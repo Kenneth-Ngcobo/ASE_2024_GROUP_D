@@ -8,7 +8,7 @@ export default function recipeCard() {
 
   return (
     <div>
-      recipeCard
+     <h1>recipeCard</h1> 
     </div>
   )
 }
