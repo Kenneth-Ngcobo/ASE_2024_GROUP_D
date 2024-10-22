@@ -5,6 +5,11 @@ import connectToDatabase from '../../../db.js';
 export async function GET(req) {
   try {
     const db = await connectToDatabase(); // Connect to the database
+
+    if (!db) {
+      throw new Error('Failed to get database connection');
+    }
+    
     const recipesCollection = db.collection('recipes'); // Fetch from the 'recipes' collection
 
     // Parse query parameters for pagination
