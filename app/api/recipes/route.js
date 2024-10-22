@@ -1,5 +1,4 @@
-//Pagenation and limiting, wont function if there is not limmiting to mny items Default 50 items for demonstration: http://localhost:3000/api/recipes?page=1&limit=10
-
+// pages/api/recipes/index.js
 import connectToDatabase from '../../../db.js';
 
 export async function GET(req) {
@@ -10,7 +9,7 @@ export async function GET(req) {
     // Parse query parameters for pagination
     const url = new URL(req.url);
     const page = parseInt(url.searchParams.get('page')) || 1; // Default to page 1
-    const limit = Math.min(parseInt(url.searchParams.get('limit')) || 20); // Default 20
+    const limit = Math.min(parseInt(url.searchParams.get('limit')) || 20, 50); // Default 20, max 50
 
     // Calculate the number of documents to skip
     const skip = (page - 1) * limit;

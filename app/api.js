@@ -18,3 +18,13 @@ export async function fetchRecipes(limit =20, page) {
     }
     
 }
+
+export async function fetchRecipeById(id){
+    const response = await fetch(`${API_BASE_URL}/${id}`);
+    if (!response.ok) {
+        throw new Error('Failed to fetch recipes');
+    }
+
+    const data = await response.json();
+    return data;
+}
