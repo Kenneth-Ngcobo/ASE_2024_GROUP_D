@@ -1,5 +1,6 @@
 import { fetchRecipes } from './api'
 import Recipes from './components/recipes';
+import RecipeDetails from './Recipe/[id]/page';
 
 export default async function Home() {
   let recipes = [];
@@ -14,6 +15,7 @@ export default async function Home() {
   return (
     <>
       <Recipes recipes={recipes} />
+      <RecipeDetails />
       {error && <div className="text-red-500 text-center p-4">Error: {error}</div>}
     </>
   );
