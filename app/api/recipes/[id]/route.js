@@ -8,15 +8,16 @@ export async function GET(req, { params }) {
   try {
   
     {/**connects and destructures the db obj */}
-    const { db } = await connectToDatabase();
- 
+    const  db  = await connectToDatabase();
+
     /** 
      * Access recipes collection in database 
      * findOne method to find a single document that matches the specified query.
      * uses the ObjectId constructor to convert the 'id' string into a valid MongoDB ObjectId.
      */
-    const recipe = await db.collection('recipes').findOne({ _id: new ObjectId(id) }); 
+    const recipe = await db.collection('recipes').findOne({ _id: id }); 
 
+    console.log(recipe)
     if (!recipe) {
       return new Response(
         JSON.stringify({ message: 'Recipe not found' }),
