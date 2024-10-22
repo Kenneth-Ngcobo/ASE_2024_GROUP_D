@@ -1,6 +1,5 @@
-
 import React from 'react';
-import Recipes from './recipes';
+import Recipes from './recipes.js';
 
 const RecipeGrid = ({ recipes }) => {
   return (
