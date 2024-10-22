@@ -1,6 +1,6 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import RecipeGrid from './components/RecipeGrid';
+import RecipeGrid from './components/recipeGrid';
 
 const HomePage = () => {
   const [recipes, setRecipes] = useState([]);
