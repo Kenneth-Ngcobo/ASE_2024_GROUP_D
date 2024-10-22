@@ -35,4 +35,6 @@ export default function Recipes({ recipes }) {
       </div>
     </div>
   );
+    </div>
+  );
 }
