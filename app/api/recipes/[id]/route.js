@@ -1,11 +1,10 @@
-import connectToDatabase from '@/db';
-import { ObjectId } from 'mongodb';
+import connectToDatabase from '@/db.js';
 
 export async function GET(req, { params }) {
-    {/**extracts id param from req param */}
   const { id } = params;
 
   try {
+<<<<<<< HEAD
   
     {/**connects and destructures the db obj */}
     const  db  = await connectToDatabase();
@@ -16,6 +15,15 @@ export async function GET(req, { params }) {
      * uses the ObjectId constructor to convert the 'id' string into a valid MongoDB ObjectId.
      */
     const recipe = await db.collection('recipes').findOne({ _id: id }); 
+=======
+    const db = await connectToDatabase();
+
+    if (!db) {
+      throw new Error('Failed to get database connection');
+    }
+
+    const recipe = await db.collection('recipes').findOne({ _id: id });
+>>>>>>> e5a4e47a286d80de8eb283fb6f0e9117645c2541
 
     console.log(recipe)
     if (!recipe) {
@@ -32,8 +40,10 @@ export async function GET(req, { params }) {
       },
     });
   } catch (error) {
+    console.error('Error fetching recipe:', error);
+
     return new Response(
-      JSON.stringify({ error: 'Failed to fetch recipe' }),
+      JSON.stringify({ error: 'Failed to fetch recipe', details: error.message }),
       { status: 500 }
     );
   }
