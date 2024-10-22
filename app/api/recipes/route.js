@@ -24,6 +24,7 @@ export async function GET(req) {
     const db = await connectToDatabase(); // Connect to the database
 
     if (!db) {
+      // Throw an error if the database connection is not established
       throw new Error('Failed to get database connection');
     }
     
