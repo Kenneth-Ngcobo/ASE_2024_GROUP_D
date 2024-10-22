@@ -20,7 +20,7 @@ async function connectToDatabase() {
     console.log('Connected to MongoDB!');
     const db = client.db('devdb'); // Use your database name
     cachedDb = db; // Cache the DB connection
-    return db;
+    return db;//changed the return
   } catch (error) {
     console.error('MongoDB connection error:', error);
     throw error;
