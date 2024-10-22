@@ -25,7 +25,7 @@ export default function Recipes({ recipes }) {
           <Link href={`/recipes/${recipe.id}`} key={recipe.id} className="block p-4 border rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
             <h2 className="text-xl font-semibold mb-2">{recipe.title}</h2>
             <Image
-              src={recipe.images}
+              src={recipe.images[0]}
               alt={recipe.title}
               width={300}
               height={200}
