@@ -19,8 +19,11 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <head>
         <title>Recipe website</title>
-        
+        <link rel="icon" href="restaurant.png" />
+
         {/* Main Meta Tags */}
+    
+
         <meta name="description" content="This is a recipe website" />
         <meta
           name="keywords"
