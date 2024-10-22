@@ -1,20 +1,26 @@
 const { MongoClient } = require('mongodb');
 
-// Replace with your MongoDB URI
-const uri = 'mongodb+srv://group-d:p0FlVQ6DhVbkZrYV@cluster0.knrq5.mongodb.net/'; // For local DB
-// Or, for MongoDB Atlas: 'mongodb+srv://<username>:<password>@cluster.mongodb.net/<dbname>?retryWrites=true&w=majority'
+const uri = 'mongodb+srv://group-d:p0FlVQ6DhVbkZrYV@cluster0.knrq5.mongodb.net/';
 
 const client = new MongoClient(uri, {
   maxPoolSize: 50,
   connectTimeoutMS: 5000,
-  retryWrites: true
+  retryWrites: true,
 });
+
+let cachedDb = null; // Use caching to avoid reconnecting on every request
 
 async function connectToDatabase() {
   try {
+    if (cachedDb) {
+      return cachedDb; // Return the cached DB if already connected
+    }
+    
     await client.connect();
     console.log('Connected to MongoDB!');
-    return client.db('devdb'); // Replace with your DB name
+    const db = client.db('devdb'); // Use your database name
+    cachedDb = db; // Cache the DB connection
+    return db;
   } catch (error) {
     console.error('MongoDB connection error:', error);
     throw error;
