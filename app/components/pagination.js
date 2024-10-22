@@ -1,10 +1,9 @@
-"use client"
+'use client'
 
 import { useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 
 export default function Pagination({ currentPage, totalPages}) {
-
     const [page, setPage] = useState(currentPage);
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -22,7 +21,6 @@ export default function Pagination({ currentPage, totalPages}) {
 
             const currentQueryString = new URLSearchParams(newQuery).toString();
             router.push(`?${currentQueryString}`)
-
         }
     };
 
@@ -36,10 +34,10 @@ export default function Pagination({ currentPage, totalPages}) {
                 <button
                     key={1}
                     onClick={() => onPageChange(1)}
-                    className={`items-center justify-center w-8 h-8 text-sm border rounded shadow-md ${
+                    className={`items-center justify-center w-8 h-8 text-sm border rounded-full shadow-md ${
                         page === 1
-                            ? "bg-slate-800 text-white font-semibold"
-                            : "bg-slate-100 hover:bg-slate-200"
+                            ? "bg-green-600 text-white font-semibold"
+                            : "bg-white text-green-600 border-green-600 hover:bg-green-100"
                     }`}
                 >
                     1
@@ -49,7 +47,7 @@ export default function Pagination({ currentPage, totalPages}) {
 
         // Show "..." if there are pages between the first and the current page window
         if (page > maxPagesToShow) {
-            pageNumbers.push(<span key="dots-start">...</span>);
+            pageNumbers.push(<span key="dots-start" className="px-2">...</span>);
         }
 
         // Show a few pages around the current page
@@ -62,10 +60,10 @@ export default function Pagination({ currentPage, totalPages}) {
                 <button
                     key={i}
                     onClick={() => onPageChange(i)}
-                    className={`items-center justify-center w-8 h-8 text-sm border rounded shadow-md ${
+                    className={`items-center justify-center w-8 h-8 text-sm border rounded-full shadow-md ${
                         page === i
-                            ? "bg-slate-800 text-white font-semibold"
-                            : "bg-slate-100 hover:bg-slate-200"
+                            ? "bg-green-600 text-white font-semibold"
+                            : "bg-white text-green-600 border-green-600 hover:bg-green-100"
                     }`}
                 >
                     {i}
@@ -75,7 +73,7 @@ export default function Pagination({ currentPage, totalPages}) {
 
         // Show "..." if there are pages between the current page window and the last page
         if (page < totalPages - maxPagesToShow) {
-            pageNumbers.push(<span key="dots-end">...</span>);
+            pageNumbers.push(<span key="dots-end" className="px-2">...</span>);
         }
 
         // Always show the last page
@@ -84,10 +82,10 @@ export default function Pagination({ currentPage, totalPages}) {
                 <button
                     key={totalPages}
                     onClick={() => onPageChange(totalPages)}
-                    className={`items-center justify-center w-8 h-8 text-sm border rounded shadow-md ${
+                    className={`items-center justify-center w-8 h-8 text-sm border rounded-full shadow-md ${
                         page === totalPages
-                            ? "bg-slate-800 text-white font-semibold"
-                            : "bg-slate-100 hover:bg-slate-200"
+                            ? "bg-green-600 text-white font-semibold"
+                            : "bg-white text-green-600 border-green-600 hover:bg-green-100"
                     }`}
                 >
                     {totalPages}
@@ -98,17 +96,18 @@ export default function Pagination({ currentPage, totalPages}) {
         return pageNumbers;
     };
 
-
     return (
-        <div className="flex justify-center space-x-1 text-gray-800">
+        <div className="flex justify-center items-center space-x-2 py-4">
             {/* Previous page Button */}
             <button
                 title="previous"
                 type="button"
                 disabled={page === 1}
                 onClick={() => onPageChange(page - 1)}
-                className={`inline-flex items-center justify-center w-8 h-8 py-0 border rounded-md shadow-md bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:border-gray-100 hover:bg-slate-900 ${
-                    page === 1 ? "cursor-not-allowed opacity-50" : ""
+                className={`inline-flex items-center justify-center w-8 h-8 border rounded-full shadow-md ${
+                    page === 1 
+                        ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                        : "bg-white text-green-600 border-green-600 hover:bg-green-100"
                 }`}
             >
                 <svg
@@ -133,8 +132,10 @@ export default function Pagination({ currentPage, totalPages}) {
                 type="button"
                 disabled={page === totalPages}
                 onClick={() => onPageChange(page + 1)}
-                className={`inline-flex items-center justify-center w-8 h-8 py-0 border rounded-md shadow-md bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:border-gray-100 hover:bg-slate-900 ${
-                    page === totalPages ? "cursor-not-allowed opacity-50" : ""
+                className={`inline-flex items-center justify-center w-8 h-8 border rounded-full shadow-md ${
+                    page === totalPages
+                        ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                        : "bg-white text-green-600 border-green-600 hover:bg-green-100"
                 }`}
             >
                 <svg
@@ -150,5 +151,5 @@ export default function Pagination({ currentPage, totalPages}) {
                 </svg>
             </button>
         </div>
-    )
+    );
 }
