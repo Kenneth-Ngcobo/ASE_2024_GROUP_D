@@ -20,7 +20,6 @@ export async function GET(req, { params }) {
   const { id } = params;
 
   try {
-    // Try to establish a connection to the MongoDB database
     const db = await connectToDatabase();
 
     if (!db) {
@@ -31,7 +30,7 @@ export async function GET(req, { params }) {
     // Attempt to find a single recipe by its ID in the 'recipes' collection
     const recipe = await db.collection('recipes').findOne({ _id: id });
 
-    // If no recipe is found, return a 404 response with a "Recipe not found" message
+
     if (!recipe) {
       return new Response(
         JSON.stringify({ message: 'Recipe not found' }),

@@ -1,9 +1,11 @@
 // Pagination and limiting. This endpoint will not function correctly without limiting 
 // the number of items returned. Default to 20 items per page. 
-// Example request: http://localhost:3000/api/recipes?page=1&limit=10
+
 
 import connectToDatabase from '../../../db.js';
 
+
+// Example request: http://localhost:3000/api/recipes?page=1&limit=10
 /**
  * Fetch a paginated list of recipes from the MongoDB database.
  *
