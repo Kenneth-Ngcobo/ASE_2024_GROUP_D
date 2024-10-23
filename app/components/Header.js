@@ -9,10 +9,11 @@ export default function Header() {
                 {/* Logo */}
                 <Link href="/" className="flex items-center">
                     <Image
-                        src="/logo.svg" 
+                        src="/restaurant.png" 
                         alt="Logo"
                         width={40}
                         height={40}
+                        priority
                         className="mr-2"
                     />
                     <span className="text-xl font-semibold tracking-tight">
