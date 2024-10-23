@@ -1,4 +1,4 @@
-"use client"; // Mark this file as a client component
+"use client";
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation'; // Import useRouter from next/navigation
@@ -19,8 +19,6 @@ const Loading = () => (
 );
 import { useParams } from 'next/navigation';
 import { fetchRecipeById } from '../../api';
-import Image from 'next/image';
-import Loading from '@/app/components/loading';
 
 // Go back function
 function goBack() {
@@ -137,9 +135,8 @@ export default function RecipePage({ params }) {
                         Description
                         <FontAwesomeIcon
                             icon={openSections['description'] ? faChevronUp : faChevronDown}
-                            className={`ml-2 text-green-600 transition-transform duration-300 transform ${
-                                openSections['description'] ? 'rotate-180' : ''
-                            }`}
+                            className={`ml-2 text-green-600 transition-transform duration-300 transform ${openSections['description'] ? 'rotate-180' : ''
+                                }`}
                         />
                     </h2>
                     {openSections['description'] && (
@@ -154,9 +151,8 @@ export default function RecipePage({ params }) {
                         Ingredients
                         <FontAwesomeIcon
                             icon={openSections['ingredients'] ? faChevronUp : faChevronDown}
-                            className={`ml-2 text-green-600 transition-transform duration-300 transform ${
-                                openSections['ingredients'] ? 'rotate-180' : ''
-                            }`}
+                            className={`ml-2 text-green-600 transition-transform duration-300 transform ${openSections['ingredients'] ? 'rotate-180' : ''
+                                }`}
                         />
                     </h2>
                     {openSections['ingredients'] && (
@@ -177,9 +173,8 @@ export default function RecipePage({ params }) {
                         Nutrition
                         <FontAwesomeIcon
                             icon={openSections['nutrition'] ? faChevronUp : faChevronDown}
-                            className={`ml-2 text-green-600 transition-transform duration-300 transform ${
-                                openSections['nutrition'] ? 'rotate-180' : ''
-                            }`}
+                            className={`ml-2 text-green-600 transition-transform duration-300 transform ${openSections['nutrition'] ? 'rotate-180' : ''
+                                }`}
                         />
                     </h2>
                     {openSections['nutrition'] && (
@@ -200,9 +195,8 @@ export default function RecipePage({ params }) {
                         Instructions
                         <FontAwesomeIcon
                             icon={openSections['instructions'] ? faChevronUp : faChevronDown}
-                            className={`ml-2 text-green-600 transition-transform duration-300 transform ${
-                                openSections['instructions'] ? 'rotate-180' : ''
-                            }`}
+                            className={`ml-2 text-green-600 transition-transform duration-300 transform ${openSections['instructions'] ? 'rotate-180' : ''
+                                }`}
                         />
                     </h2>
                     {openSections['instructions'] && (
