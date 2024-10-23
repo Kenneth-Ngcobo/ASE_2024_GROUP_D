@@ -1,4 +1,4 @@
-// app/components/Header.js
+
 import Link from 'next/link';
 import Image from 'next/image';
 
@@ -9,7 +9,7 @@ export default function Header() {
                 {/* Logo */}
                 <Link href="/" className="flex items-center">
                     <Image
-                        src="/logo.svg" // Replace with your logo path
+                        src="/logo.svg" 
                         alt="Logo"
                         width={40}
                         height={40}
@@ -40,21 +40,21 @@ export default function Header() {
                     >
                         About
                     </Link>
-                    <Link
+                    {/* <Link
                         href="/contact"
                         className="text-gray-700 hover:text-black transition-colors"
                     >
                         Contact
-                    </Link>
+                    </Link> */}
                 </nav>
 
                 {/* Button */}
                 <div className="hidden md:flex">
-                    <Link href="/login">
+                    {/* <Link href="/login">
                         <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
                             Login
                         </button>
-                    </Link>
+                    </Link> */}
                 </div>
 
                 {/* Mobile Menu Button */}
