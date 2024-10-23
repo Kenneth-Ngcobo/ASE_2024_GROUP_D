@@ -66,6 +66,7 @@ export default function RecipeDetail() {
                     )}
                     
                     <h2 className="text-xl font-semibold font-serif mb-2 text-green-800">{recipe.title}</h2>
+                    <h2 className="text-xl font-semibold font-serif mb-2 text-green-800">{recipe.title}</h2>
                     <p className="text-sm text-green-600">Published: {new Date(recipe.published).toDateString()}</p>
                     <p className="text-sm">
                         <strong className="text-green-600">Prep Time:</strong> {recipe.prep} minutes
