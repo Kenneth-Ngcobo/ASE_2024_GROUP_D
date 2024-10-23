@@ -1,9 +1,14 @@
+
 export default function Loading() {
-    return (
+  return (
       <div className="flex justify-center items-center h-screen">
-        <div className="spinner-border animate-spin inline-block w-8 h-8 border-4 rounded-full" role="status"></div>
-          <span className="visually-hidden">Loading...</span>
-       
+          <div
+              className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500"
+              role="status"
+          ></div>
+          <span className="ml-4 text-blue-500 text-lg font-medium">
+              Loading...
+          </span>
       </div>
-    );
-  }
+  );
+}
