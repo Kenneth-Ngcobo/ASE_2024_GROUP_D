@@ -1,6 +1,7 @@
 import { fetchRecipes } from './api';
 import Pagination from './components/pagination';
 import Recipes from './components/recipes';
+import Footer from './components/footer';
 import RecipeDetails from './Recipe/[id]/page';
 
 export default async function Home({ searchParams }) {
@@ -30,7 +31,7 @@ export default async function Home({ searchParams }) {
                 currentPage={recipes.currentPage} // Current page number
                 totalPages={recipes.totalPages} // Total number of pages available
             />
-            {/* Display an error message if there was an error during fetch */}
+            <Footer />
             {error && <div className="text-red-500 text-center p-4">Error: {error}</div>}
         </>
     );

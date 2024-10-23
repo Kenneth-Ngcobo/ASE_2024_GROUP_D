@@ -3,14 +3,14 @@ import Image from 'next/image';
 
 export default function Header() {
     return (
-        <header className="bg-gradient-to-r from-green-600 via-green-300 to-green-100 shadow-lg sticky top-0 z-50">
+        <header className="bg-gradient-to-r from-green-300 via-green-200 to-mint-400 text-gray-700 shadow-lg ">
             <div className="container mx-auto flex items-center justify-between p-4">
 
                 {/* Logo section with link to the home page */}
                 <Link href="/" className="flex items-center">
                     {/* Display the logo using Next.js Image component */}
                     <Image
-                        src="/Kwa.jpg"
+                        src="/Kwa.png"
                         alt="Logo"
                         width={100}
                         height={80}
@@ -27,7 +27,7 @@ export default function Header() {
                     {/* Home link with Roboto font, rounded button, and hover effects */}
                     <Link
                         href="/"
-                        className="px-4 py-2 rounded-full text-white font-medium hover:bg-green-700 hover:bg-opacity-80 transition-colors duration-300"
+                        className="px-4 py-2 rounded-full text-gray-700  font-bold  hover:bg-green-600 hover:bg-opacity-80 transition-colors duration-300"
                         style={{ fontFamily: 'Roboto, sans-serif' }}
                     >
                         Home
@@ -36,8 +36,8 @@ export default function Header() {
                     {/* Recipes link with Montserrat font, similar styling to Home */}
                     <Link
                         href="/recipes"
-                        className="px-4 py-2 rounded-full text-white font-medium hover:bg-green-700 hover:bg-opacity-80 transition-colors duration-300"
-                        style={{ fontFamily: 'Montserrat, sans-serif' }}
+                        className="px-4 py-2 rounded-full text-gray-700  font-bold hover:bg-green-700 hover:bg-opacity-80 transition-colors duration-300"
+                        style={{ fontFamily: 'Roboto, sans-serif' }}
                     >
                         Recipes
                     </Link>
@@ -45,8 +45,8 @@ export default function Header() {
                     {/* About link with Open Sans font, same styling */}
                     <Link
                         href="/about"
-                        className="px-4 py-2 rounded-full text-white font-medium hover:bg-green-700 hover:bg-opacity-80 transition-colors duration-300"
-                        style={{ fontFamily: 'Open Sans, sans-serif' }}
+                        className="px-4 py-2 rounded-full text-gray-700  font-bold hover:bg-green-700 hover:bg-opacity-80 transition-colors duration-300"
+                        style={{ fontFamily: 'Roboto, sans-serif' }}
                     >
                         About
                     </Link>
@@ -55,8 +55,8 @@ export default function Header() {
                 {/* Mobile Menu Button visible on small screens (md:hidden) */}
                 <div className="md:hidden">
                     <button
-                        className="text-white focus:outline-none"
-                        aria-label="Open Menu" // Accessibility label for the button
+                        className="text-gray-700 focus:outline-none"
+                        aria-label="Open Menu"
                     >
                         {/* Menu icon (hamburger icon) displayed using an SVG */}
                         <svg
