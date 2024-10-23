@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { fetchRecipeById } from '../../api';
 import Image from 'next/image';
-import Loading from '@/app/components/loading';
+import Loading from "../../components/loading"
 
 // Function to navigate back to the previous page
 function goBack() {

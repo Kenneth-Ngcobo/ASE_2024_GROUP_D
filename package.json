@@ -10,14 +10,8 @@
     "lint": "next lint"
   },
   "dependencies": {
-<<<<<<< Updated upstream
-    "mongodb": "^6.10.0",
-=======
-    "@fortawesome/fontawesome-free": "^6.6.0",
-    "@fortawesome/free-solid-svg-icons": "^6.6.0",
     "@fortawesome/react-fontawesome": "^0.2.2",
-    "mongodb": "^6.9.0",
->>>>>>> Stashed changes
+    "mongodb": "^6.10.0",
     "next": "14.2.15",
     "react": "^18",
     "react-dom": "^18"
