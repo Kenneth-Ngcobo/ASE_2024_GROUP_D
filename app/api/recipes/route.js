@@ -33,7 +33,7 @@ export async function GET(req) {
     // Parse query parameters for pagination
     const url = new URL(req.url);
     const page = parseInt(url.searchParams.get('page')) || 1; // Default to page 1
-    const limit = Math.min(parseInt(url.searchParams.get('limit')) || 20, 50); // Default to 20, max 50
+    const limit = Math.min(parseInt(url.searchParams.get('limit')) || 20, 50); // Default 20, max 50
 
     // Calculate the number of documents to skip
     const skip = (page - 1) * limit;
