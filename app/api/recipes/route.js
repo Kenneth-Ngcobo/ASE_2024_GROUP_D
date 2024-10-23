@@ -2,6 +2,9 @@
 // the number of items returned. Default to 20 items per page. 
 
 
+=========
+// pages/api/recipes/index.js
+>>>>>>>>> Temporary merge branch 2
 import connectToDatabase from '../../../db.js';
 
 
@@ -33,7 +36,11 @@ export async function GET(req) {
     // Parse query parameters for pagination
     const url = new URL(req.url);
     const page = parseInt(url.searchParams.get('page')) || 1; // Default to page 1
+<<<<<<<<< Temporary merge branch 1
+    const limit = Math.min(parseInt(url.searchParams.get('limit')) || 20, 50); // Default to 20, max 50
+=========
     const limit = Math.min(parseInt(url.searchParams.get('limit')) || 20, 50); // Default 20, max 50
+>>>>>>>>> Temporary merge branch 2
 
     // Calculate the number of documents to skip
     const skip = (page - 1) * limit;
