@@ -80,8 +80,34 @@ export default function RecipeDetail() {
                     {/* Display recipe tags */}
                     <h2 className="text-xl font-semibold font-serif mb-2 text-green-800">{recipe.tags}</h2>
 
+                    <h2 className="text-xl font-semibold font-serif mb-2 text-green-800">Description</h2>
+                    <p className="mt-4">{recipe.description}</p>
+                    <h2 className="text-xl font-semibold font-serif mb-2 text-green-800">
+  Ingredients:
+</h2>
+<ul className="list-disc list-inside">
+  {Object.entries(recipe.ingredients).map(([key, value], index) => (
+    <li key={index}>
+      {key}: {value}
+    </li>
+  ))}
+</ul>
+
+<h2 className="text-xl font-semibold font-serif mb-2 text-green-800">
+  Nutrition:
+</h2>
+<ul className="list-disc list-inside">
+  {Object.entries(recipe.nutrition).map(([key, value], index) => (
+    <li key={index}>
+      {key}: {value}
+    </li>
+  ))}
+</ul>
+
                     {/* Display the published date */}
                     <p className="text-sm text-green-600">Published: {new Date(recipe.published).toDateString()}</p>
+
+
 
                     {/* Display prep time */}
                     <p className="text-sm">
