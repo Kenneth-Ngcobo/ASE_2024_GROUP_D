@@ -1,12 +1,18 @@
-"use client"; // Mark this file as a client component
+<<<<<<<<< Temporary merge branch 1
+'use client'
+=========
+'use client';
+>>>>>>>>> Temporary merge branch 2
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation'; // Import useRouter from next/navigation
-import { getRecipe } from '@/app/lib/getRecipe'; // Correctly import the server-side fetch function
-import ImageGallery from '@/app/components/ImageGallery'; // Import ImageGallery component
-import Image from 'next/image'; // Import Image component from Next.js
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
+import { useParams } from 'next/navigation';
+import { fetchRecipeById } from '../../api';
+<<<<<<<<< Temporary merge branch 1
+import Image from 'next/image'; // Ensure Image is imported correctly
+import Loading from '@/app/components/loading';
+=========
+import ImageGallery from '@/app/components/ImageGallery';
+import Image from 'next/image';
 
 // Loading component
 const Loading = () => (
@@ -23,47 +29,129 @@ function goBack() {
     window.history.back();
 }
 
-// Main Recipe Page Component
-export default function RecipePage({ params }) {
-    const [isLoading, setIsLoading] = useState(true); // Loading state
-    const [recipe, setRecipe] = useState(null); // State for recipe data
-    const [error, setError] = useState(null); // State for error handling
-    const [openSections, setOpenSections] = useState({}); // State to track open/close sections
-    const router = useRouter(); // Use router for navigation
-    const { id } = params; // Get recipe ID from URL parameters
+export default function RecipeDetail() {
+    const params = useParams();
+<<<<<<<<< Temporary merge branch 1
+    const { id } = params; // Ensure correct destructuring
+=========
+    const { id } = params;
+>>>>>>>>> Temporary merge branch 2
+    const [recipe, setRecipe] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState(null);
 
-    // Fetch recipe data
-    useEffect(() => {
-        const fetchRecipe = async () => {
-            const { recipe, error } = await getRecipe(id);
-            if (error) {
-                setError(error);
-            } else {
-                setRecipe(recipe);
-            }
-            setIsLoading(false);
-        };
-
-        fetchRecipe();
-    }, [id]);
-
-    // Function to toggle open/close sections
-    const toggleSection = (section) => {
-        setOpenSections((prev) => ({
-            ...prev,
-            [section]: !prev[section],
-        }));
+    const renderTags = (tags) => {
+        if (!tags) return null;
+        
+        if (Array.isArray(tags)) {
+            return tags.map((tag, index) => (
+                <span key={index} className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm">
+                    {tag}
+                </span>
+            ));
+        }
+        
+        if (typeof tags === 'string') {
+            return tags.split(',').map((tag, index) => (
+                <span key={index} className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm">
+                    {tag.trim()}
+                </span>
+            ));
+        }
+        
+        return null;
     };
 
-    // Render loading state
-    if (isLoading) return <Loading />;
+    useEffect(() => {
+<<<<<<<<< Temporary merge branch 1
+        if (id) {
+            const loadRecipe = async () => {
+                try {
+                    const data = await fetchRecipeById(id);
+                    console.log("Fetched Recipe:", data); // Debug log the fetched data
+                    setRecipe(data); // Set recipe state with fetched data
+                } catch (err) {
+                    setError(err.message);
+                } finally {
+                    setLoading(false);
+=========
+        const loadRecipe = async () => {
+            setIsLoading(true);
+            try {
+                if (id) {
+                    const data = await fetchRecipeById(id);
+                    setRecipe(data);
+>>>>>>>>> Temporary merge branch 2
+                }
+            } catch (err) {
+                console.error('Error fetching recipe:', err); // Log error for debugging
+                setError(err.message);
+            } finally {
+                setIsLoading(false);
+            }
+        };
 
-    // Render error state
+<<<<<<<<< Temporary merge branch 1
+            loadRecipe();
+        }
+    }, [id]);
+
+    if (loading) return <Loading />;
+    if (error) return <div className="text-red-500">{error}</div>;
+
+    return (
+        <div className="container mx-auto p-4">
+            <div className="flex justify-center mb-8">
+                <button
+                    onClick={goBack}
+                    className="bg-green-600 hover:bg-green-400 text-white font-bold py-2 px-4 rounded-full transition-colors duration-300"
+                >
+                    Back to list ←
+                </button>
+            </div>
+
+            {/* Check if recipe exists and render its details */}
+            {recipe && (
+                <>
+                    {/* Check if images array exists and has at least one image */}
+                    {recipe?.images?.length > 0 && (
+                        <Image
+                            src={recipe.images[0]} // Assuming images is an array
+                            alt={recipe.title}
+                            width={300}
+                            height={200}
+                            className="object-cover rounded-md"
+                        />
+                    )}
+                    
+                    <h2 className="text-xl font-semibold font-serif mb-2 text-green-800">{recipe.title}</h2>
+                    <p className="text-sm text-green-600">Published: {new Date(recipe.published).toDateString()}</p>
+                    <p className="text-sm">
+                        <strong className="text-green-600">Prep Time:</strong> {recipe.prep} minutes
+                    </p>
+                    <p className="text-sm">
+                        <strong className="text-green-600">Cook Time:</strong> {recipe.cook} minutes
+                    </p>
+                    <p className="text-sm">
+                        <strong className="text-green-600">Servings:</strong> {recipe.servings}
+                    </p>
+                    <p className="text-sm">
+                        <strong className="text-green-600">Category:</strong> {recipe.category}
+                    </p>
+                    <p className="mt-4">{recipe.instructions}</p>
+                </>
+            )}
+=========
+        loadRecipe();
+    }, [id]);
+
+    if (isLoading) return <Loading />;
+    
     if (error) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-green-50 to-white">
                 <div className="bg-white p-8 rounded-xl shadow-lg">
-                    <p className="text-gray-700 text-lg">{error}</p>
+                    <p className="text-red-500 text-lg">Error: {error}</p>
                     <button
                         onClick={goBack}
                         className="mt-4 bg-green-600 hover:bg-green-500 text-white font-bold py-2 px-4 rounded"
@@ -75,7 +163,22 @@ export default function RecipePage({ params }) {
         );
     }
 
-    // Render the recipe page
+    if (!recipe) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-green-50 to-white">
+                <div className="bg-white p-8 rounded-xl shadow-lg">
+                    <p className="text-gray-700 text-lg">Recipe not found</p>
+                    <button
+                        onClick={goBack}
+                        className="mt-4 bg-green-600 hover:bg-green-500 text-white font-bold py-2 px-4 rounded"
+                    >
+                        Go Back
+                    </button>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className="min-h-screen bg-gradient-to-b from-green-50 to-white py-8">
             <div className="container mx-auto px-4 max-w-5xl">
@@ -117,114 +220,63 @@ export default function RecipePage({ params }) {
                             {recipe.title || 'Untitled Recipe'}
                         </h1>
                         <div className="flex flex-wrap gap-2 mb-4">
-                            {recipe.tags?.map((tag, index) => (
-                                <span key={index} className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm">
-                                    {tag}
-                                </span>
-                            ))}
+                            {renderTags(recipe.tags)}
                         </div>
                     </div>
-
+                    
                     {/* Description */}
-                    <h2
-                        className="text-xl font-semibold font-serif mb-2 text-green-800 cursor-pointer flex items-center justify-between"
-                        onClick={() => toggleSection('description')}
-                    >
-                        Description
-                        <FontAwesomeIcon
-                            icon={openSections['description'] ? faChevronUp : faChevronDown}
-                            className={`ml-2 text-green-600 transition-transform duration-300 transform ${
-                                openSections['description'] ? 'rotate-180' : ''
-                            }`}
-                        />
-                    </h2>
-                    {openSections['description'] && (
-                        <p className="mt-4">{recipe.description || 'No description available.'}</p>
-                    )}
+                    <h2 className="text-xl font-semibold font-serif mb-2 text-green-800">Description</h2>
+                    <p className="mt-4">{recipe.description || 'No description available.'}</p>
 
                     {/* Ingredients */}
-                    <h2
-                        className="text-xl font-semibold font-serif mb-2 text-green-800 cursor-pointer flex items-center justify-between"
-                        onClick={() => toggleSection('ingredients')}
-                    >
-                        Ingredients
-                        <FontAwesomeIcon
-                            icon={openSections['ingredients'] ? faChevronUp : faChevronDown}
-                            className={`ml-2 text-green-600 transition-transform duration-300 transform ${
-                                openSections['ingredients'] ? 'rotate-180' : ''
-                            }`}
-                        />
-                    </h2>
-                    {openSections['ingredients'] && (
-                        <ul className="list-disc list-inside mt-2">
-                            {Object.entries(recipe.ingredients || {}).map(([key, value], index) => (
-                                <li key={index}>
-                                    {key}: {value}
-                                </li>
-                            ))}
-                        </ul>
-                    )}
+                    <h2 className="text-xl font-semibold font-serif mb-2 text-green-800">Ingredients:</h2>
+                    <ul className="list-disc list-inside">
+                        {Object.entries(recipe.ingredients || {}).map(([key, value], index) => (
+                            <li key={index}>
+                                {key}: {value}
+                            </li>
+                        ))}
+                    </ul>
 
                     {/* Nutrition */}
-                    <h2
-                        className="text-xl font-semibold font-serif mb-2 text-green-800 cursor-pointer flex items-center justify-between"
-                        onClick={() => toggleSection('nutrition')}
-                    >
-                        Nutrition
-                        <FontAwesomeIcon
-                            icon={openSections['nutrition'] ? faChevronUp : faChevronDown}
-                            className={`ml-2 text-green-600 transition-transform duration-300 transform ${
-                                openSections['nutrition'] ? 'rotate-180' : ''
-                            }`}
-                        />
-                    </h2>
-                    {openSections['nutrition'] && (
-                        <ul className="list-disc list-inside mt-2">
-                            {Object.entries(recipe.nutrition || {}).map(([key, value], index) => (
-                                <li key={index}>
-                                    {key}: {value}
-                                </li>
-                            ))}
-                        </ul>
-                    )}
+                    <h2 className="text-xl font-semibold font-serif mb-2 text-green-800">Nutrition:</h2>
+                    <ul className="list-disc list-inside">
+                        {Object.entries(recipe.nutrition || {}).map(([key, value], index) => (
+                            <li key={index}>
+                                {key}: {value}
+                            </li>
+                        ))}
+                    </ul>
+
+                    {/* Published Date */}
+                    <p className="text-sm text-green-600">Published: {new Date(recipe.published).toDateString()}</p>
+
+                    {/* Prep Time */}
+                    <p className="text-sm">
+                        <strong className="text-green-600">Prep Time:</strong> {recipe.prep} minutes
+                    </p>
+
+                    {/* Cook Time */}
+                    <p className="text-sm">
+                        <strong className="text-green-600">Cook Time:</strong> {recipe.cook} minutes
+                    </p>
+
+                    {/* Servings */}
+                    <p className="text-sm">
+                        <strong className="text-green-600">Servings:</strong> {recipe.servings}
+                    </p>
+
+                    {/* Category */}
+                    <p className="text-sm">
+                        <strong className="text-green-600">Category:</strong> {recipe.category}
+                    </p>
 
                     {/* Recipe Instructions */}
-                    <h2
-                        className="text-xl font-semibold font-serif mb-2 text-green-800 cursor-pointer flex items-center justify-between"
-                        onClick={() => toggleSection('instructions')}
-                    >
-                        Instructions
-                        <FontAwesomeIcon
-                            icon={openSections['instructions'] ? faChevronUp : faChevronDown}
-                            className={`ml-2 text-green-600 transition-transform duration-300 transform ${
-                                openSections['instructions'] ? 'rotate-180' : ''
-                            }`}
-                        />
-                    </h2>
-                    {openSections['instructions'] && (
-                        <p className="mt-4">{recipe.instructions || 'No instructions available.'}</p>
-                    )}
-
-                    {/* Footer Information */}
-                    <div className="mt-8 bg-white p-6 rounded-xl shadow-xl">
-                        <p className="text-sm text-green-600">
-                            <strong>Published:</strong> {new Date(recipe.published).toDateString()}
-                        </p>
-                        <p className="text-sm">
-                            <strong className="text-green-600">Prep Time:</strong> {recipe.prep} minutes
-                        </p>
-                        <p className="text-sm">
-                            <strong className="text-green-600">Cook Time:</strong> {recipe.cook} minutes
-                        </p>
-                        <p className="text-sm">
-                            <strong className="text-green-600">Servings:</strong> {recipe.servings}
-                        </p>
-                        <p className="text-sm">
-                            <strong className="text-green-600">Category:</strong> {recipe.category}
-                        </p>
-                    </div>
+                    <h2 className="text-xl font-semibold font-serif mb-2 text-green-800">Instructions</h2>
+                    <p className="mt-4">{recipe.instructions || 'No instructions available.'}</p>
                 </div>
             </div>
+>>>>>>>>> Temporary merge branch 2
         </div>
     );
 }
