@@ -1,7 +1,6 @@
 // Pagination and limiting. This endpoint will not function correctly without limiting 
 // the number of items returned. Default to 20 items per page. 
 
-
 import connectToDatabase from '../../../db.js';
 
 
@@ -33,6 +32,7 @@ export async function GET(req) {
     // Parse query parameters for pagination
     const url = new URL(req.url);
     const page = parseInt(url.searchParams.get('page')) || 1; // Default to page 1
+
     const limit = Math.min(parseInt(url.searchParams.get('limit')) || 20, 50); // Default to 20, max 50
 
     // Calculate the number of documents to skip
