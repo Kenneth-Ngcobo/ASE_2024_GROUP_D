@@ -3,136 +3,202 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { fetchRecipeById } from '../../api';
-import ImageGallery from '@/app/components/ImageGallery'; // Import the new ImageGallery component
-import Image from 'next/image'; // Ensure Image is imported correctly
-import Loading from '@/app/components/loading'; // Import the loading component
+import ImageGallery from '@/app/components/ImageGallery';
+import Image from 'next/image';
 
-// Function to navigate back to the previous page
+// Loading component
+const Loading = () => (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-green-50 to-white">
+        <div className="text-center">
+            <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-green-500 mx-auto mb-4"></div>
+            <p className="text-lg text-green-700">Loading recipe...</p>
+        </div>
+    </div>
+);
+
 function goBack() {
     window.history.back();
 }
 
 export default function RecipeDetail() {
-    const params = useParams(); // Destructure the URL parameters
-    const { id } = params; // Ensure correct destructuring for the recipe ID
-    const [recipe, setRecipe] = useState(null); // State for holding the recipe data
-    const [loading, setLoading] = useState(true); // State for loading status
-    const [error, setError] = useState(null); // State for handling errors
+    const params = useParams();
+    const { id } = params;
+    const [recipe, setRecipe] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState(null);
 
-    console.log("id:", id); // Log the recipe ID for debugging
-
-    // Fetch the recipe data when the component mounts
-    useEffect(() => {
-        if (id) {
-            const loadRecipe = async () => {
-                try {
-                    const data = await fetchRecipeById(id); // Fetch the recipe by ID
-                    console.log("Fetched Recipe:", data); // Debug log the fetched data
-                    setRecipe(data); // Set the recipe state with fetched data
-                } catch (err) {
-                    setError(err.message); // Handle errors by setting the error state
-                } finally {
-                    setLoading(false); // Set loading to false after fetching data
-                }
-            };
-
-            loadRecipe(); // Call the loadRecipe function
+    const renderTags = (tags) => {
+        if (!tags) return null;
+        
+        if (Array.isArray(tags)) {
+            return tags.map((tag, index) => (
+                <span key={index} className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm">
+                    {tag}
+                </span>
+            ));
         }
+        
+        if (typeof tags === 'string') {
+            return tags.split(',').map((tag, index) => (
+                <span key={index} className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm">
+                    {tag.trim()}
+                </span>
+            ));
+        }
+        
+        return null;
+    };
+
+    useEffect(() => {
+        const loadRecipe = async () => {
+            setIsLoading(true);
+            try {
+                if (id) {
+                    const data = await fetchRecipeById(id);
+                    setRecipe(data);
+                }
+            } catch (err) {
+                console.error('Error fetching recipe:', err); // Log error for debugging
+                setError(err.message);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        loadRecipe();
     }, [id]);
 
-    // If the data is still loading, show a loading spinner
-    if (loading) return <Loading />;
+    if (isLoading) return <Loading />;
     
-    // If an error occurred, display the error message
-    if (error) return <div className="text-red-500">{error}</div>;
+    if (error) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-green-50 to-white">
+                <div className="bg-white p-8 rounded-xl shadow-lg">
+                    <p className="text-red-500 text-lg">Error: {error}</p>
+                    <button
+                        onClick={goBack}
+                        className="mt-4 bg-green-600 hover:bg-green-500 text-white font-bold py-2 px-4 rounded"
+                    >
+                        Go Back
+                    </button>
+                </div>
+            </div>
+        );
+    }
+
+    if (!recipe) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-green-50 to-white">
+                <div className="bg-white p-8 rounded-xl shadow-lg">
+                    <p className="text-gray-700 text-lg">Recipe not found</p>
+                    <button
+                        onClick={goBack}
+                        className="mt-4 bg-green-600 hover:bg-green-500 text-white font-bold py-2 px-4 rounded"
+                    >
+                        Go Back
+                    </button>
+                </div>
+            </div>
+        );
+    }
 
     return (
-        <div className="container mx-auto p-4">
-            {/* Back button to navigate to the previous page */}
-            <div className="flex justify-center mb-8">
-                <button
-                    onClick={goBack}
-                    className="bg-green-600 hover:bg-green-400 text-white font-bold py-2 px-4 rounded-full transition-colors duration-300"
-                >
-                    Back to list ←
-                </button>
-            </div>
+        <div className="min-h-screen bg-gradient-to-b from-green-50 to-white py-8">
+            <div className="container mx-auto px-4 max-w-5xl">
+                {/* Back Button */}
+                <div className="mb-8">
+                    <button
+                        onClick={goBack}
+                        className="bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 
+                                 text-white font-bold py-3 px-6 rounded-full transition-all duration-300 
+                                 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                    >
+                        ← Back to Recipes
+                    </button>
+                </div>
 
-            {/* Check if the recipe exists and render its details */}
-            {recipe && (
-                <>
-                    {/* Render the ImageGallery if there are multiple images */}
-                    {recipe?.images?.length > 0 ? (
-                        <ImageGallery images={recipe.images} /> // Use the gallery for multiple images
-                    ) : (
-                        <Image
-                            src={recipe.images[0]} // Show the first image if no gallery
-                            alt={recipe.title}
-                            width={300}
-                            height={200}
-                            className="object-cover rounded-md"
-                        />
-                    )}
+                <div className="space-y-8">
+                    {/* Image Section */}
+                    <div className="bg-white rounded-2xl shadow-xl p-6 overflow-hidden">
+                        {recipe.images && recipe.images.length > 0 ? (
+                            <ImageGallery images={recipe.images} />
+                        ) : recipe.images?.[0] ? (
+                            <Image
+                                src={recipe.images[0]}
+                                alt={recipe.title || 'Recipe Image'}
+                                width={300}
+                                height={200}
+                                className="w-full h-[400px] object-cover rounded-xl"
+                            />
+                        ) : (
+                            <div className="w-full h-[400px] bg-gray-100 rounded-xl flex items-center justify-center">
+                                <p className="text-gray-500">No image available</p>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Title and Tags Section */}
+                    <div className="bg-white rounded-2xl shadow-xl p-8">
+                        <h1 className="text-4xl font-bold text-green-800 mb-4">
+                            {recipe.title || 'Untitled Recipe'}
+                        </h1>
+                        <div className="flex flex-wrap gap-2 mb-4">
+                            {renderTags(recipe.tags)}
+                        </div>
+                    </div>
                     
-                    {/* Display recipe title */}
-                    <h2 className="text-xl font-semibold font-serif mb-2 text-green-800">{recipe.title}</h2>
-
-                    {/* Display recipe tags */}
-                    <h2 className="text-xl font-semibold font-serif mb-2 text-green-800">{recipe.tags}</h2>
-
+                    {/* Description */}
                     <h2 className="text-xl font-semibold font-serif mb-2 text-green-800">Description</h2>
-                    <p className="mt-4">{recipe.description}</p>
-                    <h2 className="text-xl font-semibold font-serif mb-2 text-green-800">
-  Ingredients:
-</h2>
-<ul className="list-disc list-inside">
-  {Object.entries(recipe.ingredients).map(([key, value], index) => (
-    <li key={index}>
-      {key}: {value}
-    </li>
-  ))}
-</ul>
+                    <p className="mt-4">{recipe.description || 'No description available.'}</p>
 
-<h2 className="text-xl font-semibold font-serif mb-2 text-green-800">
-  Nutrition:
-</h2>
-<ul className="list-disc list-inside">
-  {Object.entries(recipe.nutrition).map(([key, value], index) => (
-    <li key={index}>
-      {key}: {value}
-    </li>
-  ))}
-</ul>
+                    {/* Ingredients */}
+                    <h2 className="text-xl font-semibold font-serif mb-2 text-green-800">Ingredients:</h2>
+                    <ul className="list-disc list-inside">
+                        {Object.entries(recipe.ingredients || {}).map(([key, value], index) => (
+                            <li key={index}>
+                                {key}: {value}
+                            </li>
+                        ))}
+                    </ul>
 
-                    {/* Display the published date */}
+                    {/* Nutrition */}
+                    <h2 className="text-xl font-semibold font-serif mb-2 text-green-800">Nutrition:</h2>
+                    <ul className="list-disc list-inside">
+                        {Object.entries(recipe.nutrition || {}).map(([key, value], index) => (
+                            <li key={index}>
+                                {key}: {value}
+                            </li>
+                        ))}
+                    </ul>
+
+                    {/* Published Date */}
                     <p className="text-sm text-green-600">Published: {new Date(recipe.published).toDateString()}</p>
 
-
-
-                    {/* Display prep time */}
+                    {/* Prep Time */}
                     <p className="text-sm">
                         <strong className="text-green-600">Prep Time:</strong> {recipe.prep} minutes
                     </p>
 
-                    {/* Display cook time */}
+                    {/* Cook Time */}
                     <p className="text-sm">
                         <strong className="text-green-600">Cook Time:</strong> {recipe.cook} minutes
                     </p>
 
-                    {/* Display servings */}
+                    {/* Servings */}
                     <p className="text-sm">
                         <strong className="text-green-600">Servings:</strong> {recipe.servings}
                     </p>
 
-                    {/* Display category */}
+                    {/* Category */}
                     <p className="text-sm">
                         <strong className="text-green-600">Category:</strong> {recipe.category}
                     </p>
 
-                    {/* Display the recipe instructions */}
-                    <p className="mt-4">{recipe.instructions}</p>
-                </>
-            )}
+                    {/* Recipe Instructions */}
+                    <h2 className="text-xl font-semibold font-serif mb-2 text-green-800">Instructions</h2>
+                    <p className="mt-4">{recipe.instructions || 'No instructions available.'}</p>
+                </div>
+            </div>
         </div>
     );
 }
