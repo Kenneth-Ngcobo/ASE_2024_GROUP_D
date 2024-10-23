@@ -1,5 +1,6 @@
 'use client'
 
+import Head from "next/head";
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { fetchRecipeById } from '../../api';
@@ -26,6 +27,7 @@ export default function RecipeDetail() {
                     const data = await fetchRecipeById(id);
                     console.log("Fetched Recipe:", data); // Debug log the fetched data
                     setRecipe(data); // Set recipe state with fetched data
+                    document.title = data.title;
                 } catch (err) {
                     setError(err.message);
                 } finally {
@@ -34,8 +36,10 @@ export default function RecipeDetail() {
             };
 
             loadRecipe();
+           
         }
     }, [id]);
+    
 
     if (loading) return <Loading />;
     if (error) return <div className="text-red-500">{error}</div>;
