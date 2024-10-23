@@ -1,23 +1,26 @@
-
 import Link from 'next/link';
 import Image from 'next/image';
 
 export default function Header() {
     return (
-        <header className="bg-white shadow-md sticky top-0 z-50">
+        <header className="bg-gradient-to-r from-green-600 via-green-300 to-green-100 shadow-lg sticky top-0 z-50">
             <div className="container mx-auto flex items-center justify-between p-4">
                 {/* Logo */}
                 <Link href="/" className="flex items-center">
                     <Image
-                        src="/restaurant.png" 
+
+                     
+
+                        src="/Kwa.jpg" 
                         alt="Logo"
-                        width={40}
-                        height={40}
+                        width={100}
+                        height={80}
                         priority
+
                         className="mr-2"
                     />
-                    <span className="text-xl font-semibold tracking-tight">
-                        MyApp
+                    <span className="text-3xl font-bold tracking-tight text-white font-lobster">
+                        
                     </span>
                 </Link>
 
@@ -25,43 +28,31 @@ export default function Header() {
                 <nav className="hidden md:flex space-x-6">
                     <Link
                         href="/"
-                        className="text-gray-700 hover:text-black transition-colors"
+                        className="px-4 py-2 rounded-full text-white font-medium hover:bg-green-700 hover:bg-opacity-80 transition-colors duration-300"
+                        style={{ fontFamily: 'Roboto, sans-serif' }}
                     >
                         Home
                     </Link>
                     <Link
                         href="/recipes"
-                        className="text-gray-700 hover:text-black transition-colors"
+                        className="px-4 py-2 rounded-full text-white font-medium hover:bg-green-700 hover:bg-opacity-80 transition-colors duration-300"
+                        style={{ fontFamily: 'Montserrat, sans-serif' }}
                     >
                         Recipes
                     </Link>
                     <Link
                         href="/about"
-                        className="text-gray-700 hover:text-black transition-colors"
+                        className="px-4 py-2 rounded-full text-white font-medium hover:bg-green-700 hover:bg-opacity-80 transition-colors duration-300"
+                        style={{ fontFamily: 'Open Sans, sans-serif' }}
                     >
                         About
                     </Link>
-                    {/* <Link
-                        href="/contact"
-                        className="text-gray-700 hover:text-black transition-colors"
-                    >
-                        Contact
-                    </Link> */}
                 </nav>
-
-                {/* Button */}
-                <div className="hidden md:flex">
-                    {/* <Link href="/login">
-                        <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
-                            Login
-                        </button>
-                    </Link> */}
-                </div>
 
                 {/* Mobile Menu Button */}
                 <div className="md:hidden">
                     <button
-                        className="text-gray-700 focus:outline-none"
+                        className="text-white focus:outline-none"
                         aria-label="Open Menu"
                     >
                         <svg
