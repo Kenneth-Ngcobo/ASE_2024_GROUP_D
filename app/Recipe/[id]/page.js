@@ -17,10 +17,14 @@ const Loading = () => (
         </div>
     </div>
 );
+import { useParams } from 'next/navigation';
+import { fetchRecipeById } from '../../api';
+import Image from 'next/image';
+import Loading from '@/app/components/loading';
 
 // Go back function
 function goBack() {
-    window.history.back();
+    window.history.back(); // Uses browser's history to go back
 }
 
 // Main Recipe Page Component
