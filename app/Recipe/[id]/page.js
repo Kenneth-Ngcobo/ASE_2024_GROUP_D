@@ -19,8 +19,6 @@ const Loading = () => (
 );
 import { useParams } from 'next/navigation';
 import { fetchRecipeById } from '../../api';
-import Image from 'next/image';
-import Loading from "../../components/loading"
 
 // Go back function
 function goBack() {
