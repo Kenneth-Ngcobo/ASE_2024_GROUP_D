@@ -28,21 +28,26 @@ export default function ImageGallery({ images }) {
                 />
             </div>
 
-            {/* Left arrow button */}
-            <button
-                onClick={goToPrevious}
-                className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-green-600 text-white p-2 rounded-full hover:bg-green-400 transition-colors"
-            >
-                <FaChevronLeft size={24} />
-            </button>
+            {/* Conditionally render arrows only if there are multiple images */}
+            {images.length > 1 && (
+                <>
+                    {/* Left arrow button */}
+                    <button
+                        onClick={goToPrevious}
+                        className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-green-600 text-white p-2 rounded-full hover:bg-green-400 transition-colors"
+                    >
+                        <FaChevronLeft size={24} />
+                    </button>
 
-            {/* Right arrow button */}
-            <button
-                onClick={goToNext}
-                className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-green-600 text-white p-2 rounded-full hover:bg-green-400 transition-colors"
-            >
-                <FaChevronRight size={24} />
-            </button>
+                    {/* Right arrow button */}
+                    <button
+                        onClick={goToNext}
+                        className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-green-600 text-white p-2 rounded-full hover:bg-green-400 transition-colors"
+                    >
+                        <FaChevronRight size={24} />
+                    </button>
+                </>
+            )}
 
             {/* Dots indicating current slide */}
             <div className="flex justify-center mt-4 space-x-2">
