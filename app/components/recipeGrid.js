@@ -1,14 +1,22 @@
 import React from 'react';
-import Recipes from './recipes.js';
+import Link from 'next/link';
+import Image from 'next/image';
 
-const RecipeGrid = ({ recipes }) => {
+const Recipes = ({ recipe }) => {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-4">
-      {recipes.map((recipe) => (
-        <Recipes key={recipe._id} recipe={recipe} />
-      ))}
-    </div>
+    <Link href={`/recipes/${recipe.id}`} className="block p-4 bg-[#1C1C1C] border border-gray-700 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-800">
+      <Image
+        src={recipe.image}
+        alt={recipe.title}
+        width={300}
+        height={200}
+        className="object-cover rounded-md"
+      />
+      <h2 className="text-xl font-bold mt-8 text-orage">{recipe.title}</h2>
+      <p className="text-sm text-gray-400 mt-1">Category: {recipe.category}</p>
+      <p className="text-sm text-gray-500">Prep Time: {recipe.prep} mins</p>
+    </Link>
   );
 };
 
-export default RecipeGrid;
+export default Recipes;
