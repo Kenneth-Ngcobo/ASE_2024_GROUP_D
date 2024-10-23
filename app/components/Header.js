@@ -8,7 +8,7 @@ export default function Header() {
                 {/* Logo */}
                 <Link href="/" className="flex items-center">
                     <Image
-                        src="/Kwa.jpg" 
+                        src="/Kwa.png" 
                         alt="Logo"
                         width={100}
                         height={80}
