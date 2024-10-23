@@ -3,8 +3,10 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
+  --background: #f9ebc7;
   --foreground: #171717;
+  --primary: #a9b388;
+  --primary-dark: #5f6f52;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -23,5 +25,24 @@ body {
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+}
+
+
+.spinner-border {
+  border-top-color: transparent;
+  border-right-color: currentColor;
+  border-bottom-color: currentColor;
+  border-left-color: currentColor;
+  border-width: 0.2em;
+  border-radius: 50%;
+  width: 1.5rem;
+  height: 1.5rem;
+  animation: spin 0.75s linear infinite;
+}
+
+@keyframes spin {
+  100% {
+    transform: rotate(360deg);
   }
 }
