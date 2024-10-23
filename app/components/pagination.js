@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect } from "react";
 
 export default function Pagination({ currentPage, totalPages }) {
     // Initialize 'page' state with the current page value passed as a prop
@@ -11,6 +12,12 @@ export default function Pagination({ currentPage, totalPages }) {
     const router = useRouter();
     // Retrieve current search parameters from the URL
     const searchParams = useSearchParams();
+
+    useEffect(() => {
+        // Update the page with the currentPage value in order to fix the issue of Navigating back to home page and the page number not changing.
+        setPage(currentPage)
+    }, [currentPage]);
+
 
     // Function to handle page changes
     const onPageChange = (newPage) => {
