@@ -1,5 +1,6 @@
 "use client"; // Mark this file as a client component
 
+import Head from "next/head";
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation'; // Import useRouter from next/navigation
 import { getRecipe } from '@/app/lib/getRecipe'; // Correctly import the server-side fetch function
@@ -34,18 +35,23 @@ export default function RecipePage({ params }) {
 
     // Fetch recipe data
     useEffect(() => {
+
+
         const fetchRecipe = async () => {
             const { recipe, error } = await getRecipe(id);
             if (error) {
                 setError(error);
             } else {
                 setRecipe(recipe);
+               document.title = data.title;
             }
             setIsLoading(false);
         };
 
         fetchRecipe();
+
     }, [id]);
+    
 
     // Function to toggle open/close sections
     const toggleSection = (section) => {
