@@ -3,8 +3,18 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { fetchRecipeById } from '../../api';
-import Image from 'next/image'; // Ensure Image is imported correctly
-import Loading from '@/app/components/loading';
+import ImageGallery from '@/app/components/ImageGallery';
+import Image from 'next/image';
+
+// Loading component
+const Loading = () => (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-green-50 to-white">
+        <div className="text-center">
+            <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-green-500 mx-auto mb-4"></div>
+            <p className="text-lg text-green-700">Loading recipe...</p>
+        </div>
+    </div>
+);
 
 function goBack() {
     window.history.back();
@@ -14,10 +24,30 @@ export default function RecipeDetail() {
     const params = useParams();
     const { id } = params; // Ensure correct destructuring
     const [recipe, setRecipe] = useState(null);
-    const [loading, setLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    console.log("id:", id);
+    const renderTags = (tags) => {
+        if (!tags) return null;
+        
+        if (Array.isArray(tags)) {
+            return tags.map((tag, index) => (
+                <span key={index} className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm">
+                    {tag}
+                </span>
+            ));
+        }
+        
+        if (typeof tags === 'string') {
+            return tags.split(',').map((tag, index) => (
+                <span key={index} className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm">
+                    {tag.trim()}
+                </span>
+            ));
+        }
+        
+        return null;
+    };
 
     useEffect(() => {
         if (id) {
@@ -31,7 +61,13 @@ export default function RecipeDetail() {
                 } finally {
                     setLoading(false);
                 }
-            };
+            } catch (err) {
+                console.error('Error fetching recipe:', err); // Log error for debugging
+                setError(err.message);
+            } finally {
+                setIsLoading(false);
+            }
+        };
 
             loadRecipe();
         }
