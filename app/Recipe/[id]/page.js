@@ -2,40 +2,42 @@ import { Suspense } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import BackButton from '../../components/BackButton';
-import { getRecipe } from '@/app/lib/getRecipe';
+import { fetchRecipeById } from '../../api';
+import ImageGallery from '../../components/ImageGallery';
+import CollapsibleSection from '../../components/CollapsibleSection';
 import dynamic from 'next/dynamic';
 import Loading from '../../components/loading'; // Importing the Loading component
-
-// Dynamically import components
-const ImageGallery = dynamic(() => import('@/app/components/ImageGallery'), {
-    loading: () => (
-        <div className="w-full h-[400px] bg-gray-100 rounded-xl flex items-center justify-center">
-            <loading /> {/* Use your Loading component here */}
-        </div>
-    ),
-    ssr: false
-});
-
-const CollapsibleSection = dynamic(() => import('@/app/components/CollapsibleSection'), {
-    ssr: true
-});
 
 // Main Recipe Page Component
 export default async function RecipePage({ params }) {
     const { id } = params;
-    const { recipe, error } = await getRecipe(id);
+    let recipe;
+    let load = true;
+    let error = null;
+
+    try{
+        recipe = await fetchRecipeById(id);
+    }catch{
+        console.error('Error fetching recipe:', err);
+        error = 'Failed to load recipe data.';
+    }finally{
+        load = false;
+    };
+
+    if(load){
+        <div className="w-full h-[400px] bg-gray-100 rounded-xl flex items-center justify-center">
+            <Loading /> {/* Use your Loading component here */}
+        </div>
+    }
 
     if (error) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-green-50 to-white">
                 <div className="bg-white p-8 rounded-xl shadow-lg">
                     <p className="text-gray-700 text-lg">{error}</p>
-                    <Link
-                        href="/recipes" // Make sure this path is correct for your app
-                        className="mt-4 bg-green-600 hover:bg-green-500 text-white font-bold py-2 px-4 rounded inline-block"
-                    >
-                        Back to Recipes
-                    </Link>
+                    <div className="mb-8">
+                        <BackButton />
+                    </div>
                 </div>
             </div>
         );
