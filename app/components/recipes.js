@@ -4,6 +4,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
+import { FaCalendarDay, FaClock, FaUtensils, FaTags, FaUtensilSpoon } from "react-icons/fa"; // Importing relevant icons
 import Loading from './loading';
 import Head from 'next/head';
 
@@ -42,7 +43,7 @@ export default function Recipes({ recipes }) {
       <div className="container mx-auto p-4">
         {/* Page heading */}
         <h1 className="text-4xl font-bold text-center mb-8 font-playfair text-green-700">
-          {/* Heading for the Recipes page */}
+          Recipes
         </h1>
 
         {/* Grid layout to display the list of recipes */}
@@ -72,24 +73,30 @@ export default function Recipes({ recipes }) {
 
               {/* Recipe details */}
               <p className="text-sm text-gray-600 font-roboto">
-                <strong className="text-green-600">Published:</strong> {new Date(recipe.published).toDateString()}
+                <FaCalendarDay className="inline-block text-green-600 mr-1" />
+                <strong className="text-green-600"></strong> {new Date(recipe.published).toDateString()}
               </p>
               <p className="text-sm mt-2 font-roboto">
-                <strong className="text-green-600">Prep Time:</strong> {recipe.prep} minutes
+                <FaClock className="inline-block text-green-600 mr-1" />
+                <strong className="text-green-600"></strong> {recipe.prep} minutes
               </p>
               <p className="text-sm font-roboto">
-                <strong className="text-green-600">Cook Time:</strong> {recipe.cook} minutes
+                <FaUtensilSpoon className="inline-block text-green-600 mr-1" />
+                <strong className="text-green-600"></strong> {recipe.cook} minutes
               </p>
               <p className="text-sm font-roboto">
-                <strong className="text-green-600">Servings:</strong> {recipe.servings}
+                <FaUtensils className="inline-block text-green-600 mr-1" />
+                <strong className="text-green-600"></strong> {recipe.servings}
               </p>
               <p className="text-sm font-roboto">
-                <strong className="text-green-600">Category:</strong> {recipe.category}
+                <FaTags className="inline-block text-green-600 mr-1" />
+                <strong className="text-green-600"></strong> {recipe.category}
               </p>
             </Link>
           ))}
         </div>
       </div>
+
 
       {/* Inline styles to apply custom fonts using the loaded Google Fonts */}
       <style jsx>{`
