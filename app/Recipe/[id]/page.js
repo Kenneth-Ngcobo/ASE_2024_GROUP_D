@@ -1,7 +1,7 @@
 import { Suspense } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import BackButton from '../../components/backButton';
+import BackButton from '../../components/BackButton';
 import { getRecipe } from '@/app/lib/getRecipe';
 import dynamic from 'next/dynamic';
 
