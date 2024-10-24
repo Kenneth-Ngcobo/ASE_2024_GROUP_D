@@ -1,114 +1,86 @@
-"use client"; // Mark this file as a client component
+import { Suspense } from 'react';
+import Image from 'next/image';
+import Link from 'next/link';
+import BackButton from '../../components/backButton';
+import { getRecipe } from '@/app/lib/getRecipe';
+import dynamic from 'next/dynamic';
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation'; // Import useRouter from next/navigation
-import { getRecipe } from '@/app/lib/getRecipe'; // Correctly import the server-side fetch function
-import ImageGallery from '@/app/components/ImageGallery'; // Import ImageGallery component
-import Image from 'next/image'; // Import Image component from Next.js
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
+// Dynamically import components
+const ImageGallery = dynamic(() => import('@/app/components/ImageGallery'), {
+    loading: () => (
+        <div className="w-full h-[400px] bg-gray-100 rounded-xl flex items-center justify-center">
+            <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-green-500"></div>
+        </div>
+    ),
+    ssr: false
+});
+
+const CollapsibleSection = dynamic(() => import('@/app/components/CollapsibleSection'), {
+    ssr: true
+});
 
 // Loading component
-const Loading = () => (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-green-50 to-white">
-        <div className="text-center">
-            <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-green-500 mx-auto mb-4"></div>
-            <p className="text-lg text-green-700">Loading recipe...</p>
+function Loading() {
+    return (
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-green-50 to-white">
+            <div className="text-center">
+                <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-green-500 mx-auto mb-4"></div>
+                <p className="text-lg text-green-700">Loading recipe...</p>
+            </div>
         </div>
-    </div>
-);
-
-// Go back function
-function goBack() {
-    window.history.back();
+    );
 }
 
 // Main Recipe Page Component
-export default function RecipePage({ params }) {
-    const [isLoading, setIsLoading] = useState(true); // Loading state
-    const [recipe, setRecipe] = useState(null); // State for recipe data
-    const [error, setError] = useState(null); // State for error handling
-    const [openSections, setOpenSections] = useState({}); // State to track open/close sections
-    const router = useRouter(); // Use router for navigation
-    const { id } = params; // Get recipe ID from URL parameters
+export default async function RecipePage({ params }) {
+    const { id } = params;
+    const { recipe, error } = await getRecipe(id);
+    //const router = useRouter();
 
-    // Fetch recipe data
-    useEffect(() => {
-        const fetchRecipe = async () => {
-            const { recipe, error } = await getRecipe(id);
-            if (error) {
-                setError(error);
-            } else {
-                setRecipe(recipe);
-            }
-            setIsLoading(false);
-        };
-
-        fetchRecipe();
-    }, [id]);
-
-    // Function to toggle open/close sections
-    const toggleSection = (section) => {
-        setOpenSections((prev) => ({
-            ...prev,
-            [section]: !prev[section],
-        }));
-    };
-
-    // Render loading state
-    if (isLoading) return <Loading />;
-
-    // Render error state
     if (error) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-green-50 to-white">
                 <div className="bg-white p-8 rounded-xl shadow-lg">
                     <p className="text-gray-700 text-lg">{error}</p>
-                    <button
-                        onClick={goBack}
-                        className="mt-4 bg-green-600 hover:bg-green-500 text-white font-bold py-2 px-4 rounded"
+                    <Link
+                        href="/recipes" // Make sure this path is correct for your app
+                        className="mt-4 bg-green-600 hover:bg-green-500 text-white font-bold py-2 px-4 rounded inline-block"
                     >
-                        Go Back
-                    </button>
+                        Back to Recipes
+                    </Link>
                 </div>
             </div>
         );
     }
 
-    // Render the recipe page
     return (
         <div className="min-h-screen bg-gradient-to-b from-green-50 to-white py-8">
             <div className="container mx-auto px-4 max-w-5xl">
                 {/* Back Button */}
                 <div className="mb-8">
-                    <button
-                        onClick={goBack}
-                        className="bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 
-                                 text-white font-bold py-3 px-6 rounded-full transition-all duration-300 
-                                 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
-                    >
-                        ← Back to Recipes
-                    </button>
+                    <BackButton />
                 </div>
 
                 <div className="space-y-8">
                     {/* Image Section */}
                     <div className="bg-white rounded-2xl shadow-xl p-6 overflow-hidden">
-                        {recipe.images && recipe.images.length > 0 ? (
-                            <ImageGallery images={recipe.images} />
-                        ) : recipe.images?.[0] ? (
-                            <Image
-                                src={recipe.images[0]}
-                                alt={recipe.title || 'Recipe Image'}
-                                width={300}
-                                height={200}
-                                className="w-full h-[400px] object-cover rounded-xl"
-                            />
-                        ) : (
-                            <div className="w-full h-[400px] bg-gray-100 rounded-xl flex items-center justify-center">
-                                <p className="text-gray-500">No image available</p>
-                            </div>
-                        )}
+                        <Suspense fallback={<Loading />}>
+                            {recipe.images && recipe.images.length > 0 ? (
+                                <ImageGallery images={recipe.images} />
+                            ) : recipe.images?.[0] ? (
+                                <Image
+                                    src={recipe.images[0]}
+                                    alt={recipe.title || 'Recipe Image'}
+                                    width={300}
+                                    height={200}
+                                    className="w-full h-[400px] object-cover rounded-xl"
+                                />
+                            ) : (
+                                <div className="w-full h-[400px] bg-gray-100 rounded-xl flex items-center justify-center">
+                                    <p className="text-gray-500">No image available</p>
+                                </div>
+                            )}
+                        </Suspense>
                     </div>
 
                     {/* Title and Tags Section */}
@@ -125,85 +97,46 @@ export default function RecipePage({ params }) {
                         </div>
                     </div>
 
-                    {/* Description */}
-                    <h2
-                        className="text-xl font-semibold font-serif mb-2 text-green-800 cursor-pointer flex items-center justify-between"
-                        onClick={() => toggleSection('description')}
-                    >
-                        Description
-                        <FontAwesomeIcon
-                            icon={openSections['description'] ? faChevronUp : faChevronDown}
-                            className={`ml-2 text-green-600 transition-transform duration-300 transform ${
-                                openSections['description'] ? 'rotate-180' : ''
-                            }`}
-                        />
-                    </h2>
-                    {openSections['description'] && (
-                        <p className="mt-4">{recipe.description || 'No description available.'}</p>
-                    )}
+                    {/* Collapsible Sections */}
+                    <CollapsibleSection
+                        title="Description"
+                        content={recipe.description || 'No description available.'}
+                        defaultOpen={true}
+                    />
 
-                    {/* Ingredients */}
-                    <h2
-                        className="text-xl font-semibold font-serif mb-2 text-green-800 cursor-pointer flex items-center justify-between"
-                        onClick={() => toggleSection('ingredients')}
-                    >
-                        Ingredients
-                        <FontAwesomeIcon
-                            icon={openSections['ingredients'] ? faChevronUp : faChevronDown}
-                            className={`ml-2 text-green-600 transition-transform duration-300 transform ${
-                                openSections['ingredients'] ? 'rotate-180' : ''
-                            }`}
-                        />
-                    </h2>
-                    {openSections['ingredients'] && (
-                        <ul className="list-disc list-inside mt-2">
-                            {Object.entries(recipe.ingredients || {}).map(([key, value], index) => (
-                                <li key={index}>
-                                    {key}: {value}
-                                </li>
-                            ))}
-                        </ul>
-                    )}
+                    <CollapsibleSection
+                        title="Ingredients"
+                        content={
+                            <ul className="list-disc list-inside">
+                                {Object.entries(recipe.ingredients || {}).map(([key, value], index) => (
+                                    <li key={index}>
+                                        {key}: {value}
+                                    </li>
+                                ))}
+                            </ul>
+                        }
+                        defaultOpen={true}
+                    />
 
-                    {/* Nutrition */}
-                    <h2
-                        className="text-xl font-semibold font-serif mb-2 text-green-800 cursor-pointer flex items-center justify-between"
-                        onClick={() => toggleSection('nutrition')}
-                    >
-                        Nutrition
-                        <FontAwesomeIcon
-                            icon={openSections['nutrition'] ? faChevronUp : faChevronDown}
-                            className={`ml-2 text-green-600 transition-transform duration-300 transform ${
-                                openSections['nutrition'] ? 'rotate-180' : ''
-                            }`}
-                        />
-                    </h2>
-                    {openSections['nutrition'] && (
-                        <ul className="list-disc list-inside mt-2">
-                            {Object.entries(recipe.nutrition || {}).map(([key, value], index) => (
-                                <li key={index}>
-                                    {key}: {value}
-                                </li>
-                            ))}
-                        </ul>
-                    )}
+                    <CollapsibleSection
+                        title="Nutrition"
+                        content={
+                            <ul className="list-disc list-inside">
+                                {Object.entries(recipe.nutrition || {}).map(([key, value], index) => (
+                                    <li key={index}>
+                                        {key}: {value}
+                                    </li>
+                                ))}
+                            </ul>
+                        }
+                        defaultOpen={true}
+                    />
 
-                    {/* Recipe Instructions */}
-                    <h2
-                        className="text-xl font-semibold font-serif mb-2 text-green-800 cursor-pointer flex items-center justify-between"
-                        onClick={() => toggleSection('instructions')}
-                    >
-                        Instructions
-                        <FontAwesomeIcon
-                            icon={openSections['instructions'] ? faChevronUp : faChevronDown}
-                            className={`ml-2 text-green-600 transition-transform duration-300 transform ${
-                                openSections['instructions'] ? 'rotate-180' : ''
-                            }`}
-                        />
-                    </h2>
-                    {openSections['instructions'] && (
-                        <p className="mt-4">{recipe.instructions || 'No instructions available.'}</p>
-                    )}
+                    <CollapsibleSection
+                        title="Instructions"
+                        content={recipe.instructions || 'No instructions available.'}
+                        defaultOpen={true}
+                    />
 
                     {/* Footer Information */}
                     <div className="mt-8 bg-white p-6 rounded-xl shadow-xl">
