@@ -9,12 +9,7 @@
   --primary-dark: #5f6f52;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+
 
 /* Overall App */
 body {
