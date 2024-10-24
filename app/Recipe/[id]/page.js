@@ -3,8 +3,8 @@
 import Head from "next/head";
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation'; // Import useRouter from next/navigation
-import { getRecipe } from '@/app/lib/getRecipe'; // Correctly import the server-side fetch function
-import ImageGallery from '@/app/components/ImageGallery'; // Import ImageGallery component
+import { getRecipe } from '../../components/recipes'; // Correctly import the server-side fetch function
+import ImageGallery from '../../components/ImageGallery'; // Import ImageGallery component
 import Image from 'next/image'; // Import Image component from Next.js
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
