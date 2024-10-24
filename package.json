@@ -2,7 +2,7 @@
   "name": "ase_group-d",
   "version": "0.1.0",
   "private": true,
-  "module": true,
+  "module": "true",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -10,9 +10,8 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@fortawesome/free-solid-svg-icons": "^6.6.0",
     "@fortawesome/react-fontawesome": "^0.2.2",
-    "mongodb": "^6.9.0",
+    "mongodb": "^6.10.0",
     "next": "14.2.15",
     "react": "^18",
     "react-dom": "^18",
