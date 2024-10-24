@@ -45,7 +45,7 @@ export default function RecipePage({ params }) {
                 setError(error);
             } else {
                 setRecipe(recipe);
-               document.title = data.title;
+               document.title = recipe.title;
             }
             setIsLoading(false);
         };
