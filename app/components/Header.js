@@ -1,85 +1,133 @@
-
+"use client";
 import Link from 'next/link';
 import Image from 'next/image';
+import { useState } from 'react';
+import { FaHome, FaUtensils, FaInfoCircle, FaPhoneAlt, FaSignInAlt, FaSignOutAlt, FaChevronDown } from 'react-icons/fa';
 
-export default function Header() {
+/**
+ * Header Component
+ * Extended to support:
+ * - Dropdown menus for mobile navigation
+ * - Dynamic login/logout links based on authentication status
+ * - Enhanced styling and user experience improvements
+ */
+export default function Header({ isAuthenticated, onLogout }) {
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+    // Toggle mobile dropdown menu
+    const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
+
     return (
-        <header className="bg-white shadow-md sticky top-0 z-50">
+        <header className="bg-gradient-to-r from-green-600 via-green-300 to-green-100 shadow-lg sticky top-0 z-50">
             <div className="container mx-auto flex items-center justify-between p-4">
-                {/* Logo */}
+                {/* Logo Section */}
                 <Link href="/" className="flex items-center">
                     <Image
-                        src="/logo.svg" 
+                        src="/Kwa.png"
                         alt="Logo"
-                        width={40}
-                        height={40}
+                        width={100}
+                        height={80}
                         className="mr-2"
                     />
-                    <span className="text-xl font-semibold tracking-tight">
-                        MyApp
+                    <span className="text-3xl font-bold tracking-tight text-white font-lobster">
+                        <h1></h1>
                     </span>
                 </Link>
 
-                {/* Navigation Links */}
+                {/* Navigation Links for Desktop */}
                 <nav className="hidden md:flex space-x-6">
                     <Link
                         href="/"
-                        className="text-gray-700 hover:text-black transition-colors"
+                        className="flex items-center px-4 py-2 rounded-full text-grey font-medium hover:bg-green-500 hover:bg-opacity-80 transition-colors duration-300"
                     >
-                        Home
+                        <FaHome className="mr-2" /> Home
                     </Link>
                     <Link
                         href="/recipes"
-                        className="text-gray-700 hover:text-black transition-colors"
+                        className="flex items-center px-4 py-2 rounded-full text-grey font-medium hover:bg-green-500 hover:bg-opacity-80 transition-colors duration-300"
                     >
-                        Recipes
+                        <FaUtensils className="mr-2" /> Recipes
                     </Link>
                     <Link
                         href="/about"
-                        className="text-gray-700 hover:text-black transition-colors"
+                        className="flex items-center px-4 py-2 rounded-full text-grey font-medium hover:bg-green-500 hover:bg-opacity-80 transition-colors duration-300"
                     >
-                        About
+                        <FaInfoCircle className="mr-2" /> About Us
                     </Link>
-                    {/* <Link
+                    <Link
                         href="/contact"
-                        className="text-gray-700 hover:text-black transition-colors"
+                        className="flex items-center px-4 py-2 rounded-full text-grey font-medium hover:bg-green-500 hover:bg-opacity-80 transition-colors duration-300"
                     >
-                        Contact
-                    </Link> */}
+                        <FaPhoneAlt className="mr-2" /> Contact
+                    </Link>
                 </nav>
 
-                {/* Button */}
-                <div className="hidden md:flex">
-                    {/* <Link href="/login">
-                        <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
-                            Login
-                        </button>
-                    </Link> */}
-                </div>
+                
 
                 {/* Mobile Menu Button */}
                 <div className="md:hidden">
                     <button
-                        className="text-gray-700 focus:outline-none"
+                        className="text-white focus:outline-none"
+                        onClick={toggleDropdown}
                         aria-label="Open Menu"
                     >
-                        <svg
-                            className="w-6 h-6"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                            xmlns="http://www.w3.org/2000/svg"
-                        >
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth="2"
-                                d="M4 6h16M4 12h16m-7 6h7"
-                            ></path>
-                        </svg>
+                        <FaChevronDown className={`w-6 h-6 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
                     </button>
                 </div>
             </div>
+
+          {/* Dropdown Menu for Mobile */}
+{isDropdownOpen && (
+    <div className="md:hidden bg-green-200 text-gray-900 p-4 rounded-b-lg shadow-lg">
+        <Link
+            href="/"
+            className="block px-4 py-2 rounded text-grey hover:bg-green-500 hover:bg-opacity-80 transition-colors duration-300"
+            onClick={() => setIsDropdownOpen(false)}
+        >
+            Home
+        </Link>
+        <Link
+            href="/recipes"
+            className="block px-4 py-2 rounded text-grey hover:bg-green-500 hover:bg-opacity-80 transition-colors duration-300"
+            onClick={() => setIsDropdownOpen(false)}
+        >
+            Recipes
+        </Link>
+        <Link
+            href="/about"
+            className="block px-4 py-2 rounded text-grey hover:bg-green-500 hover:bg-opacity-80 transition-colors duration-300"
+            onClick={() => setIsDropdownOpen(false)}
+        >
+            About Us
+        </Link>
+        <Link
+            href="/contact"
+            className="block px-4 py-2 rounded text-grey hover:bg-green-500 hover:bg-opacity-80 transition-colors duration-300"
+            onClick={() => setIsDropdownOpen(false)}
+        >
+            Contact
+        </Link>
+        {isAuthenticated ? (
+            <button
+                onClick={() => { onLogout(); setIsDropdownOpen(false); }}
+                className="w-full text-left block px-4 py-2 rounded text-grey hover:bg-red-600 hover:bg-opacity-80 transition-colors duration-300"
+            >
+                Logout
+            </button>
+        ) : (
+            <Link
+                href="/login"
+                className="block px-4 py-2 rounded text-grey hover:bg-green-700 hover:bg-opacity-80 transition-colors duration-300"
+                onClick={() => setIsDropdownOpen(false)}
+            >
+                Login
+            </Link>
+        )}
+    </div>
+)}
+
+                
+        
         </header>
     );
 }
