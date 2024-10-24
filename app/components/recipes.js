@@ -32,7 +32,7 @@ export default function Recipes({ recipes }) {
       {/* Use the Head component to include external resources like fonts */}
       <Head>
         {/* Import Google Fonts */}
-        <link
+        <Link
           href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Roboto:wght@300;400;500&display=swap"
           rel="stylesheet"
         />
