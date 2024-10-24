@@ -23,7 +23,7 @@ export default function Header({ isAuthenticated, onLogout }) {
                 {/* Logo Section */}
                 <Link href="/" className="flex items-center">
                     <Image
-                        src="/Kwa.jpg"
+                        src="/Kwa.png"
                         alt="Logo"
                         width={100}
                         height={80}
