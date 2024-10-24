@@ -22,7 +22,7 @@ export default function RootLayout({ children }) {
       <head>
 
         <title>KwaMai Eatery</title>
-        <link rel="icon" href="/Kwa.jpg" />
+        <link rel="icon" href="/Kwa.png" />
 
         {/* Main Meta Tags */}
     
