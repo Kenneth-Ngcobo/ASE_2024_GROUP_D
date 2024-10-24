@@ -1,4 +1,3 @@
-
 import localFont from "next/font/local";
 import "./globals.css";
 import Header from "./components/Header";
@@ -18,42 +17,39 @@ const geistMono = localFont({
 
 
 export default function RootLayout({ children }) {
-
   return (
     <html lang="en">
       <head>
-        <title>Recipe website</title>
-        <link rel="icon" href="restaurant.png" />
+        <title>Recipe website</title> {/* Page title shown in the browser tab */}
+        <link rel="icon" href="restaurant.png" /> {/* Favicon for the website */}
 
         {/* Main Meta Tags */}
-    
-
-        <meta name="description" content="This is a recipe website" />
+        <meta name="description" content="This is a recipe website" /> {/* Description for SEO */}
         <meta
           name="keywords"
-          content="Food, recipe, dinner, lunch, snack, breakfast, vegan, ingredients "
+          content="Food, recipe, dinner, lunch, snack, breakfast, vegan, ingredients " // Keywords for SEO
         />
-        <meta name="author" content="Codespace" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="author" content="Codespace" /> {/* Author of the website */}
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" /> {/* Responsive design meta tag */}
 
-        {/* Open Graph Meta Tags */}
-        <meta property="og:title" content="Recipe Website" />
-        <meta property="og:description" content="This is a recipe website" />
-        <meta property="og:image" content="/knifefork.png" />
-        <meta property="og:url" content="To be added" />
+        {/* Open Graph Meta Tags for social media sharing */}
+        <meta property="og:title" content="Recipe Website" /> {/* Title for social media previews */}
+        <meta property="og:description" content="This is a recipe website" /> {/* Description for social media */}
+        <meta property="og:image" content="/knifefork.png" /> {/* Image for social media previews */}
+        <meta property="og:url" content="To be added" /> {/* URL of the webpage for social media */}
 
-        {/* Twitter Meta Tags */}
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Recipe Website" />
-        <meta name="twitter:description" content="This is a recipe website" />
-        <meta name="twitter:image" content="/knifefork.png" />
+        {/* Twitter Meta Tags for better sharing experience on Twitter */}
+        <meta name="twitter:card" content="summary_large_image" /> {/* Type of Twitter card */}
+        <meta name="twitter:title" content="Recipe Website" /> {/* Title for Twitter previews */}
+        <meta name="twitter:description" content="This is a recipe website" /> {/* Description for Twitter */}
+        <meta name="twitter:image" content="/knifefork.png" /> {/* Image for Twitter previews */}
       </head>
 
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`} // Applying custom fonts and antialiasing for better text rendering
       >
-        <Header />
-        {children}
+        <Header /> {/* Rendering the Header component */}
+        {children} {/* Rendering the child components or pages */}
        
       </body>
     </html>
