@@ -1,4 +1,3 @@
-
 import localFont from "next/font/local";
 import "./globals.css";
 import Header from "./components/Header";
@@ -18,10 +17,10 @@ const geistMono = localFont({
 
 
 export default function RootLayout({ children }) {
-
   return (
     <html lang="en">
       <head>
+
         <title>KwaMai Eatery</title>
         <link rel="icon" href="/Kwa.jpg" />
 
@@ -47,13 +46,14 @@ export default function RootLayout({ children }) {
         <meta name="twitter:title" content="KwaMai Eatery" />
         <meta name="twitter:description" content="This is the official recipe website of KwaMai Eatery" />
         <meta name="twitter:image" content="/kwaMai.jpg" />
+
       </head>
 
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`} // Applying custom fonts and antialiasing for better text rendering
       >
-        <Header />
-        {children}
+        <Header /> {/* Rendering the Header component */}
+        {children} {/* Rendering the child components or pages */}
        
       </body>
     </html>
