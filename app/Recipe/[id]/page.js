@@ -4,12 +4,13 @@ import Link from 'next/link';
 import BackButton from '../../components/BackButton';
 import { getRecipe } from '@/app/lib/getRecipe';
 import dynamic from 'next/dynamic';
+import Loading from '../../components/loading'; // Importing the Loading component
 
 // Dynamically import components
 const ImageGallery = dynamic(() => import('@/app/components/ImageGallery'), {
     loading: () => (
         <div className="w-full h-[400px] bg-gray-100 rounded-xl flex items-center justify-center">
-            <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-green-500"></div>
+            <loading /> {/* Use your Loading component here */}
         </div>
     ),
     ssr: false
@@ -19,23 +20,10 @@ const CollapsibleSection = dynamic(() => import('@/app/components/CollapsibleSec
     ssr: true
 });
 
-// Loading component
-function Loading() {
-    return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-green-50 to-white">
-            <div className="text-center">
-                <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-green-500 mx-auto mb-4"></div>
-                <p className="text-lg text-green-700">Loading recipe...</p>
-            </div>
-        </div>
-    );
-}
-
 // Main Recipe Page Component
 export default async function RecipePage({ params }) {
     const { id } = params;
     const { recipe, error } = await getRecipe(id);
-    //const router = useRouter();
 
     if (error) {
         return (
@@ -64,7 +52,7 @@ export default async function RecipePage({ params }) {
                 <div className="space-y-8">
                     {/* Image Section */}
                     <div className="bg-white rounded-2xl shadow-xl p-6 overflow-hidden">
-                        <Suspense fallback={<Loading />}>
+                        <Suspense fallback={<Loading />}> {/* Use the Loading component here */}
                             {recipe.images && recipe.images.length > 0 ? (
                                 <ImageGallery images={recipe.images} />
                             ) : recipe.images?.[0] ? (
