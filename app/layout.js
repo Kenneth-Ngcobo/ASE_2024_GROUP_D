@@ -20,29 +20,33 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <head>
-        <title>Recipe website</title> {/* Page title shown in the browser tab */}
-        <link rel="icon" href="restaurant.png" /> {/* Favicon for the website */}
+
+        <title>KwaMai Eatery</title>
+        <link rel="icon" href="/Kwa.jpg" />
 
         {/* Main Meta Tags */}
-        <meta name="description" content="This is a recipe website" /> {/* Description for SEO */}
+    
+
+        <meta name="description" content="This is the official recipe website of KwaMai Eatery" />
         <meta
           name="keywords"
-          content="Food, recipe, dinner, lunch, snack, breakfast, vegan, ingredients " // Keywords for SEO
+          content="Food, recipe, dinner, lunch, snack, ingredients, kwamai, eatery "
         />
-        <meta name="author" content="Codespace" /> {/* Author of the website */}
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" /> {/* Responsive design meta tag */}
+        <meta name="author" content="Codespace" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-        {/* Open Graph Meta Tags for social media sharing */}
-        <meta property="og:title" content="Recipe Website" /> {/* Title for social media previews */}
-        <meta property="og:description" content="This is a recipe website" /> {/* Description for social media */}
-        <meta property="og:image" content="/knifefork.png" /> {/* Image for social media previews */}
-        <meta property="og:url" content="To be added" /> {/* URL of the webpage for social media */}
+        {/* Open Graph Meta Tags */}
+        <meta property="og:title" content="KwaMai Eatery" />
+        <meta property="og:description" content="This is the official recipe website of KwaMai Eatery" />
+        <meta property="og:image" content="/kwaMai.jpg" />
+        <meta property="og:url" content="To be added when app is launched" />
 
-        {/* Twitter Meta Tags for better sharing experience on Twitter */}
-        <meta name="twitter:card" content="summary_large_image" /> {/* Type of Twitter card */}
-        <meta name="twitter:title" content="Recipe Website" /> {/* Title for Twitter previews */}
-        <meta name="twitter:description" content="This is a recipe website" /> {/* Description for Twitter */}
-        <meta name="twitter:image" content="/knifefork.png" /> {/* Image for Twitter previews */}
+        {/* Twitter Meta Tags */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="KwaMai Eatery" />
+        <meta name="twitter:description" content="This is the official recipe website of KwaMai Eatery" />
+        <meta name="twitter:image" content="/kwaMai.jpg" />
+
       </head>
 
       <body
