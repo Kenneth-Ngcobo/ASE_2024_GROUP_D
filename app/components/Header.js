@@ -11,9 +11,15 @@ export default function Header() {
                     {/* Display the logo using Next.js Image component */}
                     <Image
                         src="/Kwa.png"
+
+                     
+
+                        src="/Kwa.jpg" 
                         alt="Logo"
                         width={100}
                         height={80}
+                        priority
+
                         className="mr-2"
                     />
                     {/* Placeholder for logo text with a custom font (Lobster) */}

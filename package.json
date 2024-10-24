@@ -2,7 +2,7 @@
   "name": "ase_group-d",
   "version": "0.1.0",
   "private": true,
-  "module": true,
+  "module": "true",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
