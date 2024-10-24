@@ -40,11 +40,7 @@ export default function Recipes({ recipes }) {
       </Head>
 
       {/* Main container for the recipes grid */}
-      <div className="container mx-auto p-4">
-        {/* Page heading */}
-        <h1 className="text-4xl font-bold text-center mb-8 font-playfair text-green-700">
-          Recipes
-        </h1>
+      <div className="container mx-auto p-4 pt-6 md:p-6 lg:p-12">
 
         {/* Grid layout to display the list of recipes */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
