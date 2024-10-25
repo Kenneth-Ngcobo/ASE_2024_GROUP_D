@@ -8,6 +8,30 @@ import CollapsibleSection from '../../components/CollapsibleSection';
 import dynamic from 'next/dynamic';
 import Loading from '../../components/loading'; // Importing the Loading component
 
+//Generate metadata for the recipe page dynamically
+export async function generateMetadata({ params }) {
+    const { id } = params;
+    const { recipe, error } = await fetchRecipeById(id);
+
+    if (error || !recipe) {
+        return {
+            title: 'Recipe not found',
+            description: 'Error occurred while fetching the recipe.'
+        };
+    }
+
+    return {
+        title: recipe.title || 'Untitled Recipe',
+        description: recipe.description || 'No description available.',
+        openGraph: {
+            title: recipe.title || 'Untitled Recipe',
+            description: recipe.description || 'No description available.',
+            images: recipe.images?.[0] || '/kwaMai.jpg',
+            type: 'article'
+        }
+    };
+}
+
 // Main Recipe Page Component
 export default async function RecipePage({ params }) {
     const { id } = params;
