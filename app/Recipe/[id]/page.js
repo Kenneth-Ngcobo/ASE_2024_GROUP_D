@@ -41,8 +41,8 @@ export default async function RecipePage({ params }) {
 
     try{
         recipe = await fetchRecipeById(id);
-    }catch{
-        console.error('Error fetching recipe:', err);
+    }catch(error){
+        console.error('Error fetching recipe:', error);
         error = 'Failed to load recipe data.';
     }finally{
         load = false;
@@ -55,16 +55,7 @@ export default async function RecipePage({ params }) {
     }
 
     if (error) {
-        return (
-            <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-green-50 to-white">
-                <div className="bg-white p-8 rounded-xl shadow-lg">
-                    <p className="text-gray-700 text-lg">{error}</p>
-                    <div className="mb-8">
-                        <BackButton />
-                    </div>
-                </div>
-            </div>
-        );
+        throw error;
     }
 
     return (
