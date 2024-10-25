@@ -1,4 +1,4 @@
-import connectToDatabase from '@/db.js';
+import connectToDatabase from '../../../../db';
 
 /**
  * Fetch a single recipe by ID from the MongoDB database.
