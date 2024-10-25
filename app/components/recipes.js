@@ -4,6 +4,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
+import { FaCalendarDay, FaClock, FaUtensils, FaTags, FaUtensilSpoon } from "react-icons/fa"; // Importing relevant icons
 import Loading from './loading';
 import Head from 'next/head';
 
@@ -32,18 +33,14 @@ export default function Recipes({ recipes }) {
       {/* Use the Head component to include external resources like fonts */}
       <Head>
         {/* Import Google Fonts */}
-        <link
+        <Link
           href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Roboto:wght@300;400;500&display=swap"
           rel="stylesheet"
         />
       </Head>
 
       {/* Main container for the recipes grid */}
-      <div className="container mx-auto p-4">
-        {/* Page heading */}
-        <h1 className="text-4xl font-bold text-center mb-8 font-playfair text-green-700">
-          {/* Heading for the Recipes page */}
-        </h1>
+      <div className="container mx-auto p-4 pt-6 md:p-6 lg:p-12">
 
         {/* Grid layout to display the list of recipes */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
@@ -72,24 +69,30 @@ export default function Recipes({ recipes }) {
 
               {/* Recipe details */}
               <p className="text-sm text-gray-600 font-roboto">
-                <strong className="text-green-600">Published:</strong> {new Date(recipe.published).toDateString()}
+                <FaCalendarDay className="inline-block text-green-600 mr-1" />
+                <strong className="text-green-600"></strong> {new Date(recipe.published).toDateString()}
               </p>
               <p className="text-sm mt-2 font-roboto">
-                <strong className="text-green-600">Prep Time:</strong> {recipe.prep} minutes
+                <FaClock className="inline-block text-green-600 mr-1" />
+                <strong className="text-green-600"></strong> {recipe.prep} minutes
               </p>
               <p className="text-sm font-roboto">
-                <strong className="text-green-600">Cook Time:</strong> {recipe.cook} minutes
+                <FaUtensilSpoon className="inline-block text-green-600 mr-1" />
+                <strong className="text-green-600"></strong> {recipe.cook} minutes
               </p>
               <p className="text-sm font-roboto">
-                <strong className="text-green-600">Servings:</strong> {recipe.servings}
+                <FaUtensils className="inline-block text-green-600 mr-1" />
+                <strong className="text-green-600"></strong> {recipe.servings}
               </p>
               <p className="text-sm font-roboto">
-                <strong className="text-green-600">Category:</strong> {recipe.category}
+                <FaTags className="inline-block text-green-600 mr-1" />
+                <strong className="text-green-600"></strong> {recipe.category}
               </p>
             </Link>
           ))}
         </div>
       </div>
+
 
       {/* Inline styles to apply custom fonts using the loaded Google Fonts */}
       <style jsx>{`
