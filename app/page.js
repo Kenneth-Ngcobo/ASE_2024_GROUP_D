@@ -2,7 +2,7 @@ import { fetchRecipes } from './api';
 import Pagination from './components/pagination';
 import Recipes from './components/recipes';
 import Footer from './components/footer';
-import RecipeDetails from './Recipe/[id]/page';
+import Loading from './components/loading';
 
 export default async function Home({ searchParams }) {
     // Initialize recipes object to store fetched data
@@ -16,12 +16,16 @@ export default async function Home({ searchParams }) {
     try {
         // Fetch recipes from the API with a limit of 20 per page
         recipes = await fetchRecipes(20, page);
-    } catch (e) {
+    } catch (error) {
         // Capture any error that occurs during the fetch
-        error = e.message; // Store the error message
+        error = error.message; // Store the error message
     }
 
-    // Return the rendered JSX for the Home component
+    if(recipes.recipes.length === 0 && !error) {
+        return <Loading />;
+    }
+
+    // Return the rendered JS for the Home component
     return (
         <>
             {/* Render the Recipes component, passing the fetched recipes as props */}
@@ -32,7 +36,6 @@ export default async function Home({ searchParams }) {
                 totalPages={recipes.totalPages} // Total number of pages available
             />
             <Footer />
-            {error && <div className="text-red-500 text-center p-4">Error: {error}</div>}
         </>
     );
 }

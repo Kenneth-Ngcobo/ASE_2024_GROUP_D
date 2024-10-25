@@ -6,29 +6,10 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import { FaCalendarDay, FaClock, FaUtensils, FaTags, FaUtensilSpoon } from "react-icons/fa"; // Importing relevant icons
-import Loading from './loading';
 import Head from 'next/head';
 import Carousel from './Carousel';
 
 export default function Recipes({ recipes }) {
-  // State to track if data is still loading
-  const [loading, setLoading] = useState(true);
-
-  // State to handle any potential errors
-  const [error, setError] = useState(null);
-
-  // useEffect hook to manage loading state based on whether 'recipes' is available
-  useEffect(() => {
-    if (recipes) {
-      setLoading(false);  // Stop loading if recipes are provided
-    }
-  }, [recipes]);
-
-  // Return a loading component if still fetching recipes
-  if (loading) return <Loading />;
-
-  // Return an error message if there's an error
-  if (error) return <div className="text-red-500 text-center p-4">Error: {error}</div>;
 
   return (
     <>
