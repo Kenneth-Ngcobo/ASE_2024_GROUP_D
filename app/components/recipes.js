@@ -8,6 +8,7 @@ import { useState, useEffect } from 'react';
 import { FaCalendarDay, FaClock, FaUtensils, FaTags, FaUtensilSpoon } from "react-icons/fa"; // Importing relevant icons
 import Loading from './loading';
 import Head from 'next/head';
+import Carousel from './Carousel';
 
 export default function Recipes({ recipes }) {
   // State to track if data is still loading
@@ -59,13 +60,20 @@ export default function Recipes({ recipes }) {
 
               {/* Recipe image */}
               <div className="relative w-full h-48 mb-4">
-                <Image
-                  src={recipe.images[0]}  // First image from the recipe images array
-                  alt={recipe.title}  // Alternative text for the image
-                  layout="fill"
-                  objectFit="cover"
-                  className="rounded-md"
-                />
+                {recipe.images.length > 1 ? (
+                  <Carousel images={recipe.images}/>
+                ) : (
+                  <div className='relative w-full h-full'>
+                    <Image
+                      src={recipe.images[0]}  // First image from the recipe images array
+                      alt={recipe.title}  // Alternative text for the image
+                      fill
+                      objectFit="cover"
+                      className="rounded-md"
+                    />
+                  </div>
+                )}
+                
               </div>
 
               {/* Recipe details */}
