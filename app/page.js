@@ -3,6 +3,7 @@ import Pagination from './components/pagination';
 import Recipes from './components/recipes';
 import Footer from './components/footer';
 import Loading from './components/loading';
+import CategoryList from './components/CategoryList';
 
 export default async function Home({ searchParams }) {
     // Initialize recipes object to store fetched data
@@ -28,6 +29,7 @@ export default async function Home({ searchParams }) {
     // Return the rendered JS for the Home component
     return (
         <>
+        <CategoryList />
             {/* Render the Recipes component, passing the fetched recipes as props */}
             <Recipes recipes={recipes.recipes} />
             {/* Render the Pagination component, passing the current page and total pages */}
