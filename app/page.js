@@ -5,6 +5,7 @@ import Footer from './components/footer';
 import Loading from './components/loading';
 import CategoryList from './components/CategoryList';
 import TagDisplay from './components/TagList';
+import IngredientsDisplay from './components/Ingredients';
 export default async function Home({ searchParams }) {
     // Initialize recipes object to store fetched data
     let recipes = {};
@@ -31,6 +32,7 @@ export default async function Home({ searchParams }) {
         <>
         <CategoryList />
         <TagDisplay />
+        <IngredientsDisplay />
             {/* Render the Recipes component, passing the fetched recipes as props */}
             <Recipes recipes={recipes.recipes} />
          
