@@ -49,7 +49,7 @@ export default function Recipes({ recipes }) {
                       src={recipe.images[0]}  // First image from the recipe images array
                       alt={recipe.title}  // Alternative text for the image
                       fill
-                      objectFit="cover"
+                      style = {{objectFit:'cover'}}
                       className="rounded-md"
                     />
                   </div>
