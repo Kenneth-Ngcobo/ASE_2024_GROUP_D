@@ -115,13 +115,13 @@ export default async function RecipePage({ params }) {
                     <CollapsibleSection
                         title="Ingredients"
                         content={
-                            <ul className="list-disc list-inside">
+                            <ol className="list-decimal list-inside">
                                 {Object.entries(recipe.ingredients || {}).map(([key, value], index) => (
                                     <li key={index}>
                                         {key}: {value}
                                     </li>
                                 ))}
-                            </ul>
+                            </ol>
                         }
                         defaultOpen={true}
                     />
@@ -129,13 +129,13 @@ export default async function RecipePage({ params }) {
                     <CollapsibleSection
                         title="Nutrition"
                         content={
-                            <ul className="list-disc list-inside">
+                            <ol className="list-decimal list-inside">
                                 {Object.entries(recipe.nutrition || {}).map(([key, value], index) => (
                                     <li key={index}>
                                         {key}: {value}
                                     </li>
                                 ))}
-                            </ul>
+                            </ol>
                         }
                         defaultOpen={true}
                     />
@@ -143,14 +143,11 @@ export default async function RecipePage({ params }) {
                     <CollapsibleSection
                         title="Instructions"
                         content={
-                            <>
-                                <ol className="list-decimal list-inside mb-4">
-                                    {recipe.instructions?.map((instruction, index) => (
-                                        <li key={index}>{instruction}</li>
-                                    )) || <li>No instructions available.</li>}
-                                </ol>
-                                <p>{recipe.instructions || 'No instructions available.'}</p>
-                            </>
+                            <ol className="list-decimal list-inside mb-4">
+                                {recipe.instructions?.map((instruction, index) => (
+                                    <li key={index}>{instruction}</li>
+                                )) || <li>No instructions available.</li>}
+                            </ol>
                         }
                         defaultOpen={true}
                     />
