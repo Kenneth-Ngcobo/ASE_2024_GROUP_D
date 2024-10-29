@@ -42,24 +42,21 @@ export default function Header({ isAuthenticated, onLogout }) {
                     >
                         <FaHome className="mr-2" /> Home
                     </Link>
-                    <Link
-                        href="/recipes"
+                    <div
                         className="flex items-center px-4 py-2 rounded-full text-grey font-medium hover:bg-green-500 hover:bg-opacity-80 transition-colors duration-300"
                     >
                         <FaUtensils className="mr-2" /> Recipes
-                    </Link>
-                    <Link
-                        href="/about"
+                    </div>
+                    <div
                         className="flex items-center px-4 py-2 rounded-full text-grey font-medium hover:bg-green-500 hover:bg-opacity-80 transition-colors duration-300"
                     >
                         <FaInfoCircle className="mr-2" /> About Us
-                    </Link>
-                    <Link
-                        href="/contact"
+                    </div>
+                    <div
                         className="flex items-center px-4 py-2 rounded-full text-grey font-medium hover:bg-green-500 hover:bg-opacity-80 transition-colors duration-300"
                     >
                         <FaPhoneAlt className="mr-2" /> Contact
-                    </Link>
+                    </div>
                 </nav>
 
                 
@@ -86,43 +83,25 @@ export default function Header({ isAuthenticated, onLogout }) {
         >
             Home
         </Link>
-        <Link
-            href="/recipes"
+        <div
             className="block px-4 py-2 rounded text-grey hover:bg-green-500 hover:bg-opacity-80 transition-colors duration-300"
             onClick={() => setIsDropdownOpen(false)}
         >
             Recipes
-        </Link>
-        <Link
-            href="/about"
+        </div>
+        <div
             className="block px-4 py-2 rounded text-grey hover:bg-green-500 hover:bg-opacity-80 transition-colors duration-300"
             onClick={() => setIsDropdownOpen(false)}
         >
             About Us
-        </Link>
-        <Link
-            href="/contact"
+        </div>
+        <div
             className="block px-4 py-2 rounded text-grey hover:bg-green-500 hover:bg-opacity-80 transition-colors duration-300"
             onClick={() => setIsDropdownOpen(false)}
         >
             Contact
-        </Link>
-        {isAuthenticated ? (
-            <button
-                onClick={() => { onLogout(); setIsDropdownOpen(false); }}
-                className="w-full text-left block px-4 py-2 rounded text-grey hover:bg-red-600 hover:bg-opacity-80 transition-colors duration-300"
-            >
-                Logout
-            </button>
-        ) : (
-            <Link
-                href="/login"
-                className="block px-4 py-2 rounded text-grey hover:bg-green-700 hover:bg-opacity-80 transition-colors duration-300"
-                onClick={() => setIsDropdownOpen(false)}
-            >
-                Login
-            </Link>
-        )}
+        </div>
+        
     </div>
 )}
 
