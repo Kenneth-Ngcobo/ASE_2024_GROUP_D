@@ -11,17 +11,6 @@ const client = new MongoClient(uri, {
 
 let cachedDb = null; // Use caching to avoid reconnecting on every request
 
-/**
- * Connect to the MongoDB database.
- *
- * This function establishes a connection to the MongoDB database, reusing an existing 
- * connection if one is already cached. It returns the database instance for use in 
- * further database operations.
- *
- * @returns {Promise<Db>} A promise that resolves to the database instance.
- *
- * @throws {Error} Throws an error if the connection to the database fails.
- */
 async function connectToDatabase() {
   try {
     if (cachedDb) {
@@ -42,4 +31,30 @@ async function connectToDatabase() {
   }
 }
 
-module.exports = connectToDatabase;
+/**
+ * Search for recipes by title using $regex for partial matching or $text for full-text search.
+ *
+ * @param {string} title - The title or partial title to search for.
+ * @param {boolean} useRegex - Whether to use $regex (true) or text search (false).
+ * @param {number} limit - The maximum number of results to return.
+ * @returns {Promise<Array>} - A promise that resolves to an array of matching recipes.
+ */
+async function searchRecipesByTitle(title, useRegex = true, limit =10) {
+  const db = await connectToDatabase();
+  const collection = db.collection('recipes'); 
+
+  // Define the query based on `useRegex`
+  const query = useRegex
+  ? { title: { $regex: `^${title}`, $options: 'i' } } // Case-insensitive regex
+    : { $text: { $search: title } }; // Full-text search if text index exists
+
+  try {
+    const recipes = await collection.find(query).limit(limit).toArray();
+    return recipes.map(recipe => recipe.title); // Return matched recipes
+  } catch (error) {
+    console.error('Error searching recipes:', error);
+    throw error; // Rethrow the error
+  }
+}
+
+module.exports = { connectToDatabase, searchRecipesByTitle };
