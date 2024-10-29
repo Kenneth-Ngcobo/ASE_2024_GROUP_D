@@ -1,8 +1,11 @@
 export const sortRecipes = (recipes, sortBy, sortOrder) => {
+    if (!recipes || recipes.length === 0) return recipes;
+
     let sorted = [...recipes];
 
     switch (sortBy) {
         case 'newest':
+            // Ensure proper date comparison with fallback
             sorted.sort((a, b) => {
                 const dateA = new Date(a.published || 0);
                 const dateB = new Date(b.published || 0);
@@ -11,7 +14,10 @@ export const sortRecipes = (recipes, sortBy, sortOrder) => {
             break;
         case 'prepTime':
             sorted.sort((a, b) => {
-                const diff = parseInt(a.prep) - parseInt(b.prep);
+                // Convert to numbers and handle invalid values
+                const timeA = parseInt(a.prep) || 0;
+                const timeB = parseInt(b.prep) || 0;
+                const diff = timeA - timeB;
                 return sortOrder === 'ascending' ? diff : -diff;
             });
             break;
