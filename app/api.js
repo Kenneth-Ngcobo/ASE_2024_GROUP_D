@@ -8,7 +8,7 @@ const API_BASE_URL = process.env.API_BASE_URL;
  * @param {number} [page] - The current page number (optional).
  * @returns {Promise<Object>} - Returns a promise that resolves with the recipe data, or throws an error if the request fails.
  */
-export async function fetchRecipes(limit = 20, page) {
+export async function fetchRecipes(limit = 20, page,search='') {
     // Construct query string with limit and page parameters
     const query = new URLSearchParams({
         limit, // Set the limit of items per page
@@ -42,7 +42,7 @@ export async function fetchRecipes(limit = 20, page) {
 export async function fetchRecipeById(id) {
     try {
         // Make a GET request to the API to fetch a specific recipe by its ID
-        const response = await fetch(`${API_BASE_URL}/${id}`);
+        const response = await fetch(`${API_BASE_URL}/api/recipes/${id}`);
 
         // Check if the response is successful
         if (!response.ok) {
