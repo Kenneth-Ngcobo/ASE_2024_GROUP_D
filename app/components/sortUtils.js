@@ -23,13 +23,19 @@ export const sortRecipes = (recipes, sortBy, sortOrder) => {
             break;
         case 'cookTime':
             sorted.sort((a, b) => {
-                const diff = parseInt(a.cook) - parseInt(b.cook);
+                // Convert to numbers and handle invalid values
+                const timeA = parseInt(a.cook) || 0;
+                const timeB = parseInt(b.cook) || 0;
+                const diff = timeA - timeB;
                 return sortOrder === 'ascending' ? diff : -diff;
             });
             break;
         case 'steps':
             sorted.sort((a, b) => {
-                const diff = a.steps.length - b.steps.length;
+                // Ensure steps array exists and handle invalid values
+                const stepsA = Array.isArray(a.steps) ? a.steps.length : 0;
+                const stepsB = Array.isArray(b.steps) ? b.steps.length : 0;
+                const diff = stepsA - stepsB;
                 return sortOrder === 'ascending' ? diff : -diff;
             });
             break;
