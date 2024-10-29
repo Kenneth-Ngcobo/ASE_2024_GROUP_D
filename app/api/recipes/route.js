@@ -9,7 +9,7 @@ export async function GET(req) {
     const url = new URL(req.url);
     const page = parseInt(url.searchParams.get('page')) || 1; // Default to page 1
     const limit = Math.min(parseInt(url.searchParams.get('limit')) || 50, 50); // Default to 50, max 50
-    const searchTerm = url.searchParams.get('search') || ''; // Get the search term from query
+    const searchTerm = url.searchParams.get('search')?.trim() || ''; // Get the search term from query
 
     // Construct the query for text search
     const query = searchTerm ? { $text: { $search: searchTerm } } : {}; // Full-text search if there's a search term
@@ -17,12 +17,25 @@ export async function GET(req) {
     // Calculate the number of documents to skip
     const skip = (page - 1) * limit;
 
-    // Fetch the paginated recipes from the collection with the search query
-    const recipes = await recipesCollection.find(query).skip(skip).limit(limit).toArray();
-    console.log('Recipes fetched successfully:', recipes);
-
+    // Fetch the paginated recipes from the collection with the search query and projection
+    const recipes = await recipesCollection.find(query, { projection: { title: 1, otherField: 1 } }) // Adjust fields as needed
+        .skip(skip)
+        .limit(limit)
+        .toArray();
+    
     // Count the total number of recipes for pagination info, applying the same search query
     const totalRecipes = await recipesCollection.countDocuments(query);
+
+    // Check if any recipes were found
+    if (totalRecipes === 0) {
+      return new Response(JSON.stringify({
+        message: "No matches found",
+        data: []
+      }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
 
     // Return the data as JSON response, including pagination info
     return new Response(JSON.stringify({
