@@ -15,8 +15,8 @@ let cachedDb = null; // Use caching to avoid reconnecting on every request
  * Connect to the MongoDB database.
  *
  * This function establishes a connection to the MongoDB database, reusing an existing 
- * connection if one is already cached. It returns the database instance for use in 
- * further database operations.
+ * connection if one is already cached. It also creates a text index on the "title" field
+ * of the "recipes" collection to enable full-text search.
  *
  * @returns {Promise<Db>} A promise that resolves to the database instance.
  *
@@ -27,15 +27,21 @@ async function connectToDatabase() {
     if (cachedDb) {
       return cachedDb; // Return the cached DB if already connected
     }
-    
+
+    // Connect to the database
     await client.connect();
     console.log('Connected to MongoDB!');
-    
-    const db = client.db('devdb'); // Use your database name
-    cachedDb = db; // Cache the DB connection
-    
-    return db; // Return the database instance
 
+    const db = client.db('devdb'); // Use your database name
+    const recipesCollection = db.collection('recipes'); // Access the collection
+
+    // The text index on the "title" field (create only if it doesn't exist)
+    await recipesCollection.createIndex({ title: 'text' });
+    console.log('Text index on "title" field created (or already exists).');
+
+    cachedDb = db; // Cache the DB connection for reuse
+
+    return db; // Return the database instance
   } catch (error) {
     console.error('MongoDB connection error:', error);
     throw error; // Rethrow the error to handle it later
