@@ -33,8 +33,8 @@ export const sortRecipes = (recipes, sortBy, sortOrder) => {
         case 'steps':
             sorted.sort((a, b) => {
                 // Ensure steps array exists and handle invalid values
-                const stepsA = Array.isArray(a.steps) ? a.steps.length : 0;
-                const stepsB = Array.isArray(b.steps) ? b.steps.length : 0;
+                const stepsA = Array.isArray(a.instructions) || 0;
+                const stepsB = Array.isArray(b.instructions) || 0;
                 const diff = stepsA - stepsB;
                 return sortOrder === 'ascending' ? diff : -diff;
             });
