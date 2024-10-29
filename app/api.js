@@ -1,5 +1,5 @@
 // Base URL for the API requests related to recipes
-const API_BASE_URL = 'http://localhost:3000/api/recipes';
+const API_BASE_URL = process.env.API_BASE_URL;
 
 /**
  * Fetches a paginated list of recipes from the API.
@@ -17,7 +17,7 @@ export async function fetchRecipes(limit = 20, page) {
 
     try {
         // Make a GET request to the API with the constructed query string
-        const response = await fetch(`${API_BASE_URL}?${query}`);
+        const response = await fetch(`${API_BASE_URL}/api/recipes?${query}`);
 
         // Check if the response is successful (HTTP status code 200-299)
         if (!response.ok) {
@@ -42,7 +42,7 @@ export async function fetchRecipes(limit = 20, page) {
 export async function fetchRecipeById(id) {
     try {
         // Make a GET request to the API to fetch a specific recipe by its ID
-        const response = await fetch(`${API_BASE_URL}/${id}`);
+        const response = await fetch(`${API_BASE_URL}/api/recipes/${id}`);
 
         // Check if the response is successful
         if (!response.ok) {
