@@ -1,5 +1,8 @@
 //Pagenation and limiting, wont function if there is not limmiting to mny items Default 50 items for demonstration: http://localhost:3000/api/recipes?page=1&limit=10
 import connectToDatabase from '../../../db.js'; // Adjust the path based on your file structure
+
+
+
 export async function GET(req) {
   try {
     const db = await connectToDatabase(); // Connect to the database
