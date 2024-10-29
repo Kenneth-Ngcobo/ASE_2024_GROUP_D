@@ -6,6 +6,7 @@ const CategoryList = ({ onCategoryChange }) => {
     const [categories, setCategories] = useState([]);
     const [error, setError] = useState(null);
     const [isOpen, setIsOpen] = useState(false); 
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchCategories = async () => {
@@ -16,17 +17,23 @@ const CategoryList = ({ onCategoryChange }) => {
                 }
                 const data = await response.json();
                 setCategories(data); 
+                console.log('Fetched categories:', data)
             } catch (err) {
                 setError(err.message);
-            }
-        };
-
+            } finally {
+        setLoading(false);
+      }
+    };
         fetchCategories();
     }, []);
 
-    if (error) {
-        return <div className="text-red-500">Error: {error}</div>;
-    }
+    if (loading) {
+        return <div>Loading categories...</div>;
+      }
+    
+      if (error) {
+        return <div>Error: {error}</div>;
+      }
 
     const handleCategorySelect = (category) => {
         setIsOpen(false); 

@@ -4,7 +4,7 @@ import Recipes from './components/recipes';
 import Footer from './components/footer';
 import Loading from './components/loading';
 import CategoryList from './components/CategoryList';
-
+import TagDisplay from './components/TagList';
 export default async function Home({ searchParams }) {
     // Initialize recipes object to store fetched data
     let recipes = {};
@@ -30,8 +30,10 @@ export default async function Home({ searchParams }) {
     return (
         <>
         <CategoryList />
+        <TagDisplay />
             {/* Render the Recipes component, passing the fetched recipes as props */}
             <Recipes recipes={recipes.recipes} />
+         
             {/* Render the Pagination component, passing the current page and total pages */}
             <Pagination
                 currentPage={recipes.currentPage} // Current page number
