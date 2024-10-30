@@ -1,12 +1,16 @@
 export const sortRecipes = (recipes, sortBy, sortOrder) => {
+    // Return original recipes array if empty or undefined
     if (!recipes?.length) return recipes;
 
     const sorted = [...recipes];
+
+    // Helper function to compare values based on sort order
     const compareValues = (a, b, order = 'ascending') => {
         const multiplier = order === 'ascending' ? 1 : -1;
         return (a - b) * multiplier;
     };
 
+    // Define sorting strategies based on sortBy options
     const sortingStrategies = {
         createdAt: (a, b) => {
             const dateA = new Date(a.published || 0).getTime();
@@ -30,5 +34,6 @@ export const sortRecipes = (recipes, sortBy, sortOrder) => {
         }
     };
 
+    // Use the appropriate sorting strategy or a no-op if none is matched
     return sorted.sort(sortingStrategies[sortBy] || (() => 0));
 };

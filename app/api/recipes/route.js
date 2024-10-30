@@ -82,10 +82,10 @@ export async function GET(req) {
       order: order,
       firstThreeValues: recipes.slice(0, 3).map(r => ({
         value: sortLower === 'instructionscount' 
-          ? r.instructions.length 
+          ? r.instructionsCount 
           : r[validSortFields[sortLower]],
         title: r.title,
-        instructionsCount: r.instructions.length
+        instructionsCount: r.instructionsCount
       }))
     });
 
