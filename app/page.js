@@ -31,6 +31,7 @@ export default async function Home({ searchParams }) {
     // Return the rendered JS for the Home component
     return (
         <>
+        <SearchBar />
             {/* Render the Recipes component, passing the fetched recipes as props */}
             <Recipes
                 recipes={recipes.recipes}
