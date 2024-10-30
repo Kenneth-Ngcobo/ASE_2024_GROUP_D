@@ -22,6 +22,7 @@ const Recipes = ({ recipe }) => {
       {/* Recipe title */}
       <h2 className="text-xl font-bold mt-8 text-orage">
         {recipe.title} {/* Display the recipe title */}
+
       </h2>
 
       {/* Recipe category */}
@@ -29,6 +30,8 @@ const Recipes = ({ recipe }) => {
         Category: {recipe.category} {/* Display the recipe category */}
       </p>
 
+ ?
+     
       {/* Recipe preparation time */}
       <p className="text-sm text-gray-500">
         Prep Time: {recipe.prep} mins {/* Display the preparation time */}
