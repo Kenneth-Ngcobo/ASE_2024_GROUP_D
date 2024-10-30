@@ -5,6 +5,9 @@ import Footer from './components/footer';
 import Loading from './components/loading';
 import CategoryList from './components/CategoryList';
 import TagDisplay from './components/TagList';
+import IngredientsDisplay from './components/Ingredients';
+import SearchBar from './components/searchBar';
+
 export default async function Home({ searchParams }) {
     // Initialize recipes object to store fetched data
     let recipes = {};
@@ -31,6 +34,10 @@ export default async function Home({ searchParams }) {
         <>
         <CategoryList />
         <TagDisplay />
+        <IngredientsDisplay />
+            <SearchBar
+            
+            />
             {/* Render the Recipes component, passing the fetched recipes as props */}
             <Recipes recipes={recipes.recipes} />
          
@@ -38,8 +45,11 @@ export default async function Home({ searchParams }) {
             <Pagination
                 currentPage={recipes.currentPage} // Current page number
                 totalPages={recipes.totalPages} // Total number of pages available
+                
             />
+            
             <Footer />
+           
         </>
     );
 }
