@@ -12,6 +12,7 @@ export async function GET(req) {
     const searchTerm = url.searchParams.get("search") || "";
     const category = url.searchParams.get("category");
     const tags = url.searchParams.get("tags");
+    const ingredients = url.searchParams.get("ingredients");
 
     let query = {};
 
@@ -30,16 +31,32 @@ export async function GET(req) {
     }
 
     if (tags) {
+      const tagArray = tags.split(",").map((tag) => tag.trim().toLowerCase());
+
       query.tags = {
-        $regex: new RegExp(`^${tags}$`, "i"),
+        $elemMatch: { $in: tagArray.map((tag) => new RegExp(`^${tag}$`, "i")) },
       };
-  }
+    }
+
+       // Filter by ingredients (object structure)
+       if (ingredients) {
+        const ingredientArray = ingredients.split(",").map((ingredient) => ingredient.trim().toLowerCase());
+  
+        // Create a filter for each ingredient key, allowing case-insensitive matching
+        query.$and = ingredientArray.map((ingredient) => ({
+          [`ingredients.${ingredient}`]: { $exists: true }
+        }));
+      }
 
     // Log constructed query
     console.log("Constructed query:", JSON.stringify(query, null, 2));
 
     const skip = (page - 1) * limit;
-    const recipes = await recipesCollection.find(query).skip(skip).limit(limit).toArray();
+    const recipes = await recipesCollection
+      .find(query)
+      .skip(skip)
+      .limit(limit)
+      .toArray();
     console.log("Fetched recipes:", recipes);
 
     const totalRecipes = await recipesCollection.countDocuments(query);
@@ -51,6 +68,7 @@ export async function GET(req) {
         currentPage: page,
         category: category || "all",
         appliedTags: tags ? tags.split(',').map(tag => tag.trim()) : [],
+        appliedIngredients: ingredients ? ingredients.split(",").map((ingredient) => ingredient.trim()) : [],
         recipes,
       }),
       {
