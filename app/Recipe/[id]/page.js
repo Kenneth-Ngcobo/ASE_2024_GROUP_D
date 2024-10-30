@@ -11,9 +11,9 @@ import Loading from '../../components/loading'; // Importing the Loading compone
 //Generate metadata for the recipe page dynamically
 export async function generateMetadata({ params }) {
     const { id } = params;
-    const { recipe, error } = await fetchRecipeById(id);
+    const recipe = await fetchRecipeById(id);
 
-    if (error || !recipe) {
+    if ( !recipe) {
         return {
             title: 'Recipe not found',
             description: 'Error occurred while fetching the recipe.'
