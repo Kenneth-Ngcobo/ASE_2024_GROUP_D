@@ -76,27 +76,27 @@ export default function Recipes({ recipes: initialRecipes }) {
               {/* Recipe details */}
               <p className="text-sm text-gray-600 font-roboto">
                 <FaCalendarDay className="inline-block text-green-600 mr-1" />
-                {new Date(recipe.published).toDateString()}
+                <strong className="text-green-600"></strong> {new Date(recipe.published).toDateString()}
               </p>
               <p className="text-sm text-gray-600 font-roboto">
                 <FaListUl className="inline-block text-green-600 mr-1" />
-                {recipe.instructions ? recipe.instructions.length : 0} steps
+                <strong className="text-green-600"></strong> {recipe.instructions ? recipe.instructions.length : 0} steps
               </p>
               <p className="text-sm mt-2 font-roboto">
                 <FaClock className="inline-block text-green-600 mr-1" />
-                {recipe.prep} minutes
+                <strong className="text-green-600"></strong> {recipe.prep} minutes
               </p>
               <p className="text-sm font-roboto">
                 <FaUtensilSpoon className="inline-block text-green-600 mr-1" />
-                {recipe.cook} minutes
+                <strong className="text-green-600"></strong> {recipe.cook} minutes
               </p>
               <p className="text-sm font-roboto">
                 <FaUtensils className="inline-block text-green-600 mr-1" />
-                {recipe.servings}
+                <strong className="text-green-600"></strong> {recipe.servings}
               </p>
               <p className="text-sm font-roboto">
                 <FaTags className="inline-block text-green-600 mr-1" />
-                {recipe.category}
+                <strong className="text-green-600"></strong> {recipe.category}
               </p>
             </Link>
           ))}
