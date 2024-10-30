@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-page-custom-font */
 'use client'
 
-// Import necessary dependencies from Next.js and React
+
 import Link from 'next/link';
 import Image from 'next/image';
 import { useState, useEffect } from 'react';

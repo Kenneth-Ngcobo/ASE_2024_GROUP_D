@@ -4,38 +4,49 @@ import React, { useState, useEffect, useCallback } from 'react';
 const SearchBar = () => {
     const [query, setQuery] = useState('');
     const [suggestions, setSuggestions] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
 
-    // Custom debounce function
+    // Improved debounce function with cleanup
     const debounce = (func, delay) => {
         let timeoutId;
         return (...args) => {
             if (timeoutId) clearTimeout(timeoutId);
             timeoutId = setTimeout(() => func(...args), delay);
+            return () => clearTimeout(timeoutId);
         };
     };
 
-    // Function to fetch suggestions from the API
+    // Enhanced suggestion fetching with error handling and loading state
     const fetchSuggestions = async (searchTerm) => {
-        if (!searchTerm) {
+        if (!searchTerm || searchTerm.length < 2) {
             setSuggestions([]);
             return;
         }
 
+        setIsLoading(true);
         try {
-            const response = await fetch(`/api/AutoSuggest?query=${searchTerm}`);
-            if (response.ok) {
-                const data = await response.json();
-                setSuggestions(data);
+            const response = await fetch(
+                `/api/AutoSuggest?query=${encodeURIComponent(searchTerm)}`
+            );
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
             }
+            const data = await response.json();
+            setSuggestions(data);
         } catch (error) {
             console.error("Error fetching suggestions:", error);
+            setSuggestions([]);
+        } finally {
+            setIsLoading(false);
         }
     };
 
     // Debounced version of fetchSuggestions
-    const debouncedFetchSuggestions = useCallback(debounce(fetchSuggestions, 300), []);
+    const debouncedFetchSuggestions = useCallback(
+        debounce(fetchSuggestions, 300),
+        []
+    );
 
-    // Update query and trigger debounced API call
     const handleInputChange = (e) => {
         const value = e.target.value;
         setQuery(value);
@@ -50,14 +61,24 @@ const SearchBar = () => {
                 onChange={handleInputChange}
                 placeholder="Search for recipes..."
                 className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
+                aria-label="Search recipes"
+                autoComplete="off"
             />
-            {suggestions.length > 0 && (
-                <ul className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg">
-                    {suggestions.map((item, index) => (
+            {isLoading && (
+                <div className="absolute right-3 top-3">
+                    <div className="animate-spin h-4 w-4 border-2 border-blue-500 rounded-full border-t-transparent"></div>
+                </div>
+            )}
+            {suggestions.length > 0 && !isLoading && (
+                <ul className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto">
+                    {suggestions.map((item) => (
                         <li
-                            key={index}
+                            key={item.id}
                             className="px-4 py-2 cursor-pointer hover:bg-gray-100"
-                            onClick={() => setQuery(item.title)} // To set the clicked suggestion in the input
+                            onClick={() => {
+                                setQuery(item.title);
+                                setSuggestions([]);
+                            }}
                         >
                             {item.title}
                         </li>
