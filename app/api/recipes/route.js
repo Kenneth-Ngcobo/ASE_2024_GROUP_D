@@ -13,6 +13,7 @@ export async function GET(req) {
     const category = url.searchParams.get("category");
     const tags = url.searchParams.get("tags");
     const ingredients = url.searchParams.get("ingredients");
+    const instructions = parseInt(url.searchParams.get("instructions"));
 
     let query = {};
 
@@ -48,6 +49,11 @@ export async function GET(req) {
         }));
       }
 
+ 
+    // Filter by number of instructions
+    if (!isNaN(instructions)) {
+      query.instructions = { $size: instructions };
+    }
     // Log constructed query
     console.log("Constructed query:", JSON.stringify(query, null, 2));
 
@@ -69,6 +75,7 @@ export async function GET(req) {
         category: category || "all",
         appliedTags: tags ? tags.split(',').map(tag => tag.trim()) : [],
         appliedIngredients: ingredients ? ingredients.split(",").map((ingredient) => ingredient.trim()) : [],
+        appliedInstructions: instructions,
         recipes,
       }),
       {
