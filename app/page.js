@@ -3,6 +3,9 @@ import Pagination from './components/pagination';
 import Recipes from './components/recipes';
 import Footer from './components/footer';
 import Loading from './components/loading';
+import CategoryList from './components/CategoryList';
+import TagDisplay from './components/TagList';
+import IngredientsDisplay from './components/Ingredients';
 import SearchBar from './components/searchBar';
 
 export default async function Home({ searchParams }) {
@@ -29,6 +32,9 @@ export default async function Home({ searchParams }) {
     // Return the rendered JS for the Home component
     return (
         <>
+        <CategoryList />
+        <TagDisplay />
+        <IngredientsDisplay />
             <SearchBar
             
             />
