@@ -30,7 +30,7 @@ export default async function Home({ searchParams }) {
     return (
         <>
         <CategoryList />
-        <TagDisplay />
+      
             {/* Render the Recipes component, passing the fetched recipes as props */}
             <Recipes recipes={recipes.recipes} />
          

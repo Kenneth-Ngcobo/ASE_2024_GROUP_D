@@ -1,6 +1,8 @@
 "use client"; // Ensure this component is rendered on the client side
 
 import { useState } from "react";
+import CategoryList from "./CategoryList";
+import TagList from "./TagList";
 
 export const FilterModal = ({ onClose }) => {
   const [customerName, setCustomerName] = useState("");
@@ -58,6 +60,7 @@ export const FilterModal = ({ onClose }) => {
 
 
     <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
+        
       <div className="bg-white w-[60%] p-6 rounded-lg shadow-lg">
         {/* Header */}
         <div className="flex justify-between items-center mb-4">
@@ -75,13 +78,7 @@ export const FilterModal = ({ onClose }) => {
           {/* Customer Name Text Input */}
           <div className="flex flex-col">
             <label className="text-sm font-medium text-gray-700">Ingredients</label>
-            <input
-              type="text"
-              value={customerName}
-              onChange={(e) => setCustomerName(e.target.value)}
-              className="border border-gray-300 rounded-md p-2 text-gray-800"
-              placeholder="Enter customer name"
-            />
+            <TagList />
           </div>
 
           {/* Brand Slider */}
