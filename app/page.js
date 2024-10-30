@@ -8,6 +8,7 @@ import TagDisplay from './components/TagList';
 import IngredientsDisplay from './components/Ingredients';
 import SearchBar from './components/searchBar';
 
+
 export default async function Home({ searchParams }) {
     // Initialize recipes object to store fetched data
     let recipes = {};
