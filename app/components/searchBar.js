@@ -233,7 +233,7 @@ const RecipeSearchBar = ({
                             </ul>
                         ) : search.length >= minCharacters ? (
                             <div className="p-4 text-gray-600 text-center">
-                                No recipes found matching "{search}"
+                                No recipes found matching &qout{search}&qout
                             </div>
                         ) : recentSearches.length > 0 ? (
                             <div className="p-4">
