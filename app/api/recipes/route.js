@@ -9,7 +9,7 @@ export async function GET(req) {
     const url = new URL(req.url);
     const page = parseInt(url.searchParams.get('page')) || 1;
     const limit = Math.min(parseInt(url.searchParams.get('limit')) || 50, 50);
-    const sort = url.searchParams.get('sort') || 'createdAt'; // Changed default to createdAt
+    const sort = url.searchParams.get('sort') || 'published'; // Changed default to createdAt
     const order = url.searchParams.get('order')?.toLowerCase() === 'desc' ? -1 : 1;
 
     // Validate sort parameter
