@@ -29,11 +29,11 @@ export default async function Home({ searchParams }) {
     return (
         <>
             <Suspense fallback={<Loading />}>
-               <SearchBar/>
+                <SearchBar/>
 
                 {/* Render the Recipes component, passing the fetched recipes as props */}
                 <Recipes recipes={recipes.recipes} />
-             
+    
                 {/* Render the Pagination component, passing the current page and total pages */}
                 <Pagination
                     currentPage={recipes.currentPage} // Current page number
@@ -43,7 +43,6 @@ export default async function Home({ searchParams }) {
                 
                 <Footer />
             </Suspense>
-           
         </>
     );
 }
