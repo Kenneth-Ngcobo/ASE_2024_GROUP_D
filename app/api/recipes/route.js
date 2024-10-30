@@ -1,50 +1,56 @@
-import connectToDatabase from "../../../db.js"; // Adjust the path based on your file structure
+import connectToDatabase from "../../../db.js";
 
 export async function GET(req) {
   try {
-    const db = await connectToDatabase(); // Connect to the database
-    const recipesCollection = db.collection("recipes"); // Fetch from the 'recipes' collection
+    const db = await connectToDatabase();
+    const recipesCollection = db.collection("recipes");
 
-    // Parse query parameters for pagination and search
+    // Parse query parameters
     const url = new URL(req.url);
-    const page = parseInt(url.searchParams.get("page")) || 1; // Default to page 1
-    const limit = Math.min(parseInt(url.searchParams.get("limit")) || 50, 50); // Default to 50, max 50
-    const searchTerm = url.searchParams.get("search") || ""; // Get the search term from query
+    const page = parseInt(url.searchParams.get("page")) || 1;
+    const limit = Math.min(parseInt(url.searchParams.get("limit")) || 50, 50);
+    const searchTerm = url.searchParams.get("search") || "";
     const category = url.searchParams.get("category");
+    const tags = url.searchParams.get("tags");
 
     let query = {};
-    // Construct the query for text search
+
+    // Log incoming tags
+    console.log("Incoming tags:", tags);
+
+    // Construct query for text search
     if (searchTerm) {
       query.$text = { $search: searchTerm };
     }
 
     if (category) {
-      // Use regex with 'i' flag for case-insensitive matching
       query.category = {
         $regex: new RegExp(`^${category}$`, "i"),
       };
     }
-    // Calculate the number of documents to skip
+
+    if (tags) {
+      query.tags = {
+        $regex: new RegExp(`^${tags}$`, "i"),
+      };
+  }
+
+    // Log constructed query
+    console.log("Constructed query:", JSON.stringify(query, null, 2));
+
     const skip = (page - 1) * limit;
+    const recipes = await recipesCollection.find(query).skip(skip).limit(limit).toArray();
+    console.log("Fetched recipes:", recipes);
 
-    // Fetch the paginated recipes from the collection with the search query
-    const recipes = await recipesCollection
-      .find(query)
-      .skip(skip)
-      .limit(limit)
-      .toArray();
-    console.log("Recipes fetched successfully:", recipes);
-
-    // Count the total number of recipes for pagination info, applying the same search query
     const totalRecipes = await recipesCollection.countDocuments(query);
 
-    // Return the data as JSON response, including pagination info
     return new Response(
       JSON.stringify({
         totalRecipes,
         totalPages: Math.ceil(totalRecipes / limit),
         currentPage: page,
         category: category || "all",
+        appliedTags: tags ? tags.split(',').map(tag => tag.trim()) : [],
         recipes,
       }),
       {
@@ -54,7 +60,6 @@ export async function GET(req) {
     );
   } catch (error) {
     console.error("Error fetching recipes:", error);
-    // Return error response in case of failure
     return new Response(JSON.stringify({ error: "Failed to fetch recipes" }), {
       status: 500,
       headers: { "Content-Type": "application/json" },
