@@ -9,52 +9,93 @@ export async function GET(req) {
     const url = new URL(req.url);
     const page = parseInt(url.searchParams.get('page')) || 1;
     const limit = Math.min(parseInt(url.searchParams.get('limit')) || 50, 50);
-    const sort = url.searchParams.get('sort') || 'createdAt'; // Changed default to createdAt
+    const sort = url.searchParams.get('sort') || 'published';
     const order = url.searchParams.get('order')?.toLowerCase() === 'desc' ? -1 : 1;
 
-    // Validate sort parameter
+    // Updated to match actual database field names and added instructionsCount
     const validSortFields = {
-      'cookTime': 'cookingTime',
-      'prepTime': 'preparationTime',
-      'instructions': 'instructions',
-      'createdAt': 'createdAt'  // Added creation date sorting
+      'cookingtime': 'cook',        
+      'preparationtime': 'prep',    
+      'published': 'published',     
+      'calories': 'nutrition.calories',  
+      'title': 'title',
+      'instructionscount': 'instructionsCount'  // Added in lowercase
     };
 
-    // Check if the sort field is valid
-    if (!validSortFields[sort]) {
+    // Convert sort parameter to lowercase for case-insensitive comparison
+    const sortLower = sort.toLowerCase();
+    
+    if (!validSortFields[sortLower]) {
       return new Response(
         JSON.stringify({
-          error: 'Invalid sort parameter. Valid options are: cookTime, prepTime, instructions, createdAt'
+          error: `Invalid sort parameter '${sort}'. Valid options are: cookingTime, preparationTime, published, calories, title, instructionsCount`
         }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' }
-      }
+          status: 400,
+          headers: { 'Content-Type': 'application/json' }
+        }
       );
     }
 
     const skip = (page - 1) * limit;
 
     // Create sort object for MongoDB query
-    const sortObj = {};
-    sortObj[validSortFields[sort]] = order;
+    const sortObj = { [validSortFields[sortLower]]: order };
+
+    // Updated pipeline to include instructions count
+    let pipeline = [
+      {
+        $addFields: {
+          // Convert string numbers to actual numbers for sorting
+          numericPrep: { $toInt: "$prep" },
+          numericCook: { $toInt: "$cook" },
+          numericCalories: { $toDouble: "$nutrition.calories" },
+          // Add instructions count field
+          instructionsCount: { $size: "$instructions" }
+        }
+      }
+    ];
+
+    // If sorting by instructions count, use the computed field
+    if (sortLower === 'instructionscount') {
+      pipeline.push({ $sort: { instructionsCount: order } });
+    } else {
+      pipeline.push({ $sort: sortObj });
+    }
+
+    // Add pagination after sorting
+    pipeline.push(
+      { $skip: skip },
+      { $limit: limit }
+    );
 
     // Fetch sorted and paginated recipes
     const recipes = await recipesCollection
-      .find({})
-      .sort(sortObj)
-      .skip(skip)
-      .limit(limit)
+      .aggregate(pipeline)
       .toArray();
 
     const totalRecipes = await recipesCollection.countDocuments();
 
-    // Return response with pagination and sorting info
+    // Debug log to verify sorting
+    console.log('Sorting Debug:', {
+      requestedSort: sort,
+      sortField: validSortFields[sortLower],
+      order: order,
+      firstThreeValues: recipes.slice(0, 3).map(r => ({
+        value: sortLower === 'instructionscount' 
+          ? r.instructions.length 
+          : r[validSortFields[sortLower]],
+        title: r.title,
+        instructionsCount: r.instructions.length
+      }))
+    });
+
     return new Response(JSON.stringify({
       totalRecipes,
       totalPages: Math.ceil(totalRecipes / limit),
       currentPage: page,
       sortedBy: sort,
       sortOrder: order === 1 ? 'asc' : 'desc',
+      sortQuery: sortObj,
       recipes,
     }), {
       status: 200,
@@ -63,7 +104,10 @@ export async function GET(req) {
 
   } catch (error) {
     console.error('Error fetching recipes:', error);
-    return new Response(JSON.stringify({ error: 'Failed to fetch recipes' }), {
+    return new Response(JSON.stringify({ 
+      error: 'Failed to fetch recipes',
+      details: error.message 
+    }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },
     });
