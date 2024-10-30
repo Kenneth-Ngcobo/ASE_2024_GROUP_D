@@ -6,7 +6,7 @@ const SearchBar = () => {
     const [suggestions, setSuggestions] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
 
-    // Improved debounce function with cleanup
+    // Debounce function with cleanup
     const debounce = (func, delay) => {
         let timeoutId;
         return (...args) => {
@@ -16,7 +16,6 @@ const SearchBar = () => {
         };
     };
 
-    // Enhanced suggestion fetching with error handling and loading state
     const fetchSuggestions = async (searchTerm) => {
         if (!searchTerm || searchTerm.length < 2) {
             setSuggestions([]);
@@ -25,9 +24,7 @@ const SearchBar = () => {
 
         setIsLoading(true);
         try {
-            const response = await fetch(
-                `/api/AutoSuggest?query=${encodeURIComponent(searchTerm)}`
-            );
+            const response = await fetch(`/api/AutoSuggest?query=${encodeURIComponent(searchTerm)}`);
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
@@ -41,11 +38,7 @@ const SearchBar = () => {
         }
     };
 
-    // Debounced version of fetchSuggestions
-    const debouncedFetchSuggestions = useCallback(
-        debounce(fetchSuggestions, 300),
-        []
-    );
+    const debouncedFetchSuggestions = useCallback(debounce(fetchSuggestions, 300), []);
 
     const handleInputChange = (e) => {
         const value = e.target.value;
@@ -77,7 +70,7 @@ const SearchBar = () => {
                             className="px-4 py-2 cursor-pointer hover:bg-gray-100"
                             onClick={() => {
                                 setQuery(item.title);
-                                setSuggestions([]);
+                                setSuggestions([]); // Clear suggestions after selection
                             }}
                         >
                             {item.title}
