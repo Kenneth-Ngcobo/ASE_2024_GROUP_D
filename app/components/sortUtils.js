@@ -4,12 +4,12 @@ export const sortRecipes = (recipes, sortBy, sortOrder) => {
     let sorted = [...recipes];
 
     switch (sortBy) {
-        case 'newest':
+        case 'createdAt':
             // Ensure proper date comparison with fallback
             sorted.sort((a, b) => {
-                const dateA = new Date(a.published || 0);
-                const dateB = new Date(b.published || 0);
-                return dateB - dateA; // Newest first by default
+                const createdAtA = new Date(a.published || 0);
+                const createdAtB = new Date(b.published || 0);
+                return createdAtB - createdAtA; // Newest first by default
             });
             break;
         case 'prepTime':
