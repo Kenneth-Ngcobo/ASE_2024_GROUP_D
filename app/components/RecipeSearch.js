@@ -114,7 +114,7 @@ const RecipeSearch = () => {
           className="w-full p-3 pl-10 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           aria-label="Search recipes"
           role="searchbox"
-        />
+        /> 
         <SearchBar 
           className={`absolute left-3 top-3 text-gray-400 ${isLoading ? 'animate-spin' : ''}`} 
           size={20} 
