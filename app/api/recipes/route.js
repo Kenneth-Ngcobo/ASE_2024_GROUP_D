@@ -16,7 +16,6 @@ export async function GET(req) {
     const validSortFields = {
       'cookingTime': 'cookingTime',
       'prepTime': 'preparationTime',
-      'steps': 'steps',
       'instructions': 'instructions',
       'createdAt': 'createdAt'  // Added creation date sorting
     };
@@ -27,9 +26,9 @@ export async function GET(req) {
         JSON.stringify({
           error: 'Invalid sort parameter. Valid options are: cookingTime, prepTime, steps, instructions, createdAt'
         }), {
-          status: 400,
-          headers: { 'Content-Type': 'application/json' }
-        }
+        status: 400,
+        headers: { 'Content-Type': 'application/json' }
+      }
       );
     }
 

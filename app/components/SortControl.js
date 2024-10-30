@@ -21,10 +21,10 @@ export const SortControl = ({ onSortChange, sortBy, sortOrder }) => {
                     className="appearance-none bg-white border border-gray-300 rounded-md py-2 pl-3 pr-10 text-sm leading-5 focus:outline-none focus:ring-2 focus:ring-green-500"
                 >
                     <option value="default">Default</option>
-                    <option value="newest">Newest</option>
+                    <option value="createdAt">Date</option>
                     <option value="prepTime">Preparation Time</option>
                     <option value="cookTime">Cooking Time</option>
-                    <option value="steps">Number of Steps</option>
+                    <option value="instructions">Instructions</option>
                 </select>
                 <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
             </div>
@@ -36,8 +36,8 @@ export const SortControl = ({ onSortChange, sortBy, sortOrder }) => {
                         onChange={handleOrderChange}
                         className="appearance-none bg-white border border-gray-300 rounded-md py-2 pl-3 pr-10 text-sm leading-5 focus:outline-none focus:ring-2 focus:ring-green-500"
                     >
-                        <option value="ascending">Ascending</option>
-                        <option value="descending">Descending</option>
+                        <option value="asc">Ascending</option>
+                        <option value="desc">Descending</option>
                     </select>
                     <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
                 </div>
