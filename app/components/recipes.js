@@ -9,7 +9,7 @@ import { FaCalendarDay, FaClock, FaUtensils, FaTags, FaUtensilSpoon, FaListUl } 
 import Head from 'next/head';
 import Carousel from './Carousel';
 import { SortControl } from './SortControl';
-import { sortRecipes } from './SortUtils';
+import { sortRecipes } from './sortUtils';
 
 export default function Recipes({ recipes: initialRecipes }) {
   const [sortBy, setSortBy] = useState("default");
