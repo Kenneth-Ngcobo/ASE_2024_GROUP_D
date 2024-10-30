@@ -32,11 +32,13 @@ export const sortRecipes = (recipes, sortBy, sortOrder) => {
             break;
         case 'instructions':
             sorted.sort((a, b) => {
-                // Ensure instructions array exists and handle invalid values
-                const instructionsA = Array.isArray(a.instructions) || 0;
-                const instructionsB = Array.isArray(b.instructions) || 0;
+                // Get the length of instructions array, defaulting to 0 if not an array
+                const instructionsA = Array.isArray(a.instructions) ? a.instructions.length : 0;
+                const instructionsB = Array.isArray(b.instructions) ? b.instructions.length : 0;
                 const diff = instructionsA - instructionsB;
-                return sortOrder === 'ascending' ? diff : -diff;
+                return sortOrder === 'ascending'
+                    ? instructionsA - instructionsB
+                    : instructionsA - instructionsB;
             });
             break;
         default:
