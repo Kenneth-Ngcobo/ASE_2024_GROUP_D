@@ -5,6 +5,7 @@ import Footer from './components/footer';
 import LoadingSpinner from './components/loadingSpinner';
 import Loading from './loading';
 import { Suspense } from 'react';
+import SearchBar from './components/searchBar';
 
 export default async function Home({ searchParams }) {
     // Initialize recipes object to store fetched data
@@ -28,15 +29,21 @@ export default async function Home({ searchParams }) {
     return (
         <>
             <Suspense fallback={<Loading />}>
+               <SearchBar/>
+
                 {/* Render the Recipes component, passing the fetched recipes as props */}
                 <Recipes recipes={recipes.recipes} />
+             
                 {/* Render the Pagination component, passing the current page and total pages */}
                 <Pagination
                     currentPage={recipes.currentPage} // Current page number
                     totalPages={recipes.totalPages} // Total number of pages available
+                    
                 />
+                
                 <Footer />
             </Suspense>
+           
         </>
     );
 }
