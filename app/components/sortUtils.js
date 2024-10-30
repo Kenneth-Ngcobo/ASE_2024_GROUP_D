@@ -30,12 +30,12 @@ export const sortRecipes = (recipes, sortBy, sortOrder) => {
                 return sortOrder === 'ascending' ? diff : -diff;
             });
             break;
-        case 'steps':
+        case 'instructions':
             sorted.sort((a, b) => {
-                // Ensure steps array exists and handle invalid values
-                const stepsA = Array.isArray(a.instructions) || 0;
-                const stepsB = Array.isArray(b.instructions) || 0;
-                const diff = stepsA - stepsB;
+                // Ensure instructions array exists and handle invalid values
+                const instructionsA = Array.isArray(a.instructions) || 0;
+                const instructionsB = Array.isArray(b.instructions) || 0;
+                const diff = instructionsA - instructionsB;
                 return sortOrder === 'ascending' ? diff : -diff;
             });
             break;

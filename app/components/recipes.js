@@ -75,29 +75,28 @@ export default function Recipes({ recipes: initialRecipes }) {
 
               {/* Recipe details */}
               <p className="text-sm text-gray-600 font-roboto">
-                <FaListUl className="inline-block text-green-600 mr-1" />
-                <strong className="text-green-600">Instructions:</strong> {recipe.instructions ? recipe.instructions.length : 0} steps
-              </p>
-
-              <p className="text-sm text-gray-600 font-roboto">
                 <FaCalendarDay className="inline-block text-green-600 mr-1" />
-                <strong className="text-green-600">Published:</strong> {new Date(recipe.published).toDateString()}
+                {new Date(recipe.published).toDateString()}
+              </p>
+              <p className="text-sm text-gray-600 font-roboto">
+                <FaListUl className="inline-block text-green-600 mr-1" />
+                {recipe.instructions ? recipe.instructions.length : 0} steps
               </p>
               <p className="text-sm mt-2 font-roboto">
                 <FaClock className="inline-block text-green-600 mr-1" />
-                <strong className="text-green-600">Prep Time:</strong> {recipe.prep} minutes
+                {recipe.prep} minutes
               </p>
               <p className="text-sm font-roboto">
                 <FaUtensilSpoon className="inline-block text-green-600 mr-1" />
-                <strong className="text-green-600">Cook Time:</strong> {recipe.cook} minutes
+                {recipe.cook} minutes
               </p>
               <p className="text-sm font-roboto">
                 <FaUtensils className="inline-block text-green-600 mr-1" />
-                <strong className="text-green-600">Servings:</strong> {recipe.servings}
+                {recipe.servings}
               </p>
               <p className="text-sm font-roboto">
                 <FaTags className="inline-block text-green-600 mr-1" />
-                <strong className="text-green-600">Category:</strong> {recipe.category}
+                {recipe.category}
               </p>
             </Link>
           ))}
