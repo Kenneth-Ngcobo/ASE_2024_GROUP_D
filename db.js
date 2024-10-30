@@ -16,13 +16,17 @@ async function connectToDatabase() {
     if (cachedDb) {
       return cachedDb; // Return the cached DB if already connected
     }
-    
+
     await client.connect();
     console.log('Connected to MongoDB!');
-    
+
     const db = client.db('devdb'); // Use your database name
     cachedDb = db; // Cache the DB connection
-    
+
+    // Create a text index on the title field of the recipes collection
+    await db.collection('recipes').createIndex({ title: "text" });
+    console.log('Text index created on title field of recipes collection.');
+
     return db; // Return the database instance
 
   } catch (error) {
