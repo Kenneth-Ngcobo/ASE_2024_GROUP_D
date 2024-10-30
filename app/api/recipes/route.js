@@ -16,6 +16,7 @@ export async function GET(req) {
     const validSortFields = {
       'cookingTime': 'cookingTime',
       'prepTime': 'preparationTime',
+      'steps': 'steps',
       'instructions': 'instructions',
       'createdAt': 'createdAt'  // Added creation date sorting
     };

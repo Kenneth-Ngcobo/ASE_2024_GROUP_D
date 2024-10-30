@@ -4,7 +4,7 @@ export const sortRecipes = (recipes, sortBy, sortOrder) => {
     let sorted = [...recipes];
 
     switch (sortBy) {
-        case 'createdAt':
+        case 'newest':
             // Ensure proper date comparison with fallback
             sorted.sort((a, b) => {
                 const dateA = new Date(a.published || 0);
@@ -30,7 +30,7 @@ export const sortRecipes = (recipes, sortBy, sortOrder) => {
                 return sortOrder === 'ascending' ? diff : -diff;
             });
             break;
-        case 'instructions':
+        case 'steps':
             sorted.sort((a, b) => {
                 // Ensure steps array exists and handle invalid values
                 const stepsA = Array.isArray(a.instructions) || 0;
