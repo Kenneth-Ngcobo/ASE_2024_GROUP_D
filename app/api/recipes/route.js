@@ -9,14 +9,35 @@ export async function GET(req) {
     const url = new URL(req.url);
     const page = parseInt(url.searchParams.get("page")) || 1;
     const limit = Math.min(parseInt(url.searchParams.get("limit")) || 50, 50);
+    const sort = url.searchParams.get("sort") || "createdAt"; // Default to createdAt
+    const order = url.searchParams.get("order")?.toLowerCase() === "desc" ? -1 : 1;
     const searchTerm = url.searchParams.get("search") || "";
     const category = url.searchParams.get("category");
     const tags = url.searchParams.get("tags");
+    const ingredients = url.searchParams.get("ingredients");
+    const instructions = parseInt(url.searchParams.get("instructions"));
 
     let query = {};
 
-    // Log incoming tags
-    console.log("Incoming tags:", tags);
+    // Validate sort parameter
+    const validSortFields = {
+      'cookTime': 'cookingTime',
+      'prepTime': 'preparationTime',
+      'instructions': 'instructions',
+      'createdAt': 'createdAt'  // Added creation date sorting
+    };
+
+    // Check if the sort field is valid
+    if (!validSortFields[sort]) {
+      return new Response(
+        JSON.stringify({
+          error: 'Invalid sort parameter. Valid options are: cookTime, prepTime, instructions, createdAt'
+        }), {
+          status: 400,
+        headers: { 'Content-Type': 'application/json' }
+        }
+      );
+    }
 
     // Construct query for text search
     if (searchTerm) {
@@ -30,19 +51,46 @@ export async function GET(req) {
     }
 
     if (tags) {
+      const tagArray = tags.split(",").map((tag) => tag.trim().toLowerCase());
       query.tags = {
-        $regex: new RegExp(`^${tags}$`, "i"),
+        $elemMatch: { $in: tagArray.map((tag) => new RegExp(`^${tag}$`, "i")) },
       };
-  }
+    }
+
+       // Filter by ingredients (object structure)
+    if (ingredients) {
+      const ingredientArray = ingredients.split(",").map((ingredient) => ingredient.trim().toLowerCase());
+  
+        // Create a filter for each ingredient key, allowing case-insensitive matching
+      query.$and = ingredientArray.map((ingredient) => ({
+        [`ingredients.${ingredient}`]: { $exists: true },
+      }));
+    }
+
+    // Filter by number of instructions
+    if (!isNaN(instructions)) {
+      query.instructions = { $size: instructions }; // Match recipes with exactly the specified number of instructions
+    }
 
     // Log constructed query
     console.log("Constructed query:", JSON.stringify(query, null, 2));
 
     const skip = (page - 1) * limit;
-    const recipes = await recipesCollection.find(query).skip(skip).limit(limit).toArray();
-    console.log("Fetched recipes:", recipes);
 
-    const totalRecipes = await recipesCollection.countDocuments(query);
+    // Create sort object for MongoDB query
+    const sortObj = {};
+    sortObj[validSortFields[sort]] = order;
+
+    // Fetch sorted and paginated recipes
+    const recipes = await recipesCollection
+      .find(query) // Use the constructed query
+      .sort(sortObj)
+      .skip(skip)
+      .limit(limit)
+      .toArray();
+
+    // Count total number of matching documents for pagination
+    const totalRecipes = await recipesCollection.countDocuments(query); // Count with query to match filters
 
     return new Response(
       JSON.stringify({
@@ -51,6 +99,10 @@ export async function GET(req) {
         currentPage: page,
         category: category || "all",
         appliedTags: tags ? tags.split(',').map(tag => tag.trim()) : [],
+        appliedIngredients: ingredients ? ingredients.split(",").map((ingredient) => ingredient.trim()) : [],
+        appliedInstructions: instructions,
+        sortedBy: sort,
+        sortOrder: order === 1 ? "asc" : "desc",
         recipes,
       }),
       {
@@ -59,8 +111,8 @@ export async function GET(req) {
       }
     );
   } catch (error) {
-    console.error("Error fetching recipes:", error);
-    return new Response(JSON.stringify({ error: "Failed to fetch recipes" }), {
+    console.error('Error fetching recipes:', error);
+    return new Response(JSON.stringify({ error: 'Failed to fetch recipes' }), {
       status: 500,
       headers: { "Content-Type": "application/json" },
     });

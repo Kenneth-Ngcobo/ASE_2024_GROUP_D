@@ -3,6 +3,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useState } from 'react';
 import { FaHome, FaUtensils, FaInfoCircle, FaPhoneAlt, FaSignInAlt, FaSignOutAlt, FaChevronDown } from 'react-icons/fa';
+import { FilterModal, FilterButton } from "./FilterButton.js";
 
 /**
  * Header Component
@@ -13,6 +14,7 @@ import { FaHome, FaUtensils, FaInfoCircle, FaPhoneAlt, FaSignInAlt, FaSignOutAlt
  */
 export default function Header({ isAuthenticated, onLogout }) {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const [isFilterOpen, setIsFilterOpen] = useState(false);
 
     // Toggle mobile dropdown menu
     const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
@@ -20,6 +22,7 @@ export default function Header({ isAuthenticated, onLogout }) {
     return (
         <header className="bg-gradient-to-r from-green-600 via-green-300 to-green-100 shadow-lg sticky top-0 z-50">
             <div className="container mx-auto flex items-center justify-between p-4">
+
                 {/* Logo Section */}
                 <Link href="/" className="flex items-center">
                     <Image
@@ -59,7 +62,11 @@ export default function Header({ isAuthenticated, onLogout }) {
                     </div>
                 </nav>
 
-                
+                {/* Filter Button and Modal */}
+                <div className="flex items-center">
+                    <FilterButton onClick={() => setIsFilterOpen(true)} />
+                    {isFilterOpen && <FilterModal onClose={() => setIsFilterOpen(false)} />}
+                </div>
 
                 {/* Mobile Menu Button */}
                 <div className="md:hidden">
