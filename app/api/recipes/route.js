@@ -1,30 +1,42 @@
 import connectToDatabase from '../../../db.js';
 
+/**
+ * GET handler for fetching paginated and sorted recipes from the database.
+ * @param {Request} req - The incoming HTTP request.
+ * @returns {Response} - JSON response containing paginated recipes and metadata.
+ */
 export async function GET(req) {
   try {
+    // Connect to the database and get the recipes collection
     const db = await connectToDatabase();
     const recipesCollection = db.collection('recipes');
 
-    // Parse query parameters
+    // Parse query parameters from the request URL
     const url = new URL(req.url);
+    /**
+     * @constant {number} page - The current page number; defaults to 1.
+     * @constant {number} limit - Number of recipes per page; defaults to 50, capped at 50.
+     * @constant {string} sort - The field to sort by; defaults to 'published'.
+     * @constant {number} order - The sort order, 1 for ascending, -1 for descending.
+     */
     const page = parseInt(url.searchParams.get('page')) || 1;
     const limit = Math.min(parseInt(url.searchParams.get('limit')) || 50, 50);
     const sort = url.searchParams.get('sort') || 'published';
     const order = url.searchParams.get('order')?.toLowerCase() === 'desc' ? -1 : 1;
 
-    // Updated to match actual database field names and added instructionsCount
+    // Define valid sorting fields based on database structure
     const validSortFields = {
-      'cookingtime': 'cook',        
-      'preparationtime': 'prep',    
-      'published': 'published',     
-      'calories': 'nutrition.calories',  
-      'title': 'title',
-      'instructionscount': 'instructionsCount'  // Added in lowercase
+      'cookingtime': 'cook',            // Maps 'cookingtime' to 'cook' field
+      'preparationtime': 'prep',        // Maps 'preparationtime' to 'prep' field
+      'published': 'published',         // Maps 'published' to 'published' field
+      'calories': 'nutrition.calories', // Maps 'calories' to nested 'nutrition.calories' field
+      'title': 'title',                 // Maps 'title' to 'title' field
+      'instructionscount': 'instructionsCount' // Maps 'instructionscount' to computed field 'instructionsCount'
     };
 
-    // Convert sort parameter to lowercase for case-insensitive comparison
     const sortLower = sort.toLowerCase();
-    
+
+    // Validate sort field
     if (!validSortFields[sortLower]) {
       return new Response(
         JSON.stringify({
@@ -37,45 +49,34 @@ export async function GET(req) {
     }
 
     const skip = (page - 1) * limit;
-
-    // Create sort object for MongoDB query
     const sortObj = { [validSortFields[sortLower]]: order };
 
-    // Updated pipeline to include instructions count
+    // MongoDB aggregation pipeline
     let pipeline = [
       {
         $addFields: {
-          // Convert string numbers to actual numbers for sorting
           numericPrep: { $toInt: "$prep" },
           numericCook: { $toInt: "$cook" },
           numericCalories: { $toDouble: "$nutrition.calories" },
-          // Add instructions count field
           instructionsCount: { $size: "$instructions" }
         }
       }
     ];
 
-    // If sorting by instructions count, use the computed field
     if (sortLower === 'instructionscount') {
       pipeline.push({ $sort: { instructionsCount: order } });
     } else {
       pipeline.push({ $sort: sortObj });
     }
 
-    // Add pagination after sorting
     pipeline.push(
       { $skip: skip },
       { $limit: limit }
     );
 
-    // Fetch sorted and paginated recipes
-    const recipes = await recipesCollection
-      .aggregate(pipeline)
-      .toArray();
-
+    const recipes = await recipesCollection.aggregate(pipeline).toArray();
     const totalRecipes = await recipesCollection.countDocuments();
 
-    // Debug log to verify sorting
     console.log('Sorting Debug:', {
       requestedSort: sort,
       sortField: validSortFields[sortLower],
@@ -89,6 +90,7 @@ export async function GET(req) {
       }))
     });
 
+    // Return successful response with paginated data
     return new Response(JSON.stringify({
       totalRecipes,
       totalPages: Math.ceil(totalRecipes / limit),
