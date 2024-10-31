@@ -1,6 +1,8 @@
 import localFont from "next/font/local";
 import "./globals.css";
 import Header from "./components/Header";
+import { Suspense } from "react";
+import Loading from "./loading";
 
 
 const geistSans = localFont({
@@ -53,7 +55,9 @@ export default function RootLayout({ children }) {
         className={`${geistSans.variable} ${geistMono.variable} antialiased`} // Applying custom fonts and antialiasing for better text rendering
       >
         <Header /> {/* Rendering the Header component */}
-        {children} {/* Rendering the child components or pages */}
+        <Suspense fallback={<Loading />}>
+          {children} {/* Rendering the child components or pages */}
+        </Suspense>
        
       </body>
     </html>
