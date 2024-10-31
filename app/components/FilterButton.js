@@ -45,9 +45,11 @@ export const FilterModal = ({ onClose }) => {
             tags: selectedTags.join(","), // Join tags for the query string
             // Add any other parameters as needed
         };
-        const currentQueryString = new URLSearchParams(newQuery).toString();
-        // Use router.push to update the URL and force a reload
-        router.replace(`?${currentQueryString}`);
+      // Construct the new query string
+      const queryString = new URLSearchParams(newQuery).toString();
+
+      // Push the new URL with updated query
+      router.push(`?${queryString}`);
 
         // Optional: Close the modal after updating (if needed)
         onClose(); 

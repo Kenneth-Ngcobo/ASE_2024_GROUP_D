@@ -7,6 +7,7 @@ export default function TagDisplay({ selectedTags, onTagsChange }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isOpen, setIsOpen] = useState(false); 
+  const [searchTerm, setSearchTerm] = useState(''); // State for search term
 
   useEffect(() => {
     const fetchTags = async () => {
@@ -58,6 +59,11 @@ export default function TagDisplay({ selectedTags, onTagsChange }) {
     setIsOpen(false);
   };
 
+  // Filter tags based on the search term
+  const filteredTags = tags.filter(tag => 
+    tag.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <div className="p-6 bg-white shadow-md rounded-lg">
       <h2 className="text-2xl font-semibold mb-4">Select Tags</h2>
@@ -68,19 +74,29 @@ export default function TagDisplay({ selectedTags, onTagsChange }) {
         {isOpen ? 'Hide Tags' : 'Select Tag'}
       </button>
       {isOpen && ( 
-        <div className="mt-4 max-h-60 overflow-y-auto border border-gray-300 rounded-md">
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 p-2">
-            {tags.map((tag, index) => (
-              <button
-                key={index}
-                className={`p-2 border border-gray-300 rounded-md transition duration-200 ${
-                  selectedTags.includes(tag) ? 'bg-blue-300' : 'bg-gray-200 hover:bg-gray-300'
-                }`}
-                onClick={() => handleTagSelect(tag)} // Use the tag directly
-              >
-                {tag} 
-              </button>
-            ))}
+        <div>
+          {/* Search Bar */}
+          <input
+            type="text"
+            placeholder="Search tags..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)} // Update search term on input change
+            className="mt-4 p-2 border border-gray-300 rounded-md w-full"
+          />
+          <div className="mt-2 max-h-60 overflow-y-auto border border-gray-300 rounded-md">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 p-2">
+              {filteredTags.map((tag, index) => (
+                <button
+                  key={index}
+                  className={`p-2 border border-gray-300 rounded-md transition duration-200 ${
+                    selectedTags.includes(tag) ? 'bg-blue-300' : 'bg-gray-200 hover:bg-gray-300'
+                  }`}
+                  onClick={() => handleTagSelect(tag)} // Use the tag directly
+                >
+                  {tag} 
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       )}
