@@ -90,4 +90,4 @@ setInterval(() => {
         const oldestEntries = Array.from(queryCache.entries()).sort(([, a], [, b]) => a.timestamp - b.timestamp).slice(0, 500);
         for (const [key] of oldestEntries) queryCache.delete(key);
     }
-}, 60000);
+}, 60000); 
