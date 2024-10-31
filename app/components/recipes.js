@@ -4,12 +4,12 @@
 // Import necessary dependencies from Next.js and React
 import Link from 'next/link';
 import Image from 'next/image';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { FaCalendarDay, FaClock, FaUtensils, FaTags, FaUtensilSpoon, FaListUl } from "react-icons/fa"; // Updated icon imports
 import Head from 'next/head';
 import Carousel from './Carousel';
 import { SortControl } from './SortControl';
-import { sortRecipes } from './SortUtils';
+import { sortRecipes } from './sortUtils';
 
 export default function Recipes({ recipes: initialRecipes }) {
   const [sortBy, setSortBy] = useState("default");
@@ -22,6 +22,12 @@ export default function Recipes({ recipes: initialRecipes }) {
     const sortedRecipes = sortRecipes(initialRecipes, newSortBy, newSortOrder);
     setRecipes(sortedRecipes);
   };
+
+  useEffect(() => {
+    const sortedRecipes = sortRecipes(initialRecipes, sortBy, sortOrder);
+    setRecipes(sortedRecipes);
+  }, [initialRecipes]);
+
 
   return (
     <>

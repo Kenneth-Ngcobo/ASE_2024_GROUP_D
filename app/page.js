@@ -1,8 +1,12 @@
-import { fetchRecipes } from './api';
-import Pagination from './components/pagination';
-import Recipes from './components/recipes';
-import Footer from './components/footer';
-import Loading from './components/loading';
+
+import { fetchRecipes } from "./api";
+import Pagination from "./components/pagination";
+import Recipes from "./components/recipes";
+import Footer from "./components/footer";
+import Loading from "./loading";
+import SearchBar from "./components/searchBar";
+import CategoryList from "./components/CategoryList";
+import { Suspense } from 'react';
 
 export default async function Home({ searchParams }) {
     // Initialize recipes object to store fetched data
@@ -14,34 +18,38 @@ export default async function Home({ searchParams }) {
     const page = searchParams.page ? parseInt(searchParams.page) : 1;
     const sort = searchParams.sort || 'default';
     const order = searchParams.order || 'ascending';
-
+  const tags = searchParams.tags
     try {
         // Fetch recipes from the API with a limit of 20 per page
         recipes = await fetchRecipes(20, page);
-    } catch (error) {
+    } catch (err) {
         // Capture any error that occurs during the fetch
-        error = error.message; // Store the error message
-    }
-
-    if (recipes.recipes.length === 0 && !error) {
-        return <Loading />;
+        error = err.message; // Store the error message
     }
 
     // Return the rendered JS for the Home component
     return (
         <>
-            {/* Render the Recipes component, passing the fetched recipes as props */}
-            <Recipes
-                recipes={recipes.recipes}
-                initialSort={sort}
-                initialOrder={order}
-            />
-            {/* Render the Pagination component, passing the current page and total pages */}
-            <Pagination
-                currentPage={recipes.currentPage} // Current page number
-                totalPages={recipes.totalPages} // Total number of pages available
-            />
-            <Footer />
+            <Suspense fallback={<Loading />}>
+                <SearchBar/>
+                  <CategoryList />
+                {/* Render the Recipes component, passing the fetched recipes as props */}
+                <Recipes 
+                    recipes={recipes.recipes}
+                    initialSort={sort}
+                    initialOrder={order}
+                />
+    
+                {/* Render the Pagination component, passing the current page and total pages */}
+                <Pagination
+                    currentPage={recipes.currentPage} // Current page number
+                    totalPages={recipes.totalPages} // Total number of pages available
+                    
+                />
+                
+                <Footer />
+            </Suspense>
+
         </>
     );
 }
