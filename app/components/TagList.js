@@ -39,7 +39,10 @@ export default function TagDisplay() {
         setIsOpen(false);
         setSearch(''); // Reset search field
         setFilteredTags(tags); // Show all tags again
+        console.log(selectedTags);
     };
+
+    
 
     const handleTagRemove = (tag) => {
         setSelectedTags(selectedTags.filter((item) => item !== tag));

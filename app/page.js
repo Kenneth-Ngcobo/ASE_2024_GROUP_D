@@ -13,10 +13,10 @@ export default async function Home({ searchParams }) {
 
   // Determine the current page from search parameters, defaulting to 1
   const page = searchParams.page ? parseInt(searchParams.page) : 1;
-
+  const tags = searchParams.tags
   try {
     // Fetch recipes from the API with a limit of 20 per page
-    recipes = await fetchRecipes(20, page);
+    recipes = await fetchRecipes(20, page, tags);
   } catch (error) {
     // Capture any error that occurs during the fetch
     error = error.message; // Store the error message
