@@ -25,7 +25,6 @@ export default async function Home({ searchParams }) {
         error = err.message; // Store the error message
     }
 
-
     // Return the rendered JS for the Home component
     return (
         <>
@@ -33,7 +32,11 @@ export default async function Home({ searchParams }) {
                 <SearchBar/>
 
                 {/* Render the Recipes component, passing the fetched recipes as props */}
-                <Recipes recipes={recipes.recipes} />
+                <Recipes 
+                    recipes={recipes.recipes}
+                    initialSort={sort}
+                    initialOrder={order}
+                />
     
                 {/* Render the Pagination component, passing the current page and total pages */}
                 <Pagination
