@@ -1,10 +1,12 @@
-import { fetchRecipes } from './api';
-import Pagination from './components/pagination';
-import Recipes from './components/recipes';
-import Footer from './components/footer';
-import Loading from './loading';
+
+import { fetchRecipes } from "./api";
+import Pagination from "./components/pagination";
+import Recipes from "./components/recipes";
+import Footer from "./components/footer";
+import Loading from "./components/loading";
+import SearchBar from "./components/searchBar";
+import CategoryList from "./components/CategoryList";
 import { Suspense } from 'react';
-import SearchBar from './components/searchBar';
 
 export default async function Home({ searchParams }) {
     // Initialize recipes object to store fetched data
@@ -16,7 +18,7 @@ export default async function Home({ searchParams }) {
     const page = searchParams.page ? parseInt(searchParams.page) : 1;
     const sort = searchParams.sort || 'default';
     const order = searchParams.order || 'ascending';
-
+  const tags = searchParams.tags
     try {
         // Fetch recipes from the API with a limit of 20 per page
         recipes = await fetchRecipes(20, page);
@@ -30,7 +32,7 @@ export default async function Home({ searchParams }) {
         <>
             <Suspense fallback={<Loading />}>
                 <SearchBar/>
-
+                  <CategoryList />
                 {/* Render the Recipes component, passing the fetched recipes as props */}
                 <Recipes 
                     recipes={recipes.recipes}
@@ -47,6 +49,7 @@ export default async function Home({ searchParams }) {
                 
                 <Footer />
             </Suspense>
+
         </>
     );
 }
