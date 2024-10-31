@@ -10,13 +10,14 @@ const API_BASE_URL = process.env.API_BASE_URL;
  * @param {Array<string>} [tags] - An array of tags to filter recipes (optional).
  * @returns {Promise<Object>} - Returns a promise that resolves with the recipe data, or throws an error if the request fails.
  */
-export async function fetchRecipes(limit = 20, page, search = '', tags) {
+export async function fetchRecipes(limit = 20, page, search = '', tags, category) {
     // Construct query string with limit, page, and tags parameters
     const query = new URLSearchParams({
         limit, // Set the limit of items per page
         ...(page && { page }), // Conditionally add 'page' to the query if it's provided
         ...(tags && { tags: tags.join(',') }), // Correctly add tags query if provided
-        ...(search && { search }) // Add search query if provided
+        ...(search && { search }), // Add search query if provided
+        ...(category && {category}) //Add a category query if provided
     }).toString();
 
     try {

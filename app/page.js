@@ -17,9 +17,10 @@ export default async function Home({ searchParams }) {
     const sort = searchParams.sort || 'default';
     const order = searchParams.order || 'ascending';
    const tags = searchParams.tags || '';
+   const category = searchParams.category || '';
     try {
         // Fetch recipes from the API with a limit of 20 per page
-        recipes = await fetchRecipes(20, page, tags);
+        recipes = await fetchRecipes(20, page, tags, category);
     } catch (error) {
         // Capture any error that occurs during the fetch
         error = error.message; // Store the error message
