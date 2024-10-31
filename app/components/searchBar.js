@@ -31,7 +31,6 @@ const RecipeSearchBar = ({
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
-    // Fetch suggestions from the API
     const fetchSuggestions = async (query) => {
         if (query.length < minCharacters) {
             setSuggestions([]);
@@ -65,7 +64,6 @@ const RecipeSearchBar = ({
         }
     };
 
-    // Debounced version of fetchSuggestions
     const debouncedFetch = useCallback(
         debounce((query) => {
             fetchSuggestions(query);
@@ -73,7 +71,6 @@ const RecipeSearchBar = ({
         []
     );
 
-    // Effect to call debounced fetch when search changes
     useEffect(() => {
         if (search.length >= minCharacters) {
             debouncedFetch(search);
@@ -83,7 +80,6 @@ const RecipeSearchBar = ({
         }
     }, [search, debouncedFetch]);
 
-    // Cleanup debounce on unmount
     useEffect(() => {
         return () => {
             debouncedFetch.cancel();
