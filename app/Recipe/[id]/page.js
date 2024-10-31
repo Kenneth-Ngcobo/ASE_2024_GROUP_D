@@ -1,3 +1,4 @@
+// Other imports remain unchanged
 import { Suspense } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -8,7 +9,7 @@ import CollapsibleSection from '../../components/CollapsibleSection';
 import dynamic from 'next/dynamic';
 import Loading from '../../components/loading'; // Importing the Loading component
 
-//Generate metadata for the recipe page dynamically
+// Generate metadata for the recipe page dynamically
 export async function generateMetadata({ params }) {
     const { id } = params;
     const recipe = await fetchRecipeById(id);
@@ -39,19 +40,21 @@ export default async function RecipePage({ params }) {
     let load = true;
     let error = null;
 
-    try{
+    try {
         recipe = await fetchRecipeById(id);
-    }catch(error){
+    } catch (error) {
         console.error('Error fetching recipe:', error);
         error = 'Failed to load recipe data.';
-    }finally{
+    } finally {
         load = false;
-    };
+    }
 
-    if(load){
-        <div className="w-full h-[400px] bg-gray-100 rounded-xl flex items-center justify-center">
-            <Loading /> {/* Use your Loading component here */}
-        </div>
+    if (load) {
+        return (
+            <div className="w-full h-[400px] bg-gray-100 rounded-xl flex items-center justify-center">
+                <Loading /> {/* Use your Loading component here */}
+            </div>
+        );
     }
 
     if (error) {
@@ -69,7 +72,7 @@ export default async function RecipePage({ params }) {
                 <div className="space-y-8">
                     {/* Image Section */}
                     <div className="bg-white rounded-2xl shadow-xl p-6 overflow-hidden">
-                        <Suspense fallback={<Loading />}> {/* Use the Loading component here */}
+                        <Suspense fallback={<Loading />}>
                             {recipe.images && recipe.images.length > 0 ? (
                                 <ImageGallery images={recipe.images} />
                             ) : recipe.images?.[0] ? (
@@ -112,13 +115,13 @@ export default async function RecipePage({ params }) {
                     <CollapsibleSection
                         title="Ingredients"
                         content={
-                            <ul className="list-disc list-inside">
+                            <ol className="list-decimal list-inside">
                                 {Object.entries(recipe.ingredients || {}).map(([key, value], index) => (
                                     <li key={index}>
                                         {key}: {value}
                                     </li>
                                 ))}
-                            </ul>
+                            </ol>
                         }
                         defaultOpen={true}
                     />
@@ -126,20 +129,26 @@ export default async function RecipePage({ params }) {
                     <CollapsibleSection
                         title="Nutrition"
                         content={
-                            <ul className="list-disc list-inside">
+                            <ol className="list-decimal list-inside">
                                 {Object.entries(recipe.nutrition || {}).map(([key, value], index) => (
                                     <li key={index}>
                                         {key}: {value}
                                     </li>
                                 ))}
-                            </ul>
+                            </ol>
                         }
                         defaultOpen={true}
                     />
 
                     <CollapsibleSection
                         title="Instructions"
-                        content={recipe.instructions || 'No instructions available.'}
+                        content={
+                            <ol className="list-decimal list-inside mb-4">
+                                {recipe.instructions?.map((instruction, index) => (
+                                    <li key={index}>{instruction}</li>
+                                )) || <li>No instructions available.</li>}
+                            </ol>
+                        }
                         defaultOpen={true}
                     />
 
