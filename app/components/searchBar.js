@@ -30,7 +30,6 @@ const RecipeSearchBar = ({
     const [suggestions, setSuggestions] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
-    const [recentSearches, setRecentSearches] = useState([]);
 
     // Fetch suggestions from the API
     const fetchSuggestions = async (query) => {
@@ -53,11 +52,11 @@ const RecipeSearchBar = ({
             const data = await response.json();
             setSuggestions(data.suggestions);
             setShowSuggestions(true);
-          if (data.message && data.suggestions.length === 0 ) {
-            setError(data.message);
-          } else {
-            setError(null);
-          }
+            if (data.message && data.suggestions.length === 0) {
+                setError(data.message);
+            } else {
+                setError(null);
+            }
         } catch (err) {
             setError(err.message);
             setSuggestions([]);
