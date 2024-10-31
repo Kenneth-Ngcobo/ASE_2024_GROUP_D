@@ -4,6 +4,7 @@ import Recipes from "./components/recipes";
 import Footer from "./components/footer";
 import Loading from "./components/loading";
 import SearchBar from "./components/searchBar";
+import CategoryList from "./components/CategoryList";
 
 export default async function Home({ searchParams }) {
     // Initialize recipes object to store fetched data
@@ -33,6 +34,7 @@ export default async function Home({ searchParams }) {
         <>
         <SearchBar />
             {/* Render the Recipes component, passing the fetched recipes as props */}
+            <CategoryList />
             <Recipes
                 recipes={recipes.recipes}
                 initialSort={sort}

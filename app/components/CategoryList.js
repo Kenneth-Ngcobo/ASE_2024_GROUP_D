@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 const CategoryList = ({ onCategoryChange }) => {
   const [categories, setCategories] = useState([]);
@@ -9,6 +10,9 @@ const CategoryList = ({ onCategoryChange }) => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredCategories, setFilteredCategories] = useState([]);
+
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
   // Fetch categories from API
   useEffect(() => {
@@ -51,8 +55,22 @@ const CategoryList = ({ onCategoryChange }) => {
 
   // Handle category select
   const handleCategorySelect = (category) => {
-    setIsOpen(false); // Close dropdown on selection
-    onCategoryChange(category); 
+    setIsOpen(false);
+
+    // Get current query parameters
+    const currentQuery = Object.fromEntries(searchParams.entries());
+
+    // Update the query with the selected category
+    const newQuery = {
+      ...currentQuery,
+      category: category,
+    };
+
+    // Construct the new query string
+    const queryString = new URLSearchParams(newQuery).toString();
+
+    // Push the new URL with updated query
+    router.push(`?${queryString}`);
   };
 
   if (loading) {
