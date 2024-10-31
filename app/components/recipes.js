@@ -4,12 +4,24 @@
 // Import necessary dependencies from Next.js and React
 import Link from 'next/link';
 import Image from 'next/image';
-import { useState, useEffect } from 'react';
-import { FaCalendarDay, FaClock, FaUtensils, FaTags, FaUtensilSpoon } from "react-icons/fa"; // Importing relevant icons
+import { useState } from 'react';
+import { FaCalendarDay, FaClock, FaUtensils, FaTags, FaUtensilSpoon, FaListUl } from "react-icons/fa"; // Updated icon imports
 import Head from 'next/head';
 import Carousel from './Carousel';
+import { SortControl } from './SortControl';
+import { sortRecipes } from './sortUtils';
 
-export default function Recipes({ recipes }) {
+export default function Recipes({ recipes: initialRecipes }) {
+  const [sortBy, setSortBy] = useState("default");
+  const [sortOrder, setSortOrder] = useState("ascending");
+  const [recipes, setRecipes] = useState(initialRecipes);
+
+  const handleSort = (newSortBy, newSortOrder) => {
+    setSortBy(newSortBy);
+    setSortOrder(newSortOrder);
+    const sortedRecipes = sortRecipes(initialRecipes, newSortBy, newSortOrder);
+    setRecipes(sortedRecipes);
+  };
 
   return (
     <>
@@ -24,6 +36,11 @@ export default function Recipes({ recipes }) {
 
       {/* Main container for the recipes grid */}
       <div className="container mx-auto p-4 pt-6 md:p-6 lg:p-12">
+        <SortControl
+          onSortChange={handleSort}
+          sortBy={sortBy}
+          sortOrder={sortOrder}
+        />
 
         {/* Grid layout to display the list of recipes */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
@@ -42,7 +59,7 @@ export default function Recipes({ recipes }) {
               {/* Recipe image */}
               <div className="relative w-full h-48 mb-4">
                 {recipe.images.length > 1 ? (
-                  <Carousel images={recipe.images}/>
+                  <Carousel images={recipe.images} />
                 ) : (
                   <div className='relative w-full h-full'>
                     <Image
@@ -54,13 +71,16 @@ export default function Recipes({ recipes }) {
                     />
                   </div>
                 )}
-                
               </div>
 
               {/* Recipe details */}
               <p className="text-sm text-gray-600 font-roboto">
                 <FaCalendarDay className="inline-block text-green-600 mr-1" />
                 <strong className="text-green-600"></strong> {new Date(recipe.published).toDateString()}
+              </p>
+              <p className="text-sm text-gray-600 font-roboto">
+                <FaListUl className="inline-block text-green-600 mr-1" />
+                <strong className="text-green-600"></strong> {recipe.instructions ? recipe.instructions.length : 0} steps
               </p>
               <p className="text-sm mt-2 font-roboto">
                 <FaClock className="inline-block text-green-600 mr-1" />
@@ -82,7 +102,6 @@ export default function Recipes({ recipes }) {
           ))}
         </div>
       </div>
-
 
       {/* Inline styles to apply custom fonts using the loaded Google Fonts */}
       <style jsx>{`

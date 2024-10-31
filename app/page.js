@@ -7,13 +7,15 @@ import { Suspense } from 'react';
 import SearchBar from './components/searchBar';
 
 export default async function Home({ searchParams }) {
-  // Initialize recipes object to store fetched data
-  let recipes = {};
-  // Initialize error variable to capture any error messages
-  let error = null;
+    // Initialize recipes object to store fetched data
+    let recipes = {};
+    // Initialize error variable to capture any error messages
+    let error = null;
 
-  // Determine the current page from search parameters, defaulting to 1
-  const page = searchParams.page ? parseInt(searchParams.page) : 1;
+    // Determine the current page from search parameters, defaulting to 1
+    const page = searchParams.page ? parseInt(searchParams.page) : 1;
+    const sort = searchParams.sort || 'default';
+    const order = searchParams.order || 'ascending';
 
     try {
         // Fetch recipes from the API with a limit of 20 per page
