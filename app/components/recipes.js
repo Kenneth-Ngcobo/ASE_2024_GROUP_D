@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-page-custom-font */
 'use client'
 
-// Import necessary dependencies from Next.js and React
+
 import Link from 'next/link';
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
@@ -49,7 +49,7 @@ export default function Recipes({ recipes }) {
                       src={recipe.images[0]}  // First image from the recipe images array
                       alt={recipe.title}  // Alternative text for the image
                       fill
-                      objectFit="cover"
+                      style = {{objectFit:'cover'}}
                       className="rounded-md"
                     />
                   </div>
