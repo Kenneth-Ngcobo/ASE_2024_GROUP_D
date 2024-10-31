@@ -6,13 +6,17 @@ const API_BASE_URL = process.env.API_BASE_URL;
  *
  * @param {number} limit - The maximum number of recipes to fetch (default is 20).
  * @param {number} [page] - The current page number (optional).
+ * @param {string} [search] - Search query (optional).
+ * @param {Array<string>} [tags] - An array of tags to filter recipes (optional).
  * @returns {Promise<Object>} - Returns a promise that resolves with the recipe data, or throws an error if the request fails.
  */
-export async function fetchRecipes(limit = 20, page,search='') {
-    // Construct query string with limit and page parameters
+export async function fetchRecipes(limit = 20, page, search = '', tags) {
+    // Construct query string with limit, page, and tags parameters
     const query = new URLSearchParams({
         limit, // Set the limit of items per page
-        ...(page && { page }) // Conditionally add 'page' to the query if it's provided
+        ...(page && { page }), // Conditionally add 'page' to the query if it's provided
+        ...(tags && { tags: tags.join(',') }), // Correctly add tags query if provided
+        ...(search && { search }) // Add search query if provided
     }).toString();
 
     try {
@@ -29,7 +33,7 @@ export async function fetchRecipes(limit = 20, page,search='') {
         return data; // Return the fetched recipe data
 
     } catch (error) {
-        return error; // Return the error if the request fails
+        throw error; // Throw the error if the request fails
     }
 }
 
