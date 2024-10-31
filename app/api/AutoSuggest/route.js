@@ -53,8 +53,15 @@ export async function GET(req) {
             highlights: highlightMatches(recipe.title, query)
         }));
 
+        // Include a message when no suggestions are found
+   const responseData = {
+    suggestions,
+    total: suggestions.length,
+    query,
+    message: suggestions.length === 0 ? 'No recipes found' : undefined
+       };
+
         // Cache and respond
-        const responseData = { suggestions, total: suggestions.length, query };
         queryCache.set(cacheKey, { data: responseData, timestamp: Date.now() });
         cleanCache();
 

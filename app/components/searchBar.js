@@ -53,6 +53,11 @@ const RecipeSearchBar = ({
             const data = await response.json();
             setSuggestions(data.suggestions);
             setShowSuggestions(true);
+          if (data.message && data.suggestions.length === 0 ) {
+            setError(data.message);
+          } else {
+            setError(null);
+          }
         } catch (err) {
             setError(err.message);
             setSuggestions([]);
@@ -196,9 +201,9 @@ const RecipeSearchBar = ({
                                     </li>
                                 ))}
                             </ul>
-                        ) : search.length >= minCharacters ? (
+                        ) : search.length >= minCharacters && error ? (
                             <div className="p-4 text-gray-600 text-center">
-                                No recipes found matching "{search}"
+                                {error}
                             </div>
                         ) : null}
                     </div>
