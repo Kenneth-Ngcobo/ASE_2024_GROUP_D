@@ -1,3 +1,4 @@
+// Other imports remain unchanged
 import { Suspense } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -10,7 +11,7 @@ import LoadingSpinner from '../../components/loadingSpinner'; // Importing the L
 import Loading from './loading';
 
 
-//Generate metadata for the recipe page dynamically
+// Generate metadata for the recipe page dynamically
 export async function generateMetadata({ params }) {
     const { id } = params;
     const { recipe, error } = await fetchRecipeById(id);
@@ -41,14 +42,14 @@ export default async function RecipePage({ params }) {
     let load = true;
     let error = null;
 
-    try{
+    try {
         recipe = await fetchRecipeById(id);
-    }catch(error){
+    } catch (error) {
         console.error('Error fetching recipe:', error);
         error = 'Failed to load recipe data.';
-    }finally{
+    } finally {
         load = false;
-    };
+    }
 
     // if(load){
     //     <div className="w-full h-[400px] bg-gray-100 rounded-xl flex items-center justify-center">
