@@ -10,11 +10,21 @@ import Head from 'next/head';
 import Carousel from './Carousel';
 import { SortControl } from './SortControl';
 import { sortRecipes } from './sortUtils';
+import { useSearchParams } from 'next/navigation';
 
 export default function Recipes({ recipes: initialRecipes }) {
   const [sortBy, setSortBy] = useState("default");
   const [sortOrder, setSortOrder] = useState("ascending");
   const [recipes, setRecipes] = useState(initialRecipes);
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const newSort = searchParams.get("sortBy") || "default";
+    const newOrder = searchParams.get("order") || "ascending";
+
+    setSortBy(newSort);
+    setSortOrder(newOrder);
+  },[searchParams])
 
   const handleSort = (newSortBy, newSortOrder) => {
     setSortBy(newSortBy);
