@@ -1,3 +1,4 @@
+
 import { connectToDatabase } from '../../../db';
 
 // Cache configuration
@@ -15,7 +16,7 @@ createTitleIndex();
 export async function GET(req) {
     const { searchParams } = new URL(req.url);
     const query = searchParams.get('search')?.trim().toLowerCase() || ''; // Match parameter 'search' used by searchbar.js
-    const limit = Math.min(parseInt(searchParams.get('limit') || '10'), 10);
+    const limit = Math.min(parseInt(searchParams.get('limit') || '10'), 10); // Set default to 10, max to 10
 
     if (!query || query.length < 2) {
         return new Response(JSON.stringify({
@@ -54,12 +55,12 @@ export async function GET(req) {
         }));
 
         // Include a message when no suggestions are found
-   const responseData = {
-    suggestions,
-    total: suggestions.length,
-    query,
-    message: suggestions.length === 0 ? 'No recipes found' : undefined
-       };
+        const responseData = {
+            suggestions,
+            total: suggestions.length,
+            query,
+            message: suggestions.length === 0 ? 'No recipes found' : undefined
+        };
 
         // Cache and respond
         queryCache.set(cacheKey, { data: responseData, timestamp: Date.now() });
@@ -92,9 +93,10 @@ function cleanCache() {
     }
 }
 
+// Periodic cache cleaning for performance
 setInterval(() => {
     if (queryCache.size > 1000) {
         const oldestEntries = Array.from(queryCache.entries()).sort(([, a], [, b]) => a.timestamp - b.timestamp).slice(0, 500);
         for (const [key] of oldestEntries) queryCache.delete(key);
     }
-}, 60000); 
+}, 60000);
