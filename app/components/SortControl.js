@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { ChevronDown } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 /**
  * A component for controlling sorting of recipes by various options and orders.
@@ -15,18 +16,29 @@ export const SortControl = ({ onSortChange, sortBy, sortOrder }) => {
      * Handles change in sorting field selection.
      * @param {Object} event - The change event.
      */
+
+    const router = useRouter();
+
     const handleSortChange = (event) => {
         const newSortBy = event.target.value;
         onSortChange(newSortBy, sortOrder);
+
+        const newSortQuery = new URLSearchParams(window.location.search);
+        newSortQuery.set('sortBy', newSortBy); 
+        newSortQuery.set("page", "1");
+
+        router.push(`?${newSortQuery.toString()}`);
     };
 
-    /**
-     * Handles change in sorting order selection.
-     * @param {Object} event - The change event.
-     */
     const handleOrderChange = (event) => {
         const newOrder = event.target.value;
         onSortChange(sortBy, newOrder);
+
+        const newOrderQuery = new URLSearchParams(window.location.search); 
+        newOrderQuery.set('order', newOrder); 
+        newOrderQuery.set("page", "1");
+
+        router.push(`?${newOrderQuery.toString()}`);
     };
 
     return (

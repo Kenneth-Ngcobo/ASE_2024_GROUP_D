@@ -4,6 +4,7 @@
 import { useState, useEffect } from 'react';
 import { FaSearch } from 'react-icons/fa';
 import { XCircle, Timer, Coffee, Utensils } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 
 /**
@@ -61,6 +62,7 @@ const RecipeSearchBar = ({
     const [loading, setLoading] = useState(false);
     const [recentSearches, setRecentSearches] = useState([]);
     const [selectedRecipe, setSelectedRecipe] = useState(null); // New state for selected recipe
+    const router = useRouter();
 
     useEffect(() => {
         const savedSearches = localStorage.getItem('recentRecipeSearches');
@@ -162,6 +164,8 @@ const RecipeSearchBar = ({
             saveRecentSearch(search.trim());
             setShowSuggestions(false);
             setSelectedRecipe(null);
+
+            router.push(`/?search=${encodeURIComponent(search.trim())}`);
             if (onSearch) {
                 onSearch(search);
             }
