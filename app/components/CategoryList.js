@@ -3,25 +3,18 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
-/**
- * CategoryList component fetches and displays a list of categories.
- * 
- * @component
- * @param {Object} props - The properties object.
- * @param {string} props.searchTerm - The term used to filter categories.
- * @returns {JSX.Element} The rendered CategoryList component.
- */
-const CategoryList = ({ searchTerm }) => {
+const CategoryList = ({ onCategoryChange }) => {
   const [categories, setCategories] = useState([]);
   const [error, setError] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
   const [filteredCategories, setFilteredCategories] = useState([]);
-  const [searchInput, setSearchInput] = useState('');
 
   const router = useRouter();
   const searchParams = useSearchParams();
 
+  // Fetch categories from API
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -32,6 +25,7 @@ const CategoryList = ({ searchTerm }) => {
         const data = await response.json();
         setCategories(data);
         setFilteredCategories(data); 
+        console.log('Fetched categories:', data);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -41,57 +35,43 @@ const CategoryList = ({ searchTerm }) => {
     fetchCategories();
   }, []);
 
-  useEffect(() => {
-    if (searchTerm) {
-      const matches = categories.filter(category =>
-        category.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-      setFilteredCategories(matches);
-      setIsOpen(true);
-    } else {
-      setFilteredCategories(categories);
-    }
-  }, [searchTerm, categories]);
+  // Handle search submit or input change
+  const handleSearch = (event) => {
+    event.preventDefault();
 
-  /**
-   * Handles category selection and updates the query parameters.
-   * 
-   * @param {string} category - The selected category.
-   */
-  const handleCategorySelect = (category) => {
+    if (!searchTerm) {
+      setFilteredCategories(categories); // Reset to all categories if search is empty
+      return;
+    }
+
+    // Filter categories based on search term
+    const matches = categories.filter(category =>
+      category.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    setFilteredCategories(matches);
+    setIsOpen(true); 
+  };
+
+  // Handle category select
+  const handleCategorySelect = async (category) => {
     setIsOpen(false);
 
+    // Get current query parameters
     const currentQuery = Object.fromEntries(searchParams.entries());
 
+    // Update the query with the selected category
     const newQuery = {
       ...currentQuery,
+      page: 1,
       category: category,
     };
 
+    // Construct the new query string
     const queryString = new URLSearchParams(newQuery).toString();
 
+    // Push the new URL with updated query
     router.push(`?${queryString}`);
-  };
-
-  /**
-   * Handles search input change and filters categories dynamically.
-   * 
-   * @param {Event} e - The input change event.
-   */
-  const handleSearchChange = (e) => {
-    const input = e.target.value;
-    setSearchInput(input);
-
-    if (input) {
-      const matches = categories.filter(category =>
-        category.toLowerCase().includes(input.toLowerCase())
-      );
-      setFilteredCategories(matches);
-      setIsOpen(true);
-    } else {
-      setFilteredCategories(categories);
-      setIsOpen(false);
-    }
   };
 
   if (loading) {
@@ -103,28 +83,40 @@ const CategoryList = ({ searchTerm }) => {
   }
 
   return (
-    <div className="relative">
+    <div className="relative" >
       <h2 className="text-xl font-semibold mb-4">Categories</h2>
 
+      {/* Search form */}
+     
+      <form onSubmit={handleSearch} className="">
+        <input
+          type="text"
+          placeholder="Search categories"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="border px-4 py-2 mb-4 w-30 mx-2"
+        />
+        <button
+          type="submit"
+          className="bg-blue-500 text-white px-4 py-2 mx-2 rounded hover:bg-blue-400 transition duration-200"
+        >
+          Search
+        </button>
+
+            {/* Toggle button */}
       <button
         onClick={() => setIsOpen((prev) => !prev)}
         className="bg-green-600 text-white px-4 py-2 mx-2 rounded hover:bg-green-500 transition duration-200"
       >
         {isOpen ? 'Close' : 'Select Category'}
       </button>
+      </form>
+    
+      
 
-      {isOpen && (
-        <div className="mt-2 mb-4">
-          <input
-            type="text"
-            value={searchInput}
-            onChange={handleSearchChange}
-            className="border px-4 py-2 mr-2 rounded"
-            placeholder="Search categories"
-          />
-        </div>
-      )}
+  
 
+      {/* Dropdown with filtered categories */}
       {isOpen && filteredCategories.length > 0 && (
         <ul
           style={{
@@ -157,4 +149,3 @@ const CategoryList = ({ searchTerm }) => {
 };
 
 export default CategoryList;
-
