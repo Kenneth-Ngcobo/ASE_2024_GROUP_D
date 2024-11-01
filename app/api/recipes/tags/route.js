@@ -11,6 +11,8 @@ export async function GET() {
     });
   } catch (error) {
     console.error("Error fetching tags:", error);
-    return new Response(JSON.stringify({ error: 'Failed to fetch tags' }), { status: 500 });
-  }
+    return new Response(JSON.stringify({ error: "Failed to fetch tags" }), {
+      status: 500,
+    });
+}
 }

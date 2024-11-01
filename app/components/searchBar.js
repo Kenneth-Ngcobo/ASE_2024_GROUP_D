@@ -5,6 +5,16 @@
 import { useState, useEffect } from 'react';
 import { FaSearch } from 'react-icons/fa';
 import { XCircle, Timer, Coffee, Utensils } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+
+
+/**
+ * Component to highlight search terms within a text.
+ * @param {Object} props - The properties object.
+ * @param {string} props.text - The text to highlight.
+ * @param {string[]} props.searchTerms - The search terms to highlight.
+ * @returns {JSX.Element} Highlighted text.
+ */
 
 const HighlightedText = ({ text, searchTerms }) => {
     if (!searchTerms || searchTerms.length === 0) return text;
@@ -32,6 +42,16 @@ const HighlightedText = ({ text, searchTerms }) => {
     );
 };
 
+
+/**
+ * Component for a recipe search bar with suggestions and recent searches.
+ * @param {Object} props - The properties object.
+ * @param {string} [props.currentSearch=''] - The current search term.
+ * @param {Function} props.onSearch - Callback function to handle search submission.
+ * @param {number} [props.minCharacters=2] - Minimum characters required to trigger suggestions.
+ * @returns {JSX.Element} Recipe search bar.
+ */
+
 const RecipeSearchBar = ({
     currentSearch = '',
     onSearch,
@@ -43,6 +63,7 @@ const RecipeSearchBar = ({
     const [loading, setLoading] = useState(false);
     const [recentSearches, setRecentSearches] = useState([]);
     const [selectedRecipe, setSelectedRecipe] = useState(null); // New state for selected recipe
+    const router = useRouter();
 
     useEffect(() => {
         const savedSearches = localStorage.getItem('recentRecipeSearches');
@@ -55,12 +76,23 @@ const RecipeSearchBar = ({
         setSearch(currentSearch);
     }, [currentSearch]);
 
+        /**
+     * Extracts search terms from the search text.
+     * @param {string} searchText - The text to extract search terms from.
+     * @returns {string[]} Array of search terms.
+     */
+
     const getSearchTerms = (searchText) => {
         return searchText
             .toLowerCase()
             .split(' ')
             .filter(term => term.length >= minCharacters);
     };
+
+        /**
+     * Saves a search term to the recent searches in localStorage.
+     * @param {string} searchTerm - The search term to save.
+     */
 
     const saveRecentSearch = (searchTerm) => {
         const updatedSearches = [
@@ -104,6 +136,11 @@ const RecipeSearchBar = ({
         return () => clearTimeout(timeoutId);
     }, [search, minCharacters]);
 
+        /**
+     * Fetches recipe details by ID.
+     * @param {string} recipeId - The ID of the recipe to fetch.
+     */
+
     const fetchRecipeDetails = async (recipeId) => {
         try {
             const response = await fetch(`/api/recipes/${recipeId}`);
@@ -116,17 +153,30 @@ const RecipeSearchBar = ({
         }
     };
 
+    /**
+     * Handles the search form submission.
+     * @param {Event} e - The form submit event.
+     */
+
+
     const handleSearchSubmit = (e) => {
         e.preventDefault();
         if (search.trim()) {
             saveRecentSearch(search.trim());
             setShowSuggestions(false);
             setSelectedRecipe(null);
+
+            router.push(`/?search=${encodeURIComponent(search.trim())}`);
             if (onSearch) {
                 onSearch(search);
             }
         }
     };
+
+        /**
+     * Handles the click event on a suggestion item.
+     * @param {Object} suggestion - The suggestion item.
+     */
 
     const handleSuggestionClick = (suggestion) => {
         setSearch(suggestion.title);
@@ -136,11 +186,14 @@ const RecipeSearchBar = ({
         fetchRecipeDetails(suggestion._id); // Fetch and set the selected recipe details
     };
 
+    /**
+     * Clears the current search input.
+     */
     const clearSearch = () => {
         setSearch('');
         setShowSuggestions(false);
         setSuggestions([]);
-        setSelectedRecipe(null); // Clear selected recipe details
+        setSelectedRecipe(null); 
         if (onSearch) {
             onSearch('');
         }

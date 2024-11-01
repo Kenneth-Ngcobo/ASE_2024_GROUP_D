@@ -1,5 +1,4 @@
 import connectToDatabase from "../../../../db";
-
 export async function GET() {
   try {
     const db = await connectToDatabase();
