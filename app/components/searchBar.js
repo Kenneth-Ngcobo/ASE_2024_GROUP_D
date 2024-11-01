@@ -42,7 +42,7 @@ const RecipeSearchBar = ({
         setError(null);
 
         try {
-            const response = await fetch(`/api/AutoSuggest?search=${encodeURIComponent(query)}&limit=5`);
+            const response = await fetch(`/api/AutoSuggest?search=${encodeURIComponent(query)}&limit=10`);
             
             if (!response.ok) {
                 throw new Error('Failed to fetch suggestions');
