@@ -20,7 +20,7 @@ export default async function Home({ searchParams }) {
     const order = searchParams.order || 'ascending';
     const search = searchParams.search || '';
     const tags = searchParams.tags ||'';
-    const category = searchParams.category || ''
+    const category = searchParams.category || '';
     try {
         // Fetch recipes from the API with a limit of 20 per page
         recipes = await fetchRecipes(20, page,search, tags, category);
