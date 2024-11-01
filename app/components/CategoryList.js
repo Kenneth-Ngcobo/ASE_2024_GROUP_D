@@ -3,16 +3,22 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
-const CategoryList = ({ onCategoryChange }) => {
+const CategoryList = ({ onCategoryChange, totalRecipes }) => {
   const [categories, setCategories] = useState([]);
   const [error, setError] = useState(null);
   const [isOpen, setIsOpen] = useState(false); // State to control the visibility of the search and category list
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredCategories, setFilteredCategories] = useState([]);
+  const [totalRecipesState, setTotalRecipes] = useState(0);
 
   const router = useRouter();
   const searchParams = useSearchParams();
+
+  useEffect(() => {
+    console.log('Total recipes:', totalRecipes);
+    setTotalRecipes(totalRecipes);
+  }, [totalRecipes]);
 
   // Fetch categories from API
   useEffect(() => {
@@ -71,6 +77,8 @@ const CategoryList = ({ onCategoryChange }) => {
 
     // Push the new URL with updated query
     router.push(`?${queryString}`);
+
+  
   };
 
   const clearCategory = () => {
@@ -96,10 +104,11 @@ const CategoryList = ({ onCategoryChange }) => {
 
   return (
     <div className="relative">
+       
       {/* Toggle button to open/close the search and category dropdown */}
       <button
         onClick={() => setIsOpen((prev) => !prev)} // Toggle isOpen state
-        className="bg-green-600 text-white px-4 py-2 mx-2  rounded hover:bg-green-500 transition duration-200"
+        className="bg-green-600 text-white px-4 mx-6 py-2 mx-2   rounded hover:bg-green-500 transition duration-200"
       >
         {isOpen ? 'Close' : 'Category'} {/* Display appropriate label based on isOpen */}
       </button>
@@ -126,6 +135,7 @@ const CategoryList = ({ onCategoryChange }) => {
               className="bg-red-500 text-white px-4 py-2 mx-2 rounded hover:bg-red-400 transition duration-200">
               Clear category
             </button>
+         
           </form>
 
           {/* Dropdown with filtered categories */}
@@ -160,7 +170,11 @@ const CategoryList = ({ onCategoryChange }) => {
           )}
         </div>
       )}
+           <p className="font-semibold text-lg mb-2 px-4">
+      {totalRecipesState > 0 ? `Total Recipes Found: ${totalRecipesState}` : 'No recipes found'}
+    </p>
     </div>
+   
   );
 };
 
