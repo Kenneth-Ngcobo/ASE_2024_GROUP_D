@@ -3,7 +3,16 @@
 import { useState, useEffect, useCallback } from 'react';
 import { FaSearch } from 'react-icons/fa';
 import { XCircle, Timer, Coffee, Utensils } from 'lucide-react';
-import { debounce } from 'lodash';
+import { useRouter } from 'next/navigation';
+
+
+/**
+ * Component to highlight search terms within a text.
+ * @param {Object} props - The properties object.
+ * @param {string} props.text - The text to highlight.
+ * @param {string[]} props.searchTerms - The search terms to highlight.
+ * @returns {JSX.Element} Highlighted text.
+ */
 
 const HighlightedText = ({ text, highlights }) => {
     return (
@@ -20,6 +29,16 @@ const HighlightedText = ({ text, highlights }) => {
     );
 };
 
+
+/**
+ * Component for a recipe search bar with suggestions and recent searches.
+ * @param {Object} props - The properties object.
+ * @param {string} [props.currentSearch=''] - The current search term.
+ * @param {Function} props.onSearch - Callback function to handle search submission.
+ * @param {number} [props.minCharacters=2] - Minimum characters required to trigger suggestions.
+ * @returns {JSX.Element} Recipe search bar.
+ */
+
 const RecipeSearchBar = ({
     currentSearch = '',
     onSearch,
@@ -29,7 +48,9 @@ const RecipeSearchBar = ({
     const [showSuggestions, setShowSuggestions] = useState(false);
     const [suggestions, setSuggestions] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
+    const [recentSearches, setRecentSearches] = useState([]);
+    const [selectedRecipe, setSelectedRecipe] = useState(null); // New state for selected recipe
+    const router = useRouter();
 
     const fetchSuggestions = async (query) => {
         if (query.length < minCharacters) {
@@ -41,6 +62,72 @@ const RecipeSearchBar = ({
         setLoading(true);
         setError(null);
 
+        /**
+     * Extracts search terms from the search text.
+     * @param {string} searchText - The text to extract search terms from.
+     * @returns {string[]} Array of search terms.
+     */
+
+    const getSearchTerms = (searchText) => {
+        return searchText
+            .toLowerCase()
+            .split(' ')
+            .filter(term => term.length >= minCharacters);
+    };
+
+        /**
+     * Saves a search term to the recent searches in localStorage.
+     * @param {string} searchTerm - The search term to save.
+     */
+
+    const saveRecentSearch = (searchTerm) => {
+        const updatedSearches = [
+            searchTerm,
+            ...recentSearches.filter(term => term !== searchTerm)
+        ].slice(0, 5);
+
+        setRecentSearches(updatedSearches);
+        localStorage.setItem('recentRecipeSearches', JSON.stringify(updatedSearches));
+    };
+
+    useEffect(() => {
+        const fetchSuggestions = async () => {
+            if (search.length < minCharacters) {
+                setSuggestions([]);
+                return;
+            }
+
+            try {
+                setLoading(true);
+                const params = new URLSearchParams({
+                    search,
+                    limit: '5',
+                    page: '1'
+                });
+
+                const response = await fetch(`/api/recipes?${params}`);
+                if (!response.ok) throw new Error('Failed to fetch suggestions');
+
+                const data = await response.json();
+                setSuggestions(data.recipes);
+            } catch (error) {
+                console.error('Error fetching suggestions:', error);
+                setSuggestions([]);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        const timeoutId = setTimeout(fetchSuggestions, 500);
+        return () => clearTimeout(timeoutId);
+    }, [search, minCharacters]);
+
+        /**
+     * Fetches recipe details by ID.
+     * @param {string} recipeId - The ID of the recipe to fetch.
+     */
+
+    const fetchRecipeDetails = async (recipeId) => {
         try {
             const response = await fetch(`/api/AutoSuggest?search=${encodeURIComponent(query)}&limit=10`);
             
@@ -64,37 +151,29 @@ const RecipeSearchBar = ({
         }
     };
 
-    const debouncedFetch = useCallback(
-        debounce((query) => {
-            fetchSuggestions(query);
-        }, 300),
-        []
-    );
+    /**
+     * Handles the search form submission.
+     * @param {Event} e - The form submit event.
+     */
 
-    useEffect(() => {
-        if (search.length >= minCharacters) {
-            debouncedFetch(search);
-        } else {
-            setSuggestions([]);
-            setShowSuggestions(false);
-        }
-    }, [search, debouncedFetch]);
-
-    useEffect(() => {
-        return () => {
-            debouncedFetch.cancel();
-        };
-    }, [debouncedFetch]);
 
     const handleSearchSubmit = (e) => {
         e.preventDefault();
         if (search.trim()) {
             setShowSuggestions(false);
+            setSelectedRecipe(null);
+
+            router.push(`/?search=${encodeURIComponent(search.trim())}`);
             if (onSearch) {
                 onSearch(search);
             }
         }
     };
+
+        /**
+     * Handles the click event on a suggestion item.
+     * @param {Object} suggestion - The suggestion item.
+     */
 
     const handleSuggestionClick = (suggestion) => {
         setSearch(suggestion.title);
@@ -104,10 +183,14 @@ const RecipeSearchBar = ({
         }
     };
 
+    /**
+     * Clears the current search input.
+     */
     const clearSearch = () => {
         setSearch('');
         setShowSuggestions(false);
         setSuggestions([]);
+        setSelectedRecipe(null); 
         if (onSearch) {
             onSearch('');
         }
@@ -206,6 +289,7 @@ const RecipeSearchBar = ({
             </form>
         </div>
     );
+};
 };
 
 export default RecipeSearchBar;
