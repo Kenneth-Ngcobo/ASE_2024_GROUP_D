@@ -54,7 +54,7 @@ const CategoryList = ({ onCategoryChange }) => {
   };
 
   // Handle category select
-  const handleCategorySelect = (category) => {
+  const handleCategorySelect = async (category) => {
     setIsOpen(false);
 
     // Get current query parameters
@@ -63,6 +63,7 @@ const CategoryList = ({ onCategoryChange }) => {
     // Update the query with the selected category
     const newQuery = {
       ...currentQuery,
+      page: 1,
       category: category,
     };
 
