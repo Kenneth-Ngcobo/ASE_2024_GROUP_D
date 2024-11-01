@@ -12,13 +12,13 @@ import { useRouter } from 'next/navigation';
  * @returns {JSX.Element} The rendered component.
  */
 export const SortControl = ({ onSortChange, sortBy, sortOrder }) => {
+    
+    const router = useRouter();
+    
     /**
      * Handles change in sorting field selection.
      * @param {Object} event - The change event.
      */
-
-    const router = useRouter();
-
     const handleSortChange = (event) => {
         const newSortBy = event.target.value;
         onSortChange(newSortBy, sortOrder);
