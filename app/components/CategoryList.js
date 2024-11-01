@@ -6,7 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 const CategoryList = ({ onCategoryChange }) => {
   const [categories, setCategories] = useState([]);
   const [error, setError] = useState(null);
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false); // State to control the visibility of the search and category list
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredCategories, setFilteredCategories] = useState([]);
@@ -50,12 +50,11 @@ const CategoryList = ({ onCategoryChange }) => {
     );
 
     setFilteredCategories(matches);
-    setIsOpen(true); 
   };
 
   // Handle category select
   const handleCategorySelect = async (category) => {
-    setIsOpen(false);
+    setIsOpen(false); // Close the dropdown after selecting a category
 
     // Get current query parameters
     const currentQuery = Object.fromEntries(searchParams.entries());
@@ -83,66 +82,66 @@ const CategoryList = ({ onCategoryChange }) => {
   }
 
   return (
-    <div className="relative" >
-      <h2 className="text-xl font-semibold mb-4">Categories</h2>
-
-      {/* Search form */}
-     
-      <form onSubmit={handleSearch} className="">
-        <input
-          type="text"
-          placeholder="Search categories"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="border px-4 py-2 mb-4 w-30 mx-2"
-        />
-        <button
-          type="submit"
-          className="bg-blue-500 text-white px-4 py-2 mx-2 rounded hover:bg-blue-400 transition duration-200"
-        >
-          Search
-        </button>
-
-            {/* Toggle button */}
+    <div className="relative">
+      {/* Toggle button to open/close the search and category dropdown */}
       <button
-        onClick={() => setIsOpen((prev) => !prev)}
+        onClick={() => setIsOpen((prev) => !prev)} // Toggle isOpen state
         className="bg-green-600 text-white px-4 py-2 mx-2 rounded hover:bg-green-500 transition duration-200"
       >
-        {isOpen ? 'Close' : 'Select Category'}
+        {isOpen ? 'Close' : 'Select Category'} {/* Display appropriate label based on isOpen */}
       </button>
-      </form>
-    
-      
 
-  
-
-      {/* Dropdown with filtered categories */}
-      {isOpen && filteredCategories.length > 0 && (
-        <ul
-          style={{
-            position: 'relative',
-            top: '100%',
-            left: 0,
-            width: '100%',
-            background: 'white',
-            border: '1px solid #ccc',
-            listStyleType: 'none',
-            padding: 0,
-            margin: 0,
-            maxHeight: '200px',
-            overflowY: 'auto',
-          }}
-        >
-          {filteredCategories.map((category, index) => (
-            <li
-              key={index}
-              onClick={() => handleCategorySelect(category)}
-              className="p-2 bg-gray-200 border-b hover:bg-gray-300 transition duration-200 cursor-pointer"
+      {/* Conditionally render content when isOpen is true */}
+      {isOpen && (
+        <div className="mt-4">
+          {/* Search form to filter categories */}
+          <form onSubmit={handleSearch} className="mb-4">
+            <input
+              type="text"
+              placeholder="Search categories"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="border px-4 py-2 mb-4 w-30 mx-2"
+            />
+            <button
+              type="submit"
+              className="bg-blue-500 text-white px-4 py-2 mx-2 rounded hover:bg-blue-400 transition duration-200"
             >
-              {category}
-            </li>
-          ))}
-        </ul>
+              Search
+            </button>
+          </form>
+
+          {/* Dropdown with filtered categories */}
+          {filteredCategories.length > 0 ? (
+            <ul
+              style={{
+                position: 'relative',
+                top: '100%',
+                left: 0,
+                width: '100%',
+                background: 'white',
+                border: '1px solid #ccc',
+                listStyleType: 'none',
+                padding: 0,
+                margin: 0,
+                maxHeight: '200px',
+                overflowY: 'auto',
+              }}
+            >
+              {filteredCategories.map((category, index) => (
+                <li
+                  key={index}
+                  onClick={() => handleCategorySelect(category)} // Trigger category selection
+                  className="p-2 bg-gray-200 border-b hover:bg-gray-300 transition duration-200 cursor-pointer"
+                >
+                  {category}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-gray-500">No categories found</p> // Message when no categories match search
+          )}
+        </div>
       )}
     </div>
   );
