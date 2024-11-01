@@ -3,10 +3,15 @@ import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import TagDisplay from "./TagList"; // Correctly imported TagDisplay
 import { fetchRecipes } from "../api"; // Import your fetchRecipes function
+import IngDisplay from "./IngredientList";
+
+import StepsDropdown from "./StepsDropdown"; // Import StepsDropdown
 
 export const FilterModal = ({ onClose }) => {
     const [cookTime, setCookTime] = useState(0);
     const [selectedTags, setSelectedTags] = useState([]); // State to store selected tags
+    const [selectedIngs, setSelectedIngs] = useState([]);// State to store selected inggredients
+    const [steps, setSteps] = useState(0); // State for steps
     const searchParams = useSearchParams();
     const router = useRouter();
 
@@ -30,19 +35,31 @@ export const FilterModal = ({ onClose }) => {
         const value = Number(e.target.value);
         setValue(snapToNearest(value));
     };
-
+    const handleStepsChange = (steps) => {
+        setSteps(steps);
+    };
     const handleTagsChange = (tags) => {
         setSelectedTags(tags);
         console.log("Selected Tags", tags); // Log selected tags
     };
+    const handleIngsChange = (ing) => {
+        setSelectedIngs(ing);
+        console.log("Selected Ings", ing); // Log selected ingredients
+    }
 
     const handleSubmit = async () => {
         const currentQuery = Object.fromEntries(searchParams.entries());
+        if (steps===0){
+            setSteps('')
+        }
         // Create a new query including selected tags
         const newQuery = {
             ...currentQuery,
             page: 1, // Reset to the first page
             tags: selectedTags.join(","), // Join tags for the query string
+            ingredients: selectedIngs.join(","), // Join ingredients for the query string
+            instructions: steps
+
             // Add any other parameters as needed
         };
       // Construct the new query string
@@ -75,9 +92,12 @@ export const FilterModal = ({ onClose }) => {
                     <div className="flex flex-col">
                         <label className="text-sm font-medium text-gray-700">Ingredients</label>
                         <TagDisplay selectedTags={selectedTags} onTagsChange={handleTagsChange} /> {/* Pass selected tags and function */}
+                        <IngDisplay selectedIngs={selectedIngs} onIngsChange={handleIngsChange} />
+                        <StepsDropdown selectedSteps={steps} onStepsChange={handleStepsChange} />
+                        
                     </div>
 
-                    {/* Time Slider */}
+                    {/* Time Slider
                     <div className="flex flex-col">
                         <label className="text-sm font-medium text-gray-700">Time for meal</label>
                         <input
@@ -93,7 +113,7 @@ export const FilterModal = ({ onClose }) => {
                             <span>{getRangeLabel(cookTime)}</span>
                             <span>60</span>
                         </div>
-                    </div>
+                    </div> */}
                 </div>
 
                 {/* Clear All Filters */}
