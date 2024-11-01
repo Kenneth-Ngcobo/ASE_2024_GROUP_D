@@ -73,6 +73,19 @@ const CategoryList = ({ onCategoryChange }) => {
     router.push(`?${queryString}`);
   };
 
+  const clearCategory = () => {
+    const currentQuery = Object.fromEntries(searchParams.entries());
+
+    // Remove the 'category' key from the query object
+    const { category, ...updatedQuery } = currentQuery;
+
+    // Construct the new query string without 'category'
+    const queryString = new URLSearchParams(updatedQuery).toString();
+
+    // Push the updated URL without the 'category' parameter
+    router.push(`?${queryString}`);
+  };
+
   if (loading) {
     return <div>Loading categories...</div>;
   }
@@ -86,7 +99,7 @@ const CategoryList = ({ onCategoryChange }) => {
       {/* Toggle button to open/close the search and category dropdown */}
       <button
         onClick={() => setIsOpen((prev) => !prev)} // Toggle isOpen state
-        className="bg-green-600 text-white px-4 py-2 mx-2 rounded hover:bg-green-500 transition duration-200"
+        className="bg-green-600 text-white px-4 py-2 mx-2  rounded hover:bg-green-500 transition duration-200"
       >
         {isOpen ? 'Close' : 'Category'} {/* Display appropriate label based on isOpen */}
       </button>
@@ -108,6 +121,10 @@ const CategoryList = ({ onCategoryChange }) => {
               className="bg-blue-500 text-white px-4 py-2 mx-2 rounded hover:bg-blue-400 transition duration-200"
             >
               Search
+            </button>
+            <button onClick={() => clearCategory()}   type="button"
+              className="bg-red-500 text-white px-4 py-2 mx-2 rounded hover:bg-red-400 transition duration-200">
+              Clear category
             </button>
           </form>
 
