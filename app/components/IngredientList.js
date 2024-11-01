@@ -1,35 +1,34 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 
-export default function TagDisplay({ selectedTags, onTagsChange }) {
-  const [tags, setTags] = useState([]);
+export default function IngDisplay({ selectedIngs = [], onIngsChange = () => {} }) { // Default empty array and function
+  const [ings, setIngs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
-  const [searchTerm, setSearchTerm] = useState(''); // State for search term
-
+  const [searchTerm, setSearchTerm] = useState('');
+  
   const searchParams = useSearchParams();
 
   useEffect(() => {
-    // Initialize selected tags from URL search params if present
-    const urlTags = searchParams.get('tags')?.split(',') || [];
-    if (urlTags.length && urlTags !== ' ' && urlTags !== '') {
-      onTagsChange(urlTags); // Populate selectedTags from URL
+    const urlIngs = searchParams.get('ingredients')?.split(',') || [];
+    if (urlIngs.length && urlIngs !== ' ' && urlIngs !== '') {
+      onIngsChange(urlIngs); 
     }
   }, []);
 
   useEffect(() => {
-    const fetchTags = async () => {
+    const fetchIngs = async () => {
       try {
-        const response = await fetch('/api/recipes/tags');
+        const response = await fetch('/api/recipes/ingredients');
         if (!response.ok) {
-          throw new Error('Failed to fetch tags');
+          throw new Error('Failed to fetch ingredients');
         }
         const data = await response.json();
-        setTags(data);
-        console.log('Fetched tags:', data);
+        setIngs(data);
+        console.log('Fetched ingredients:', data);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -37,65 +36,64 @@ export default function TagDisplay({ selectedTags, onTagsChange }) {
       }
     };
 
-    fetchTags();
+    fetchIngs();
   }, []);
 
   useEffect(() => {
-    // Update URL with selected tags as query parameters
     const params = new URLSearchParams(searchParams);
-    params.set('tags', selectedTags.join(','));
-  }, [selectedTags, searchParams]);
+    params.set('ingredients', selectedIngs.join(','));
+  }, [selectedIngs, searchParams]);
 
   if (loading) {
-    return <div className="text-center py-4">Loading tags...</div>;
+    return <div className="text-center py-4">Loading ingredients...</div>;
   }
 
   if (error) {
     return <div className="text-red-500 text-center py-4">Error: {error}</div>;
   }
 
-  const handleTagSelect = (tag) => {
-    if (!selectedTags.includes(tag)) {
-      onTagsChange([...selectedTags, tag]);
+  const handleIngSelect = (ing) => {
+    if (!selectedIngs.includes(ing)) {
+      onIngsChange([...selectedIngs, ing]);
     } else {
-      onTagsChange(selectedTags.filter((t) => t !== tag));
+      onIngsChange(selectedIngs.filter((t) => t !== ing));
     }
     setIsOpen(false);
   };
 
-  const filteredTags = tags.filter(tag =>
-    tag.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredIngs = ings.filter(ing =>
+    ing.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
     <div className="p-6 bg-white shadow-md rounded-lg">
-      <h2 className="text-2xl font-semibold mb-4">Select Tags</h2>
+      <h2 className="text-2xl font-semibold mb-4">Select Ingredients</h2>
       <button
         onClick={() => setIsOpen((prev) => !prev)}
         className="bg-green-600 text-white px-4 py-2 rounded-md shadow hover:bg-green-500 transition duration-200"
       >
-        {isOpen ? 'Hide Tags' : 'Select Tag'}
+        {isOpen ? 'Hide Ingredients' : 'Select Ingredient'}
       </button>
       {isOpen && (
         <div>
           <input
             type="text"
-            placeholder="Search tags..."
+            placeholder="Search ingredients..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="mt-4 p-2 border border-gray-300 rounded-md w-full"
           />
           <div className="mt-2 max-h-60 overflow-y-auto border border-gray-300 rounded-md">
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 p-2">
-              {filteredTags.map((tag, index) => (
+              {filteredIngs.map((ing, index) => (
                 <button
                   key={index}
                   className={`p-2 border border-gray-300 rounded-md transition duration-200 ${
-                    selectedTags.includes(tag) ? 'bg-blue-300' : 'bg-gray-200 hover:bg-gray-300'
+                    selectedIngs.includes(ing) ? 'bg-blue-300' : 'bg-gray-200 hover:bg-gray-300'
                   }`}
-                  onClick={() => handleTagSelect(tag)}
+                  onClick={() => handleIngSelect(ing)}
                 >
-                  {tag}
+                  {ing}
                 </button>
               ))}
             </div>
@@ -103,15 +101,15 @@ export default function TagDisplay({ selectedTags, onTagsChange }) {
         </div>
       )}
       <div className="mt-6">
-        <h3 className="text-xl font-semibold mb-2">Selected Tags:</h3>
+        <h3 className="text-xl font-semibold mb-2">Selected Ingredients:</h3>
         <div className="flex flex-wrap gap-2">
-          {selectedTags.map((tag, index) => (
+          {selectedIngs.map((ing, index) => (
             <span
               key={index}
-              onClick={() => handleTagSelect(tag)}
+              onClick={() => handleIngSelect(ing)}
               className="bg-blue-200 text-blue-800 px-3 py-1 rounded-md shadow cursor-pointer hover:bg-blue-300 transition duration-200"
             >
-              {tag}
+              {ing}
             </span>
           ))}
         </div>
