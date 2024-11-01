@@ -23,8 +23,6 @@ export async function GET(req) {
       'cookingtime': 'cook',            // Maps 'cookingtime' to 'cook' field
       'preparationtime': 'prep',        // Maps 'preparationtime' to 'prep' field
       'published': 'published',         // Maps 'published' to 'published' field
-      'calories': 'nutrition.calories', // Maps 'calories' to nested 'nutrition.calories' field
-      'title': 'title',                 // Maps 'title' to 'title' field
       'instructionscount': 'instructionsCount' // Maps 'instructionscount' to computed field 'instructionsCount'
     };
 
