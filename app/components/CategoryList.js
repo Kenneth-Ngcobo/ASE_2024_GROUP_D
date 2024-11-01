@@ -88,7 +88,7 @@ const CategoryList = ({ onCategoryChange }) => {
         onClick={() => setIsOpen((prev) => !prev)} // Toggle isOpen state
         className="bg-green-600 text-white px-4 py-2 mx-2 rounded hover:bg-green-500 transition duration-200"
       >
-        {isOpen ? 'Close' : 'Select Category'} {/* Display appropriate label based on isOpen */}
+        {isOpen ? 'Close' : 'Category'} {/* Display appropriate label based on isOpen */}
       </button>
 
       {/* Conditionally render content when isOpen is true */}
