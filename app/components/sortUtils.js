@@ -8,7 +8,7 @@ export const sortRecipes = (recipes, sortBy, sortOrder) => {
     };
 
     const sortingStrategies = {
-        published: (a, b) => {
+        createdAt: (a, b) => {
             const dateA = new Date(a.published || 0).getTime();
             const dateB = new Date(b.published || 0).getTime();
             return compareValues(dateB, dateA, 'descending'); // Newest first by default
