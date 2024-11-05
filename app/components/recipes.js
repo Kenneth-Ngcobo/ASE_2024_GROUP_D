@@ -5,7 +5,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
-import { FaCalendarDay, FaClock, FaUtensils, FaTags, FaUtensilSpoon, FaListUl } from "react-icons/fa"; // Updated icon imports
+import { FaHeart,FaCalendarDay, FaClock, FaUtensils, FaTags, FaUtensilSpoon, FaListUl } from "react-icons/fa"; // Updated icon imports
 import Head from 'next/head';
 import Carousel from './Carousel';
 import { SortControl } from './SortControl';
@@ -36,7 +36,7 @@ export default function Recipes({ recipes: initialRecipes }) {
   useEffect(() => {
     const sortedRecipes = sortRecipes(initialRecipes, sortBy, sortOrder);
     setRecipes(sortedRecipes);
-  }, [initialRecipes]);
+  }, [initialRecipes, sortBy, sortOrder]);
 
 
   return (
@@ -67,6 +67,18 @@ export default function Recipes({ recipes: initialRecipes }) {
               key={recipe._id}  // Unique key for each mapped element
               className="block p-4 bg-white border border-gray-200 rounded-lg shadow-lg hover:shadow-2xl transition-transform transform hover:scale-105 duration-300 ease-in-out"
             >
+
+               {/* Heart Icon for Favorites */}
+            <button
+              className="absolute top-2 right-2 text-gray-400 hover:text-red-500"
+              onClick={(e) => {
+                e.preventDefault(); // Prevents navigating when clicked
+                // Implement favorite toggle here
+              }}
+            >
+              <FaHeart size={24} />
+            </button>
+
               {/* Recipe title */}
               <h2 className="text-xl font-semibold font-playfair mb-2 text-green-800">
                 {recipe.title}
