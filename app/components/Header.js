@@ -11,7 +11,8 @@ import {
   FaUserAlt,
 } from "react-icons/fa";
 import { FilterModal, FilterButton } from "./FilterButton.js";
-import ThemeButton from './ThemeButton.js';
+import ThemeButton from "./ThemeButton.js";
+import UserModal from "./UserModal.js";
 
 /**
  * Header Component
@@ -20,15 +21,14 @@ import ThemeButton from './ThemeButton.js';
  * - Dynamic login/logout links based on authentication status
  * - Enhanced styling and user experience improvements
  */
-export default function Header({ isAuthenticated, onLogout }) {
+export default function Header({}) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [showMenu, setShowMenu] = useState(false);
+  const [showModal, setShowModal] = useState(false);
 
-  const toggleMenu = () => setShowMenu((prev) => !prev);
   // Toggle mobile dropdown menu
   const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
-
+  const toggleModal = () => setShowModal((prev) => !prev);
   return (
     <header className="bg-gradient-to-r from-green-600 via-green-300 to-green-100 shadow-lg sticky top-0 z-50">
       <div className="container mx-auto flex items-center justify-between p-4">
@@ -63,42 +63,23 @@ export default function Header({ isAuthenticated, onLogout }) {
           <div className="flex items-center px-4 py-2 rounded-full text-grey font-medium hover:bg-green-500 hover:bg-opacity-80 transition-colors duration-300">
             <FaPhoneAlt className="mr-2" /> Contact
           </div>
-                    <div
-                        className="flex items-center px-4 py-2 rounded-full text-grey font-medium hover:bg-green-500 hover:bg-opacity-80 transition-colors duration-300"
-                    >
-                       <ThemeButton /> Theme
-                    </div>
-
+          <div className="flex items-center px-4 py-2 rounded-full text-grey font-medium hover:bg-green-500 hover:bg-opacity-80 transition-colors duration-300">
+            <ThemeButton /> Theme
+          </div>
         </nav>
 
         {/* User Icon Toggle */}
         <div className="relative hidden md:block">
           <button
-            onClick={toggleMenu}
+            onClick={toggleModal}
             className="flex items-center px-4 py-2 rounded-full text-grey font-medium hover:bg-green-500 hover:bg-opacity-80 transition-colors duration-300"
           >
             <FaUserAlt className="mr-2" />
           </button>
-
-          {/* Sign Up / Log In Links */}
-          {showMenu && (
-            <div className="absolute right-0 mt-2 w-40 bg-white rounded-md shadow-lg text-gray-800">
-              <Link
-                href="/signup"
-                className="block px-4 py-2 hover:bg-gray-200"
-              >
-                Sign Up
-              </Link>
-              <Link href="/login" className="block px-4 py-2 hover:bg-gray-200">
-                Log In
-              </Link>
-
-              <Link href="/editdetails" className="block px-4 py-2 hover:bg-gray-200">
-                Edit
-              </Link>
-            </div>
-          )}
         </div>
+
+        {/* Authentication Modal */}
+        <UserModal show={showModal} onClose={toggleModal} />
 
         {/* Filter Button and Modal */}
         <div className="flex items-center">
