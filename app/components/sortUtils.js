@@ -32,6 +32,7 @@ export const sortRecipes = (recipes, sortBy = SORT_OPTIONS.DEFAULT, sortOrder = 
         return ((a < b) ? -1 : 1) * multiplier;
     };
 
+    // Define sorting strategies based on sortBy options
     const sortingStrategies = {
         [SORT_OPTIONS.CREATED_AT]: (a, b) => {
             const dateA = new Date(a.published || 0).getTime();
@@ -55,5 +56,6 @@ export const sortRecipes = (recipes, sortBy = SORT_OPTIONS.DEFAULT, sortOrder = 
         }
     };
 
+    // Use the appropriate sorting strategy or a no-op if none is matched
     return sorted.sort(sortingStrategies[sortBy] || (() => 0));
 };  

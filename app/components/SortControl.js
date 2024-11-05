@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { SORT_OPTIONS, SORT_ORDERS } from './sortUtils';

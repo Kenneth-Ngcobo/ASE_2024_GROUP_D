@@ -1,13 +1,20 @@
-import connectToDatabase from "../../../db.js";
+import connectToDatabase from '../../../db.js';
 
+/**
+ * GET handler for fetching paginated and sorted recipes from the database.
+ * @param {Request} req - The incoming HTTP request.
+ * @returns {Response} - JSON response containing paginated recipes and metadata.
+ */
 export async function GET(req) {
   try {
+    // Connect to the database and get the recipes collection
     const db = await connectToDatabase();
-    const recipesCollection = db.collection("recipes");
+    const recipesCollection = db.collection('recipes');
 
     // Use req.nextUrl to parse query parameters
     const { searchParams } = req.nextUrl;
 
+    const url = new URL(req.url);
     const page = parseInt(searchParams.get("page")) || 1;
     const limit = Math.min(parseInt(searchParams.get("limit")) || 50, 50);
     const sort = searchParams.get("sort") || "createdAt"; // Default to createdAt
@@ -18,24 +25,25 @@ export async function GET(req) {
     const ingredients = searchParams.get("ingredients");
     const instructions = parseInt(searchParams.get("instructions"));
 
-    let query = {};
-
-    // Validate sort parameter
+    // Define valid sorting fields based on database structure
     const validSortFields = {
-      'cookTime': 'cookingTime',
-      'prepTime': 'preparationTime',
-      'instructions': 'instructions',
-      'createdAt': 'createdAt'  // Added creation date sorting
+      'cookingtime': 'cook',            // Maps 'cookingtime' to 'cook' field
+      'preparationtime': 'prep',        // Maps 'preparationtime' to 'prep' field
+      'published': 'published',         // Maps 'published' to 'published' field
+      'instructionscount': 'instructionsCount' // Maps 'instructionscount' to computed field 'instructionsCount'
     };
 
-    if (!validSortFields[sort]) {
+    const sortLower = sort.toLowerCase();
+
+    // Validate sort field
+    if (!validSortFields[sortLower]) {
       return new Response(
         JSON.stringify({
-          error: 'Invalid sort parameter. Valid options are: cookTime, prepTime, instructions, createdAt'
+          error: `Invalid sort parameter '${sort}'. Valid options are: cookingTime, preparationTime, published, calories, title, instructionsCount`
         }), {
-          status: 400,
-          headers: { 'Content-Type': 'application/json' }
-        }
+        status: 400,
+        headers: { 'Content-Type': 'application/json' }
+      }
       );
     }
 
@@ -60,7 +68,7 @@ export async function GET(req) {
     // Filter by ingredients (object structure)
     if (ingredients) {
       const ingredientArray = ingredients.split(",").map((ingredient) => ingredient.trim().toLowerCase());
-  
+
       // Create a filter for each ingredient key, allowing case-insensitive matching
       query.$and = ingredientArray.map((ingredient) => ({
         [`ingredients.${ingredient}`]: { $exists: true },
@@ -73,45 +81,69 @@ export async function GET(req) {
     }
 
     const skip = (page - 1) * limit;
+    const sortObj = { [validSortFields[sortLower]]: order };
 
-    // Create sort object for MongoDB query
-    const sortObj = {};
-    sortObj[validSortFields[sort]] = order;
-
-    // Fetch sorted and paginated recipes
-    const recipes = await recipesCollection
-      .find(query) // Use the constructed query
-      .sort(sortObj)
-      .skip(skip)
-      .limit(limit)
-      .toArray();
-
-    // Count total number of matching documents for pagination
-    const totalRecipes = await recipesCollection.countDocuments(query); // Count with query to match filters
-
-    return new Response(
-      JSON.stringify({
-        totalRecipes,
-        totalPages: Math.ceil(totalRecipes / limit),
-        currentPage: page,
-        category: category || "all",
-        appliedTags: tags ? tags.split(',').map(tag => tag.trim()) : [],
-        appliedIngredients: ingredients ? ingredients.split(",").map((ingredient) => ingredient.trim()) : [],
-        appliedInstructions: instructions,
-        sortedBy: sort,
-        sortOrder: order === 1 ? "asc" : "desc",
-        recipes,
-      }),
+    // MongoDB aggregation pipeline
+    let pipeline = [
       {
-        status: 200,
-        headers: { "Content-Type": "application/json" },
+        $addFields: {
+          numericPrep: { $toInt: "$prep" },
+          numericCook: { $toInt: "$cook" },
+          numericCalories: { $toDouble: "$nutrition.calories" },
+          instructionsCount: { $size: "$instructions" }
+        }
       }
+    ];
+
+    if (sortLower === 'instructionscount') {
+      pipeline.push({ $sort: { instructionsCount: order } });
+    } else {
+      pipeline.push({ $sort: sortObj });
+    }
+
+    pipeline.push(
+      { $skip: skip },
+      { $limit: limit }
     );
+
+    const recipes = await recipesCollection.aggregate(pipeline).toArray();
+    const totalRecipes = await recipesCollection.countDocuments();
+
+    console.log('Sorting Debug:', {
+      requestedSort: sort,
+      sortField: validSortFields[sortLower],
+      order: order,
+      firstThreeValues: recipes.slice(0, 3).map(r => ({
+        value: sortLower === 'instructionscount'
+          ? r.instructionsCount
+          : r[validSortFields[sortLower]],
+        title: r.title,
+        instructionsCount: r.instructionsCount
+      }))
+    });
+
+    // Return successful response with paginated data
+    return new Response(JSON.stringify({
+      totalRecipes,
+      totalPages: Math.ceil(totalRecipes / limit),
+      currentPage: page,
+      sortedBy: sort,
+      sortOrder: order === 1 ? 'asc' : 'desc',
+      sortQuery: sortObj,
+      recipes,
+    }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+    });
+
   } catch (error) {
     console.error('Error fetching recipes:', error);
-    return new Response(JSON.stringify({ error: 'Failed to fetch recipes' }), {
+    return new Response(JSON.stringify({
+      error: 'Failed to fetch recipes',
+      details: error.message
+    }), {
       status: 500,
-      headers: { "Content-Type": "application/json" },
+      headers: { 'Content-Type': 'application/json' },
     });
   }
 }
