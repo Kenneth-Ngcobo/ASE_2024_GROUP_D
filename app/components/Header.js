@@ -11,6 +11,7 @@ import {
   FaUserAlt,
 } from "react-icons/fa";
 import { FilterModal, FilterButton } from "./FilterButton.js";
+import ThemeButton from './ThemeButton.js';
 
 /**
  * Header Component
@@ -62,6 +63,12 @@ export default function Header({ isAuthenticated, onLogout }) {
           <div className="flex items-center px-4 py-2 rounded-full text-grey font-medium hover:bg-green-500 hover:bg-opacity-80 transition-colors duration-300">
             <FaPhoneAlt className="mr-2" /> Contact
           </div>
+                    <div
+                        className="flex items-center px-4 py-2 rounded-full text-grey font-medium hover:bg-green-500 hover:bg-opacity-80 transition-colors duration-300"
+                    >
+                       <ThemeButton /> Theme
+                    </div>
+
         </nav>
 
         {/* User Icon Toggle */}
