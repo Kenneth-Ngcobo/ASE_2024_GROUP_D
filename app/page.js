@@ -18,10 +18,14 @@ export default async function Home({ searchParams }) {
     const page = searchParams.page ? parseInt(searchParams.page) : 1;
     const sort = searchParams.sort || 'default';
     const order = searchParams.order || 'ascending';
-  const tags = searchParams.tags
+    const search = searchParams.search || '';
+    const tags = searchParams.tags ||'';
+    const category = searchParams.category || '';
+    const ingredients = searchParams.ingredients || ''
+    const instructions = searchParams.instructions || ''
     try {
         // Fetch recipes from the API with a limit of 20 per page
-        recipes = await fetchRecipes(20, page);
+        recipes = await fetchRecipes(20, page,search, tags, category, ingredients, instructions);
     } catch (err) {
         // Capture any error that occurs during the fetch
         error = err.message; // Store the error message
@@ -32,7 +36,7 @@ export default async function Home({ searchParams }) {
         <>
             <Suspense fallback={<Loading />}>
                 <SearchBar/>
-                  <CategoryList />
+                  <CategoryList totalRecipes={recipes.totalRecipes} />
                 {/* Render the Recipes component, passing the fetched recipes as props */}
                 <Recipes 
                     recipes={recipes.recipes}
