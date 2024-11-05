@@ -1,4 +1,4 @@
-export default function Loading() {
+export default function LoadingSpinner() {
     return (
         <div className="flex justify-center items-center h-screen">
             {/* Spinner element styled to rotate (using `animate-spin`) and form a circular loading indicator */}

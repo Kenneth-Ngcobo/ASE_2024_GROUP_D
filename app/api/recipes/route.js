@@ -1,45 +1,117 @@
-import connectToDatabase from '../../../db.js'; // Adjust the path based on your file structure
+import connectToDatabase from "../../../db.js";
 
 export async function GET(req) {
   try {
-    const db = await connectToDatabase(); // Connect to the database
-    const recipesCollection = db.collection('recipes'); // Fetch from the 'recipes' collection
+    const db = await connectToDatabase();
+    const recipesCollection = db.collection("recipes");
 
-    // Parse query parameters for pagination and search
-    const url = new URL(req.url);
-    const page = parseInt(url.searchParams.get('page')) || 1; // Default to page 1
-    const limit = Math.min(parseInt(url.searchParams.get('limit')) || 50, 50); // Default to 50, max 50
-    const searchTerm = url.searchParams.get('search') || ''; // Get the search term from query
+    // Use req.nextUrl to parse query parameters
+    const { searchParams } = req.nextUrl;
 
-    // Construct the query for text search
-    const query = searchTerm ? { $text: { $search: searchTerm } } : {}; // Full-text search if there's a search term
+    const page = parseInt(searchParams.get("page")) || 1;
+    const limit = Math.min(parseInt(searchParams.get("limit")) || 50, 50);
+    const sort = searchParams.get("sort") || "createdAt"; // Default to createdAt
+    const order = searchParams.get("order")?.toLowerCase() === "desc" ? -1 : 1;
+    const searchTerm = searchParams.get("search") || "";
+    const category = searchParams.get("category");
+    const tags = searchParams.get("tags");
+    const ingredients = searchParams.get("ingredients");
+    const instructions = parseInt(searchParams.get("instructions"));
 
-    // Calculate the number of documents to skip
+    let query = {};
+
+    // Validate sort parameter
+    const validSortFields = {
+      'cookTime': 'cookingTime',
+      'prepTime': 'preparationTime',
+      'instructions': 'instructions',
+      'createdAt': 'createdAt'  // Added creation date sorting
+    };
+
+    if (!validSortFields[sort]) {
+      return new Response(
+        JSON.stringify({
+          error: 'Invalid sort parameter. Valid options are: cookTime, prepTime, instructions, createdAt'
+        }), {
+          status: 400,
+          headers: { 'Content-Type': 'application/json' }
+        }
+      );
+    }
+
+    // Construct query for text search
+    if (searchTerm) {
+      query.$text = { $search: searchTerm };
+    }
+
+    if (category) {
+      query.category = {
+        $regex: new RegExp(`^${category}$`, "i"),
+      };
+    }
+
+    if (tags) {
+      const tagArray = tags.split(",").map((tag) => tag.trim().toLowerCase());
+      query.tags = {
+        $elemMatch: { $in: tagArray.map((tag) => new RegExp(`^${tag}$`, "i")) },
+      };
+    }
+
+    // Filter by ingredients (object structure)
+    if (ingredients) {
+      const ingredientArray = ingredients.split(",").map((ingredient) => ingredient.trim().toLowerCase());
+  
+      // Create a filter for each ingredient key, allowing case-insensitive matching
+      query.$and = ingredientArray.map((ingredient) => ({
+        [`ingredients.${ingredient}`]: { $exists: true },
+      }));
+    }
+
+    // Filter by number of instructions
+    if (!isNaN(instructions)) {
+      query.instructions = { $size: instructions }; // Match recipes with exactly the specified number of instructions
+    }
+
     const skip = (page - 1) * limit;
 
-    // Fetch the paginated recipes from the collection with the search query
-    const recipes = await recipesCollection.find(query).skip(skip).limit(limit).toArray();
-    console.log('Recipes fetched successfully:', recipes);
+    // Create sort object for MongoDB query
+    const sortObj = {};
+    sortObj[validSortFields[sort]] = order;
 
-    // Count the total number of recipes for pagination info, applying the same search query
-    const totalRecipes = await recipesCollection.countDocuments(query);
+    // Fetch sorted and paginated recipes
+    const recipes = await recipesCollection
+      .find(query) // Use the constructed query
+      .sort(sortObj)
+      .skip(skip)
+      .limit(limit)
+      .toArray();
 
-    // Return the data as JSON response, including pagination info
-    return new Response(JSON.stringify({
-      totalRecipes,
-      totalPages: Math.ceil(totalRecipes / limit),
-      currentPage: page,
-      recipes,
-    }), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    // Count total number of matching documents for pagination
+    const totalRecipes = await recipesCollection.countDocuments(query); // Count with query to match filters
+
+    return new Response(
+      JSON.stringify({
+        totalRecipes,
+        totalPages: Math.ceil(totalRecipes / limit),
+        currentPage: page,
+        category: category || "all",
+        appliedTags: tags ? tags.split(',').map(tag => tag.trim()) : [],
+        appliedIngredients: ingredients ? ingredients.split(",").map((ingredient) => ingredient.trim()) : [],
+        appliedInstructions: instructions,
+        sortedBy: sort,
+        sortOrder: order === 1 ? "asc" : "desc",
+        recipes,
+      }),
+      {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      }
+    );
   } catch (error) {
     console.error('Error fetching recipes:', error);
-    // Return error response in case of failure
     return new Response(JSON.stringify({ error: 'Failed to fetch recipes' }), {
       status: 500,
-      headers: { 'Content-Type': 'application/json' },
+      headers: { "Content-Type": "application/json" },
     });
   }
 }
