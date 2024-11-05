@@ -1,110 +1,81 @@
-// components/FavoritesList.js
-import { useState, useEffect } from 'react';
-import Link from 'next/link';
+// /pages/api/favorites/list.js
+import connectToDatabase from "../../../../db";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "../auth/[...nextauth]";
 
-export function FavoritesList() {
-    const [favorites, setFavorites] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-    const [pagination, setPagination] = useState({
-        currentPage: 1,
-        totalPages: 1,
-        totalCount: 0,
-        hasNextPage: false,
-        hasPrevPage: false
-    });
+export default async function handler(req, res) {
+    if (req.method !== 'GET') {
+        return res.status(405).json({ message: 'Method not allowed' });
+    }
 
-    const fetchFavorites = async (page = 1) => {
-        try {
-            setLoading(true);
-            const response = await fetch(`/api/favorites/list?page=${page}&limit=10`);
-            
-            if (!response.ok) {
-                throw new Error('Failed to fetch favorites');
-            }
-            
-            const data = await response.json();
-            setFavorites(data.favorites);
-            setPagination(data.pagination);
-        } catch (err) {
-            setError(err.message);
-        } finally {
-            setLoading(false);
+    try {
+        // Verify user is authenticated
+        const session = await getServerSession(req, res, authOptions);
+        if (!session) {
+            return res.status(401).json({ message: 'Unauthorized' });
         }
-    };
 
-    useEffect(() => {
-        fetchFavorites();
-    }, []);
-
-    if (loading) {
-        return <div>Loading your favorite recipes...</div>;
-    }
-
-    if (error) {
-        return <div>Error loading favorites: {error}</div>;
-    }
-
-    if (favorites.length === 0) {
-        return <div>You haven&#39;t saved any recipes to your favorites yet!</div>;
-    }
-
-    return (
-        <div className="favorites-container">
-            <h2>Your Favorite Recipes</h2>
-            <p>Total favorites: {pagination.totalCount}</p>
+        const db = await connectToDatabase();
+        
+        // First get the user's favorites list
+        const userFavorites = await db.collection('user_favorites').findOne(
+            { userId: session.user.id }
             
-            <div className="recipes-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {favorites.map(recipe => (
-                    <div key={recipe._id} className="recipe-card p-4 border rounded-lg shadow">
-                        {recipe.images && recipe.images[0] && (
-                            <img 
-                                src={recipe.images[0]} 
-                                alt={recipe.title}
-                                className="w-full h-48 object-cover rounded-t-lg"
-                            />
-                        )}
-                        <div className="p-4">
-                            <h3 className="text-xl font-semibold">{recipe.title}</h3>
-                            <p className="text-gray-600">{recipe.description}</p>
-                            <div className="mt-2 text-sm text-gray-500">
-                                <p>Prep time: {recipe.prep} mins</p>
-                                <p>Cook time: {recipe.cook} mins</p>
-                                <p>Servings: {recipe.servings}</p>
-                            </div>
-                            <Link 
-                                href={`/recipes/${recipe._id}`}
-                                className="mt-4 inline-block px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-                            >
-                                View Recipe
-                            </Link>
-                        </div>
-                    </div>
-                ))}
-            </div>
+        );
+        console.log('Received a request');
 
-            {/* Pagination Controls */}
-            <div className="pagination-controls mt-6 flex justify-center gap-4">
-                <button
-                    onClick={() => fetchFavorites(pagination.currentPage - 1)}
-                    disabled={!pagination.hasPrevPage}
-                    className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
-                >
-                    Previous
-                </button>
-                <span>
-                    Page {pagination.currentPage} of {pagination.totalPages}
-                </span>
-                <button
-                    onClick={() => fetchFavorites(pagination.currentPage + 1)}
-                    disabled={!pagination.hasNextPage}
-                    className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
-                >
-                    Next
-                </button>
-            </div>
-        </div>
-    );
+        // If user has no favorites yet, return empty array
+        if (!userFavorites || !userFavorites.favorites || userFavorites.favorites.length === 0) {
+            return res.status(200).json({ 
+                favorites: [],
+                totalCount: 0
+            });
+        }
+
+        // Get pagination parameters from query string
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const skip = (page - 1) * limit;
+
+        // Fetch the full recipe details for favorites with pagination
+        const favoriteRecipes = await db.collection('recipes')
+            .find({ _id: { $in: userFavorites.favorites } })
+            .skip(skip)
+            .limit(limit)
+            .toArray();
+
+        // Get total count for pagination
+        const totalCount = userFavorites.favorites.length;
+
+        // Calculate pagination metadata
+        const totalPages = Math.ceil(totalCount / limit);
+        const hasNextPage = page < totalPages;
+        const hasPrevPage = page > 1;
+
+        return res.status(200).json({
+            favorites: favoriteRecipes.map(recipe => ({
+                _id: recipe._id,
+                title: recipe.title,
+                description: recipe.description,
+                category: recipe.category,
+                images: recipe.images,
+                prep: recipe.prep,
+                cook: recipe.cook,
+                servings: recipe.servings,
+                // Add any other recipe fields you want to include
+            })),
+            pagination: {
+                currentPage: page,
+                totalPages,
+                totalCount,
+                hasNextPage,
+                hasPrevPage,
+                limit
+            }
+        });
+
+    } catch (error) {
+        console.error('Error fetching favorited recipes:', error);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
 }
-
-export default FavoritesList;
