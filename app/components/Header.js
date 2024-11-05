@@ -1,9 +1,17 @@
 "use client";
-import Link from 'next/link';
-import Image from 'next/image';
-import { useState } from 'react';
-import { FaHome, FaUtensils, FaInfoCircle, FaPhoneAlt, FaSignInAlt, FaSignOutAlt, FaChevronDown } from 'react-icons/fa';
+import Link from "next/link";
+import Image from "next/image";
+import { useState } from "react";
+import {
+  FaHome,
+  FaUtensils,
+  FaInfoCircle,
+  FaPhoneAlt,
+  FaChevronDown,
+  FaUserAlt,
+} from "react-icons/fa";
 import { FilterModal, FilterButton } from "./FilterButton.js";
+import ThemeButton from './ThemeButton.js';
 
 /**
  * Header Component
@@ -13,107 +21,137 @@ import { FilterModal, FilterButton } from "./FilterButton.js";
  * - Enhanced styling and user experience improvements
  */
 export default function Header({ isAuthenticated, onLogout }) {
-    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-    const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
 
-    // Toggle mobile dropdown menu
-    const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
+  const toggleMenu = () => setShowMenu((prev) => !prev);
+  // Toggle mobile dropdown menu
+  const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
 
-    return (
-        <header className="bg-gradient-to-r from-green-600 via-green-300 to-green-100 shadow-lg sticky top-0 z-50">
-            <div className="container mx-auto flex items-center justify-between p-4">
+  return (
+    <header className="bg-gradient-to-r from-green-600 via-green-300 to-green-100 shadow-lg sticky top-0 z-50">
+      <div className="container mx-auto flex items-center justify-between p-4">
+        {/* Logo Section */}
+        <Link href="/" className="flex items-center">
+          <Image
+            src="/Kwa.png"
+            alt="Logo"
+            width={100}
+            height={80}
+            className="mr-2"
+          />
+          <span className="text-3xl font-bold tracking-tight text-white font-lobster">
+            <h1></h1>
+          </span>
+        </Link>
 
-                {/* Logo Section */}
-                <Link href="/" className="flex items-center">
-                    <Image
-                        src="/Kwa.png"
-                        alt="Logo"
-                        width={100}
-                        height={80}
-                        className="mr-2"
-                    />
-                    <span className="text-3xl font-bold tracking-tight text-white font-lobster">
-                        <h1></h1>
-                    </span>
-                </Link>
-
-                {/* Navigation Links for Desktop */}
-                <nav className="hidden md:flex space-x-6">
-                    <Link
-                        href="/"
-                        className="flex items-center px-4 py-2 rounded-full text-grey font-medium hover:bg-green-500 hover:bg-opacity-80 transition-colors duration-300"
-                    >
-                        <FaHome className="mr-2" /> Home
-                    </Link>
+        {/* Navigation Links for Desktop */}
+        <nav className="hidden md:flex space-x-6">
+          <Link
+            href="/"
+            className="flex items-center px-4 py-2 rounded-full text-grey font-medium hover:bg-green-500 hover:bg-opacity-80 transition-colors duration-300"
+          >
+            <FaHome className="mr-2" /> Home
+          </Link>
+          <div className="flex items-center px-4 py-2 rounded-full text-grey font-medium hover:bg-green-500 hover:bg-opacity-80 transition-colors duration-300">
+            <FaUtensils className="mr-2" /> Recipes
+          </div>
+          <div className="flex items-center px-4 py-2 rounded-full text-grey font-medium hover:bg-green-500 hover:bg-opacity-80 transition-colors duration-300">
+            <FaInfoCircle className="mr-2" /> About Us
+          </div>
+          <div className="flex items-center px-4 py-2 rounded-full text-grey font-medium hover:bg-green-500 hover:bg-opacity-80 transition-colors duration-300">
+            <FaPhoneAlt className="mr-2" /> Contact
+          </div>
                     <div
                         className="flex items-center px-4 py-2 rounded-full text-grey font-medium hover:bg-green-500 hover:bg-opacity-80 transition-colors duration-300"
                     >
-                        <FaUtensils className="mr-2" /> Recipes
+                       <ThemeButton /> Theme
                     </div>
-                    <div
-                        className="flex items-center px-4 py-2 rounded-full text-grey font-medium hover:bg-green-500 hover:bg-opacity-80 transition-colors duration-300"
-                    >
-                        <FaInfoCircle className="mr-2" /> About Us
-                    </div>
-                    <div
-                        className="flex items-center px-4 py-2 rounded-full text-grey font-medium hover:bg-green-500 hover:bg-opacity-80 transition-colors duration-300"
-                    >
-                        <FaPhoneAlt className="mr-2" /> Contact
-                    </div>
-                </nav>
 
-                {/* Filter Button and Modal */}
-                <div className="flex items-center">
-                    <FilterButton onClick={() => setIsFilterOpen(true)} />
-                    {isFilterOpen && <FilterModal onClose={() => setIsFilterOpen(false)} />}
-                </div>
+        </nav>
 
-                {/* Mobile Menu Button */}
-                <div className="md:hidden">
-                    <button
-                        className="text-white focus:outline-none"
-                        onClick={toggleDropdown}
-                        aria-label="Open Menu"
-                    >
-                        <FaChevronDown className={`w-6 h-6 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
-                    </button>
-                </div>
+        {/* User Icon Toggle */}
+        <div className="relative hidden md:block">
+          <button
+            onClick={toggleMenu}
+            className="flex items-center px-4 py-2 rounded-full text-grey font-medium hover:bg-green-500 hover:bg-opacity-80 transition-colors duration-300"
+          >
+            <FaUserAlt className="mr-2" />
+          </button>
+
+          {/* Sign Up / Log In Links */}
+          {showMenu && (
+            <div className="absolute right-0 mt-2 w-40 bg-white rounded-md shadow-lg text-gray-800">
+              <Link
+                href="/signup"
+                className="block px-4 py-2 hover:bg-gray-200"
+              >
+                Sign Up
+              </Link>
+              <Link href="/login" className="block px-4 py-2 hover:bg-gray-200">
+                Log In
+              </Link>
+
+              <Link href="/editdetails" className="block px-4 py-2 hover:bg-gray-200">
+                Edit
+              </Link>
             </div>
+          )}
+        </div>
 
-          {/* Dropdown Menu for Mobile */}
-{isDropdownOpen && (
-    <div className="md:hidden bg-green-200 text-gray-900 p-4 rounded-b-lg shadow-lg">
-        <Link
+        {/* Filter Button and Modal */}
+        <div className="flex items-center">
+          <FilterButton onClick={() => setIsFilterOpen(true)} />
+          {isFilterOpen && (
+            <FilterModal onClose={() => setIsFilterOpen(false)} />
+          )}
+        </div>
+
+        {/* Mobile Menu Button */}
+        <div className="md:hidden">
+          <button
+            className="text-white focus:outline-none"
+            onClick={toggleDropdown}
+            aria-label="Open Menu"
+          >
+            <FaChevronDown
+              className={`w-6 h-6 transition-transform ${isDropdownOpen ? "rotate-180" : ""}`}
+            />
+          </button>
+        </div>
+      </div>
+
+      {/* Dropdown Menu for Mobile */}
+      {isDropdownOpen && (
+        <div className="md:hidden bg-green-200 text-gray-900 p-4 rounded-b-lg shadow-lg">
+          <Link
             href="/"
             className="block px-4 py-2 rounded text-grey hover:bg-green-500 hover:bg-opacity-80 transition-colors duration-300"
             onClick={() => setIsDropdownOpen(false)}
-        >
+          >
             Home
-        </Link>
-        <div
+          </Link>
+          <div
             className="block px-4 py-2 rounded text-grey hover:bg-green-500 hover:bg-opacity-80 transition-colors duration-300"
             onClick={() => setIsDropdownOpen(false)}
-        >
+          >
             Recipes
-        </div>
-        <div
+          </div>
+          <div
             className="block px-4 py-2 rounded text-grey hover:bg-green-500 hover:bg-opacity-80 transition-colors duration-300"
             onClick={() => setIsDropdownOpen(false)}
-        >
+          >
             About Us
-        </div>
-        <div
+          </div>
+          <div
             className="block px-4 py-2 rounded text-grey hover:bg-green-500 hover:bg-opacity-80 transition-colors duration-300"
             onClick={() => setIsDropdownOpen(false)}
-        >
+          >
             Contact
+          </div>
         </div>
-        
-    </div>
-)}
-
-                
-        
-        </header>
-    );
+      )}
+    </header>
+  );
 }
