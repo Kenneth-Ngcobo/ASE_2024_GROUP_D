@@ -11,6 +11,10 @@ import Carousel from './Carousel';
 import { SortControl } from './SortControl';
 import { sortRecipes } from './sortUtils';
 import { useSearchParams } from 'next/navigation';
+import ReviewForm from '../components/ReviewForm';
+import ReviewList from '../components/ReviewList';
+
+
 
 export default function Recipes({ recipes: initialRecipes }) {
   const [sortBy, setSortBy] = useState("default");

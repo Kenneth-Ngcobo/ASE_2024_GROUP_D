@@ -1,6 +1,5 @@
 // components/ReviewForm.js
 import { useState } from 'react';
-import axios from 'axios';
 
 const ReviewForm = ({ recipeId, onReviewAdded }) => {
   const [rating, setRating] = useState(5);
@@ -11,15 +10,27 @@ const ReviewForm = ({ recipeId, onReviewAdded }) => {
     e.preventDefault();
     setError('');
     try {
-      const response = await axios.post('/api/reviews', {
-        recipeId,
-        rating,
-        comment,
-        // Assuming user's authentication details are handled in the backend
+      const response = await fetch('/api/reviews', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          recipeId,
+          rating,
+          comment,
+          // Assuming the user's authentication details are handled on the server
+        }),
       });
+
+      if (!response.ok) {
+        throw new Error('Failed to submit review');
+      }
+
+      const review = await response.json();
       setComment('');
       setRating(5);
-      onReviewAdded(response.data); // Trigger an update in the parent component
+      onReviewAdded(review); // Trigger an update in the parent component
     } catch (error) {
       setError('Failed to submit review. Please try again.');
       console.error(error);
