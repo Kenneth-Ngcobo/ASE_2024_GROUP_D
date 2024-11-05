@@ -1,21 +1,24 @@
 /* eslint-disable @next/next/no-page-custom-font */
-'use client'
+'use client';
 
 // Import necessary dependencies from Next.js and React
 import Link from 'next/link';
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import { FaCalendarDay, FaClock, FaUtensils, FaTags, FaUtensilSpoon, FaListUl } from "react-icons/fa"; // Updated icon imports
+import { FaHeart } from "react-icons/fa"; // Import the heart icon
 import Head from 'next/head';
 import Carousel from './Carousel';
 import { SortControl } from './SortControl';
 import { sortRecipes } from './sortUtils';
 import { useSearchParams } from 'next/navigation';
+import FavoritesList from './FavoritesList'; // Import FavoritesList
 
 export default function Recipes({ recipes: initialRecipes }) {
   const [sortBy, setSortBy] = useState("default");
   const [sortOrder, setSortOrder] = useState("ascending");
   const [recipes, setRecipes] = useState(initialRecipes);
+  const [favorites, setFavorites] = useState(new Set()); // State to manage favorites
   const searchParams = useSearchParams();
 
   useEffect(() => {
@@ -24,7 +27,7 @@ export default function Recipes({ recipes: initialRecipes }) {
 
     setSortBy(newSort);
     setSortOrder(newOrder);
-  },[searchParams])
+  }, [searchParams]);
 
   const handleSort = (newSortBy, newSortOrder) => {
     setSortBy(newSortBy);
@@ -36,8 +39,19 @@ export default function Recipes({ recipes: initialRecipes }) {
   useEffect(() => {
     const sortedRecipes = sortRecipes(initialRecipes, sortBy, sortOrder);
     setRecipes(sortedRecipes);
-  }, [initialRecipes]);
+  }, [initialRecipes, sortBy, sortOrder]); // Ensure to watch for changes in sortBy and sortOrder
 
+  const toggleFavorite = (recipeId) => {
+    setFavorites((prevFavorites) => {
+      const newFavorites = new Set(prevFavorites);
+      if (newFavorites.has(recipeId)) {
+        newFavorites.delete(recipeId); // Remove from favorites if already present
+      } else {
+        newFavorites.add(recipeId); // Add to favorites
+      }
+      return newFavorites;
+    });
+  };
 
   return (
     <>
@@ -57,6 +71,9 @@ export default function Recipes({ recipes: initialRecipes }) {
           sortBy={sortBy}
           sortOrder={sortOrder}
         />
+
+        {/* Favorites Button */}
+        <FavoritesList favorites={favorites} /> {/* Pass favorites state here */}
 
         {/* Grid layout to display the list of recipes */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
@@ -82,37 +99,52 @@ export default function Recipes({ recipes: initialRecipes }) {
                       src={recipe.images[0]}  // First image from the recipe images array
                       alt={recipe.title}  // Alternative text for the image
                       fill
-                      objectFit="cover"
+                      style={{ objectFit: "cover" }} // Use style for object fit in Next.js Image
                       className="rounded-md"
                     />
                   </div>
                 )}
               </div>
 
-              {/* Recipe details */}
-              <p className="text-sm text-gray-600 font-roboto">
-                <FaCalendarDay className="inline-block text-green-600 mr-1" />
-                <strong className="text-green-600"></strong> {new Date(recipe.published).toDateString()}
-              </p>
-              <p className="text-sm text-gray-600 font-roboto">
+              {/* Favorite button */}
+              <div className="flex justify-between items-center mb-2">
+                <span
+                  onClick={(e) => {
+                    e.preventDefault(); // Prevent navigation when clicking the heart icon
+                    toggleFavorite(recipe._id);
+                  }}
+                  className={`cursor-pointer text-xl ${favorites.has(recipe._id) ? 'text-red-500' : 'text-gray-400'}`}
+                >
+                  <FaHeart />
+                </span>
+
+                {/* Recipe details */}
+                <div className="text-sm text-gray-600 font-roboto">
+                  <FaCalendarDay className="inline-block text-green-600 mr-1" />
+                  {new Date(recipe.published).toDateString()}
+                </div>
+              </div>
+
+              {/* Additional recipe details */}
+              <p className="text-sm font-roboto">
                 <FaListUl className="inline-block text-green-600 mr-1" />
-                <strong className="text-green-600"></strong> {recipe.instructions ? recipe.instructions.length : 0} steps
+                {recipe.instructions ? recipe.instructions.length : 0} steps
               </p>
               <p className="text-sm mt-2 font-roboto">
                 <FaClock className="inline-block text-green-600 mr-1" />
-                <strong className="text-green-600"></strong> {recipe.prep} minutes
+                {recipe.prep} minutes
               </p>
               <p className="text-sm font-roboto">
                 <FaUtensilSpoon className="inline-block text-green-600 mr-1" />
-                <strong className="text-green-600"></strong> {recipe.cook} minutes
+                {recipe.cook} minutes
               </p>
               <p className="text-sm font-roboto">
                 <FaUtensils className="inline-block text-green-600 mr-1" />
-                <strong className="text-green-600"></strong> {recipe.servings}
+                {recipe.servings}
               </p>
               <p className="text-sm font-roboto">
                 <FaTags className="inline-block text-green-600 mr-1" />
-                <strong className="text-green-600"></strong> {recipe.category}
+                {recipe.category}
               </p>
             </Link>
           ))}
