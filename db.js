@@ -35,4 +35,29 @@ async function connectToDatabase() {
   return db;
 }
 
+async function ensureIndexes(db) {
+  try {
+   
+    await db.collection('reviews').createIndexes([
+    
+      { key: { recipeId: 1 }, name: 'recipeId_index' },
+      
+      { key: { recipeId: 1, rating: -1 }, name: 'recipe_rating_index' },
+      
+      { key: { recipeId: 1, createdAt: -1 }, name: 'recipe_date_index' },
+      
+      { key: { username: 1 }, name: 'username_index' }
+    ]);
+
+    console.log('Database indexes have been created successfully');
+  } catch (error) {
+    
+    if (!error.message.includes('already exists')) {
+      console.error('Error creating indexes:', error);
+      throw error;
+    }
+  }
+}
+
+
 module.exports = connectToDatabase;
