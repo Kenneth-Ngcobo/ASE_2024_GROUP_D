@@ -67,18 +67,3 @@ export async function fetchRecipeById(id) {
         throw error; // Throw the error if the request fails
     }
 }
-export async function fetchReviewsByRecipeId(recipeId) {
-    try {
-        const response = await fetch(`${API_BASE_URL}/recipes/${recipeId}/reviews`);
-
-        if (!response.ok) {
-            throw new Error(`Failed to fetch reviews for recipe ID ${recipeId}: ${response.statusText}`);
-        }
-
-        const data = await response.json();
-        return data; // Assuming data is an array of reviews
-    } catch (error) {
-        console.error('Error fetching reviews:', error);
-        return []; // Return an empty array or handle the error as needed
-    }
-}
