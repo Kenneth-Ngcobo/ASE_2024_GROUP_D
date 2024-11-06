@@ -1,4 +1,3 @@
-// reviewRoutes.js - API endpoints for review management
 const express = require('express');
 const router = express.Router();
 const connectToDatabase = require('./db');

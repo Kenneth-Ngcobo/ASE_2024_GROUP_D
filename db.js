@@ -32,6 +32,8 @@ async function connectToDatabase() {
   // Connect to specific database
   const db = client.db('devdb'); 
   cachedDb = db; // Caches the DB connection for future requests
+  await ensureIndexes(db);
+  
   return db;
 }
 
