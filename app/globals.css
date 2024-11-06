@@ -9,6 +9,14 @@
   --primary-dark: #5f6f52;
 }
 
+.dark {
+  /* Dark mode variables */
+  --background: #171717; /* Dark background */
+  --foreground: #f1f5ef; /* Light text */
+  --primary: #5f6f52; /* Darker green for dark mode */
+  --primary-dark: #a9b388; /* Lighter green for accents */
+  --secondary: #a9b388;
+}
 
 
 /* Overall App */
@@ -19,7 +27,7 @@ body {
 
 /* Recipe Cards */
 .recipe-card {
-  background-color: white; /* Clean white background for cards */
+  background-color: red;/*var(--background);*/ /* Clean white background for cards */
   border: 1px solid var(--primary); /* Subtle sage green border */
   box-shadow: 0 2px 4px rgba(95, 111, 82, 0.1); /* Subtle shadow using secondary color */
 }
