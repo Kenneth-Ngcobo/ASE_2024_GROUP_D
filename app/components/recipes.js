@@ -2,8 +2,9 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import { FaCalendarDay, FaClock, FaUtensils, FaListUl, FaTags, FaUtensilSpoon } from "react-icons/fa";
-import { FavoriteButton } from './FavoriteButton';
+import { useState, useEffect } from 'react';
+import { FaHeart,FaCalendarDay, FaClock, FaUtensils, FaTags, FaUtensilSpoon, FaListUl } from "react-icons/fa"; // Updated icon imports
+import Head from 'next/head';
 import Carousel from './Carousel';
 
 export default function Recipe({ recipe }) {
@@ -47,33 +48,31 @@ export default function Recipe({ recipe }) {
             )}
           </div>
 
-          {/* Recipe Quick Info */}
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
-            <div className="flex items-center text-gray-600">
-              <FaCalendarDay className="mr-2 text-green-600" />
-              <span>{new Date(recipe.published).toLocaleDateString()}</span>
-            </div>
-            <div className="flex items-center text-gray-600">
-              <FaClock className="mr-2 text-green-600" />
-              <span>Prep: {recipe.prep} mins</span>
-            </div>
-            <div className="flex items-center text-gray-600">
-              <FaUtensilSpoon className="mr-2 text-green-600" />
-              <span>Cook: {recipe.cook} mins</span>
-            </div>
-            <div className="flex items-center text-gray-600">
-              <FaUtensils className="mr-2 text-green-600" />
-              <span>Serves: {recipe.servings}</span>
-            </div>
-            <div className="flex items-center text-gray-600">
-              <FaListUl className="mr-2 text-green-600" />
-              <span>{recipe.instructions.length} steps</span>
-            </div>
-            <div className="flex items-center text-gray-600">
-              <FaTags className="mr-2 text-green-600" />
-              <span>{recipe.category}</span>
-            </div>
-          </div>
+        {/* Grid layout to display the list of recipes */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {/* Map over recipes and display each one */}
+          {recipes && recipes.map((recipe) => (
+            <Link
+              href={`/Recipe/${recipe._id}`}  // Link to each recipe's detailed page using its ID
+              key={recipe._id}  // Unique key for each mapped element
+              className="block p-4  border border-gray-200 rounded-lg shadow-lg hover:shadow-2xl transition-transform transform hover:scale-105 duration-300 ease-in-out"
+            >
+
+               {/* Heart Icon for Favorites */}
+            <button
+              className="absolute top-2 right-2 text-gray-400 hover:text-red-500"
+              onClick={(e) => {
+                e.preventDefault(); // Prevents navigating when clicked
+                // Implement favorite toggle here
+              }}
+            >
+              <FaHeart size={24} />
+            </button>
+
+              {/* Recipe title */}
+              <h2 className="text-xl font-semibold font-playfair mb-2 text-green-800">
+                {recipe.title}
+              </h2>
 
           {/* Description */}
           <div className="mb-6">
