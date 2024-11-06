@@ -1,134 +1,142 @@
-/* eslint-disable @next/next/no-page-custom-font */
 'use client'
 
-// Import necessary dependencies from Next.js and React
-import Link from 'next/link';
+import { useState } from 'react';
 import Image from 'next/image';
-import { useState, useEffect } from 'react';
-import { FaCalendarDay, FaClock, FaUtensils, FaTags, FaUtensilSpoon, FaListUl } from "react-icons/fa"; // Updated icon imports
-import Head from 'next/head';
+import { FaCalendarDay, FaClock, FaUtensils, FaListUl, FaTags, FaUtensilSpoon } from "react-icons/fa";
+import { FavoriteButton } from './FavoriteButton';
 import Carousel from './Carousel';
-import { SortControl } from './SortControl';
-import { sortRecipes } from './sortUtils';
-import { useSearchParams } from 'next/navigation';
 
-export default function Recipes({ recipes: initialRecipes }) {
-  const [sortBy, setSortBy] = useState("default");
-  const [sortOrder, setSortOrder] = useState("ascending");
-  const [recipes, setRecipes] = useState(initialRecipes);
-  const searchParams = useSearchParams();
+export default function Recipe({ recipe }) {
+  const [activeTab, setActiveTab] = useState('ingredients');
 
-  useEffect(() => {
-    const newSort = searchParams.get("sortBy") || "default";
-    const newOrder = searchParams.get("order") || "ascending";
-
-    setSortBy(newSort);
-    setSortOrder(newOrder);
-  },[searchParams])
-
-  const handleSort = (newSortBy, newSortOrder) => {
-    setSortBy(newSortBy);
-    setSortOrder(newSortOrder);
-    const sortedRecipes = sortRecipes(initialRecipes, newSortBy, newSortOrder);
-    setRecipes(sortedRecipes);
-  };
-
-  useEffect(() => {
-    const sortedRecipes = sortRecipes(initialRecipes, sortBy, sortOrder);
-    setRecipes(sortedRecipes);
-  }, [initialRecipes]);
-
+  if (!recipe) {
+    return <div>Loading...</div>;
+  }
 
   return (
-    <>
-      {/* Use the Head component to include external resources like fonts */}
-      <Head>
-        {/* Import Google Fonts */}
-        <Link
-          href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Roboto:wght@300;400;500&display=swap"
-          rel="stylesheet"
-        />
-      </Head>
+    <div className="container mx-auto px-4 py-8">
+      {/* Recipe Header Section */}
+      <div className="mb-8 relative">
+        <div className="bg-white rounded-lg shadow-lg p-6">
+          <div className="flex justify-between items-start mb-4">
+            <h1 className="text-3xl font-playfair font-bold text-green-800">
+              {recipe.title}
+            </h1>
+            {/* Add FavoriteButton here with larger size */}
+            <div className="relative top-0 right-0">
+              <FavoriteButton 
+                recipeId={recipe._id} 
+                className="p-3" // Larger padding
+                iconClassName="w-6 h-6" // Larger icon
+              />
+            </div>
+          </div>
 
-      {/* Main container for the recipes grid */}
-      <div className="container mx-auto p-4 pt-6 md:p-6 lg:p-12">
-        <SortControl
-          onSortChange={handleSort}
-          sortBy={sortBy}
-          sortOrder={sortOrder}
-        />
+          {/* Recipe Image/Carousel */}
+          <div className="relative w-full h-[400px] mb-6 rounded-lg overflow-hidden">
+            {recipe.images.length > 1 ? (
+              <Carousel images={recipe.images} />
+            ) : (
+              <Image
+                src={recipe.images[0]}
+                alt={recipe.title}
+                fill
+                objectFit="cover"
+                className="rounded-lg"
+              />
+            )}
+          </div>
 
-        {/* Grid layout to display the list of recipes */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {/* Map over recipes and display each one */}
-          {recipes && recipes.map((recipe) => (
-            <Link
-              href={`/Recipe/${recipe._id}`}  // Link to each recipe's detailed page using its ID
-              key={recipe._id}  // Unique key for each mapped element
-              className="block p-4  border border-gray-200 rounded-lg shadow-lg hover:shadow-2xl transition-transform transform hover:scale-105 duration-300 ease-in-out"
-            >
-              {/* Recipe title */}
-              <h2 className="text-xl font-semibold font-playfair mb-2 text-green-800">
-                {recipe.title}
-              </h2>
+          {/* Recipe Quick Info */}
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
+            <div className="flex items-center text-gray-600">
+              <FaCalendarDay className="mr-2 text-green-600" />
+              <span>{new Date(recipe.published).toLocaleDateString()}</span>
+            </div>
+            <div className="flex items-center text-gray-600">
+              <FaClock className="mr-2 text-green-600" />
+              <span>Prep: {recipe.prep} mins</span>
+            </div>
+            <div className="flex items-center text-gray-600">
+              <FaUtensilSpoon className="mr-2 text-green-600" />
+              <span>Cook: {recipe.cook} mins</span>
+            </div>
+            <div className="flex items-center text-gray-600">
+              <FaUtensils className="mr-2 text-green-600" />
+              <span>Serves: {recipe.servings}</span>
+            </div>
+            <div className="flex items-center text-gray-600">
+              <FaListUl className="mr-2 text-green-600" />
+              <span>{recipe.instructions.length} steps</span>
+            </div>
+            <div className="flex items-center text-gray-600">
+              <FaTags className="mr-2 text-green-600" />
+              <span>{recipe.category}</span>
+            </div>
+          </div>
 
-              {/* Recipe image */}
-              <div className="relative w-full h-48 mb-4">
-                {recipe.images.length > 1 ? (
-                  <Carousel images={recipe.images} />
-                ) : (
-                  <div className='relative w-full h-full'>
-                    <Image
-                      src={recipe.images[0]}  // First image from the recipe images array
-                      alt={recipe.title}  // Alternative text for the image
-                      fill
-                      objectFit="cover"
-                      className="rounded-md"
-                    />
-                  </div>
-                )}
+          {/* Description */}
+          <div className="mb-6">
+            <p className="text-gray-700">{recipe.description}</p>
+          </div>
+
+          {/* Tabs */}
+          <div className="border-b border-gray-200">
+            <nav className="flex -mb-px">
+              <button
+                onClick={() => setActiveTab('ingredients')}
+                className={`mr-4 py-2 px-4 font-medium ${
+                  activeTab === 'ingredients'
+                    ? 'border-b-2 border-green-600 text-green-600'
+                    : 'text-gray-500 hover:text-green-500'
+                }`}
+              >
+                Ingredients
+              </button>
+              <button
+                onClick={() => setActiveTab('instructions')}
+                className={`py-2 px-4 font-medium ${
+                  activeTab === 'instructions'
+                    ? 'border-b-2 border-green-600 text-green-600'
+                    : 'text-gray-500 hover:text-green-500'
+                }`}
+              >
+                Instructions
+              </button>
+            </nav>
+          </div>
+
+          {/* Tab Content */}
+          <div className="mt-6">
+            {activeTab === 'ingredients' ? (
+              <div className="space-y-2">
+                <h2 className="text-xl font-semibold mb-4">Ingredients</h2>
+                <ul className="list-disc pl-5 space-y-2">
+                  {recipe.ingredients.map((ingredient, index) => (
+                    <li key={index} className="text-gray-700">
+                      {ingredient}
+                    </li>
+                  ))}
+                </ul>
               </div>
-
-              {/* Recipe details */}
-              <p className="text-sm text-gray-600 font-roboto">
-                <FaCalendarDay className="inline-block text-green-600 mr-1" />
-                <strong className="text-green-600"></strong> {new Date(recipe.published).toDateString()}
-              </p>
-              <p className="text-sm text-gray-600 font-roboto">
-                <FaListUl className="inline-block text-green-600 mr-1" />
-                <strong className="text-green-600"></strong> {recipe.instructions ? recipe.instructions.length : 0} steps
-              </p>
-              <p className="text-sm mt-2 font-roboto">
-                <FaClock className="inline-block text-green-600 mr-1" />
-                <strong className="text-green-600"></strong> {recipe.prep} minutes
-              </p>
-              <p className="text-sm font-roboto">
-                <FaUtensilSpoon className="inline-block text-green-600 mr-1" />
-                <strong className="text-green-600"></strong> {recipe.cook} minutes
-              </p>
-              <p className="text-sm font-roboto">
-                <FaUtensils className="inline-block text-green-600 mr-1" />
-                <strong className="text-green-600"></strong> {recipe.servings}
-              </p>
-              <p className="text-sm font-roboto">
-                <FaTags className="inline-block text-green-600 mr-1" />
-                <strong className="text-green-600"></strong> {recipe.category}
-              </p>
-            </Link>
-          ))}
+            ) : (
+              <div className="space-y-4">
+                <h2 className="text-xl font-semibold mb-4">Instructions</h2>
+                <ol className="space-y-4">
+                  {recipe.instructions.map((instruction, index) => (
+                    <li key={index} className="flex">
+                      <span className="font-bold text-green-600 mr-4">
+                        {index + 1}.
+                      </span>
+                      <span className="text-gray-700">{instruction}</span>
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            )}
+          </div>
         </div>
       </div>
-
-      {/* Inline styles to apply custom fonts using the loaded Google Fonts */}
-      <style jsx>{`
-        /* Apply custom fonts */
-        .font-playfair {
-          font-family: 'Playfair Display', serif;
-        }
-        .font-roboto {
-          font-family: 'Roboto', sans-serif;
-        }
-      `}</style>
-    </>
+    </div>
   );
 }
