@@ -1,4 +1,4 @@
-// components/ReviewList.js
+"use client";
 import { useState, useEffect } from 'react';
 
 const ReviewList = ({ recipeId }) => {

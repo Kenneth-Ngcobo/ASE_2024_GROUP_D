@@ -1,25 +1,23 @@
-// Other imports remain unchanged
+// pages/RecipePage.js
 import { Suspense } from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
 import BackButton from '../../components/BackButton';
-import { fetchRecipeById } from '../../api';
+import { fetchRecipeById, fetchReviewsByRecipeId } from '../../api';
 import ImageGallery from '../../components/ImageGallery';
 import CollapsibleSection from '../../components/CollapsibleSection';
-import dynamic from 'next/dynamic';
-import LoadingSpinner from '../../components/loadingSpinner'; // Importing the Loading component
+import ReviewForm from '../../components/ReviewForm';
+import ReviewList from '../../components/ReviewList';
 import Loading from './loading';
 
-
-// Generate metadata for the recipe page dynamically
+// Metadata function for SEO
 export async function generateMetadata({ params }) {
     const { id } = params;
     const recipe = await fetchRecipeById(id);
 
-    if ( !recipe) {
+    if (!recipe) {
         return {
             title: 'Recipe not found',
-            description: 'Error occurred while fetching the recipe.'
+            description: 'Error occurred while fetching the recipe.',
         };
     }
 
@@ -30,35 +28,21 @@ export async function generateMetadata({ params }) {
             title: recipe.title || 'Untitled Recipe',
             description: recipe.description || 'No description available.',
             images: recipe.images?.[0] || '/kwaMai.jpg',
-            type: 'article'
-        }
+            type: 'article',
+        },
     };
 }
 
 // Main Recipe Page Component
 export default async function RecipePage({ params }) {
     const { id } = params;
-    let recipe;
-    let load = true;
-    let error = null;
 
-    try {
-        recipe = await fetchRecipeById(id);
-    } catch (error) {
-        console.error('Error fetching recipe:', error);
-        error = 'Failed to load recipe data.';
-    } finally {
-        load = false;
-    }
+    // Fetch recipe and reviews on the server
+    const recipe = await fetchRecipeById(id);
+    const reviews = await fetchReviewsByRecipeId(id);
 
-    // if(load){
-    //     <div className="w-full h-[400px] bg-gray-100 rounded-xl flex items-center justify-center">
-    //         <Loading /> {/* Use your Loading component here */}
-    //     </div>
-    // }
-
-    if (error) {
-        throw error;
+    if (!recipe) {
+        throw new Error('Failed to load recipe data.');
     }
 
     return (
@@ -73,7 +57,7 @@ export default async function RecipePage({ params }) {
                     <div className="space-y-8">
                         {/* Image Section */}
                         <div className="bg-white rounded-2xl shadow-xl p-6 overflow-hidden">
-                            <Suspense fallback={<Loading />}> {/* Use the Loading component here */}
+                            <Suspense fallback={<Loading />}>
                                 {recipe.images && recipe.images.length > 0 ? (
                                     <ImageGallery images={recipe.images} />
                                 ) : recipe.images?.[0] ? (
@@ -164,6 +148,12 @@ export default async function RecipePage({ params }) {
                             <p className="text-sm">
                                 <strong className="text-green-600">Category:</strong> {recipe.category}
                             </p>
+                        </div>
+
+                        {/* Reviews Section */}
+                        <div className="bg-white rounded-2xl shadow-xl p-6">
+                            <ReviewForm recipeId={id} />
+                            <ReviewList recipeId={id} reviews={reviews} />
                         </div>
                     </div>
                 </div>

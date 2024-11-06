@@ -1,4 +1,4 @@
-// components/ReviewForm.js
+"use client";
 import { useState } from 'react';
 
 const ReviewForm = ({ recipeId, onReviewAdded }) => {

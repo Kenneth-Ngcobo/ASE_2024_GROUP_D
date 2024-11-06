@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-page-custom-font */
 'use client'
 
- 
+// Import necessary dependencies from Next.js and React
 import Link from 'next/link';
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
@@ -11,14 +11,11 @@ import Carousel from './Carousel';
 import { SortControl } from './SortControl';
 import { sortRecipes } from './sortUtils';
 import { useSearchParams } from 'next/navigation';
-import ReviewForm from '../components/ReviewForm';
-import ReviewList from '../components/ReviewList';
 
-export default function Recipes({ recipes: initialRecipes, recipeId }) {
+export default function Recipes({ recipes: initialRecipes }) {
   const [sortBy, setSortBy] = useState("default");
   const [sortOrder, setSortOrder] = useState("ascending");
   const [recipes, setRecipes] = useState(initialRecipes);
-  const [refreshReviews, setRefreshReviews] = useState(false); // Track review refresh for detailed view
   const searchParams = useSearchParams();
 
   useEffect(() => {
@@ -27,7 +24,7 @@ export default function Recipes({ recipes: initialRecipes, recipeId }) {
 
     setSortBy(newSort);
     setSortOrder(newOrder);
-  }, [searchParams]);
+  },[searchParams])
 
   const handleSort = (newSortBy, newSortOrder) => {
     setSortBy(newSortBy);
@@ -41,9 +38,6 @@ export default function Recipes({ recipes: initialRecipes, recipeId }) {
     setRecipes(sortedRecipes);
   }, [initialRecipes]);
 
-  const handleReviewAdded = () => {
-    setRefreshReviews(!refreshReviews); // Toggle to refresh reviews on the detailed page
-  };
 
   return (
     <>
@@ -71,7 +65,7 @@ export default function Recipes({ recipes: initialRecipes, recipeId }) {
             <Link
               href={`/Recipe/${recipe._id}`}  // Link to each recipe's detailed page using its ID
               key={recipe._id}  // Unique key for each mapped element
-              className="block p-4 border border-gray-200 rounded-lg shadow-lg hover:shadow-2xl transition-transform transform hover:scale-105 duration-300 ease-in-out"
+              className="block p-4  border border-gray-200 rounded-lg shadow-lg hover:shadow-2xl transition-transform transform hover:scale-105 duration-300 ease-in-out"
             >
               {/* Recipe title */}
               <h2 className="text-xl font-semibold font-playfair mb-2 text-green-800">
@@ -98,39 +92,31 @@ export default function Recipes({ recipes: initialRecipes, recipeId }) {
               {/* Recipe details */}
               <p className="text-sm text-gray-600 font-roboto">
                 <FaCalendarDay className="inline-block text-green-600 mr-1" />
-                {new Date(recipe.published).toDateString()}
+                <strong className="text-green-600"></strong> {new Date(recipe.published).toDateString()}
               </p>
               <p className="text-sm text-gray-600 font-roboto">
                 <FaListUl className="inline-block text-green-600 mr-1" />
-                {recipe.instructions ? recipe.instructions.length : 0} steps
+                <strong className="text-green-600"></strong> {recipe.instructions ? recipe.instructions.length : 0} steps
               </p>
               <p className="text-sm mt-2 font-roboto">
                 <FaClock className="inline-block text-green-600 mr-1" />
-                {recipe.prep} minutes
+                <strong className="text-green-600"></strong> {recipe.prep} minutes
               </p>
               <p className="text-sm font-roboto">
                 <FaUtensilSpoon className="inline-block text-green-600 mr-1" />
-                {recipe.cook} minutes
+                <strong className="text-green-600"></strong> {recipe.cook} minutes
               </p>
               <p className="text-sm font-roboto">
                 <FaUtensils className="inline-block text-green-600 mr-1" />
-                {recipe.servings}
+                <strong className="text-green-600"></strong> {recipe.servings}
               </p>
               <p className="text-sm font-roboto">
                 <FaTags className="inline-block text-green-600 mr-1" />
-                {recipe.category}
+                <strong className="text-green-600"></strong> {recipe.category}
               </p>
             </Link>
           ))}
         </div>
-        
-        {/* Show review form and list for the specific recipe page */}
-        {recipeId && (
-          <div className="mt-8">
-            <ReviewForm recipeId={recipeId} onReviewAdded={handleReviewAdded} />
-            <ReviewList recipeId={recipeId} key={refreshReviews} />
-          </div>
-        )}
       </div>
 
       {/* Inline styles to apply custom fonts using the loaded Google Fonts */}
