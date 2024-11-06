@@ -115,6 +115,15 @@ export default function Header({ isAuthenticated, onLogout }) {
         >
             Contact
         </div>
+        <div
+            className="block px-4 py-2  rounded text-grey hover:bg-green-500 hover:bg-opacity-80 transition-colors duration-300"
+            onClick={() => setIsDropdownOpen(false)}
+        >
+            
+            <ThemeButton  />
+          
+      
+        </div>
         
     </div>
 )}
