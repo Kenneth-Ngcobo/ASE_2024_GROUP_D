@@ -4,6 +4,7 @@ import Header from "./components/Header";
 import { Suspense } from "react";
 import Loading from "./loading";
 import { ThemeProvider } from "next-themes";
+import Providers from "./providers";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -58,12 +59,14 @@ export default function RootLayout({ children }) {
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`} // Applying custom fonts and antialiasing for better text rendering
       >
-        <ThemeProvider attribute="class">
-          <Header /> {/* Rendering the Header component */}
-          <Suspense fallback={<Loading />}>
-            {children} {/* Rendering the child components or pages */}
-          </Suspense>
-        </ThemeProvider>
+        <Providers>
+          <ThemeProvider attribute="class">
+            <Header /> {/* Rendering the Header component */}
+            <Suspense fallback={<Loading />}>
+              {children} {/* Rendering the child components or pages */}
+            </Suspense>
+          </ThemeProvider>
+        </Providers>
       </body>
     </html>
   );
