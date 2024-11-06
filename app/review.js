@@ -1,11 +1,12 @@
 
-const { ObjectId } = require('mongodb');
+//const { v4: uuidv4} = require('uuid');
 
 // Create a new review
-async function createReview(db, reviewData) {
+/*async function createReview(db, reviewData) {
   const review = {
     ...reviewData,
-    createdAt: new Date()
+    reviewId: uuidv4(),
+    createdAt: new Date(),
   };
   const result = await db.collection('reviews').insertOne(review);
   return result.ops[0];
@@ -14,7 +15,7 @@ async function createReview(db, reviewData) {
 // Update an existing review
 async function updateReview(db, reviewId, updateData) {
   const result = await db.collection('reviews').updateOne(
-    { _id: new ObjectId(reviewId) },
+    { reviewId },
     { $set: updateData }
   );
   return result;
@@ -22,7 +23,7 @@ async function updateReview(db, reviewId, updateData) {
 
 // Delete a review
 async function deleteReview(db, reviewId) {
-  const result = await db.collection('reviews').deleteOne({ _id: new ObjectId(reviewId) });
+  const result = await db.collection('reviews').deleteOne({reviewId});
   return result;
 }
 
@@ -42,4 +43,4 @@ module.exports = {
   updateReview,
   deleteReview,
   getRecipeReviews
-};
+};*/
