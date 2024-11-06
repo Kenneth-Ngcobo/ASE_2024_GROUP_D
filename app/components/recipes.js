@@ -65,7 +65,7 @@ export default function Recipes({ recipes: initialRecipes }) {
             <Link
               href={`/Recipe/${recipe._id}`}  // Link to each recipe's detailed page using its ID
               key={recipe._id}  // Unique key for each mapped element
-              className="block p-4  border border-gray-200 rounded-lg shadow-lg hover:shadow-2xl transition-transform transform hover:scale-105 duration-300 ease-in-out"
+              className="block p-4  border bg-white dark:bg-gray-950 bg-border  dark:border-none border-gray-200 rounded-lg shadow-lg hover:shadow-2xl transition-transform transform hover:scale-105 duration-300 ease-in-out"
             >
               {/* Recipe title */}
               <h2 className="text-xl font-semibold font-playfair mb-2 text-green-800">

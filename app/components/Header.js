@@ -151,7 +151,9 @@ export default function Header({ isAuthenticated, onLogout }) {
             Contact
           </div>
         </div>
+
       )}
     </header>
   );
+
 }
