@@ -70,5 +70,28 @@ router.get('/recipes/:recipeId/reviews', async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch reviews' });
   }
 });
+// Create a new review if no reviews exist for the recipe
+router.post('/reviews', async (req, res) => {
+  try {
+    const db = await connectToDatabase();
+    const recipeId = req.body.recipeId; // Assuming recipeId is passed in the body
+
+    // Check if there are existing reviews for the recipe
+    const existingReviews = await db.collection('reviews').find({ recipeId }).toArray();
+    
+    if (existingReviews.length > 0) {
+      return res.status(400).json({ error: 'Reviews already exist for this recipe' });
+    }
+    
+    // If no reviews exist, create the new review
+    const review = await createReview(db, req.body);
+    res.status(201).json(review);
+
+  } catch (error) {
+    console.error('Error creating review:', error);
+    res.status(500).json({ error: 'Failed to create review' });
+  }
+});
+
 
 module.exports = router;
