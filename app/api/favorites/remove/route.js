@@ -1,5 +1,5 @@
 // app/api/favorites/remove/route.js
-import connectToDatabase from "@/path/to/connectToDatabase";
+import connectToDatabase from "../../../../db";
 
 export async function DELETE(req) {
   const db = await connectToDatabase();

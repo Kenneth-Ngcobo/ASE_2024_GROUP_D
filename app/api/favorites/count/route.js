@@ -1,6 +1,5 @@
 import { auth } from '../../../../auth';
 import { NextResponse } from 'next/server';
-import { ObjectId } from 'mongodb';
 import connectToDatabase from '../../../../db';
 
 export async function GET() {
@@ -19,7 +18,7 @@ export async function GET() {
     }
 
     const count = await db.collection('favorites').countDocuments({
-      userId: new ObjectId(user._id)
+      userId: user._id
     });
 
     return NextResponse.json({ count });

@@ -1,5 +1,5 @@
 // app/api/favorites/add/route.js
-import connectToDatabase from "@/path/to/connectToDatabase";
+import connectToDatabase from "../../../../db";
 
 export async function POST(req) {
   const db = await connectToDatabase();

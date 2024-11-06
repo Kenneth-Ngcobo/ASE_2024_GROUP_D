@@ -1,6 +1,5 @@
 import { auth } from '../../../auth';
 import { NextResponse } from 'next/server';
-import { ObjectId } from 'mongodb';
 import connectToDatabase from '../../../db';
 
 // GET - List all favorites
@@ -23,7 +22,7 @@ export async function GET() {
     const favorites = await db.collection('favorites')
       .aggregate([
         {
-          $match: { userId: new ObjectId(user._id) }
+          $match: { userId: user._id }
         },
         {
           $lookup: {
@@ -41,7 +40,11 @@ export async function GET() {
             _id: '$recipe._id',
             title: '$recipe.title',
             description: '$recipe.description',
-            image: '$recipe.image',
+            category: '$recipe.category',
+            images: '$recipe.images',
+            prep: '$recipe.prep',
+            cook: '$recipe.cook',
+            servings: '$recipe.servings',
             createdAt: 1
           }
         },
@@ -79,10 +82,16 @@ export async function POST(req) {
       return NextResponse.json({ message: 'User not found' }, { status: 404 });
     }
 
+    // Check if recipe exists
+    const recipe = await db.collection('recipes').findOne({ _id: recipeId });
+    if (!recipe) {
+      return NextResponse.json({ message: 'Recipe not found' }, { status: 404 });
+    }
+
     // Check if recipe is already in favorites
     const existingFavorite = await db.collection('favorites').findOne({
-      userId: new ObjectId(user._id),
-      recipeId: new ObjectId(recipeId)
+      userId: user._id,
+      recipeId: recipeId
     });
 
     if (existingFavorite) {
@@ -91,8 +100,8 @@ export async function POST(req) {
 
     // Add to favorites
     await db.collection('favorites').insertOne({
-      userId: new ObjectId(user._id),
-      recipeId: new ObjectId(recipeId),
+      userId: user._id,
+      recipeId: recipeId,
       createdAt: new Date()
     });
 
