@@ -1,66 +1,40 @@
-"use client";
 
-import { useState } from "react";
 
-const EditDetails = () => {
-  const [userDetails, setUserDetails] = useState({
-    name: "",
-    email: "",
-  });
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setUserDetails({ ...userDetails, [name]: value });
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    console.log("User details updated", userDetails);
-  };
-
+export default function EditDetails() {
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Edit User Details</h1>
-      <form onSubmit={handleSubmit}>
-        <div className="mb-4">
-          <label htmlFor="name" className="block text-sm font-medium">
-            Name:
-          </label>
+    <div class="flex h-screen">
+      <div class="w-1/4 p-6 bg-blue-100 text-white">
+        <h1 class="text-2xl font-bold mb-6">KWAMAIMAI</h1>
+        <button class="bg-teal-600 text-white px-4 py-2 rounded-md">
+          Back to Website
+        </button>
+        <p class="mt-4">ACCOUNT: signed in as</p>
+      </div>
+
+      <div class="w-3/4 p-6">
+        <h2 class="text-3xl font-bold">Welcome Back!</h2>
+        <div class="mt-6">
+          <h3 class="text-xl">About You:</h3>
           <input
             type="text"
-            id="name"
-            name="name"
-            value={userDetails.name}
-            onChange={handleChange}
-            className="mt-1 block w-60 border-gray-300 rounded-md shadow-sm focus:border-green-500 focus:ring focus:ring-green-500"
-            required
-          />
-        </div>
-        <div className="mb-4">
-          <label htmlFor="email" className="block text-sm font-medium">
-            Email:
-          </label>
+            placeholder="First Name"
+            value=""
+            className="w-full border rounded-md p-3 text-gray-700 mb-4"
+          ></input>
           <input
-            type="email"
-            id="email"
-            name="email"
-            value={userDetails.email}
-            onChange={handleChange}
-            className="mt-1 block w-60 border-gray-300 rounded-md shadow-sm focus:border-green-500 focus:ring focus:ring-green-500"
-            required
-          />
+            type="text"
+            placeholder="Last Name"
+            value=""
+            className="w-full border rounded-md p-3 text-gray-700 mb-4"
+          ></input>
+            <input
+            type="text"
+            placeholder="Email"
+            value=""
+            className="w-full border rounded-md p-3 text-gray-700 mb-4"
+          ></input>
         </div>
-
-        <button
-          type="submit"
-          className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition duration-200"
-        >
-          Save Changes
-        </button>
-      </form>
+      </div>
     </div>
   );
-};
-
-export default EditDetails;
+}
