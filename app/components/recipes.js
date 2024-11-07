@@ -54,6 +54,7 @@ export default function Recipes({ recipes: initialRecipes }) {
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include' 
       });
     } else {
       // Add to favorites
@@ -64,6 +65,7 @@ export default function Recipes({ recipes: initialRecipes }) {
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include' 
       });
     }
   };
