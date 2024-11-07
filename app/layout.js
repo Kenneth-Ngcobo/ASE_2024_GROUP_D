@@ -58,7 +58,7 @@ export default function RootLayout({ children }) {
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`} // Applying custom fonts and antialiasing for better text rendering
       >
-        <ThemeProvider attribute="class">
+        <ThemeProvider attribute="class" defaultTheme="light">
           <Header /> {/* Rendering the Header component */}
           <Suspense fallback={<Loading />}>
             {children} {/* Rendering the child components or pages */}
