@@ -106,7 +106,7 @@ const CategoryList = ({ onCategoryChange, totalRecipes }) => {
       {/* Toggle button to open/close the search and category dropdown */}
       <button
         onClick={() => setIsOpen((prev) => !prev)} // Toggle isOpen state
-        className="text-gray-600 hover:text-teal-500 font-medium uppercase text-sm"
+        className="text-gray-600 dark:text-white hover:text-teal-500 font-medium uppercase text-sm"
       >
         {isOpen ? 'Close' : 'Category'} {/* Display appropriate label based on isOpen */}
       </button>
