@@ -159,7 +159,7 @@ const CategoryList = ({ onCategoryChange, totalRecipes }) => {
                 <li
                   key={index}
                   onClick={() => handleCategorySelect(category)} // Trigger category selection
-                  className="p-2 bg-gray-200 border-b hover:bg-gray-300 transition duration-200 cursor-pointer"
+                  className="p-2 bg-gray-200 border-b dark:bg-gray-950 hover:bg-gray-300 transition duration-200 cursor-pointer"
                 >
                   {category}
                 </li>
