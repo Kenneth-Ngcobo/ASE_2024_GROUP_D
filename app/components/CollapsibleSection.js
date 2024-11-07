@@ -8,7 +8,7 @@ function CollapsibleSection({ title, content, defaultOpen = true }) {
     const [isOpen, setIsOpen] = useState(defaultOpen);
 
     return (
-        <div className="bg-white rounded-xl shadow-lg p-6 mb-6 transition-all duration-300 ease-in-out">
+        <div className="bg-white dark:bg-gray-950 rounded-xl shadow-lg p-6 mb-6 transition-all duration-300 ease-in-out">
             <button 
                 onClick={() => setIsOpen(!isOpen)}
                 className={`w-full text-xl font-semibold font-serif flex items-center justify-between 

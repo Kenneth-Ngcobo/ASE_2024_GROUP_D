@@ -29,7 +29,7 @@ export const SortControl = ({ onSortChange, sortBy, sortOrder }) => {
     };
 
     return (
-        <div className="flex gap-4 items-center mb-6 p-4 bg-white rounded-lg shadow">
+        <div className="flex gap-4 items-center mb-6 p-4 bg-white rounded-lg shadow dark:bg-gray-950">
             <div className="relative">
                 <select
                     value={sortBy}
