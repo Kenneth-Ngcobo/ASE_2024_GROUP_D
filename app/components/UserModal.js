@@ -53,14 +53,13 @@ export default function UserModal({ show, onClose }) {
       setIsCheckingUser(false);
     }
   };
-
   const handleSubmit = async () => {
     if (isLogin) {
       await login(email, password);
       if (!error) {
         alert("Login successful!");
         setLoggedInUser(email);
-        localStorage.setItem("loggedInUser", email);
+        localStorage.setItem("loggedInUserEmail", email); // Consistent key here
         router.push("/");
         onClose();
       } else {
@@ -71,7 +70,7 @@ export default function UserModal({ show, onClose }) {
       if (!error) {
         alert("Sign up successful!");
         setLoggedInUser(email);
-        localStorage.setItem("loggedInUser", email);
+        localStorage.setItem("loggedInUserEmail", email); // Consistent key here
         router.push("/");
         onClose();
       } else {
@@ -79,7 +78,6 @@ export default function UserModal({ show, onClose }) {
       }
     }
   };
-
   const handleLogout = async () => {
     await logout();
     setLoggedInUser(null);
