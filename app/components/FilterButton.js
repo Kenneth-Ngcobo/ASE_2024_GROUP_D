@@ -4,13 +4,12 @@ import { useRouter, useSearchParams } from "next/navigation";
 import TagDisplay from "./TagList"; // Correctly imported TagDisplay
 import { fetchRecipes } from "../api"; // Import your fetchRecipes function
 import IngDisplay from "./IngredientList";
-
 import StepsDropdown from "./StepsDropdown"; // Import StepsDropdown
 
 export const FilterModal = ({ onClose }) => {
     const [cookTime, setCookTime] = useState(0);
     const [selectedTags, setSelectedTags] = useState([]); // State to store selected tags
-    const [selectedIngs, setSelectedIngs] = useState([]);// State to store selected inggredients
+    const [selectedIngs, setSelectedIngs] = useState([]);// State to store selected ingredients
     const [steps, setSteps] = useState(0); // State for steps
     const searchParams = useSearchParams();
     const router = useRouter();
@@ -151,9 +150,9 @@ export const FilterButton = ({ onClick }) => {
     return (
         <button
             onClick={onClick}
-            className="flex items-center px-4 py-2 bg-white text-gray-800 border border-gray-300 rounded-md shadow hover:bg-gray-100"
+            className="text-gray-600 hover:text-teal-500 font-medium uppercase text-sm"
         >
-            <span className="material-icons mr-2">filter_list</span>
+            <span className="material-icons mr-2"></span>
             Filter
         </button>
     );
@@ -176,3 +175,4 @@ const ParentComponent = () => {
 };
 
 export default ParentComponent;
+
