@@ -64,7 +64,7 @@ export default function Header({}) {
             <FaPhoneAlt className="mr-2" /> Contact
           </div>
           <div className="flex items-center px-4 py-2 rounded-full text-grey font-medium hover:bg-green-500 hover:bg-opacity-80 transition-colors duration-300">
-            <ThemeButton /> Theme
+            <ThemeButton /> 
           </div>
         </nav>
 
