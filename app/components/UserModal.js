@@ -1,16 +1,23 @@
-'use client'
-import { useState } from "react";
+'use client';
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-
+import { useAuth } from "../hook/useAuth";
 export default function UserModal({ show, onClose }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isCheckingUser, setIsCheckingUser] = useState(false);
-  const [isLogin, setIsLogin] = useState(null); 
+  const [isLogin, setIsLogin] = useState(null);
   const [prevModal, setPrevModal] = useState(null);
+  const { signup, login, logout, error } = useAuth();
+  const [loggedInUser, setLoggedInUser] = useState(null);
   const router = useRouter();
 
+  useEffect(() => {
+    const storedEmail = localStorage.getItem("loggedInUserEmail");
+    if (storedEmail) setLoggedInUser(storedEmail);
+  }, []
+);
 
   const handleContinueWithEmail = async () => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -19,26 +26,23 @@ export default function UserModal({ show, onClose }) {
       return;
     }
 
-    setIsCheckingUser(true); 
+    setIsCheckingUser(true);
     setPrevModal("email");
 
     try {
-      const response = await fetch('/api/auth/checkuser', {
-        method: 'POST',
+      const response = await fetch("/api/auth/checkuser", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ email }),
       });
 
       if (response.status === 200) {
-
         setIsLogin(true);
       } else if (response.status === 404) {
-
         setIsLogin(false);
       } else {
-
         const errorData = await response.json();
         alert(errorData.message || "An unexpected error occurred.");
       }
@@ -50,34 +54,24 @@ export default function UserModal({ show, onClose }) {
     }
   };
 
-
   const handleSubmit = async () => {
-
     if (isLogin) {
-
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      });
-
-      if (response.ok) {
+      await login(email, password);
+      if (!error) {
         alert("Login successful!");
+        setLoggedInUser(email);
+        localStorage.setItem("loggedInUser", email);
         router.push("/");
         onClose();
       } else {
         alert("Login failed. Please check your credentials.");
       }
     } else {
-
-      const response = await fetch('/api/auth/signup', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      });
-
-      if (response.ok) {
+      await signup(email, password);
+      if (!error) {
         alert("Sign up successful!");
+        setLoggedInUser(email);
+        localStorage.setItem("loggedInUser", email);
         router.push("/");
         onClose();
       } else {
@@ -86,14 +80,21 @@ export default function UserModal({ show, onClose }) {
     }
   };
 
+  const handleLogout = async () => {
+    await logout();
+    setLoggedInUser(null);
+    localStorage.removeItem("loggedInUserEmail");
+    alert("Logged out successfully!");
+    router.push("/");
+  };
+
 
   const handleBack = () => {
-    setIsLogin(null); 
+    setIsLogin(null);
     setPrevModal(null);
   };
 
   if (!show) return null;
-
   return (
     <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-end z-50">
       <div className="bg-white w-96 p-6 rounded-l-3xl shadow-lg relative">
@@ -113,12 +114,27 @@ export default function UserModal({ show, onClose }) {
             &#8592; {/* Left arrow symbol */}
           </button>
         )}
+         {/* Display logged-in user */}
+         {loggedInUser ? (
+          <div className="text-center">
+            <h2 className="text-2xl font-bold mb-4">Welcome, {loggedInUser}!</h2>
+            <button
+              onClick={handleLogout}
+              className="w-full bg-red-500 text-white py-3 rounded-md mb-4"
+            >
+              Log Out
+            </button>
+          </div>
+        ) : (
+          <>
 
         {/* Conditional Rendering for Default, Login, and Sign Up Forms */}
         {isCheckingUser ? (
           <h2 className="text-2xl font-bold text-center mb-4">Verifying...</h2>
         ) : isLogin === null ? (
-          <h2 className="text-2xl font-bold text-center mb-4">Sign Up or Login</h2>
+          <h2 className="text-2xl font-bold text-center mb-4">
+            Sign Up or Login
+          </h2>
         ) : isLogin ? (
           <h2 className="text-2xl font-bold text-center mb-4">Login</h2>
         ) : (
@@ -166,6 +182,8 @@ export default function UserModal({ show, onClose }) {
             {isLogin ? "Login" : "Sign Up"}
           </button>
         )}
+          </>
+        )}
 
         {/* Divider */}
         <div className="text-center text-gray-500 mb-4">OR</div>
@@ -185,11 +203,16 @@ export default function UserModal({ show, onClose }) {
         {/* Terms and Privacy */}
         <p className="text-gray-500 text-xs text-center mt-4">
           By continuing you agree to our{" "}
-          <a href="#" className="underline">Terms of Use</a>. Learn how we collect, use, and share your data in our{" "}
-          <a href="#" className="underline">Privacy Policy</a>.
+          <a href="#" className="underline">
+            Terms of Use
+          </a>
+          . Learn how we collect, use, and share your data in our{" "}
+          <a href="#" className="underline">
+            Privacy Policy
+          </a>
+          .
         </p>
       </div>
     </div>
   );
 }
-
