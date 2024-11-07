@@ -168,9 +168,9 @@ const CategoryList = ({ onCategoryChange, totalRecipes }) => {
           )}
         </div>
       )}
-           <p className="font-semibold text-lg mb-2 px-4">
+         {/*  <p className="font-semibold text-lg mb-2 px-4">
       {totalRecipesState > 0 ? `Total Recipes Found: ${totalRecipesState}` : ''}
-    </p>
+    </p>*/}
     </div>
   );
 };

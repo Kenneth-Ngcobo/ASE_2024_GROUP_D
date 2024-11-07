@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import CategoryList from './CategoryList';
 import FilterButton from './FilterButton'
 import ThemeButton from './ThemeButton';
+import RecipeSearchBar from './searchBar';
 
 const Header = ({ isAuthenticated, onLogout }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -53,8 +54,8 @@ const Header = ({ isAuthenticated, onLogout }) => {
             <Image
               src="/Kwa.png"
               alt="Logo"
-              width={120}
-              height={40}
+              width={150}
+              height={60}
               className="h-10 w-auto"
             />
           </Link>
@@ -84,7 +85,8 @@ const Header = ({ isAuthenticated, onLogout }) => {
           {/* Add any additional content for the search bar or other elements here */}
         </div>
           </div>
-          {isFilterOpen && <FilterModal onClose={toggleFilterModal} />}
+      {isFilterOpen && <FilterModal onClose={toggleFilterModal} />}
+      <RecipeSearchBar/>
     </header>
   );
 };
