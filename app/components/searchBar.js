@@ -204,7 +204,7 @@ const RecipeSearchBar = ({
         <div className="border-t border-gray-200">
             <form onSubmit={handleSearchSubmit} className="relative">
                 <div className="relative flex items-center">
-                    <FaSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                    <FaSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600" />
                     <input
                         type="text"
                         value={search}
@@ -233,7 +233,6 @@ const RecipeSearchBar = ({
                             className=" text-gray-400 p-3 "
                             aria-label="Search"
                         >
-                            <FaSearch className="  text-gray-400 hover:text-gray-600"/>
                         </button>
                     </div>
                 </div>
