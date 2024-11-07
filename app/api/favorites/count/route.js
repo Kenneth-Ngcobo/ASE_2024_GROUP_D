@@ -1,10 +1,26 @@
 // app/api/favorites/count/route.js
 import connectToDatabase from "@/path/to/connectToDatabase";
+import { NextResponse } from "next/server";
 
 export async function GET(req) {
-  const db = await connectToDatabase();
-  const userId = req.headers.userid; // Assuming user ID is sent in the headers
+  try {
+    const userId = req.headers.get('userid');
 
-  const count = await db.collection("favorites").countDocuments({ userId });
-  return new Response(JSON.stringify({ count }), { status: 200 });
+    if (!userId) {
+      return NextResponse.json(
+        { error: "User ID is required" },
+        { status: 400 }
+      );
+    }
+
+    const db = await connectToDatabase();
+    const count = await db.collection("favorites").countDocuments({ userId });
+    
+    return NextResponse.json({ count });
+  } catch (error) {
+    return NextResponse.json(
+      { error: "Failed to get favorites count" },
+      { status: 500 }
+    );
+  }
 }
