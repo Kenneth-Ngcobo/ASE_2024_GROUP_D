@@ -138,7 +138,7 @@ const CategoryList = ({ onCategoryChange, totalRecipes }) => {
 
           {/* Dropdown with filtered categories */}
           {filteredCategories.length > 0 ? (
-            <ul
+            <ul className='z-30'
               style={{
                 position: 'relative',
                 top: '100%',
@@ -151,6 +151,7 @@ const CategoryList = ({ onCategoryChange, totalRecipes }) => {
                 margin: 0,
                 maxHeight: '200px',
                 overflowY: 'auto',
+               
               }}
             >
               {filteredCategories.map((category, index) => (
