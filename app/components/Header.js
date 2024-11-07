@@ -50,6 +50,9 @@ const Header = ({ isAuthenticated, onLogout }) => {
               Favourite
             </Link>
           </div>
+
+       <ThemeButton />
+    
           <Link href="/" className="flex items-center">
             <Image
               src="/Kwa.png"
@@ -68,6 +71,7 @@ const Header = ({ isAuthenticated, onLogout }) => {
             <Link href="/cart" className="text-gray-600 hover:text-teal-500">
               <FaShoppingBag className="w-5 h-5" />
             </Link>
+
           </div>
           <button
             className="md:hidden text-gray-600"
