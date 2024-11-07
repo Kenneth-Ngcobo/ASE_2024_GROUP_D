@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect } from 'react';
+import { Alert, AlertDescription, AlertTitle } from './ui/alert';
+import { Button } from './ui/button'
 
 export default function EditableRecipeDetails({ id, initialDescription, lastEditedBy, lastEditedAt }) {
     const [description, setDescription] = useState(initialDescription);
@@ -42,16 +44,21 @@ export default function EditableRecipeDetails({ id, initialDescription, lastEdit
     return (
         <div className="bg-white rounded-2xl shadow-xl p-8">
             <h2 className="text-2xl font-semibold text-green-800 mb-4">Description</h2>
-            {message && <p className={message.type === 'error' ? 'error' : 'success'}>{message.text}</p>}
+            {message && (
+                <Alert variant={message.type === 'error' ? 'destructive' : 'default'}>
+                    <AlertTitle>{message.type === 'error' ? 'Error' : 'Success'}</AlertTitle>
+                    <AlertDescription>{message.text}</AlertDescription>
+                </Alert>
+            )}
             <textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 rows="4"
                 className="w-full p-2 border rounded"
             />
-            <button onClick={handleEdit} className="mt-4 px-4 py-2 bg-green-600 text-white rounded">
+            <Button onClick={handleEdit} className="mt-4">
                 Save Changes
-            </button>
+            </Button>
             <p className="mt-4 text-sm text-gray-600">
                 <strong>Last edited by:</strong> {editor || 'Unknown'} on {editDate || 'N/A'}
             </p>
