@@ -6,6 +6,7 @@ import Footer from "./components/footer";
 import Loading from "./loading";
 import SearchBar from "./components/searchBar";
 import CategoryList from "./components/CategoryList";
+import RecipeCarousel from "./components/RecipeCarousel";
 import { Suspense } from 'react';
 
 export default async function Home({ searchParams }) {
@@ -43,6 +44,7 @@ export default async function Home({ searchParams }) {
                     initialSort={sort}
                     initialOrder={order}
                 />
+                <RecipeCarousel />
     
                 {/* Render the Pagination component, passing the current page and total pages */}
                 <Pagination
