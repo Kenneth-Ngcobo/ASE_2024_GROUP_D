@@ -1,11 +1,13 @@
 // components/ReviewList.js
 import { useEffect, useState } from 'react';
 
-export default function ReviewList({ recipeId }) {
+export default function ReviewList({ recipeId, userId, onReviewUpdated }) {
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [sortOption, setSortOption] = useState('date_desc'); // Default sort by date descending
+  const [sortOption, setSortOption] = useState('date_desc');
+  const [editingReviewId, setEditingReviewId] = useState(null);
+  const [editForm, setEditForm] = useState({ rating: 0, comment: '' });
 
   useEffect(() => {
     async function fetchReviews() {
@@ -15,10 +17,7 @@ export default function ReviewList({ recipeId }) {
           throw new Error('Failed to fetch reviews');
         }
         let data = await response.json();
-        
-        // Sort reviews based on selected sort option
         data = sortReviews(data, sortOption);
-        
         setReviews(data);
       } catch (error) {
         setError(error.message);
@@ -43,6 +42,40 @@ export default function ReviewList({ recipeId }) {
       }
       return 0;
     });
+  };
+
+  const handleEdit = (review) => {
+    setEditingReviewId(review._id);
+    setEditForm({ rating: review.rating, comment: review.comment });
+  };
+
+  const handleEditChange = (e) => {
+    const { name, value } = e.target;
+    setEditForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleEditSubmit = async (reviewId) => {
+    try {
+      const response = await fetch(`/api/reviews/${reviewId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...editForm, date: new Date().toISOString() })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update review');
+      }
+
+      // Update the local reviews state after editing
+      const updatedReviews = reviews.map((review) =>
+        review._id === reviewId ? { ...review, ...editForm, date: new Date().toISOString() } : review
+      );
+      setReviews(updatedReviews);
+      setEditingReviewId(null);
+      if (onReviewUpdated) onReviewUpdated();
+    } catch (error) {
+      setError(error.message);
+    }
   };
 
   if (loading) {
@@ -77,8 +110,48 @@ export default function ReviewList({ recipeId }) {
           <div key={review._id} className="border rounded-lg p-4 shadow-sm">
             <p className="font-semibold">{review.username}</p>
             <p className="text-sm text-gray-500">{new Date(review.date).toLocaleDateString()}</p>
-            <p className="mt-2">Rating: {review.rating} / 5</p>
-            <p>{review.comment}</p>
+            
+            {editingReviewId === review._id ? (
+              <div>
+                <label>
+                  Rating:
+                  <input
+                    type="number"
+                    name="rating"
+                    min="1"
+                    max="5"
+                    value={editForm.rating}
+                    onChange={handleEditChange}
+                    className="w-full mt-1"
+                  />
+                </label>
+                <label>
+                  Comment:
+                  <textarea
+                    name="comment"
+                    value={editForm.comment}
+                    onChange={handleEditChange}
+                    className="w-full mt-1"
+                  />
+                </label>
+                <button onClick={() => handleEditSubmit(review._id)} className="mt-2 text-blue-500 text-sm hover:underline">
+                  Save
+                </button>
+                <button onClick={() => setEditingReviewId(null)} className="mt-2 ml-2 text-gray-500 text-sm hover:underline">
+                  Cancel
+                </button>
+              </div>
+            ) : (
+              <>
+                <p className="mt-2">Rating: {review.rating} / 5</p>
+                <p>{review.comment}</p>
+                {review.userId === userId && (
+                  <button onClick={() => handleEdit(review)} className="mt-2 text-blue-500 text-sm hover:underline">
+                    Edit Review
+                  </button>
+                )}
+              </>
+            )}
           </div>
         ))
       )}
