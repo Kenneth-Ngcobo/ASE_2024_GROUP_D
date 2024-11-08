@@ -204,7 +204,7 @@ const RecipeSearchBar = ({
         <div className="border-t border-gray-200">
             <form onSubmit={handleSearchSubmit} className="relative">
                 <div className="relative flex items-center">
-                    <FaSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600" />
+                    <FaSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 dark:text-white text-gray-400 hover:text-gray-600" />
                     <input
                         type="text"
                         value={search}
@@ -214,7 +214,7 @@ const RecipeSearchBar = ({
                         }}
                         onFocus={() => setShowSuggestions(true)}
                         placeholder="Search for recipes by name, ingredient, or cuisine..."
-                        className="w-full pl-12 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                        className="w-full pl-12 pr-4 py-2 bg-gray-50  dark:bg-gray-950 border border-gray-200 dark:border-gray-800  rounded-full focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                         aria-label="Search recipes"
                     />
                     <div className="absolute right-0 flex items-center space-x-1 mr-2">
