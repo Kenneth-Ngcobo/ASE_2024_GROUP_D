@@ -41,6 +41,12 @@ export default function Recipes({ recipes: initialRecipes }) {
 
   const toggleFavorite = async (recipeId) => {
     const isFavorited = favoritedRecipes.has(recipeId);
+
+
+    // Retrieve the logged-in email from local storage
+    const loggedInEmail = localStorage.getItem('loggedInUserEmail');
+
+
     if (isFavorited) {
       // Remove from favorites
       setFavoritedRecipes((prev) => {
@@ -50,7 +56,7 @@ export default function Recipes({ recipes: initialRecipes }) {
       });
       await fetch(`/api/favorites/remove`, {  // Endpoint to remove from favorites (you need to implement this in your backend)
         method: 'POST',
-        body: JSON.stringify({ recipeId }),
+        body: JSON.stringify({ recipeId, email: loggedInEmail }),
         headers: {
           'Content-Type': 'application/json',
         },
@@ -61,7 +67,7 @@ export default function Recipes({ recipes: initialRecipes }) {
       setFavoritedRecipes((prev) => new Set(prev).add(recipeId));
       await fetch(`/api/favorites`, {  // Endpoint to add to favorites
         method: 'POST',
-        body: JSON.stringify({ recipeId }),
+        body: JSON.stringify({ recipeId, email: loggedInEmail }),
         headers: {
           'Content-Type': 'application/json',
         },
