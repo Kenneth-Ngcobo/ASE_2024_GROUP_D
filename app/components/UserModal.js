@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "../hook/useAuth";
 import Link from "next/link";
 import { FaEye, FaEyeSlash } from "react-icons/fa6";
+import { signIn } from "next-auth/react";
 
 export default function UserModal({ show, onClose }) {
   const [email, setEmail] = useState("");
@@ -192,31 +193,28 @@ export default function UserModal({ show, onClose }) {
               </>
             )}
 
-
-
             {/* Password Input */}
             {isLogin !== null && (
               <div className="relative">
-              <input
-                type={isPasswordVisible ? "text" : "password"}
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full border rounded-md p-3 text-gray-700 mb-4"
-              />
-             <button
-              onClick={togglePasswordVisibility}
-              className="absolute inset-y-0 right-3 flex items-center text-gray-500"
-              aria-label="Toggle password visibility"
-            >
-              {isPasswordVisible ? (
-                <FaEye size={24} />
-              ) : (
-                <FaEyeSlash size={24} />
-              )}
-            </button>
-          </div>
-  
+                <input
+                  type={isPasswordVisible ? "text" : "password"}
+                  placeholder="Password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full border rounded-md p-3 text-gray-700 mb-4"
+                />
+                <button
+                  onClick={togglePasswordVisibility}
+                  className="absolute inset-y-0 right-3 flex items-center text-gray-500"
+                  aria-label="Toggle password visibility"
+                >
+                  {isPasswordVisible ? (
+                    <FaEye size={24} />
+                  ) : (
+                    <FaEyeSlash size={24} />
+                  )}
+                </button>
+              </div>
             )}
 
             {/* Continue with Email Button */}
@@ -244,16 +242,28 @@ export default function UserModal({ show, onClose }) {
         <div className="text-center text-gray-500 mb-4">OR</div>
 
         {/* Social Login Buttons */}
-        <button className="w-full border rounded-md py-3 flex items-center justify-center mb-2">
-          <Image
-            src="/google.svg"
-            alt="Google icon"
-            width={20}
-            height={20}
-            className="w-5 mr-2"
-          />
-          Continue with Google
-        </button>
+        <form
+          action=
+          {async () => {
+            await signIn("google", {
+              callbackUrl: `${window.location.origin}/`,
+            });
+          }}
+          >
+          <button
+            type="submit"
+            className="w-full border rounded-md py-3 flex items-center justify-center mb-2"
+          >
+            <Image
+              src="/google.svg"
+              alt="Google icon"
+              width={20}
+              height={20}
+              className="w-5 mr-2"
+            />
+            Continue with Google
+          </button>
+        </form>
 
         <p className="text-gray-500 text-xs text-center mt-4">
           By continuing you agree to our{" "}
