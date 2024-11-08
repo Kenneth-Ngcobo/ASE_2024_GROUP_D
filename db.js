@@ -11,7 +11,7 @@ const options = {
     version: ServerApiVersion.v1,
     deprecationErrors: true,
   },
-  //setting maxPoolSize to 20 will limit connections to database
+  // Setting maxPoolSize to 20 will limit connections to database
   maxPoolSize: 20, 
 };
 
@@ -35,9 +35,8 @@ async function connectToDatabase() {
   const db = client.db('devdb'); 
   cachedDb = db; // Caches the DB connection for future requests
   
-  // Ensure indexes and reviews setup
+  // Ensure indexes setup
   await initializeIndexes(db);
-  await checkAndCreateReviews(db);
   
   return db;
 }
@@ -151,32 +150,5 @@ async function initializeIndexes(db) {
     console.error(`Index initialization error: ${error.message}`);
   }
 }
-
-// Function to check and create reviews if not present
-async function checkAndCreateReviews(db) {
-  const collection = db.collection("recipes");
-
-  try {
-    // Find all recipes without reviews
-    const recipesWithoutReviews = await collection.find({ reviews: { $exists: false } }).toArray();
-    
-    // Update each recipe to add an empty reviews array if it does not exist
-    if (recipesWithoutReviews.length > 0) {
-      const updatePromises = recipesWithoutReviews.map(recipe => {
-        return collection.updateOne(
-          { _id: recipe._id },
-          { $set: { reviews: [] } } // Create an empty array for reviews
-        );
-      });
-      await Promise.all(updatePromises);
-      console.log(`${updatePromises.length} recipes updated with empty reviews array.`);
-    } else {
-      console.log("No recipes without reviews found.");
-    }
-  } catch (error) {
-    console.error(`Error checking and creating reviews: ${error.message}`);
-  }
-}
-
 
 module.exports = connectToDatabase;

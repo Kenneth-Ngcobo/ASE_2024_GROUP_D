@@ -1,46 +1,51 @@
+const { ObjectId } = require('mongodb');
 
-//const { v4: uuidv4} = require('uuid');
+const createReview = async (db, reviewData) => {
+  const { recipeId, rating, comment, reviewerEmail, reviewerName } = reviewData;
 
-// Create a new review
-/*async function createReview(db, reviewData) {
-  const review = {
-    ...reviewData,
-    reviewId: uuidv4(),
-    createdAt: new Date(),
+  if (!recipeId) {
+    throw new Error('Recipe ID is required to add a review');
+  }
+
+  const newReview = {
+    _id: new ObjectId(),
+    rating,
+    comment,
+    reviewerEmail,
+    reviewerName,
+    date: new Date(),
   };
-  const result = await db.collection('reviews').insertOne(review);
-  return result.ops[0];
-}
 
-// Update an existing review
-async function updateReview(db, reviewId, updateData) {
-  const result = await db.collection('reviews').updateOne(
-    { reviewId },
-    { $set: updateData }
+  console.log(`Adding review to recipe ID: ${recipeId}`);
+  console.log(`New review data: ${JSON.stringify(newReview, null, 2)}`);
+
+  const result = await db.collection('recipes').updateOne(
+    { _id: new ObjectId(recipeId) },
+    { $push: { reviews: newReview } }
   );
-  return result;
-}
 
-// Delete a review
-async function deleteReview(db, reviewId) {
-  const result = await db.collection('reviews').deleteOne({reviewId});
-  return result;
-}
+  if (result.modifiedCount === 0) {
+    throw new Error('Failed to add review to the recipe');
+  }
 
-// Get all reviews for a recipe with sorting
-async function getRecipeReviews(db, recipeId, sortOptions) {
-  const sortField = sortOptions.sortBy === 'rating' ? 'rating' : 'createdAt';
-  const sortOrder = sortOptions.order === 'asc' ? 1 : -1;
-  const reviews = await db.collection('reviews')
-    .find({ recipeId })
-    .sort({ [sortField]: sortOrder })
-    .toArray();
-  return reviews;
-}
+  return newReview;
+};
+
+const updateReview = async (db, reviewId, reviewData) => {
+ 
+};
+
+const deleteReview = async (db, reviewId) => {
+
+};
+
+const getRecipeReviews = async (db, recipeId, sortOptions) => {
+  
+};
 
 module.exports = {
   createReview,
   updateReview,
   deleteReview,
   getRecipeReviews
-};*/
+};
