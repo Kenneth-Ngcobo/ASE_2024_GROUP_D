@@ -1,11 +1,10 @@
 /* eslint-disable @next/next/no-page-custom-font */
 'use client'
 
-// Import necessary dependencies from Next.js and React
 import Link from 'next/link';
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
-import { FaCalendarDay, FaClock, FaUtensils, FaTags, FaUtensilSpoon, FaListUl } from "react-icons/fa"; // Updated icon imports
+import { FaCalendarDay, FaClock, FaUtensils, FaTags, FaListUl } from "react-icons/fa";
 import Head from 'next/head';
 import Carousel from './Carousel';
 import { SortControl } from './SortControl';
@@ -13,6 +12,7 @@ import { sortRecipes } from './sortUtils';
 import { useSearchParams } from 'next/navigation';
 
 export default function Recipes({ recipes: initialRecipes }) {
+  
   const [sortBy, setSortBy] = useState("default");
   const [sortOrder, setSortOrder] = useState("ascending");
   const [recipes, setRecipes] = useState(initialRecipes);
@@ -21,10 +21,9 @@ export default function Recipes({ recipes: initialRecipes }) {
   useEffect(() => {
     const newSort = searchParams.get("sortBy") || "default";
     const newOrder = searchParams.get("order") || "ascending";
-
     setSortBy(newSort);
     setSortOrder(newOrder);
-  },[searchParams])
+  }, [searchParams]);
 
   const handleSort = (newSortBy, newSortOrder) => {
     setSortBy(newSortBy);
@@ -38,95 +37,100 @@ export default function Recipes({ recipes: initialRecipes }) {
     setRecipes(sortedRecipes);
   }, [initialRecipes]);
 
-
   return (
     <>
-      {/* Use the Head component to include external resources like fonts */}
       <Head>
-        {/* Import Google Fonts */}
-        <Link
-          href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Roboto:wght@300;400;500&display=swap"
+        <link
+          href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap"
           rel="stylesheet"
         />
       </Head>
 
-      {/* Main container for the recipes grid */}
-      <div className="container mx-auto p-4 pt-6 md:p-6 lg:p-12">
-        <SortControl
-          onSortChange={handleSort}
-          sortBy={sortBy}
-          sortOrder={sortOrder}
-        />
+      <div className="bg-[#f7f7f7] min-h-screen">
+        <div className="container mx-auto p-4 pt-6 md:p-6 lg:p-12">
+          {/* Sort Control*/}
+          <div className="mb-8">
+            <SortControl
+              onSortChange={handleSort}
+              sortBy={sortBy}
+              sortOrder={sortOrder}
+              className="bg-white rounded-lg shadow-sm"
+            />
+          </div>
 
-        {/* Grid layout to display the list of recipes */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {/* Map over recipes and display each one */}
-          {recipes && recipes.map((recipe) => (
-            <Link
-              href={`/Recipe/${recipe._id}`}  // Link to each recipe's detailed page using its ID
-              key={recipe._id}  // Unique key for each mapped element
-              className="block p-4  border bg-white dark:bg-gray-950 bg-border  dark:border-none border-gray-200 rounded-lg shadow-lg hover:shadow-2xl transition-transform transform hover:scale-105 duration-300 ease-in-out"
-            >
-              {/* Recipe title */}
-              <h2 className="text-xl font-semibold font-playfair mb-2 text-green-800">
-                {recipe.title}
-              </h2>
+          {/*  grid layout */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {recipes && recipes.map((recipe) => (
+              <Link
+                href={`/Recipe/${recipe._id}`}
+                key={recipe._id}
+                className="group block bg-white rounded-lg overflow-hidden transform transition-transform duration-300 hover:scale-105 shadow-sm hover:shadow-md"
+              >
+                {/* Image section */}
+                <div className="relative w-full h-64">
+                  {recipe.images.length > 1 ? (
+                    <Carousel images={recipe.images} />
+                  ) : (
+                    <div className="relative w-full h-full">
+                      <Image
+                        src={recipe.images[0]}
+                        alt={recipe.title}
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
+                  )}
+                </div>
 
-              {/* Recipe image */}
-              <div className="relative w-full h-48 mb-4">
-                {recipe.images.length > 1 ? (
-                  <Carousel images={recipe.images} />
-                ) : (
-                  <div className='relative w-full h-full'>
-                    <Image
-                      src={recipe.images[0]}  // First image from the recipe images array
-                      alt={recipe.title}  // Alternative text for the image
-                      fill
-                      objectFit="cover"
-                      className="rounded-md"
-                    />
+                {/* Content section */}
+                <div className="p-4">
+                  <h2 className="text-[#1e455c] font-bold text-xl mb-3 font-montserrat group-hover:text-[#2b617f]">
+                    {recipe.title}
+                  </h2>
+
+                  {/* Recipe details */}
+                 {/*  <div className="flex justify-between items-center mb-2">*/}
+                    <div className="space-y-2">
+                      <p className="text-sm text-gray-600 flex items-center">
+                        <FaClock className="text-[#1e455c] mr-2" />
+                        {recipe.prep + recipe.cook} mins
+                      </p>
+                      <p className="text-sm text-gray-600 flex items-center">
+                        <FaClock className="text-[#1e455c] mr-2" />
+                        {recipe.cook} mins
+                      </p>
+                      <p className="text-sm text-gray-600 flex items-center">
+                        <FaUtensils className="text-[#1e455c] mr-2" />
+                        Serves {recipe.servings}
+                      </p>
+                    </div>
+                    <div className="flex flex-wrap gap-2 mt-3">
+                      {recipe.category && (
+                        <span className="inline-block bg-gray-100 text-gray-600 text-sm px-2 py-1 rounded">
+                          {recipe.category}
+                        </span>
+                      )}
+                      <span className="inline-block bg-gray-100 text-gray-600 text-sm px-2 py-1 rounded">
+                        {recipe.instructions.length} steps
+                    </span>
+                    <span className="inline-block bg-gray-100 text-gray-600 text-sm px-2 py-1 rounded">
+                    {new Date(recipe.published).toDateString()} 
+                      </span>
+                    </div>
                   </div>
-                )}
-              </div>
-
-              {/* Recipe details */}
-              <p className="text-sm text-gray-600 font-roboto">
-                <FaCalendarDay className="inline-block text-green-600 mr-1" />
-                <strong className="text-green-600"></strong> {new Date(recipe.published).toDateString()}
-              </p>
-              <p className="text-sm text-gray-600 font-roboto">
-                <FaListUl className="inline-block text-green-600 mr-1" />
-                <strong className="text-green-600"></strong> {recipe.instructions ? recipe.instructions.length : 0} steps
-              </p>
-              <p className="text-sm mt-2 font-roboto">
-                <FaClock className="inline-block text-green-600 mr-1" />
-                <strong className="text-green-600"></strong> {recipe.prep} minutes
-              </p>
-              <p className="text-sm font-roboto">
-                <FaUtensilSpoon className="inline-block text-green-600 mr-1" />
-                <strong className="text-green-600"></strong> {recipe.cook} minutes
-              </p>
-              <p className="text-sm font-roboto">
-                <FaUtensils className="inline-block text-green-600 mr-1" />
-                <strong className="text-green-600"></strong> {recipe.servings}
-              </p>
-              <p className="text-sm font-roboto">
-                <FaTags className="inline-block text-green-600 mr-1" />
-                <strong className="text-green-600"></strong> {recipe.category}
-              </p>
-            </Link>
-          ))}
+              </Link>
+            ))}
+          </div>
         </div>
       </div>
 
-      {/* Inline styles to apply custom fonts using the loaded Google Fonts */}
-      <style jsx>{`
-        /* Apply custom fonts */
-        .font-playfair {
-          font-family: 'Playfair Display', serif;
+      <style jsx global>{`
+        .font-montserrat {
+          font-family: 'Montserrat', sans-serif;
         }
-        .font-roboto {
-          font-family: 'Roboto', sans-serif;
+        
+        body {
+          background-color: #f7f7f7;
         }
       `}</style>
     </>
