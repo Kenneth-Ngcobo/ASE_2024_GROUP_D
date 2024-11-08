@@ -9,9 +9,9 @@ const ThemeButton = () => {
  
 
   return (
-    <button onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>
+    <button className="flex justify-center items-center" onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>
     {theme === 'dark' ? <FaSun /> : <FaMoon />}
-    
+     Theme
   </button>
   )
 }
