@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../hook/useAuth";
 import Link from "next/link";
+import { FaEye, FaEyeSlash } from "react-icons/fa6";
 
 export default function UserModal({ show, onClose }) {
   const [email, setEmail] = useState("");
@@ -14,7 +15,12 @@ export default function UserModal({ show, onClose }) {
   const [prevModal, setPrevModal] = useState(null);
   const { signup, login, logout, error } = useAuth();
   const [loggedInUser, setLoggedInUser] = useState(null);
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const router = useRouter();
+
+  const togglePasswordVisibility = () => {
+    setIsPasswordVisible(!isPasswordVisible);
+  };
 
   useEffect(() => {
     const storedEmail = localStorage.getItem("loggedInUserEmail");
@@ -186,15 +192,31 @@ export default function UserModal({ show, onClose }) {
               </>
             )}
 
+
+
             {/* Password Input */}
             {isLogin !== null && (
+              <div className="relative">
               <input
-                type="password"
+                type={isPasswordVisible ? "text" : "password"}
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full border rounded-md p-3 text-gray-700 mb-4"
               />
+             <button
+              onClick={togglePasswordVisibility}
+              className="absolute inset-y-0 right-3 flex items-center text-gray-500"
+              aria-label="Toggle password visibility"
+            >
+              {isPasswordVisible ? (
+                <FaEye size={24} />
+              ) : (
+                <FaEyeSlash size={24} />
+              )}
+            </button>
+          </div>
+  
             )}
 
             {/* Continue with Email Button */}
