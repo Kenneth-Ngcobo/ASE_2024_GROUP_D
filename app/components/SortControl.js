@@ -29,12 +29,12 @@ export const SortControl = ({ onSortChange, sortBy, sortOrder }) => {
     };
 
     return (
-        <div className="flex gap-4 items-center mb-6 p-4 bg-white rounded-lg shadow dark:bg-gray-950">
+        <div className="flex gap-4 items-center mb-6 p-4  bg-white rounded-lg shadow dark:bg-gray-950">
             <div className="relative">
                 <select
                     value={sortBy}
                     onChange={handleSortChange}
-                    className="appearance-none bg-white border border-gray-300 rounded-md py-2 pl-3 pr-10 text-sm leading-5 focus:outline-none focus:ring-2 focus:ring-green-500"
+                    className="appearance-none bg-white border  dark:bg-black border-gray-300 rounded-md py-2 pl-3 pr-10 text-sm leading-5 focus:outline-none focus:ring-2 focus:ring-green-500"
                 >
                     <option value="default">Default</option>
                     <option value="createdAt">Newest</option>
