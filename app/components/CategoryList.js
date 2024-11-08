@@ -30,7 +30,7 @@ const CategoryList = ({ onCategoryChange, totalRecipes }) => {
         }
         const data = await response.json();
         setCategories(data);
-        setFilteredCategories(data); 
+        setFilteredCategories(data);
         console.log('Fetched categories:', data);
       } catch (err) {
         setError(err.message);
@@ -77,8 +77,6 @@ const CategoryList = ({ onCategoryChange, totalRecipes }) => {
 
     // Push the new URL with updated query
     router.push(`?${queryString}`);
-
-  
   };
 
   const clearCategory = () => {
@@ -108,7 +106,7 @@ const CategoryList = ({ onCategoryChange, totalRecipes }) => {
       {/* Toggle button to open/close the search and category dropdown */}
       <button
         onClick={() => setIsOpen((prev) => !prev)} // Toggle isOpen state
-        className="bg-green-600 text-white px-4 mx-6 py-2 mx-2   rounded hover:bg-green-500 transition duration-200"
+        className="text-gray-600 hover:text-teal-500 font-medium uppercase text-sm"
       >
         {isOpen ? 'Close' : 'Category'} {/* Display appropriate label based on isOpen */}
       </button>
@@ -159,7 +157,7 @@ const CategoryList = ({ onCategoryChange, totalRecipes }) => {
                 <li
                   key={index}
                   onClick={() => handleCategorySelect(category)} // Trigger category selection
-                  className="p-2 bg-gray-200 border-b hover:bg-gray-300 transition duration-200 cursor-pointer"
+                  className="p-2 bg-gray-200 border-b dark:bg-gray-950 hover:bg-gray-300 transition duration-200 cursor-pointer"
                 >
                   {category}
                 </li>
@@ -170,12 +168,12 @@ const CategoryList = ({ onCategoryChange, totalRecipes }) => {
           )}
         </div>
       )}
-           <p className="font-semibold text-lg mb-2 px-4">
-      {totalRecipesState > 0 ? `Total Recipes Found: ${totalRecipesState}` : 'No recipes found'}
-    </p>
+         {/*  <p className="font-semibold text-lg mb-2 px-4">
+      {totalRecipesState > 0 ? `Total Recipes Found: ${totalRecipesState}` : ''}
+    </p>*/}
     </div>
-   
   );
 };
 
 export default CategoryList;
+
