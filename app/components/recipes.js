@@ -54,8 +54,8 @@ export default function Recipes({ recipes: initialRecipes }) {
         updated.delete(recipeId);
         return updated;
       });
-      await fetch(`/api/favorites/remove`, {  // Endpoint to remove from favorites (you need to implement this in your backend)
-        method: 'POST',
+      await fetch(`/api/favorites`, {  // Endpoint to remove from favorites (you need to implement this in your backend)
+        method: 'DELETE',
         body: JSON.stringify({ recipeId, email: loggedInEmail }),
         headers: {
           'Content-Type': 'application/json',

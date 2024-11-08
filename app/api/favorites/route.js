@@ -54,11 +54,8 @@ export async function DELETE(req) {
       return NextResponse.json({ error: 'User not found or recipe not in favorites' }, { status: 404 });
     }
 
-    if (!updatedUser.favorites.includes(recipeId)) {
-      return NextResponse.json({ message: 'Favorite removed successfully' }, { status: 200 });
-    } else {
-      return NextResponse.json({ error: 'Recipe not in favorites' }, { status: 404 });
-    }
+    return NextResponse.json({ message: 'Favorite removed successfully' }, { status: 200 });
+
   } catch (error) {
     console.error('Error removing favorite:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
