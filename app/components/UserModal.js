@@ -1,4 +1,4 @@
-'use client';
+"use client";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -8,10 +8,9 @@ import Link from "next/link";
 export default function UserModal({ show, onClose }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [firstName, setFirstName] = useState(""); 
-  const [lastName, setLastName] = useState("");
+  const [fullName, setfullName] = useState("");
   const [isCheckingUser, setIsCheckingUser] = useState(false);
-  const [isLogin, setIsLogin] = useState(null); 
+  const [isLogin, setIsLogin] = useState(null);
   const [prevModal, setPrevModal] = useState(null);
   const { signup, login, logout, error } = useAuth();
   const [loggedInUser, setLoggedInUser] = useState(null);
@@ -70,12 +69,12 @@ export default function UserModal({ show, onClose }) {
         alert("Login failed. Please check your credentials.");
       }
     } else {
-      if (!firstName || !lastName || !password) {
+      if (!fullName || !password) {
         alert("Please fill in all fields.");
         return;
       }
 
-      await signup(email, password, firstName, lastName); 
+      await signup(email, password, fullName);
       if (!error) {
         alert("Sign-up successful!");
         setLoggedInUser(email);
@@ -171,18 +170,12 @@ export default function UserModal({ show, onClose }) {
               <>
                 <input
                   type="text"
-                  placeholder="First Name"
-                  value={firstName}
-                  onChange={(e) => setFirstName(e.target.value)}
+                  placeholder="Full Name"
+                  value={fullName}
+                  onChange={(e) => setfullName(e.target.value)}
                   className="w-full border rounded-md p-3 text-gray-700 mb-4"
                 />
-                <input
-                  type="text"
-                  placeholder="Last Name"
-                  value={lastName}
-                  onChange={(e) => setLastName(e.target.value)}
-                  className="w-full border rounded-md p-3 text-gray-700 mb-4"
-                />
+
                 <input
                   type="email"
                   placeholder="Email"
