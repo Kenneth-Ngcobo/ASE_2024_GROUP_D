@@ -5,32 +5,12 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
-import { FaCalendarDay, FaClock, FaUtensils, FaTags, FaUtensilSpoon, FaListUl ,FaRegStar} from "react-icons/fa"; // Updated icon imports
+import { FaCalendarDay, FaClock, FaUtensils, FaTags, FaUtensilSpoon, FaListUl } from "react-icons/fa"; // Updated icon imports
 import Head from 'next/head';
 import Carousel from './Carousel';
 import { SortControl } from './SortControl';
 import { sortRecipes } from './sortUtils';
 import { useSearchParams } from 'next/navigation';
-
-// Helper component for rendering star ratings
-const StarRating = ({ rating }) => {
-  const stars = [];
-  const fullStars = Math.floor(rating);
-  const hasHalfStar = rating % 1 >= 0.5;
-
-  for (let i = 0; i < 5; i++) {
-    if (i < fullStars) {
-      stars.push(<FaStar key={i} className="inline-block text-yellow-400" />);
-    } else if (i === fullStars && hasHalfStar) {
-      stars.push(<FaStarHalf key={i} className="inline-block text-yellow-400" />);
-    } else {
-      stars.push(<FaRegStar key={i} className="inline-block text-yellow-400" />);
-    }
-  }
-
-  return <span className="inline-flex items-center">{stars}</span>;
-};
-
 
 export default function Recipes({ recipes: initialRecipes }) {
   const [sortBy, setSortBy] = useState("default");
@@ -85,7 +65,7 @@ export default function Recipes({ recipes: initialRecipes }) {
             <Link
               href={`/Recipe/${recipe._id}`}  // Link to each recipe's detailed page using its ID
               key={recipe._id}  // Unique key for each mapped element
-              className="block p-4  border bg-white dark:bg-gray-950 bg-border  dark:border-none border-gray-200 rounded-lg shadow-lg hover:shadow-2xl transition-transform transform hover:scale-105 duration-300 ease-in-out"
+              className="block p-4 bg-white border border-gray-200 rounded-lg shadow-lg hover:shadow-2xl transition-transform transform hover:scale-105 duration-300 ease-in-out"
             >
               {/* Recipe title */}
               <h2 className="text-xl font-semibold font-playfair mb-2 text-green-800">
@@ -107,14 +87,6 @@ export default function Recipes({ recipes: initialRecipes }) {
                     />
                   </div>
                 )}
-              </div>
-
-               {/* New Rating Display */}
-               <div className="mb-2">
-                <StarRating rating={recipe.averageRating || 0} />
-                <span className="ml-2 text-sm text-gray-600">
-                  ({recipe.reviewCount || 0} reviews)
-                </span>
               </div>
 
               {/* Recipe details */}
