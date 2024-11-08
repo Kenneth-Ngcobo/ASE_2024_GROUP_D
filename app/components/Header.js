@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-no-undef */
 "use client";
 import Link from "next/link";
 import Image from "next/image";
