@@ -11,6 +11,8 @@ const options = {
     version: ServerApiVersion.v1,
     deprecationErrors: true,
   },
+  //setting maxPoolSize to 20 will limit connections to database
+  maxPoolSize: 20, 
 };
 
 let client;
