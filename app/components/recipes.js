@@ -119,6 +119,11 @@ export default function Recipes({ recipes: initialRecipes }) {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {recipes && recipes.map((recipe) => (
+            <Link
+              href={`/Recipe/${recipe._id}`}  // Link to each recipe's detailed page using its ID
+              key={recipe._id}  // Unique key for each mapped element
+              className="block p-4 bg-white border border-gray-200 rounded-lg shadow-lg hover:shadow-2xl transition-transform transform hover:scale-105 duration-300 ease-in-out"
+            >
             <Link href={`/Recipe/${recipe._id}`} key={recipe._id} className="block p-4 border border-gray-200 rounded-lg shadow-lg hover:shadow-2xl transition-transform transform hover:scale-105 duration-300 ease-in-out">
               
               {/* Heart Icon for Favorites */}
@@ -131,6 +136,7 @@ export default function Recipes({ recipes: initialRecipes }) {
               >
                 <FaHeart size={24} />
               </button>
+
 
               {/* Recipe title */}
               <h2 className="text-xl font-semibold font-playfair mb-2 text-green-800">{recipe.title}</h2>
