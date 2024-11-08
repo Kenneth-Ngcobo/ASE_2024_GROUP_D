@@ -101,8 +101,8 @@ const CategoryList = ({ onCategoryChange, totalRecipes }) => {
   }
 
   return (
-    <div className="relative">
-       
+    <div className="  bg-opacity-50 z-50">
+       <div className=" w-96 p-6">
       {/* Toggle button to open/close the search and category dropdown */}
       <button
         onClick={() => setIsOpen((prev) => !prev)} // Toggle isOpen state
@@ -171,7 +171,8 @@ const CategoryList = ({ onCategoryChange, totalRecipes }) => {
          {/*  <p className="font-semibold text-lg mb-2 px-4">
       {totalRecipesState > 0 ? `Total Recipes Found: ${totalRecipesState}` : ''}
     </p>*/}
-    </div>
+      </div>
+      </div>
   );
 };
 
