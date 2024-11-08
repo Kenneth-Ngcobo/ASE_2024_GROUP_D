@@ -41,31 +41,31 @@ const Header = ({ isAuthenticated, onLogout }) => {
   }, []);
 
   return (
-    <header className="bg-white shadow-sm sticky top-0 z-50">
+    <header className="bg-white dark:bg-gray-950 shadow-sm sticky top-0 z-50">
       <div className="container mx-auto px-4">
         <nav className="flex items-center justify-between h-16">
           <div className="hidden md:flex space-x-8">
             <Link
               href="/recipes"
-              className="text-gray-600 hover:text-teal-500 font-medium uppercase text-sm"
+              className="text-gray-600 dark:text-white hover:text-teal-500 font-medium uppercase text-sm"
             >
               Recipes
             </Link>
             <Link
               href="/Recomended"
-              className="text-gray-600 hover:text-teal-500 font-medium uppercase text-sm"
+              className="text-gray-600 dark:text-white hover:text-teal-500 font-medium uppercase text-sm"
             >
               Recomended
             </Link>
             <Link
               href="/Favourite"
-              className="text-gray-600 hover:text-teal-500 font-medium uppercase text-sm"
+              className="text-gray-600 dark:text-white hover:text-teal-500 font-medium uppercase text-sm"
             >
               Favourite
             </Link>
           </div>
 
-          <ThemeButton />
+       
 
           <Link href="/" className="flex items-center">
             <Image
@@ -87,20 +87,21 @@ const Header = ({ isAuthenticated, onLogout }) => {
 
             <button
               onClick={toggleModal}
-              className="text-gray-600 hover:text-teal-500"
+              className="text-gray-600 dark:text-white hover:text-teal-500"
             >
               <FaUser className="w-5 h-5" />
             </button>
 
             {/* Authentication Modal */}
             <UserModal show={showModal} onClose={toggleModal} />
+            <ThemeButton />
 
-            <Link href="/cart" className="text-gray-600 hover:text-teal-500">
+            <Link href="/cart" className="text-gray-600 dark:text-white hover:text-teal-500">
               <FaShoppingBag className="w-5 h-5" />
             </Link>
           </div>
           <button
-            className="md:hidden text-gray-600"
+            className="md:hidden text-gray-600 dark:text-white"
             onClick={toggleDropdown}
             aria-label="Menu"
           >
