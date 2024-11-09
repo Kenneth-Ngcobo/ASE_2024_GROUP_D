@@ -6,7 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 const CategoryList = ({ onCategoryChange, totalRecipes }) => {
   const [categories, setCategories] = useState([]);
   const [error, setError] = useState(null);
-  const [isOpen, setIsOpen] = useState(false); // State to control the visibility of the search and category list
+  const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredCategories, setFilteredCategories] = useState([]);
@@ -20,18 +20,14 @@ const CategoryList = ({ onCategoryChange, totalRecipes }) => {
     setTotalRecipes(totalRecipes);
   }, [totalRecipes]);
 
-  // Fetch categories from API
   useEffect(() => {
     const fetchCategories = async () => {
       try {
         const response = await fetch('/api/recipes/categories');
-        if (!response.ok) {
-          throw new Error('Failed to fetch categories');
-        }
+        if (!response.ok) throw new Error('Failed to fetch categories');
         const data = await response.json();
         setCategories(data);
         setFilteredCategories(data);
-        console.log('Fetched categories:', data);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -41,139 +37,96 @@ const CategoryList = ({ onCategoryChange, totalRecipes }) => {
     fetchCategories();
   }, []);
 
-  // Handle search submit or input change
   const handleSearch = (event) => {
     event.preventDefault();
-
     if (!searchTerm) {
-      setFilteredCategories(categories); // Reset to all categories if search is empty
+      setFilteredCategories(categories);
       return;
     }
-
-    // Filter categories based on search term
     const matches = categories.filter(category =>
       category.toLowerCase().includes(searchTerm.toLowerCase())
     );
-
     setFilteredCategories(matches);
   };
 
-  // Handle category select
   const handleCategorySelect = async (category) => {
-    setIsOpen(false); // Close the dropdown after selecting a category
-
-    // Get current query parameters
+    setIsOpen(false);
     const currentQuery = Object.fromEntries(searchParams.entries());
-
-    // Update the query with the selected category
     const newQuery = {
       ...currentQuery,
       page: 1,
       category: category,
     };
-
-    // Construct the new query string
     const queryString = new URLSearchParams(newQuery).toString();
-
-    // Push the new URL with updated query
     router.push(`?${queryString}`);
   };
 
   const clearCategory = () => {
     const currentQuery = Object.fromEntries(searchParams.entries());
-
-    // Remove the 'category' key from the query object
     const { category, ...updatedQuery } = currentQuery;
-
-    // Construct the new query string without 'category'
     const queryString = new URLSearchParams(updatedQuery).toString();
-
-    // Push the updated URL without the 'category' parameter
     router.push(`?${queryString}`);
   };
 
-  if (loading) {
-    return <div>Loading categories...</div>;
-  }
-
-  if (error) {
-    return <div>Error: {error}</div>;
-  }
+  if (loading) return <div className="text-gray-500">Loading categories...</div>;
+  if (error) return <div className="text-red-500">Error: {error}</div>;
 
   return (
-    <div className="  inset-0 bg-opacity-50 z-50">
-      <div className='relative'>
-      {/* Toggle button to open/close the search and category dropdown */}
+    <div className="relative">
       <button
-        onClick={() => setIsOpen((prev) => !prev)} // Toggle isOpen state
-        className="text-gray-600 hover:text-teal-500 font-medium uppercase text-sm"
+        onClick={() => setIsOpen((prev) => !prev)}
+        className="flex items-center text-teal-600 hover:text-teal-500 font-medium uppercase tracking-wide text-sm focus:outline-none"
       >
-        {isOpen ? 'Close' : 'Category'} {/* Display appropriate label based on isOpen */}
+        {isOpen ? 'Close' : 'Categories'}
       </button>
 
-      {/* Conditionally render content when isOpen is true */}
       {isOpen && (
-        <div className="mt-4">
-          {/* Search form to filter categories */}
-          <form onSubmit={handleSearch} className="mb-4">
-            <input
-              type="text"
-              placeholder="Search categories"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="border px-4 py-2 mb-4 w-30 mx-2"
-            />
-            <button
-              type="submit"
-              className="bg-blue-500 text-white px-4 py-2 mx-2 rounded hover:bg-blue-400 transition duration-200"
-            >
-              Search
-            </button>
-            <button onClick={() => clearCategory()}   type="button"
-              className="bg-red-500 text-white px-4 py-2 mx-2 rounded hover:bg-red-400 transition duration-200">
-              Clear category
-            </button>
-         
-          </form>
+        <div className="absolute left-0 w-64 mt-2 bg-white shadow-lg rounded-lg overflow-hidden z-50">
+          <div className="p-4 border-b border-gray-100">
+            <form onSubmit={handleSearch} className="space-y-2">
+              <input
+                type="text"
+                placeholder="Search categories"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-200 rounded-md text-sm focus:outline-none focus:border-teal-500"
+              />
+              <div className="flex gap-2">
+                <button
+                  type="submit"
+                  className="flex-1 bg-teal-500 text-white px-4 py-2 rounded-md text-sm hover:bg-teal-600 transition duration-200"
+                >
+                  Search
+                </button>
+                <button
+                  onClick={clearCategory}
+                  type="button"
+                  className="flex-1 bg-gray-100 text-gray-700 px-4 py-2 rounded-md text-sm hover:bg-gray-200 transition duration-200"
+                >
+                  Clear
+                </button>
+              </div>
+            </form>
+          </div>
 
-          {/* Dropdown with filtered categories */}
           {filteredCategories.length > 0 ? (
-            <ul
-              style={{
-                position: 'relative',
-                top: '100%',
-                left: 0,
-                width: '100%',
-                background: 'white',
-                border: '1px solid #ccc',
-                listStyleType: 'none',
-                padding: 0,
-                margin: 0,
-                maxHeight: '200px',
-                overflowY: 'auto',
-              }}
-            >
+            <ul className="max-h-96 overflow-y-auto">
               {filteredCategories.map((category, index) => (
                 <li
                   key={index}
-                  onClick={() => handleCategorySelect(category)} // Trigger category selection
-                  className="p-2 bg-gray-200 border-b dark:bg-gray-950 hover:bg-gray-300 transition duration-200 cursor-pointer"
+                  onClick={() => handleCategorySelect(category)}
+                  className="px-4 py-3 hover:bg-gray-50 cursor-pointer flex items-center text-gray-700 text-sm border-b border-gray-100 last:border-0"
                 >
                   {category}
                 </li>
               ))}
             </ul>
           ) : (
-            <p className="text-gray-500">No categories found</p> // Message when no categories match search
+            <p className="p-4 text-gray-500 text-sm">No categories found</p>
           )}
         </div>
       )}
-         {/*  <p className="font-semibold text-lg mb-2 px-4">
-      {totalRecipesState > 0 ? `Total Recipes Found: ${totalRecipesState}` : ''}
-    </p>*/}
-      </div>
-      </div>
-      
+    </div>
   );
 };
 
