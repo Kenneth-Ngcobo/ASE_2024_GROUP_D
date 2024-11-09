@@ -1,16 +1,9 @@
-const { ObjectId } = require('mongodb');
-
 async function createReview(db, reviewData) {
   const collection = db.collection('recipes');
   const recipeId = reviewData.recipeId;
 
-  // Validate recipeId
-  if (!ObjectId.isValid(recipeId)) {
-    throw new Error('Invalid recipe ID');
-  }
-
   const review = {
-    _id: new ObjectId(),
+    _id: new Date().getTime().toString(), // Simple timestamp-based ID
     userId: reviewData.userId,
     rating: Number(reviewData.rating),
     comment: reviewData.comment,
@@ -20,7 +13,7 @@ async function createReview(db, reviewData) {
 
   // Add the review and update average rating
   const result = await collection.updateOne(
-    { _id: new ObjectId(recipeId) },
+    { _id: recipeId },
     { 
       $push: { reviews: review },
       $set: { updatedAt: new Date() }
@@ -38,10 +31,6 @@ async function createReview(db, reviewData) {
 async function updateReview(db, reviewId, updateData) {
   const collection = db.collection('recipes');
 
-  if (!ObjectId.isValid(reviewId)) {
-    throw new Error('Invalid review ID');
-  }
-
   const update = {
     $set: {
       "reviews.$.rating": Number(updateData.rating),
@@ -52,7 +41,7 @@ async function updateReview(db, reviewId, updateData) {
   };
 
   const result = await collection.updateOne(
-    { "reviews._id": new ObjectId(reviewId) },
+    { "reviews._id": reviewId },
     update
   );
 
@@ -62,12 +51,12 @@ async function updateReview(db, reviewId, updateData) {
 
   // Update average rating for the recipe
   const recipe = await collection.findOne(
-    { "reviews._id": new ObjectId(reviewId) },
+    { "reviews._id": reviewId },
     { projection: { _id: 1 } }
   );
   
   if (recipe) {
-    await updateAverageRating(db, recipe._id.toString());
+    await updateAverageRating(db, recipe._id);
   }
 
   return result;
@@ -76,13 +65,9 @@ async function updateReview(db, reviewId, updateData) {
 async function deleteReview(db, reviewId) {
   const collection = db.collection('recipes');
 
-  if (!ObjectId.isValid(reviewId)) {
-    throw new Error('Invalid review ID');
-  }
-
   // First find the recipe containing the review
   const recipe = await collection.findOne(
-    { "reviews._id": new ObjectId(reviewId) },
+    { "reviews._id": reviewId },
     { projection: { _id: 1 } }
   );
 
@@ -94,13 +79,13 @@ async function deleteReview(db, reviewId) {
   const result = await collection.updateOne(
     { _id: recipe._id },
     {
-      $pull: { reviews: { _id: new ObjectId(reviewId) } },
+      $pull: { reviews: { _id: reviewId } },
       $set: { updatedAt: new Date() }
     }
   );
 
   // Update average rating
-  await updateAverageRating(db, recipe._id.toString());
+  await updateAverageRating(db, recipe._id);
 
   return result;
 }
@@ -108,12 +93,8 @@ async function deleteReview(db, reviewId) {
 async function getRecipeReviews(db, recipeId, sortOptions) {
   const collection = db.collection('recipes');
 
-  if (!ObjectId.isValid(recipeId)) {
-    throw new Error('Invalid recipe ID');
-  }
-
   const recipe = await collection.findOne(
-    { _id: new ObjectId(recipeId) },
+    { _id: recipeId },
     { projection: { reviews: 1 } }
   );
 
@@ -147,13 +128,13 @@ async function updateAverageRating(db, recipeId) {
   const collection = db.collection('recipes');
 
   const recipe = await collection.findOne(
-    { _id: new ObjectId(recipeId) },
+    { _id: recipeId },
     { projection: { reviews: 1 } }
   );
 
   if (!recipe || !recipe.reviews || recipe.reviews.length === 0) {
     await collection.updateOne(
-      { _id: new ObjectId(recipeId) },
+      { _id: recipeId },
       { $set: { averageRating: 0 } }
     );
     return;
@@ -163,7 +144,7 @@ async function updateAverageRating(db, recipeId) {
   const averageRating = Number((totalRating / recipe.reviews.length).toFixed(1));
 
   await collection.updateOne(
-    { _id: new ObjectId(recipeId) },
+    { _id: recipeId },
     { $set: { averageRating } }
   );
 }
