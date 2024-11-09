@@ -37,8 +37,49 @@ async function connectToDatabase() {
   
   // Ensure indexes setup
   await initializeIndexes(db);
+  await setupSchemaValidation(db);
   
   return db;
+}
+
+async function setupSchemaValidation(db) {
+  try {
+    await db.command({
+      collMod: "recipes",
+      validator: {
+        $jsonSchema: {
+          bsonType: "object",
+          required: ["title", "description", "reviews"],
+          properties: {
+            title: { bsonType: "string" },
+            description: { bsonType: "string" },
+            reviews: {
+              bsonType: "array",
+              items: {
+                bsonType: "object",
+                required: ["_id", "userId", "rating", "comment", "createdAt"],
+                properties: {
+                  _id: { bsonType: "objectId" },
+                  userId: { bsonType: "string" },
+                  rating: { bsonType: "number", minimum: 1, maximum: 5 },
+                  comment: { bsonType: "string" },
+                  createdAt: { bsonType: "date" },
+                  updatedAt: { bsonType: "date" }
+                }
+              }
+            },
+            averageRating: { bsonType: "number" },
+            createdAt: { bsonType: "date" },
+            updatedAt: { bsonType: "date" }
+          }
+        }
+      },
+      validationLevel: "moderate"
+    });
+  } catch (error) {
+    console.error('Schema validation setup error:', error);
+    // Continue execution even if validation setup fails
+  }
 }
 
 async function initializeIndexes(db) {
@@ -98,27 +139,26 @@ async function initializeIndexes(db) {
         name: "ingredients_index",
       },
       {
-        operation: () => collection.createIndex({ instructions: 1 }, { background: true }),
-        name: "instructions_index",
-      },
-      {
-        operation: () => collection.createIndex({ category: 1, createdAt: -1 }, { background: true }),
-        name: "category_date_index",
-      },
-      // New index operations
-      {
-        operation: () => collection.createIndex({ "reviews.rating": 1, "reviews.createdAt": -1 }, { background: true }),
-        name: "Reviews compound index",
+        operation: () => collection.createIndex({ "reviews._id": 1 }, { background: true, unique: true }),
+        name: "review_id_index",
       },
       {
         operation: () => collection.createIndex({ "reviews.userId": 1 }, { background: true }),
-        name: "Review user index",
+        name: "review_user_index",
+      },
+      {
+        operation: () => collection.createIndex(
+          { "reviews.rating": 1, "reviews.createdAt": -1 },
+          { background: true }
+        ),
+        name: "review_rating_date_index",
       },
       {
         operation: () => collection.createIndex({ averageRating: -1 }, { background: true }),
-        name: "Average rating index",
+        name: "average_rating_index",
       },
     ];
+
 
     // Execute each index operation with retries
     for (const { operation, name } of indexOperations) {
@@ -150,5 +190,22 @@ async function initializeIndexes(db) {
     console.error(`Index initialization error: ${error.message}`);
   }
 }
+async function migrateExistingRecipes(db) {
+  const collection = db.collection("recipes");
 
-module.exports = connectToDatabase;
+  await collection.updateMany(
+    { reviews: { $exists: false } },
+    {
+      $set: {
+        reviews: [],
+        averageRating: 0,
+        updateAt: new Date()
+      }
+    }
+  )
+}
+
+module.exports = {
+  connectToDatabase,
+  migrateExistingRecipes
+};

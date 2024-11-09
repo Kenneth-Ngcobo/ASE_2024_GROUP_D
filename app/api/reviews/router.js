@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const connectToDatabase = require('../../../db');
+const { connectToDatabase } = require('../../../db');
 const {
   createReview,
   updateReview,
@@ -8,8 +8,13 @@ const {
   getRecipeReviews
 } = require('./reviews');
 
-// Middleware to check and create reviews array if it doesn't exist
-async function ensureReviewsArrayExists(req, res, next) {
+// Middleware for handling errors
+const asyncHandler = fn => (req, res, next) => {
+  Promise.resolve(fn(req, res, next)).catch(next);
+};
+
+// Middleware to validate recipe existence
+async function validateRecipe(req, res, next) {
   try {
     const db = await connectToDatabase();
     const recipeId = req.params.recipeId || req.body.recipeId;
@@ -24,81 +29,52 @@ async function ensureReviewsArrayExists(req, res, next) {
       return res.status(404).json({ error: 'Recipe not found' });
     }
 
-    if (!recipe.reviews) {
-      await db.collection('recipes').updateOne(
-        { _id: recipeId },
-        { $set: { reviews: [] } }
-      );
-    }
-
+    req.recipe = recipe;
     next();
   } catch (error) {
-    console.error('Error ensuring reviews array exists:', error);
-    res.status(500).json({ error: 'Failed to ensure reviews array exists' });
+    next(error);
   }
 }
 
 // Create a new review
-router.post('/reviews', ensureReviewsArrayExists, async (req, res) => {
-  try {
-    const db = await connectToDatabase();
-    const review = await createReview(db, req.body);
-    res.status(201).json(review);
-  } catch (error) {
-    console.error('Error creating review:', error);
-    res.status(500).json({ error: 'Failed to create review' });
-  }
-});
+router.post('/reviews', validateRecipe, asyncHandler(async (req, res) => {
+  const db = await connectToDatabase();
+  const review = await createReview(db, req.body);
+  res.status(201).json(review);
+}));
 
 // Update a review
-router.put('/reviews/:reviewId', ensureReviewsArrayExists, async (req, res) => {
-  try {
-    const db = await connectToDatabase();
-    const result = await updateReview(db, req.params.reviewId, req.body);
-
-    if (result.modifiedCount === 0) {
-      return res.status(404).json({ error: 'Review not found' });
-    }
-
-    res.json({ message: 'Review updated successfully' });
-  } catch (error) {
-    console.error('Error updating review:', error);
-    res.status(500).json({ error: 'Failed to update review' });
-  }
-});
+router.put('/reviews/:reviewId', asyncHandler(async (req, res) => {
+  const db = await connectToDatabase();
+  await updateReview(db, req.params.reviewId, req.body);
+  res.json({ message: 'Review updated successfully' });
+}));
 
 // Delete a review
-router.delete('/reviews/:reviewId', ensureReviewsArrayExists, async (req, res) => {
-  try {
-    const db = await connectToDatabase();
-    const result = await deleteReview(db, req.params.reviewId);
+router.delete('/reviews/:reviewId', asyncHandler(async (req, res) => {
+  const db = await connectToDatabase();
+  await deleteReview(db, req.params.reviewId);
+  res.json({ message: 'Review deleted successfully' });
+}));
 
-    if (result.deletedCount === 0) {
-      return res.status(404).json({ error: 'Review not found' });
-    }
+// Get all reviews for a recipe
+router.get('/recipes/:recipeId/reviews', validateRecipe, asyncHandler(async (req, res) => {
+  const db = await connectToDatabase();
+  const sortOptions = {
+    sortBy: req.query.sortBy || 'date',
+    order: req.query.order || 'desc'
+  };
 
-    res.json({ message: 'Review deleted successfully' });
-  } catch (error) {
-    console.error('Error deleting review:', error);
-    res.status(500).json({ error: 'Failed to delete review' });
-  }
-});
+  const reviews = await getRecipeReviews(db, req.params.recipeId, sortOptions);
+  res.json(reviews);
+}));
 
-// Get all reviews for a recipe with sorting
-router.get('/recipes/:recipeId/reviews', ensureReviewsArrayExists, async (req, res) => {
-  try {
-    const db = await connectToDatabase();
-    const sortOptions = {
-      sortBy: req.query.sortBy || 'date',  
-      order: req.query.order || 'desc'     
-    };
-
-    const reviews = await getRecipeReviews(db, req.params.recipeId, sortOptions);
-    res.json(reviews);
-  } catch (error) {
-    console.error('Error fetching reviews:', error);
-    res.status(500).json({ error: 'Failed to fetch reviews' });
-  }
+// Error handling middleware
+router.use((error, req, res, next) => {
+  console.error('API Error:', error);
+  res.status(500).json({ 
+    error: error.message || 'Internal server error'
+  });
 });
 
 module.exports = router;
