@@ -124,8 +124,6 @@ export default function Recipes({ recipes: initialRecipes }) {
               key={recipe._id}  // Unique key for each mapped element
               className="block p-4 bg-white border border-gray-200 rounded-lg shadow-lg hover:shadow-2xl transition-transform transform hover:scale-105 duration-300 ease-in-out"
             >
-            <Link href={`/Recipe/${recipe._id}`} key={recipe._id} className="block p-4 border border-gray-200 rounded-lg shadow-lg hover:shadow-2xl transition-transform transform hover:scale-105 duration-300 ease-in-out">
-              
               {/* Heart Icon for Favorites */}
               <button
                 className={`absolute top-2 right-2 ${favoritedRecipes.has(recipe._id) ? 'text-red-500' : 'text-gray-400'} hover:text-red-500`}
@@ -186,17 +184,7 @@ export default function Recipes({ recipes: initialRecipes }) {
             </Link>
             </Link>
           ))}
-        </div>
       </div>
-
-      <style jsx>{`
-        .font-playfair {
-          font-family: 'Playfair Display', serif;
-        }
-        .font-roboto {
-          font-family: 'Roboto', sans-serif;
-        }
-      `}</style>
-    </>
+</div>
   );
 }
