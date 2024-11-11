@@ -182,8 +182,10 @@ export default function Recipes({ recipes: initialRecipes }) {
                 {recipe.category}
               </p>
             </Link>
-          ))}
+      
+            ))}
       </div>
-</div>
+      </div>
+</>
   );
 }
