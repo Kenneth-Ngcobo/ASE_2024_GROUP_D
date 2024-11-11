@@ -17,7 +17,7 @@ export default function IngDisplay({ selectedIngs = [], onIngsChange = () => {} 
     if (urlIngs.length && urlIngs !== ' ' && urlIngs !== '') {
       onIngsChange(urlIngs); 
     }
-  }, [onIngsChange]);
+  }, [searchParams , onIngsChange]);
 
   useEffect(() => {
     const fetchIngs = async () => {
