@@ -1,9 +1,15 @@
-import connectToDatabase from "../../../db.js";
+import connectToDatabase from '../../../db.js';
 
+/**
+ * GET handler for fetching paginated and sorted recipes from the database.
+ * @param {Request} req - The incoming HTTP request.
+ * @returns {Response} - JSON response containing paginated recipes and metadata.
+ */
 export async function GET(req) {
   try {
+    // Connect to the database and get the recipes collection
     const db = await connectToDatabase();
-    const recipesCollection = db.collection("recipes");
+    const recipesCollection = db.collection('recipes');
 
     // Use req.nextUrl to parse query parameters
     const { searchParams } = req.nextUrl;
@@ -31,7 +37,7 @@ export async function GET(req) {
     if (!validSortFields[sort]) {
       return new Response(
         JSON.stringify({
-          error: 'Invalid sort parameter. Valid options are: cookTime, prepTime, instructions, createdAt'
+          error: `Invalid sort parameter '${sort}'. Valid options are: cookingTime, preparationTime, published, calories, title, instructionsCount`
         }), {
           status: 400,
           headers: { 'Content-Type': 'application/json' }
@@ -109,9 +115,12 @@ export async function GET(req) {
     );
   } catch (error) {
     console.error('Error fetching recipes:', error);
-    return new Response(JSON.stringify({ error: 'Failed to fetch recipes' }), {
+    return new Response(JSON.stringify({ 
+      error: 'Failed to fetch recipes',
+      details: error.message 
+    }), {
       status: 500,
-      headers: { "Content-Type": "application/json" },
+      headers: { 'Content-Type': 'application/json' },
     });
   }
 }
