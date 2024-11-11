@@ -185,5 +185,6 @@ export default function Recipes({ recipes: initialRecipes }) {
           ))}
       </div>
 </div>
+      </>
   );
 }
