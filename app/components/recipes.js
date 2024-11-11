@@ -5,7 +5,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
-import { FaCalendarDay, FaClock, FaUtensils, FaTags, FaUtensilSpoon, FaListUl } from "react-icons/fa"; // Updated icon imports
+import { FaCalendarDay, FaClock, FaUtensils, FaTags, FaUtensilSpoon, FaListUl, FaHeart } from "react-icons/fa"; // Updated icon imports
 import Head from 'next/head';
 import Carousel from './Carousel';
 import { SortControl } from './SortControl';
@@ -16,6 +16,7 @@ export default function Recipes({ recipes: initialRecipes }) {
   const [sortBy, setSortBy] = useState("default");
   const [sortOrder, setSortOrder] = useState("ascending");
   const [recipes, setRecipes] = useState(initialRecipes);
+  const [favoritedRecipes, setFavoriteRecipes] = useState(new Set())
   const searchParams = useSearchParams();
 
   useEffect(() => {
