@@ -187,15 +187,7 @@ export default function Recipes({ recipes: initialRecipes }) {
           ))}
         </div>
       </div>
-
-      <style jsx>{`
-        .font-playfair {
-          font-family: 'Playfair Display', serif;
-        }
-        .font-roboto {
-          font-family: 'Roboto', sans-serif;
-        }
-      `}</style>
+  
     </>
   );
 }
