@@ -1,73 +1,54 @@
 import React from 'react';
 import { ChevronDown } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import { SORT_OPTIONS, SORT_ORDERS } from './sortUtils';
-import { useCallback } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 
-export const SortControl = ({
-    onSortChange,
-    sortBy = SORT_OPTIONS.DEFAULT,
-    sortOrder = SORT_ORDERS.ASC
-}) => {
+export const SortControl = () => {
     const router = useRouter();
+    const searchParams = useSearchParams();
 
-    const updateUrl = useCallback((params) => {
-        const newQuery = new URLSearchParams(window.location.search);
-        Object.entries(params).forEach(([key, value]) => {
-            newQuery.set(key, value);
-        });
-        newQuery.set('page', '1'); // Reset to first page on sort change
-        router.push(`?${newQuery.toString()}`);
-    }, [router]);
-
-    const handleSortChange = useCallback((event) => {
+    const handleSortChange = (event) => {
         const newSortBy = event.target.value;
-        onSortChange(newSortBy, sortOrder);
-        updateUrl({ sortBy: newSortBy });
-    }, [onSortChange, sortOrder, updateUrl]);
+        const params = new URLSearchParams(searchParams);
+        params.set('sort', newSortBy);
+        params.set('page', '1');
+        router.push(`?${params.toString()}`);
+    };
 
-    const handleOrderChange = useCallback((event) => {
+    const handleOrderChange = (event) => {
         const newOrder = event.target.value;
-        onSortChange(sortBy, newOrder);
-        updateUrl({ order: newOrder });
-    }, [onSortChange, sortBy, updateUrl]);
+        const params = new URLSearchParams(searchParams);
+        params.set('order', newOrder);
+        params.set('page', '1');
+        router.push(`?${params.toString()}`);
+    };
 
     return (
-        <div className="flex gap-4 items-center mb-6 p-4  bg-white rounded-lg shadow dark:bg-gray-950">
+        <div className="flex gap-4 items-center mb-6 p-4 bg-white rounded-lg shadow dark:bg-gray-950">
             <div className="relative">
                 <select
-                    value={sortBy}
+                    value={searchParams.get('sort') || 'createdAt'}
                     onChange={handleSortChange}
-                    className="appearance-none bg-white border  dark:bg-black border-gray-300 rounded-md py-2 pl-3 pr-10 text-sm leading-5 focus:outline-none focus:ring-2 focus:ring-green-500"
+                    className="appearance-none bg-white border dark:bg-black border-gray-300 rounded-md py-2 pl-3 pr-10 text-sm leading-5 focus:outline-none focus:ring-2 focus:ring-green-500"
                 >
-                    <option value={SORT_OPTIONS.DEFAULT}>Default</option>
-                    <option value={SORT_OPTIONS.CREATED_AT}>Newest</option>
-                    <option value={SORT_OPTIONS.PREP_TIME}>Preparation Time</option>
-                    <option value={SORT_OPTIONS.COOK_TIME}>Cooking Time</option>
-                    <option value={SORT_OPTIONS.INSTRUCTIONS}>Instructions</option>
+                    <option value="createdAt">Newest</option>
+                    <option value="prepTime">Preparation Time</option>
+                    <option value="cookTime">Cooking Time</option>
+                    <option value="instructions">Instructions</option>
                 </select>
-                <ChevronDown
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none"
-                    size={16}
-                />
+                <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
             </div>
 
-            {sortBy !== SORT_OPTIONS.DEFAULT && sortBy !== SORT_OPTIONS.CREATED_AT && (
-                <div className="relative">
-                    <select
-                        value={sortOrder}
-                        onChange={handleOrderChange}
-                        className="appearance-none bg-white border border-gray-300 rounded-md py-2 pl-3 pr-10 text-sm leading-5 focus:outline-none focus:ring-2 focus:ring-green-500"
-                    >
-                        <option value={SORT_ORDERS.ASC}>Ascending</option>
-                        <option value={SORT_ORDERS.DESC}>Descending</option>
-                    </select>
-                    <ChevronDown
-                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none"
-                        size={16}
-                    />
-                </div>
-            )}
+            <div className="relative">
+                <select
+                    value={searchParams.get('order') || 'desc'}
+                    onChange={handleOrderChange}
+                    className="appearance-none bg-white border border-gray-300 rounded-md py-2 pl-3 pr-10 text-sm leading-5 focus:outline-none focus:ring-2 focus:ring-green-500"
+                >
+                    <option value="asc">Ascending</option>
+                    <option value="desc">Descending</option>
+                </select>
+                <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
+            </div>
         </div>
     );
 };
