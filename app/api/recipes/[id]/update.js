@@ -67,8 +67,8 @@ export async function PATCH(req, { params }) {
             }),
             {
                 status: 200,
-
-            });
+            }
+        );
     } catch (error) {
         console.error('Error updating recipe:', error);
         return new Response(JSON.stringify({ error: 'Failed to update recipe' }), { status: 500 });

@@ -66,7 +66,7 @@ export default function IngDisplay({ selectedIngs = [], onIngsChange = () => {} 
   );
 
   return (
-    <div className="p-6 bg-white shadow-md rounded-lg">
+    <div className="p-6 bg-white dark:bg-gray-950 shadow-md rounded-lg">
       <h2 className="text-2xl font-semibold mb-4">Select Ingredients</h2>
       <button
         onClick={() => setIsOpen((prev) => !prev)}

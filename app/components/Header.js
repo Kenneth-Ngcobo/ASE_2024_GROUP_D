@@ -46,23 +46,25 @@ const Header = ({ isAuthenticated, onLogout }) => {
           <div className="hidden md:flex space-x-8">
             <Link
               href="/recipes"
-              className="text-gray-600 hover:text-teal-500 font-medium uppercase text-sm"
+              className="text-gray-600 dark:text-white hover:text-teal-500 font-medium uppercase text-sm"
             >
               Recipes
             </Link>
             <Link
               href="/Recomended"
-              className="text-gray-600 hover:text-teal-500 font-medium uppercase text-sm"
+              className="text-gray-600 dark:text-white hover:text-teal-500 font-medium uppercase text-sm"
             >
               Recomended
             </Link>
             <Link
               href="/Favourite"
-              className="text-gray-600 hover:text-teal-500 font-medium uppercase text-sm"
+              className="text-gray-600 dark:text-white hover:text-teal-500 font-medium uppercase text-sm"
             >
               Favourite
             </Link>
           </div>
+
+       
 
           <Link href="/" className="flex items-center">
             <Image
@@ -84,7 +86,7 @@ const Header = ({ isAuthenticated, onLogout }) => {
 
             <button
               onClick={toggleModal}
-              className="text-gray-600 hover:text-teal-500"
+              className="text-gray-600 dark:text-white hover:text-teal-500"
             >
               <FaUser className="w-5 h-5" />
             </button>
@@ -93,9 +95,12 @@ const Header = ({ isAuthenticated, onLogout }) => {
             <UserModal show={showModal} onClose={toggleModal} />
             <ThemeButton />
 
+            <Link href="/cart" className="text-gray-600 dark:text-white hover:text-teal-500">
+              <FaShoppingBag className="w-5 h-5" />
+            </Link>
           </div>
           <button
-            className="md:hidden text-gray-600"
+            className="md:hidden text-gray-600 dark:text-white"
             onClick={toggleDropdown}
             aria-label="Menu"
           >

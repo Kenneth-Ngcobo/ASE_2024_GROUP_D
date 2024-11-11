@@ -1,19 +1,22 @@
+// Other imports remain unchanged
 import { Suspense } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import BackButton from '../../components/BackButton';
 import { fetchRecipeById } from '../../api';
 import ImageGallery from '../../components/ImageGallery';
 import CollapsibleSection from '../../components/CollapsibleSection';
+import dynamic from 'next/dynamic';
+import LoadingSpinner from '../../components/loadingSpinner'; 
 import Loading from './loading';
-import EditableRecipeDetails from '../../components/EditableRecipeDetails';
-
+import ReviewsSection from '../../components/ReviewsSection';
 
 // Generate metadata for the recipe page dynamically
 export async function generateMetadata({ params }) {
     const { id } = params;
     const recipe = await fetchRecipeById(id);
 
-    if (!recipe) {
+    if ( !recipe) {
         return {
             title: 'Recipe not found',
             description: 'Error occurred while fetching the recipe.'
@@ -35,19 +38,31 @@ export async function generateMetadata({ params }) {
 // Main Recipe Page Component
 export default async function RecipePage({ params }) {
     const { id } = params;
-    const recipe = await fetchRecipeById(id);
+    let recipe;
+    let load = true;
+    let error = null;
 
+    try {
+        recipe = await fetchRecipeById(id);
+    } catch (error) {
+        console.error('Error fetching recipe:', error);
+        error = 'Failed to load recipe data.';
+    } finally {
+        load = false;
+    }
 
-    if (!recipe) {
-        return (
-            <div className="text-center py-8">
-                <p>Recipe not found.</p>
-            </div>
-        );
+    // if(load){
+    //     <div className="w-full h-[400px] bg-gray-100 rounded-xl flex items-center justify-center">
+    //         <Loading /> {/* Use your Loading component here */}
+    //     </div>
+    // }
+
+    if (error) {
+        throw error;
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-b from-green-50 to-white  dark:from-black dark:to-gray-900 py-8">
+        <div className="min-h-screen bg-gradient-to-b from-green-50 to-white py-8">
             <Suspense fallback={<Loading />}>
                 <div className="container mx-auto px-4 max-w-5xl">
                     {/* Back Button */}
@@ -57,7 +72,7 @@ export default async function RecipePage({ params }) {
 
                     <div className="space-y-8">
                         {/* Image Section */}
-                        <div className="bg-white dark:bg-gray-950 rounded-2xl shadow-xl p-6 overflow-hidden">
+                        <div className="bg-white rounded-2xl shadow-xl p-6 overflow-hidden">
                             <Suspense fallback={<Loading />}> {/* Use the Loading component here */}
                                 {recipe.images && recipe.images.length > 0 ? (
                                     <ImageGallery images={recipe.images} />
@@ -70,7 +85,7 @@ export default async function RecipePage({ params }) {
                                         className="w-full h-[400px] object-cover rounded-xl"
                                     />
                                 ) : (
-                                    <div className="w-full h-[400px] dark:bg-gray-950 bg-gray-100 rounded-xl flex items-center justify-center">
+                                    <div className="w-full h-[400px] bg-gray-100 rounded-xl flex items-center justify-center">
                                         <p className="text-gray-500">No image available</p>
                                     </div>
                                 )}
@@ -78,25 +93,24 @@ export default async function RecipePage({ params }) {
                         </div>
 
                         {/* Title and Tags Section */}
-                        <div className="bg-white rounded-2xl shadow-xl p-8 dark:bg-gray-950">
+                        <div className="bg-white rounded-2xl shadow-xl p-8">
                             <h1 className="text-4xl font-bold text-green-800 mb-4">
                                 {recipe.title || 'Untitled Recipe'}
                             </h1>
                             <div className="flex flex-wrap gap-2 mb-4">
                                 {recipe.tags?.map((tag, index) => (
-                                    <span key={index} className="px-3 py-1 bg-green-100 dark:bg-gray-700 text-green-700 rounded-full text-sm">
+                                    <span key={index} className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm">
                                         {tag}
                                     </span>
                                 ))}
                             </div>
                         </div>
 
-                        {/* Editable Recipe Details */}
-                        <EditableRecipeDetails
-                            id={id}
-                            initialDescription={recipe.description}
-                            lastEditedBy={recipe.lastEditedBy}
-                            lastEditedAt={recipe.lastEditedAt}
+                        {/* Collapsible Sections */}
+                        <CollapsibleSection
+                            title="Description"
+                            content={recipe.description || 'No description available.'}
+                            defaultOpen={true}
                         />
 
                         <CollapsibleSection
@@ -132,9 +146,15 @@ export default async function RecipePage({ params }) {
                             content={recipe.instructions || 'No instructions available.'}
                             defaultOpen={true}
                         />
+                        {/* New Reviews Section */}
+                        <CollapsibleSection
+                            title="Reviews"
+                            content={<ReviewsSection recipeId={id} />}
+                            defaultOpen={true}
+                        />
 
                         {/* Footer Information */}
-                        <div className="mt-8 bg-white dark:bg-gray-950 p-6 rounded-xl shadow-xl">
+                        <div className="mt-8 bg-white p-6 rounded-xl shadow-xl">
                             <p className="text-sm text-green-600">
                                 <strong>Published:</strong> {new Date(recipe.published).toDateString()}
                             </p>
@@ -157,3 +177,4 @@ export default async function RecipePage({ params }) {
         </div>
     );
 }
+
