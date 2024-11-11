@@ -94,10 +94,6 @@ const Header = ({ isAuthenticated, onLogout }) => {
             {/* Authentication Modal */}
             <UserModal show={showModal} onClose={toggleModal} />
             <ThemeButton />
-
-            <Link href="/cart" className="text-gray-600 dark:text-white hover:text-teal-500">
-              <FaShoppingBag className="w-5 h-5" />
-            </Link>
           </div>
           <button
             className="md:hidden text-gray-600 dark:text-white"
