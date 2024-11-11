@@ -9,6 +9,7 @@ import FilterButton from "./FilterButton";
 import ThemeButton from "./ThemeButton";
 import RecipeSearchBar from "./searchBar";
 import UserModal from "./UserModal.js";
+import { FilterModal } from "./FilterButton";
 
 const Header = ({ isAuthenticated, onLogout }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -64,7 +65,7 @@ const Header = ({ isAuthenticated, onLogout }) => {
             </Link>
           </div>
 
-       
+
 
           <Link href="/" className="flex items-center">
             <Image
@@ -78,7 +79,7 @@ const Header = ({ isAuthenticated, onLogout }) => {
           <div className="hidden md:flex items-center space-x-8">
             <CategoryList
               totalRecipes={totalRecipes}
-              onCategoryChange={() => {}}
+              onCategoryChange={() => { }}
             />
             <FilterButton onClick={toggleFilterModal} />
 
