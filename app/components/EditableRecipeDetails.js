@@ -53,7 +53,7 @@ export default function EditableRecipeDetails({ id, initialDescription, lastEdit
             if (response.ok) {
                 setMessage({ type: 'success', text: data.message });
                 setEditor(data.lastEditedBy);
-                setEditDate(new Date(data.lastEditedAt).toLocaleString());
+                setEditDate(data.lastEditedAt);
                 setIsEditing(false);
             } else {
                 setMessage({ type: 'error', text: data.error });
