@@ -36,8 +36,7 @@ export default async function Home({ searchParams }) {
     return (
         <>
             <Suspense fallback={<Loading />}>
-                <SearchBar/>
-                  <CategoryList />
+                {/*<CategoryList totalRecipes={recipes.totalRecipes} />*/}
                 {/* Render the Recipes component, passing the fetched recipes as props */}
                 <Recipes 
                     recipes={recipes.recipes}

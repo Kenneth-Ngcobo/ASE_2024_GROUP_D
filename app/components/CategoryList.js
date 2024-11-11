@@ -3,16 +3,22 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
-const CategoryList = ({ onCategoryChange }) => {
+const CategoryList = ({ onCategoryChange, totalRecipes }) => {
   const [categories, setCategories] = useState([]);
   const [error, setError] = useState(null);
   const [isOpen, setIsOpen] = useState(false); // State to control the visibility of the search and category list
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredCategories, setFilteredCategories] = useState([]);
+  const [totalRecipesState, setTotalRecipes] = useState(0);
 
   const router = useRouter();
   const searchParams = useSearchParams();
+
+  useEffect(() => {
+    console.log('Total recipes:', totalRecipes);
+    setTotalRecipes(totalRecipes);
+  }, [totalRecipes]);
 
   // Fetch categories from API
   useEffect(() => {
@@ -24,7 +30,7 @@ const CategoryList = ({ onCategoryChange }) => {
         }
         const data = await response.json();
         setCategories(data);
-        setFilteredCategories(data); 
+        setFilteredCategories(data);
         console.log('Fetched categories:', data);
       } catch (err) {
         setError(err.message);
@@ -96,10 +102,11 @@ const CategoryList = ({ onCategoryChange }) => {
 
   return (
     <div className="relative">
+       
       {/* Toggle button to open/close the search and category dropdown */}
       <button
         onClick={() => setIsOpen((prev) => !prev)} // Toggle isOpen state
-        className="bg-green-600 text-white px-4 py-2 mx-2  rounded hover:bg-green-500 transition duration-200"
+        className="text-gray-600 dark:text-white hover:text-teal-500 font-medium uppercase text-sm"
       >
         {isOpen ? 'Close' : 'Category'} {/* Display appropriate label based on isOpen */}
       </button>
@@ -126,11 +133,12 @@ const CategoryList = ({ onCategoryChange }) => {
               className="bg-red-500 text-white px-4 py-2 mx-2 rounded hover:bg-red-400 transition duration-200">
               Clear category
             </button>
+         
           </form>
 
           {/* Dropdown with filtered categories */}
           {filteredCategories.length > 0 ? (
-            <ul
+            <ul className='z-30'
               style={{
                 position: 'relative',
                 top: '100%',
@@ -143,13 +151,14 @@ const CategoryList = ({ onCategoryChange }) => {
                 margin: 0,
                 maxHeight: '200px',
                 overflowY: 'auto',
+               
               }}
             >
               {filteredCategories.map((category, index) => (
                 <li
                   key={index}
                   onClick={() => handleCategorySelect(category)} // Trigger category selection
-                  className="p-2 bg-gray-200 border-b hover:bg-gray-300 transition duration-200 cursor-pointer"
+                  className="p-2 bg-gray-200 border-b dark:bg-gray-950 hover:bg-gray-300 transition duration-200 cursor-pointer"
                 >
                   {category}
                 </li>
@@ -160,8 +169,12 @@ const CategoryList = ({ onCategoryChange }) => {
           )}
         </div>
       )}
+         {/*  <p className="font-semibold text-lg mb-2 px-4">
+      {totalRecipesState > 0 ? `Total Recipes Found: ${totalRecipesState}` : ''}
+    </p>*/}
     </div>
   );
 };
 
 export default CategoryList;
+

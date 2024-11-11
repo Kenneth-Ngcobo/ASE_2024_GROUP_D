@@ -7,9 +7,9 @@ import { fetchRecipeById } from '../../api';
 import ImageGallery from '../../components/ImageGallery';
 import CollapsibleSection from '../../components/CollapsibleSection';
 import dynamic from 'next/dynamic';
-import LoadingSpinner from '../../components/loadingSpinner'; // Importing the Loading component
+import LoadingSpinner from '../../components/loadingSpinner'; 
 import Loading from './loading';
-
+import ReviewsSection from '../../components/ReviewsSection';
 
 // Generate metadata for the recipe page dynamically
 export async function generateMetadata({ params }) {
@@ -146,6 +146,12 @@ export default async function RecipePage({ params }) {
                             content={recipe.instructions || 'No instructions available.'}
                             defaultOpen={true}
                         />
+                        {/* New Reviews Section */}
+                        <CollapsibleSection
+                            title="Reviews"
+                            content={<ReviewsSection recipeId={id} />}
+                            defaultOpen={true}
+                        />
 
                         {/* Footer Information */}
                         <div className="mt-8 bg-white p-6 rounded-xl shadow-xl">
@@ -171,3 +177,4 @@ export default async function RecipePage({ params }) {
         </div>
     );
 }
+

@@ -156,9 +156,10 @@ const RecipeSearchBar = ({
     const searchTerms = getSearchTerms(search);
 
     return (
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="border-t border-gray-200">
             <form onSubmit={handleSearchSubmit} className="relative">
                 <div className="relative flex items-center">
+                    <FaSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 dark:text-white text-gray-400 hover:text-gray-600" />
                     <input
                         type="text"
                         value={search}
@@ -168,7 +169,7 @@ const RecipeSearchBar = ({
                         }}
                         onFocus={() => setShowSuggestions(true)}
                         placeholder="Search for recipes by name, ingredient, or cuisine..."
-                        className="w-full p-4 pr-20 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-transparent text-lg"
+                        className="w-full pl-12 pr-4 py-2 bg-gray-50  dark:bg-gray-950 border border-gray-200 dark:border-gray-800  rounded-full focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                         aria-label="Search recipes"
                     />
                     <div className="absolute right-0 flex items-center space-x-1 mr-2">
@@ -179,19 +180,18 @@ const RecipeSearchBar = ({
                                 className="p-2 text-gray-400 hover:text-gray-600"
                                 aria-label="Clear search"
                             >
-                                <XCircle className="h-5 w-5" />
+                                <XCircle className="h-5 w-5 mr-2" />
                             </button>
                         )}
                         <button 
                             type="submit" 
-                            className="bg-green-600 text-white p-3 rounded-lg hover:bg-green-700 transition-colors"
+                            className=" text-gray-400 p-3 "
                             aria-label="Search"
                         >
-                            <FaSearch className="h-5 w-5" />
                         </button>
                     </div>
                 </div>
-
+    
                 {showSuggestions && (
                     <div 
                         className="absolute z-10 w-full mt-2 bg-white rounded-lg shadow-lg border"
@@ -256,7 +256,7 @@ const RecipeSearchBar = ({
                     </div>
                 )}
             </form>
-
+    
             {selectedRecipe && (
                 <div className="mt-8 p-4 bg-white rounded-lg shadow-md">
                     <h2 className="text-2xl font-bold mb-2">{selectedRecipe.title}</h2>
@@ -268,6 +268,7 @@ const RecipeSearchBar = ({
             )}
         </div>
     );
+    
 };
 
 export default RecipeSearchBar;
