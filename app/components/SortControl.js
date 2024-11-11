@@ -30,10 +30,11 @@ export const SortControl = () => {
                     onChange={handleSortChange}
                     className="appearance-none bg-white border dark:bg-black border-gray-300 rounded-md py-2 pl-3 pr-10 text-sm leading-5 focus:outline-none focus:ring-2 focus:ring-green-500"
                 >
-                    <option value="createdAt">Newest</option>
-                    <option value="prepTime">Preparation Time</option>
-                    <option value="cookTime">Cooking Time</option>
-                    <option value="instructions">Instructions</option>
+                    <option value="default">Default</option>
+                    <option value="published">Newest</option>
+                    <option value="prep">Preparation Time</option>
+                    <option value="cook">Cooking Time</option>
+                    <option value="instructionsCount">Instructions</option>
                 </select>
                 <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
             </div>
