@@ -1,4 +1,5 @@
 "use client";
+
 import { useEffect, useState } from "react";
 import { useAuth } from "../hook/useAuth";
 import Link from "next/link";
@@ -12,7 +13,6 @@ export default function EditDetails() {
     password: "********",
   });
   const [isEditing, setIsEditing] = useState(false);
-  const [loggedInUser, setLoggedInUser] = useState(null);
   const router = useRouter(); 
 
   useEffect(() => {
@@ -23,7 +23,7 @@ export default function EditDetails() {
 
         try {
           const response = await fetch(
-            `/api/user/details?email=${loggedInUserEmail}`
+            `/api/user/login?email=${loggedInUserEmail}`
           );
           if (response.ok) {
             const data = await response.json();
@@ -57,7 +57,6 @@ export default function EditDetails() {
   const handleLogout = async () => {
     try {
       await logout();
-      setLoggedInUser(null);
       localStorage.removeItem("loggedInUserEmail");
       alert("Logged out successfully!");
       router.push("/"); 
@@ -69,7 +68,7 @@ export default function EditDetails() {
   return (
     <div className="flex min-h-screen bg-gray-100">
       {/* Left Sidebar */}
-      <aside className="w-1/4 bg-teal-700 text-white p-6 space-y-12">
+      <div className="w-1/4 bg-teal-700 text-white p-6 space-y-12">
         <h1 className="text-3xl font-semibold mb-8">KWAMAIMAI</h1>
         <div className="mb-12">
           <p className="text-2xl">Account:</p>
@@ -89,7 +88,7 @@ export default function EditDetails() {
         >
           Back to Website
         </Link>
-      </aside>
+      </div>
 
       {/* Right Profile Edit Section */}
       <main className="w-3/4 p-8 space-y-8">
