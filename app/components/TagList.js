@@ -18,7 +18,7 @@ export default function TagDisplay({ selectedTags, onTagsChange }) {
     if (urlTags.length && urlTags !== ' ' && urlTags !== '') {
       onTagsChange(urlTags); // Populate selectedTags from URL
     }
-  }, [onTagsChange]);
+  }, [searchParams, onTagsChange]);
 
   useEffect(() => {
     const fetchTags = async () => {
