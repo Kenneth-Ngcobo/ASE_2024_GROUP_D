@@ -6,7 +6,7 @@ const {
   updateReview,
   deleteReview,
   getRecipeReviews
-} = require('./reviews');
+} = require('../../review');
 
 // Middleware for handling errors
 const asyncHandler = fn => (req, res, next) => {
