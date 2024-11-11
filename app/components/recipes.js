@@ -123,16 +123,7 @@ export default function Recipes({ recipes: initialRecipes }) {
           </div>
         </div>
       </div>
-
-      <style jsx global>{`
-        .font-montserrat {
-          font-family: 'Montserrat', sans-serif;
-        }
-        
-        body {
-          background-color: #f7f7f7;
-        }
-      `}</style>
+      
     </>
   );
 }
