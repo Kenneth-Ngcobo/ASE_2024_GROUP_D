@@ -3,7 +3,7 @@ async function createReview(db, reviewData) {
   const recipeId = reviewData.recipeId;
 
   const review = {
-    _id: new Date().getTime().toString(), // Simple timestamp-based ID
+    _id: new Date().getTime().toString(), 
     userId: reviewData.userId,
     rating: Number(reviewData.rating),
     comment: reviewData.comment,
