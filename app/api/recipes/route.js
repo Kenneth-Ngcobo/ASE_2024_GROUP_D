@@ -17,7 +17,7 @@ export async function GET(req) {
     const url = new URL(req.url);
     const page = parseInt(searchParams.get("page")) || 1;
     const limit = Math.min(parseInt(searchParams.get("limit")) || 50, 50);
-    const sort = searchParams.get("sort") || "default";
+    const sort = searchParams.get("sort") || "published"; // Default to createdAt
     const order = searchParams.get("order")?.toLowerCase() === "desc" ? -1 : 1;
     const searchTerm = searchParams.get("search") || "";
     const category = searchParams.get("category");
@@ -26,25 +26,24 @@ export async function GET(req) {
     const instructions = parseInt(searchParams.get("instructions"));
 
     let query = {};
-    let sortObj = {};
 
     // Validate sort parameter
-    switch (sort) {
-      case "published":
-        sortObj = { createdAt: -1 }; // Always sort newest first for published date
-        break;
-      case "prep":
-        sortObj = { preparationTime: order };
-        break;
-      case "cook":
-        sortObj = { cookingTime: order };
-        break;
-      case "instructionsCount":
-        sortObj = { "instructions": order };
-        break;
-      default:
-        sortObj = { createdAt: -1 }; // Default sorting is newest first
-        break;
+    const validSortFields = {
+      'cookTime': 'cookingTime',
+      'prepTime': 'preparationTime',
+      'instructionsCount': 'instructionsCount',
+      'published': 'published'
+    };
+
+    if (!validSortFields[sort]) {
+      return new Response(
+        JSON.stringify({
+          error: `Invalid sort parameter '${sort}'. Valid options are: cookingTime, preparationTime, published, calories, title, instructionsCount`
+        }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' }
+      }
+      );
     }
 
     // Construct query for text search
@@ -81,6 +80,10 @@ export async function GET(req) {
     }
 
     const skip = (page - 1) * limit;
+
+    // Create sort object for MongoDB query
+    const sortObj = {};
+    sortObj[validSortFields[sort]] = order;
 
     // Fetch sorted and paginated recipes
     const recipes = await recipesCollection

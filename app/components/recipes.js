@@ -10,8 +10,8 @@ import Carousel from './Carousel';
 import { SortControl } from './SortControl';
 import { useSearchParams } from 'next/navigation';
 
-export default function Recipes({ recipes: initialRecipes }) {
-  const [recipes, setRecipes] = useState(initialRecipes);
+export default function Recipes() {
+  const [recipes, setRecipes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [favoritedRecipes, setFavoritedRecipes] = useState(new Set());  // Track favorited recipes
   const [dropdownVisible, setDropdownVisible] = useState(false);  // To manage dropdown visibility
