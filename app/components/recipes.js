@@ -42,10 +42,8 @@ export default function Recipes({ recipes: initialRecipes }) {
   const toggleFavorite = async (recipeId) => {
     const isFavorited = favoritedRecipes.has(recipeId);
 
-
     // Retrieve the logged-in email from local storage
     const loggedInEmail = localStorage.getItem('loggedInUserEmail');
-
 
     if (isFavorited) {
       // Remove from favorites
@@ -124,8 +122,6 @@ export default function Recipes({ recipes: initialRecipes }) {
               key={recipe._id}  // Unique key for each mapped element
               className="block p-4 bg-white border border-gray-200 rounded-lg shadow-lg hover:shadow-2xl transition-transform transform hover:scale-105 duration-300 ease-in-out"
             >
-            <Link href={`/Recipe/${recipe._id}`} key={recipe._id} className="block p-4 border border-gray-200 rounded-lg shadow-lg hover:shadow-2xl transition-transform transform hover:scale-105 duration-300 ease-in-out">
-              
               {/* Heart Icon for Favorites */}
               <button
                 className={`absolute top-2 right-2 ${favoritedRecipes.has(recipe._id) ? 'text-red-500' : 'text-gray-400'} hover:text-red-500`}
@@ -136,7 +132,6 @@ export default function Recipes({ recipes: initialRecipes }) {
               >
                 <FaHeart size={24} />
               </button>
-
 
               {/* Recipe title */}
               <h2 className="text-xl font-semibold font-playfair mb-2 text-green-800">{recipe.title}</h2>

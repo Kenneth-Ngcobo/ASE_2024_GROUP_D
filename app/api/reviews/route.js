@@ -1,81 +1,50 @@
-const express = require('express');
-const router = express.Router();
-const { connectToDatabase } = require('../../../db');
-const {
-  createReview,
-  updateReview,
-  deleteReview,
-  getRecipeReviews
-} = require('./reviews');
+// app/api/reviews/route.js
+import { NextResponse } from 'next/server';
+import { connectToDatabase } from '../../../db'; // Adjust this path as necessary
 
-// Middleware for handling errors
-const asyncHandler = fn => (req, res, next) => {
-  Promise.resolve(fn(req, res, next)).catch(next);
-};
+// Helper function to create a review
+async function createReview(db, reviewData) {
+  const collection = db.collection('recipes');
+  const recipeId = reviewData.recipeId;
 
-// Middleware to validate recipe existence
-async function validateRecipe(req, res, next) {
-  try {
-    const db = await connectToDatabase();
-    const recipeId = req.params.recipeId || req.body.recipeId;
-
-    if (!recipeId) {
-      return res.status(400).json({ error: 'Recipe ID is required' });
-    }
-
-    const recipe = await db.collection('recipes').findOne({ _id: recipeId });
-
-    if (!recipe) {
-      return res.status(404).json({ error: 'Recipe not found' });
-    }
-
-    req.recipe = recipe;
-    next();
-  } catch (error) {
-    next(error);
-  }
-}
-
-// Create a new review
-router.post('/reviews', validateRecipe, asyncHandler(async (req, res) => {
-  const db = await connectToDatabase();
-  const review = await createReview(db, req.body);
-  res.status(201).json(review);
-}));
-
-// Update a review
-router.put('/reviews/:reviewId', asyncHandler(async (req, res) => {
-  const db = await connectToDatabase();
-  await updateReview(db, req.params.reviewId, req.body);
-  res.json({ message: 'Review updated successfully' });
-}));
-
-// Delete a review
-router.delete('/reviews/:reviewId', asyncHandler(async (req, res) => {
-  const db = await connectToDatabase();
-  await deleteReview(db, req.params.reviewId);
-  res.json({ message: 'Review deleted successfully' });
-}));
-
-// Get all reviews for a recipe
-router.get('/recipes/:recipeId/reviews', validateRecipe, asyncHandler(async (req, res) => {
-  const db = await connectToDatabase();
-  const sortOptions = {
-    sortBy: req.query.sortBy || 'date',
-    order: req.query.order || 'desc'
+  const review = {
+    _id: new Date().getTime().toString(), // Unique ID
+    userId: reviewData.username, // Use `username` for display
+    rating: Number(reviewData.rating), // Convert `rating` to a number
+    comment: reviewData.comment,
+    createdAt: new Date(reviewData.date),
+    updatedAt: new Date(reviewData.date),
   };
 
-  const reviews = await getRecipeReviews(db, req.params.recipeId, sortOptions);
-  res.json(reviews);
-}));
+  // Add the review to the recipe document
+  const result = await collection.updateOne(
+    { _id: recipeId },
+    { 
+      $push: { reviews: review },
+      $set: { updatedAt: new Date() }
+    }
+  );
 
-// Error handling middleware
-router.use((error, req, res, next) => {
-  console.error('API Error:', error);
-  res.status(500).json({ 
-    error: error.message || 'Internal server error'
-  });
-});
+  return result;
+}
 
-module.exports = router;
+// API route handler for POST
+export async function POST(req) {
+  try {
+    const db = await connectToDatabase();
+    const reviewData = await req.json(); // Parse JSON data from request
 
+    // Call the createReview function
+    const result = await createReview(db, reviewData);
+
+    // Check if the review was added successfully
+    if (result.modifiedCount > 0) {
+      return NextResponse.json({ message: 'Review submitted successfully' }, { status: 200 });
+    } else {
+      return NextResponse.json({ error: 'Recipe not found' }, { status: 404 });
+    }
+  } catch (error) {
+    console.error('Error adding review:', error);
+    return NextResponse.json({ error: 'An error occurred while adding the review' }, { status: 500 });
+  }
+}

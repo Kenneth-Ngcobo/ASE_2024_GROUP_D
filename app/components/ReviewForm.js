@@ -18,17 +18,17 @@ export default function ReviewForm({ recipeId, onReviewAdded }) {
         },
         body: JSON.stringify({
           recipeId,
-          rating,
+          rating: Number(rating), // Convert rating to a number
           comment,
           username, // Include username
           date: new Date().toISOString() // Set current date
         })
       });
-
+  
       if (!response.ok) {
         throw new Error('Failed to submit review');
       }
-
+  
       setRating(5);
       setComment('');
       setUsername(''); // Reset username input
@@ -37,6 +37,7 @@ export default function ReviewForm({ recipeId, onReviewAdded }) {
       setError(error.message);
     }
   };
+  
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
