@@ -1,83 +1,106 @@
-const express = require('express');
-const router = express.Router();
-const { connectToDatabase } = require('../../../db');
-const {
+
+import { NextResponse } from 'next/server';
+import { connectToDatabase } from '../../../db';
+import {
   createReview,
   updateReview,
   deleteReview,
   getRecipeReviews
-} = require('../../review');
+} from '../../review';
 
 
+async function validateRecipe(recipeId) {
+  const db = await connectToDatabase();
+  
+  if (!recipeId) {
+    throw new Error('Recipe ID is required');
+  }
 
-// Middleware for handling errors
-const asyncHandler = fn => (req, res, next) => {
-  Promise.resolve(fn(req, res, next)).catch(next);
-};
+  const recipe = await db.collection('recipes').findOne({ _id: recipeId });
+  if (!recipe) {
+    throw new Error('Recipe not found');
+  }
 
-// Middleware to validate recipe existence
-async function validateRecipe(req, res, next) {
+  return recipe;
+}
+
+// Create review
+export async function POST(request) {
   try {
+    const body = await request.json();
+    await validateRecipe(body.recipeId);
+    
     const db = await connectToDatabase();
-    const recipeId = req.params.recipeId || req.body.recipeId;
-
-    if (!recipeId) {
-      return res.status(400).json({ error: 'Recipe ID is required' });
-    }
-
-    const recipe = await db.collection('recipes').findOne({ _id: recipeId });
-
-    if (!recipe) {
-      return res.status(404).json({ error: 'Recipe not found' });
-    }
-
-    req.recipe = recipe;
-    next();
+    const review = await createReview(db, body);
+    
+    return NextResponse.json(review, { status: 201 });
   } catch (error) {
-    next(error);
+    return NextResponse.json(
+      { error: error.message || 'Internal server error' },
+      { status: error.message.includes('not found') ? 404 : 500 }
+    );
   }
 }
 
-// Create a new review
-router.post('/reviews', validateRecipe, asyncHandler(async (req, res) => {
-  const db = await connectToDatabase();
-  const review = await createReview(db, req.body);
-  res.status(201).json(review);
-}));
+export async function PUT(request, { params }) {
+  try {
+    const { reviewId } = params;
+    const body = await request.json();
+    
+    const db = await connectToDatabase();
+    await updateReview(db, reviewId, body);
+    
+    return NextResponse.json({ message: 'Review updated successfully' });
+  } catch (error) {
+    return NextResponse.json(
+      { error: error.message || 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
 
-// Update a review
-router.put('/reviews/:reviewId', asyncHandler(async (req, res) => {
-  const db = await connectToDatabase();
-  await updateReview(db, req.params.reviewId, req.body);
-  res.json({ message: 'Review updated successfully' });
-}));
+export async function DELETE(request, { params }) {
+  try {
+    const { reviewId } = params;
+    
+    const db = await connectToDatabase();
+    await deleteReview(db, reviewId);
+    
+    return NextResponse.json({ message: 'Review deleted successfully' });
+  } catch (error) {
+    return NextResponse.json(
+      { error: error.message || 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
 
-// Delete a review
-router.delete('/reviews/:reviewId', asyncHandler(async (req, res) => {
-  const db = await connectToDatabase();
-  await deleteReview(db, req.params.reviewId);
-  res.json({ message: 'Review deleted successfully' });
-}));
 
-// Get all reviews for a recipe
-router.get('/recipes/:recipeId/reviews', validateRecipe, asyncHandler(async (req, res) => {
-  const db = await connectToDatabase();
-  const sortOptions = {
-    sortBy: req.query.sortBy || 'date',
-    order: req.query.order || 'desc'
-  };
+export async function GET(request, { params }) {
+  try {
+    const { recipeId } = params;
+    await validateRecipe(recipeId);
+    
+    // Get query parameters
+    const searchParams = request.nextUrl.searchParams;
+    const sortOptions = {
+      sortBy: searchParams.get('sortBy') || 'date',
+      order: searchParams.get('order') || 'desc'
+    };
+    
+    const db = await connectToDatabase();
+    const reviews = await getRecipeReviews(db, recipeId, sortOptions);
+    
+    return NextResponse.json(reviews);
+  } catch (error) {
+    return NextResponse.json(
+      { error: error.message || 'Internal server error' },
+      { 
+        status: error.message.includes('not found') ? 404 : 
+                error.message.includes('required') ? 400 : 500 
+      }
+    );
+  }
+}
 
-  const reviews = await getRecipeReviews(db, req.params.recipeId, sortOptions);
-  res.json(reviews);
-}));
-
-// Error handling middleware
-router.use((error, req, res, next) => {
-  console.error('API Error:', error);
-  res.status(500).json({ 
-    error: error.message || 'Internal server error'
-  });
-});
-
-module.exports = router;
 
