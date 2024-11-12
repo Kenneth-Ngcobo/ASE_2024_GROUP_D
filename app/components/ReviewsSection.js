@@ -1,29 +1,57 @@
-
 "use client";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import ReviewForm from './ReviewForm';
 import ReviewList from './ReviewList';
 
 export default function ReviewsSection({ recipeId, userId }) {
-  const [reviewAdded, setReviewAdded] = useState(false);
+  const [reviews, setReviews] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
-  const handleReviewAdded = () => {
-    setReviewAdded((prev) => !prev);
+  // Function to fetch reviews from the API
+  const fetchReviews = async () => {
+    setLoading(true);
+    setError('');
+    try {
+      const response = await fetch(`/api/recipes/${recipeId}/reviews`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch reviews');
+      }
+      const data = await response.json();
+      setReviews(data);
+    } catch (error) {
+      setError(error.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleReviewDeleted = () => {
-    setReviewAdded((prev) => !prev);
+  useEffect(() => {
+    fetchReviews();
+  }, [recipeId]);
+
+  const handleReviewAdded = (newReview) => {
+    setReviews((prevReviews) => [...prevReviews, newReview]);
+  };
+
+  const handleReviewUpdated = () => {
+    fetchReviews(); // Refresh the review list after update or delete
   };
 
   return (
     <div className="space-y-8">
       <ReviewForm recipeId={recipeId} onReviewAdded={handleReviewAdded} />
-      <ReviewList
-        key={reviewAdded}
-        recipeId={recipeId}
-        userId={userId}  // Pass the userId to ReviewList
-        onReviewDeleted={handleReviewDeleted}
-      />
+      {loading ? (
+        <p>Loading reviews...</p>
+      ) : error ? (
+        <p>Error: {error}</p>
+      ) : (
+        <ReviewList
+          reviews={reviews}
+          userId={userId}
+          onReviewUpdated={handleReviewUpdated}
+        />
+      )}
     </div>
   );
 }

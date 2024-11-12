@@ -4,35 +4,36 @@ import { useState } from 'react';
 export default function ReviewForm({ recipeId, onReviewAdded }) {
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState('');
-  const [username, setUsername] = useState(''); // New username state
+  const [username, setUsername] = useState('');
   const [error, setError] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     try {
       const response = await fetch('/api/reviews', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           recipeId,
           rating,
           comment,
-          username, // Include username
-          date: new Date().toISOString() // Set current date
-        })
+          username,
+          date: new Date().toISOString(),
+        }),
       });
 
       if (!response.ok) {
         throw new Error('Failed to submit review');
       }
 
+      const review = await response.json();
       setRating(5);
       setComment('');
-      setUsername(''); // Reset username input
-      onReviewAdded();
+      setUsername('');
+      onReviewAdded(review);
     } catch (error) {
       setError(error.message);
     }

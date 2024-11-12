@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 
 export default function ReviewList({ recipeId, userId, onReviewUpdated }) {
@@ -79,9 +78,12 @@ export default function ReviewList({ recipeId, userId, onReviewUpdated }) {
     return <p>Loading reviews...</p>;
   }
 
+  if (error) {
+    return <p>Error: {error}</p>;
+  }
+
   return (
     <div className="space-y-4">
-      {error && <p className="text-red-500">{error}</p>}
       {successMessage && <p className="text-green-500">{successMessage}</p>}
       {reviews.length === 0 ? (
         <p>No reviews yet. Be the first to review this recipe!</p>
@@ -97,7 +99,7 @@ export default function ReviewList({ recipeId, userId, onReviewUpdated }) {
             {userId === review.userId && (
               <div className="mt-4 flex space-x-2">
                 <button
-                  onClick={() => handleEdit(review._id, newRating, newComment)}
+                  onClick={() => handleEdit(review._id, 4, 'Updated comment')}
                   className="text-blue-500 hover:text-blue-700"
                 >
                   Edit
