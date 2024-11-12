@@ -37,30 +37,22 @@ export default function EditableRecipeDetails({ id, initialDescription, lastEdit
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ description }),
-                credential: 'include'
+                credentials: 'include'
             });
-
-            if (response.status === 401) {
-                setMessage({
-                    type: 'error',
-                    text: 'Please log in to edit recipes.'
-                });
-                setIsEditing(false);
-                return;
+        
+            if (!response.ok) {
+                const errorData = await response.json(); // Get the error details from the response
+                throw new Error(errorData.error || 'Failed to fetch recipe'); // Use the error message from the response if available
             }
-
+        
             const data = await response.json();
-            if (response.ok) {
-                setMessage({ type: 'success', text: data.message });
-                setEditor(data.lastEditedBy);
-                setEditDate(new Date(data.lastEditedAt).toLocaleString());
-                setIsEditing(false);
-            } else {
-                setMessage({ type: 'error', text: data.error });
-            }
+            setMessage({ type: 'success', text: data.message });
+            setEditor(data.lastEditedBy);
+            setEditDate(new Date(data.lastEditedAt).toLocaleString());
+            setIsEditing(false);
         } catch (error) {
             console.error('Error updating recipe:', error);
-            setMessage({ type: 'error', text: 'Something went wrong. Please try again later.' });
+            setMessage({ type: 'error', text: error.message || 'Something went wrong. Please try again later.' });
         }
     };
 
