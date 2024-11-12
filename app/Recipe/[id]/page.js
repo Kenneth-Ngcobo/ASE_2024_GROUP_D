@@ -54,7 +54,7 @@ export default async function RecipePage({ params }) {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-b from-green-50 to-white py-8">
+        <div className="min-h-screen bg-gradient-to-b from-[#1e455c]-50 to-white py-8">
             <Suspense fallback={<Loading />}>
                 <div className="container mx-auto px-4 max-w-5xl">
                     {/* Back Button */}
@@ -86,12 +86,12 @@ export default async function RecipePage({ params }) {
 
                         {/* Title and Tags Section */}
                         <div className="bg-white rounded-2xl shadow-xl p-8">
-                            <h1 className="text-4xl font-bold text-green-800 mb-4">
+                            <h1 className="text-4xl font-bold text-[#1e455c]-800 mb-4">
                                 {recipe.title || 'Untitled Recipe'}
                             </h1>
                             <div className="flex flex-wrap gap-2 mb-4">
                                 {recipe.tags?.map((tag, index) => (
-                                    <span key={index} className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm">
+                                    <span key={index} className="px-3 py-1 bg-[#1e455c]-100 text-[#1e455c]-700 rounded-full text-sm">
                                         {tag}
                                     </span>
                                 ))}
@@ -149,20 +149,20 @@ export default async function RecipePage({ params }) {
 
                         {/* Footer Information */}
                         <div className="mt-8 bg-white p-6 rounded-xl shadow-xl">
-                            <p className="text-sm text-green-600">
+                            <p className="text-sm text-[#1e455c]-600">
                                 <strong>Published:</strong> {new Date(recipe.published).toDateString()}
                             </p>
                             <p className="text-sm">
-                                <strong className="text-green-600">Prep Time:</strong> {recipe.prep} minutes
+                                <strong className="text-[#1e455c]-600">Prep Time:</strong> {recipe.prep} minutes
                             </p>
                             <p className="text-sm">
-                                <strong className="text-green-600">Cook Time:</strong> {recipe.cook} minutes
+                                <strong className="text-[#1e455c]-600">Cook Time:</strong> {recipe.cook} minutes
                             </p>
                             <p className="text-sm">
-                                <strong className="text-green-600">Servings:</strong> {recipe.servings}
+                                <strong className="text-[#1e455c]-600">Servings:</strong> {recipe.servings}
                             </p>
                             <p className="text-sm">
-                                <strong className="text-green-600">Category:</strong> {recipe.category}
+                                <strong className="text-[#1e455c]-600">Category:</strong> {recipe.category}
                             </p>
                         </div>
                     </div>
