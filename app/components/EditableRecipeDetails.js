@@ -84,7 +84,7 @@ export default function EditableRecipeDetails({ id, initialDescription, lastEdit
                     <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => setIsEditing(true)}
+                        onClick={handleEditClick}
                         className="flex items-center gap-2"
                     >
                         <Pencil className="h-4 w-4" />
