@@ -1,6 +1,6 @@
-
+const router = express.Router()
 import { NextResponse } from 'next/server';
-import { connectToDatabase } from '../../../db';
+import connectToDatabase from '../../../db';
 import {
   createReview,
   updateReview,
