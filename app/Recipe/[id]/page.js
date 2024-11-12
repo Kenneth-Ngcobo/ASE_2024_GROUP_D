@@ -1,14 +1,12 @@
 // Other imports remain unchanged
 import { Suspense } from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
 import BackButton from '../../components/BackButton';
 import { fetchRecipeById } from '../../api';
 import ImageGallery from '../../components/ImageGallery';
 import CollapsibleSection from '../../components/CollapsibleSection';
-import dynamic from 'next/dynamic';
-import LoadingSpinner from '../../components/loadingSpinner'; 
 import Loading from './loading';
+import EditableRecipeDetails from '../../components/EditableRecipeDetails';
 import ReviewsSection from '../../components/ReviewsSection';
 
 // Generate metadata for the recipe page dynamically
@@ -16,7 +14,7 @@ export async function generateMetadata({ params }) {
     const { id } = params;
     const recipe = await fetchRecipeById(id);
 
-    if ( !recipe) {
+    if (!recipe) {
         return {
             title: 'Recipe not found',
             description: 'Error occurred while fetching the recipe.'
@@ -50,12 +48,6 @@ export default async function RecipePage({ params }) {
     } finally {
         load = false;
     }
-
-    // if(load){
-    //     <div className="w-full h-[400px] bg-gray-100 rounded-xl flex items-center justify-center">
-    //         <Loading /> {/* Use your Loading component here */}
-    //     </div>
-    // }
 
     if (error) {
         throw error;
@@ -106,13 +98,15 @@ export default async function RecipePage({ params }) {
                             </div>
                         </div>
 
-                        {/* Collapsible Sections */}
-                        <CollapsibleSection
-                            title="Description"
-                            content={recipe.description || 'No description available.'}
-                            defaultOpen={true}
+                        {/* Editable Recipe Details */}
+                        <EditableRecipeDetails
+                            id={id}
+                            initialDescription={recipe.description}
+                            lastEditedBy={recipe.lastEditedBy}
+                            lastEditedAt={recipe.lastEditedAt}
                         />
 
+                        {/** Collapsible Section */}
                         <CollapsibleSection
                             title="Ingredients"
                             content={
