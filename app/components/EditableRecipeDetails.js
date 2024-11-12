@@ -4,8 +4,10 @@ import { useState, useEffect } from 'react';
 import { Alert, AlertTitle, AlertDescription } from './ui/alert';
 import { Button } from './ui/button';
 import { Pencil, X, Check } from 'lucide-react';
+import { useSession } from 'next-auth/react';
 
 export default function EditableRecipeDetails({ id, initialDescription, lastEditedBy, lastEditedAt }) {
+    const { data: session } = useSession();
     const [isEditing, setIsEditing] = useState(false);
     const [description, setDescription] = useState(initialDescription);
     const [message, setMessage] = useState(null);
@@ -53,6 +55,17 @@ export default function EditableRecipeDetails({ id, initialDescription, lastEdit
                 text: 'Something went wrong. Please try again later.'
             });
         }
+    };
+
+    const handleEditClick = () => {
+        if (!session) {
+            setMessage({
+                type: 'error',
+                text: 'You must be logged in to edit recipes'
+            });
+            return;
+        }
+        setIsEditing(true);
     };
 
     const handleCancel = () => {

@@ -18,10 +18,10 @@ import { getSession } from 'next-auth/react';
  */
 export async function PATCH(req, { params }) {
     const { id } = params;
-    const session = await getSession({ req });
+    const session = await getServerSession(req);
 
     // Check if the user is logged in
-    if (!session || !session.user) {
+    if (!session) {
         return new Response(
             JSON.stringify({
                 error: 'You must be logged in to edit recipes'
