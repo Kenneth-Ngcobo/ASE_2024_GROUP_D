@@ -1,4 +1,3 @@
-
 import { NextResponse } from 'next/server';
 import connectToDatabase from '../../../db';
 
@@ -87,6 +86,6 @@ export async function GET(req) {
     return NextResponse.json({ favorites: user.favorites, favoritesCount }, { status: 200 });
   } catch (error) {
     console.error('Error retrieving favorites:', error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
-  }
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+  }
 }
