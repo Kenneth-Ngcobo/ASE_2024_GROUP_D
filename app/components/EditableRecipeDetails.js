@@ -1,18 +1,25 @@
-"use client";
+"use client"
 
-import { useState } from 'react';
-import { useSession } from 'next-auth/react';
-import { Alert, AlertDescription, AlertTitle } from './ui/alert';
+import { useState, useEffect } from 'react';
+import { Alert, AlertTitle, AlertDescription } from './ui/alert';
 import { Button } from './ui/button';
 import { Pencil, X, Check } from 'lucide-react';
 
 export default function EditableRecipeDetails({ id, initialDescription, lastEditedBy, lastEditedAt }) {
-    const { data: session } = useSession();
     const [isEditing, setIsEditing] = useState(false);
     const [description, setDescription] = useState(initialDescription);
     const [message, setMessage] = useState(null);
     const [editor, setEditor] = useState(lastEditedBy);
     const [editDate, setEditDate] = useState(lastEditedAt);
+
+    useEffect(() => {
+        const savedMessage = localStorage.getItem("editMessage");
+        if (savedMessage) {
+            setMessage(JSON.parse(savedMessage));
+            // Clear the message after displaying it
+            localStorage.removeItem("editMessage");
+        }
+    }, []);
 
     const handleEdit = async () => {
         try {
@@ -20,25 +27,31 @@ export default function EditableRecipeDetails({ id, initialDescription, lastEdit
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ description }),
-                credentials: 'include'
             });
 
             const data = await response.json();
-
             if (response.ok) {
                 setMessage({ type: 'success', text: data.message });
                 setEditor(data.lastEditedBy);
-                setEditDate(data.lastEditedAt);
+                setEditDate(new Date(data.lastEditedAt).toLocaleString());
                 setIsEditing(false);
+                localStorage.setItem("editMessage", JSON.stringify({
+                    type: 'success',
+                    text: data.message
+                }));
             } else {
                 setMessage({ type: 'error', text: data.error });
-                if (response.status === 401) {
-                    setIsEditing(false);
-                }
+                localStorage.setItem("editMessage", JSON.stringify({
+                    type: 'error',
+                    text: data.error
+                }));
             }
         } catch (error) {
             console.error('Error updating recipe:', error);
-            setMessage({ type: 'error', text: 'Something went wrong. Please try again later.' });
+            setMessage({
+                type: 'error',
+                text: 'Something went wrong. Please try again later.'
+            });
         }
     };
 
@@ -55,30 +68,29 @@ export default function EditableRecipeDetails({ id, initialDescription, lastEdit
                     Description
                 </h2>
                 {!isEditing && (
-                    <>
-                        {session ? (
-                            <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => setIsEditing(true)}
-                                className="flex items-center gap-2"
-                            >
-                                <Pencil className="h-4 w-4" />
-                                Edit
-                            </Button>
-                        ) : (
-                            <Alert variant="destructive" className="mt-2">
-                                <AlertTitle>
-                                    Authentication Required
-                                </AlertTitle>
-                                <AlertDescription>
-                                    Please log in to edit this recipe.
-                                </AlertDescription>
-                            </Alert>
-                        )}
-                    </>
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setIsEditing(true)}
+                        className="flex items-center gap-2"
+                    >
+                        <Pencil className="h-4 w-4" />
+                        Edit
+                    </Button>
                 )}
             </div>
+
+            {message && (
+                <Alert
+                    variant={message.type === 'error' ? 'destructive' : 'default'}
+                    className="mb-4"
+                >
+                    <AlertTitle>
+                        {message.type === 'error' ? 'Error' : 'Success'}
+                    </AlertTitle>
+                    <AlertDescription>{message.text}</AlertDescription>
+                </Alert>
+            )}
 
             {isEditing ? (
                 <div>
@@ -112,12 +124,6 @@ export default function EditableRecipeDetails({ id, initialDescription, lastEdit
                         {description}
                     </p>
                 </div>
-            )}
-
-            {message && (
-                <Alert variant={message.type === 'error' ? 'destructive' : 'default'} className="mt-4">
-                    <AlertDescription>{message.text}</AlertDescription>
-                </Alert>
             )}
 
             <p className="mt-4 text-sm text-gray-600 dark:text-gray-400">
