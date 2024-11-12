@@ -21,8 +21,13 @@ export async function PATCH(req, { params }) {
     const session = await getSession({ req });
 
     // Check if the user is logged in
-    if (!session) {
-        return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 });
+    if (!session || !session.user) {
+        return new Response(
+            JSON.stringify({
+                error: 'You must be logged in to edit recipes'
+            }),
+            { status: 401 }
+        );
     }
 
     // Parse the request body
@@ -30,13 +35,19 @@ export async function PATCH(req, { params }) {
     try {
         body = await req.json();
     } catch (error) {
-        return new Response(JSON.stringify({ error: 'Invalid JSON' }), { status: 400 });
+        return new Response(
+            JSON.stringify({ error: 'Invalid JSON' }),
+            { status: 400 }
+        );
     }
 
     // Validate the new description
     const { description } = body;
     if (!description || typeof description !== 'string' || description.trim().length === 0) {
-        return new Response(JSON.stringify({ error: 'Invalid description' }), { status: 400 });
+        return new Response(
+            JSON.stringify({ error: 'Invalid description' }),
+            { status: 400 }
+        );
     }
 
     try {
@@ -56,9 +67,13 @@ export async function PATCH(req, { params }) {
         );
 
         if (result.matchedCount === 0) {
-            return new Response(JSON.stringify({ error: 'Recipe not found' }), { status: 404 });
+            return new Response(
+                JSON.stringify({ error: 'Recipe not found' }),
+                { status: 404 }
+            );
         }
 
+        // Return the update confirmation with editor details
         return new Response(
             JSON.stringify({
                 message: 'Recipe updated successfully',
@@ -71,6 +86,9 @@ export async function PATCH(req, { params }) {
         );
     } catch (error) {
         console.error('Error updating recipe:', error);
-        return new Response(JSON.stringify({ error: 'Failed to update recipe' }), { status: 500 });
+        return new Response(
+            JSON.stringify({ error: 'Failed to update recipe' }),
+            { status: 500 }
+        );
     }
 }
