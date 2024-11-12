@@ -1,93 +1,84 @@
-// components/ReviewForm.js
 import { useState } from 'react';
+import { useRouter } from 'next/router';
+import { useAuth } from '../path/to/AuthContext'; // adjust path based on your auth context
 
-export default function ReviewForm({ recipeId, onReviewAdded }) {
-  const [rating, setRating] = useState(0);
+export default function AddReview({ recipeId, onReviewAdded }) {
+  const { user } = useAuth();
+  const [rating, setRating] = useState(5);
   const [comment, setComment] = useState('');
-  const [username, setUsername] = useState('');
-  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!user) {
+      alert('You need to log in to add a review');
+      return;
+    }
 
+    setLoading(true);
     try {
-      const response = await fetch('/api/reviews', {
+      const response = await fetch(`/api/recipes/${recipeId}/reviews`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           recipeId,
+          userId: user.uid,
+          username: user.displayName || 'Anonymous',
           rating,
           comment,
-          username,
-          date: new Date().toISOString(),
         }),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to submit review');
+        throw new Error('Error adding review');
       }
 
-      const review = await response.json();
-      setRating(5);
+      const newReview = await response.json();
+      onReviewAdded(newReview); // Update review list
       setComment('');
-      setUsername('');
-      onReviewAdded(review);
+      setRating(5);
     } catch (error) {
-      setError(error.message);
+      console.error(error);
+      alert('Could not add review');
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div>
-        <label htmlFor="username" className="block text-sm font-medium text-gray-700">
-          Username
-        </label>
-        <input
-          type="text"
-          id="username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-          required
-        />
-      </div>
-      <div>
-        <label htmlFor="rating" className="block text-sm font-medium text-gray-700">
-          Rating (out of 5)
-        </label>
-        <input
-          type="number"
-          id="rating"
-          min="1"
-          max="5"
+    <form onSubmit={handleSubmit} className="flex flex-col space-y-4">
+      <label>
+        Rating (out of 5):
+        <select
           value={rating}
-          onChange={(e) => setRating(e.target.value)}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+          onChange={(e) => setRating(Number(e.target.value))}
           required
-        />
-      </div>
-      <div>
-        <label htmlFor="comment" className="block text-sm font-medium text-gray-700">
-          Comment
-        </label>
+        >
+          {[1, 2, 3, 4, 5].map((r) => (
+            <option key={r} value={r}>
+              {r}
+            </option>
+          ))}
+        </select>
+      </label>
+      <label>
+        Comment:
         <textarea
-          id="comment"
-          rows="3"
           value={comment}
           onChange={(e) => setComment(e.target.value)}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
           required
+          placeholder="Share your experience with this recipe"
         />
-      </div>
-      {error && <p className="text-red-500 text-sm">{error}</p>}
+      </label>
       <button
         type="submit"
-        className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+        disabled={loading}
+        className="bg-blue-500 text-white px-4 py-2 rounded"
       >
-        Submit Review
+        {loading ? 'Submitting...' : 'Submit Review'}
       </button>
     </form>
   );
