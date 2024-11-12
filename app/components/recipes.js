@@ -170,7 +170,7 @@ export default function Recipes({ recipes: initialRecipes }) {
 
                   {/* Recipe Details */}
                   <div></div>
-                  <div className="flex justify-between items-center mb-2">
+                  <div className="space-y-2">
                       <p className="text-sm text-gray-600 flex items-center">
                         <FaClock className="text-[#1e455c] mr-2" />
                         {recipe.prep + recipe.cook} mins
