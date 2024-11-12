@@ -1,4 +1,5 @@
-// Other imports remain unchanged
+// pages/recipes/[id].js
+
 import { Suspense } from 'react';
 import Image from 'next/image';
 import BackButton from '../../components/BackButton';
@@ -140,6 +141,7 @@ export default async function RecipePage({ params }) {
                             content={recipe.instructions || 'No instructions available.'}
                             defaultOpen={true}
                         />
+
                         {/* New Reviews Section */}
                         <CollapsibleSection
                             title="Reviews"
@@ -171,4 +173,3 @@ export default async function RecipePage({ params }) {
         </div>
     );
 }
-
