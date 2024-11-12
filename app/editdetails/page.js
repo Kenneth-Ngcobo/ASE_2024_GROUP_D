@@ -13,7 +13,7 @@ export default function EditDetails() {
     password: "********",
   });
   const [isEditing, setIsEditing] = useState(false);
-  const router = useRouter(); 
+  const router = useRouter();
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -59,7 +59,8 @@ export default function EditDetails() {
       await logout();
       localStorage.removeItem("loggedInUserEmail");
       alert("Logged out successfully!");
-      router.push("/"); 
+      router.push("/");
+      router.refresh();
     } catch (error) {
       console.error("Logout failed:", error);
     }
