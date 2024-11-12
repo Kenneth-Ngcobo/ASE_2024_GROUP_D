@@ -1,12 +1,12 @@
-const router = express.Router()
+
 import { NextResponse } from 'next/server';
-import connectToDatabase from '../../../db';
+import connectToDatabase from '../../../../../db';
 import {
   createReview,
   updateReview,
   deleteReview,
   getRecipeReviews
-} from '../../review';
+} from '../../../../review';
 
 
 async function validateRecipe(recipeId) {
@@ -77,10 +77,14 @@ export async function DELETE(request, { params }) {
 
 
 export async function GET(request, { params }) {
+
   try {
-    const { recipeId } = params;
-    await validateRecipe(recipeId);
+    const { id } = params;
+    const recipeId = id;
+    validateRecipe(recipeId);
     
+    console.log('Did we get ValidateRecipe?')
+
     // Get query parameters
     const searchParams = request.nextUrl.searchParams;
     const sortOptions = {
@@ -88,7 +92,9 @@ export async function GET(request, { params }) {
       order: searchParams.get('order') || 'desc'
     };
     
+   
     const db = await connectToDatabase();
+   
     const reviews = await getRecipeReviews(db, recipeId, sortOptions);
     
     return NextResponse.json(reviews);
