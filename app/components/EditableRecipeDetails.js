@@ -1,35 +1,18 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { useSession } from 'next-auth/react';
 import { Alert, AlertDescription, AlertTitle } from './ui/alert';
 import { Button } from './ui/button';
 import { Pencil, X, Check } from 'lucide-react';
 
 export default function EditableRecipeDetails({ id, initialDescription, lastEditedBy, lastEditedAt }) {
+    const { data: session } = useSession();
     const [isEditing, setIsEditing] = useState(false);
-    const [session, setSession] = useState(null);
     const [description, setDescription] = useState(initialDescription);
     const [message, setMessage] = useState(null);
     const [editor, setEditor] = useState(lastEditedBy);
     const [editDate, setEditDate] = useState(lastEditedAt);
-
-    useEffect(() => {
-        const savedMessage = localStorage.getItem("editMessage");
-        if (savedMessage) {
-            setMessage(JSON.parse(savedMessage));
-            // Clear the message after displaying it
-            localStorage.removeItem("editMessage");
-        }
-    }, []);
-
-    useEffect(() => {
-        const checkAuth = async () => {
-            const response = await fetch('/api/auth/session');
-            const sessionData = await response.json();
-            setSession(sessionData);
-        };
-        checkAuth();
-    }, []);
 
     const handleEdit = async () => {
         try {
@@ -37,26 +20,21 @@ export default function EditableRecipeDetails({ id, initialDescription, lastEdit
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ description }),
-                credential: 'include'
+                credentials: 'include'
             });
 
-            if (response.status === 401) {
-                setMessage({
-                    type: 'error',
-                    text: 'Please log in to edit recipes.'
-                });
-                setIsEditing(false);
-                return;
-            }
-
             const data = await response.json();
+
             if (response.ok) {
                 setMessage({ type: 'success', text: data.message });
                 setEditor(data.lastEditedBy);
-                setEditDate(new Date(data.lastEditedAt).toLocaleString());
+                setEditDate(data.lastEditedAt);
                 setIsEditing(false);
             } else {
                 setMessage({ type: 'error', text: data.error });
+                if (response.status === 401) {
+                    setIsEditing(false);
+                }
             }
         } catch (error) {
             console.error('Error updating recipe:', error);
@@ -134,6 +112,12 @@ export default function EditableRecipeDetails({ id, initialDescription, lastEdit
                         {description}
                     </p>
                 </div>
+            )}
+
+            {message && (
+                <Alert variant={message.type === 'error' ? 'destructive' : 'default'} className="mt-4">
+                    <AlertDescription>{message.text}</AlertDescription>
+                </Alert>
             )}
 
             <p className="mt-4 text-sm text-gray-600 dark:text-gray-400">
