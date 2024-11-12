@@ -1,137 +1,157 @@
-"use client";
+// Base URL for the API requests related to recipes
+const API_BASE_URL = process.env.API_BASE_URL;
 
-import { useState, useEffect } from 'react';
-import { Alert, AlertDescription, AlertTitle } from './ui/alert';
-import { Button } from './ui/button';
-import { Pencil, X, Check } from 'lucide-react';
+if (!API_BASE_URL) {
+    console.error("API_BASE_URL is not defined. Check your environment variables.");
+}
 
-export default function EditableRecipeDetails({ id, initialDescription, lastEditedBy, lastEditedAt }) {
-    const [isEditing, setIsEditing] = useState(false);
-    const [session, setSession] = useState(null);
-    const [description, setDescription] = useState(initialDescription);
-    const [message, setMessage] = useState(null);
-    const [editor, setEditor] = useState(lastEditedBy);
-    const [editDate, setEditDate] = useState(lastEditedAt);
+/**
+ * Fetches a paginated list of recipes from the API.
+ */
+export async function fetchRecipes(limit = 20, page, search, tags, category, ingredients, instructions) {
+    const query = new URLSearchParams({
+        limit,
+        ...(page && { page }),
+        ...(search && { search }),
+        ...(tags && { tags }),
+        ...(category && { category }),
+        ...(ingredients && { ingredients }),
+        ...(instructions && { instructions }),
+    }).toString();
 
-    useEffect(() => {
-        const savedMessage = localStorage.getItem("editMessage");
-        if (savedMessage) {
-            setMessage(JSON.parse(savedMessage));
-            // Clear the message after displaying it
-            localStorage.removeItem("editMessage");
-        }
-    }, []);
-
-    useEffect(() => {
-        const checkAuth = async () => {
-            const response = await fetch('/api/auth/session');
-            const sessionData = await response.json();
-            setSession(sessionData);
-        };
-        checkAuth();
-    }, []);
-
-    const handleEdit = async () => {
-        try {
-            const response = await fetch(`/api/recipes/${id}/update`, {
-                method: "PATCH",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ description }),
-                credentials: 'include'
-            });
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/recipes?${query}`);
         
-            if (!response.ok) {
-                const errorData = await response.json(); // Get the error details from the response
-                throw new Error(errorData.error || 'Failed to fetch recipe'); // Use the error message from the response if available
-            }
-        
-            const data = await response.json();
-            setMessage({ type: 'success', text: data.message });
-            setEditor(data.lastEditedBy);
-            setEditDate(new Date(data.lastEditedAt).toLocaleString());
-            setIsEditing(false);
-        } catch (error) {
-            console.error('Error updating recipe:', error);
-            setMessage({ type: 'error', text: error.message || 'Something went wrong. Please try again later.' });
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error(`Failed to fetch recipes. Status: ${response.status}. Message: ${errorText}`);
+            throw new Error(`Failed to fetch recipes: ${errorText}`);
         }
-    };
 
-    const handleCancel = () => {
-        setDescription(initialDescription);
-        setIsEditing(false);
-        setMessage(null);
-    };
+        return await response.json();
 
-    return (
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8">
-            <div className="flex justify-between items-center mb-4">
-                <h2 className="text-2xl font-semibold text-green-800 dark:text-green-400">
-                    Description
-                </h2>
-                {!isEditing && (
-                    <>
-                        {session ? (
-                            <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => setIsEditing(true)}
-                                className="flex items-center gap-2"
-                            >
-                                <Pencil className="h-4 w-4" />
-                                Edit
-                            </Button>
-                        ) : (
-                            <Alert variant="destructive" className="mt-2">
-                                <AlertTitle>
-                                    Authentication Required
-                                </AlertTitle>
-                                <AlertDescription>
-                                    Please log in to edit this recipe.
-                                </AlertDescription>
-                            </Alert>
-                        )}
-                    </>
-                )}
-            </div>
+    } catch (error) {
+        console.error("Error in fetchRecipes:", error);
+        throw error;
+    }
+}
 
-            {isEditing ? (
-                <div>
-                    <textarea
-                        value={description}
-                        onChange={(e) => setDescription(e.target.value)}
-                        rows="4"
-                        className="w-full p-2 border rounded mb-4 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                    />
-                    <div className="flex gap-2">
-                        <Button
-                            onClick={handleEdit}
-                            className="flex items-center gap-2"
-                        >
-                            <Check className="h-4 w-4" />
-                            Save Changes
-                        </Button>
-                        <Button
-                            variant="outline"
-                            onClick={handleCancel}
-                            className="flex items-center gap-2"
-                        >
-                            <X className="h-4 w-4" />
-                            Cancel
-                        </Button>
-                    </div>
-                </div>
-            ) : (
-                <div className="prose dark:prose-invert max-w-none">
-                    <p className="text-gray-600 dark:text-gray-300 whitespace-pre-wrap">
-                        {description}
-                    </p>
-                </div>
-            )}
+/**
+ * Fetches a specific recipe by its ID from the API.
+ */
+export async function fetchRecipeById(id) {
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/recipes/${id}`);
 
-            <p className="mt-4 text-sm text-gray-600 dark:text-gray-400">
-                <strong>Last edited by:</strong> {editor || 'Unknown'} on{' '}
-                {editDate ? new Date(editDate).toLocaleString() : 'N/A'}
-            </p>
-        </div>
-    );
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error(`Failed to fetch recipe with ID ${id}. Status: ${response.status}. Message: ${errorText}`);
+            throw new Error(`Failed to fetch recipe: ${errorText}`);
+        }
+
+        return await response.json();
+
+    } catch (error) {
+        console.error("Error in fetchRecipeById:", error);
+        throw error;
+    }
+}
+
+/**
+ * Fetches all reviews for a specific recipe.
+ */
+export async function fetchReviewsForRecipe(recipeId, sortOptions = { sortBy: 'createdAt', order: 'desc' }) {
+    const query = new URLSearchParams({
+        sortBy: sortOptions.sortBy,
+        order: sortOptions.order,
+    }).toString();
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/recipes/${recipeId}/reviews?${query}`);
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error(`Failed to fetch reviews for recipe ${recipeId}. Status: ${response.status}. Message: ${errorText}`);
+            throw new Error(`Failed to fetch reviews: ${errorText}`);
+        }
+
+        return await response.json();
+
+    } catch (error) {
+        console.error("Error in fetchReviewsForRecipe:", error);
+        throw error;
+    }
+}
+
+/**
+ * Creates a new review for a specific recipe.
+ */
+export async function createReview(recipeId, reviewData) {
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/recipes/${recipeId}/reviews`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(reviewData),
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error(`Failed to create review for recipe ${recipeId}. Status: ${response.status}. Message: ${errorText}`);
+            throw new Error(`Failed to create review: ${errorText}`);
+        }
+
+        return await response.json();
+
+    } catch (error) {
+        console.error("Error in createReview:", error);
+        throw error;
+    }
+}
+
+/**
+ * Updates an existing review for a specific recipe.
+ */
+export async function updateReview(recipeId, reviewId, updateData) {
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/recipes/${recipeId}/reviews/${reviewId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(updateData),
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error(`Failed to update review for recipe ${recipeId}. Status: ${response.status}. Message: ${errorText}`);
+            throw new Error(`Failed to update review: ${errorText}`);
+        }
+
+        return await response.json();
+
+    } catch (error) {
+        console.error("Error in updateReview:", error);
+        throw error;
+    }
+}
+
+/**
+ * Deletes a review for a specific recipe.
+ */
+export async function deleteReview(recipeId, reviewId) {
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/recipes/${recipeId}/reviews/${reviewId}`, {
+            method: 'DELETE',
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error(`Failed to delete review for recipe ${recipeId}. Status: ${response.status}. Message: ${errorText}`);
+            throw new Error(`Failed to delete review: ${errorText}`);
+        }
+
+        return;
+
+    } catch (error) {
+        console.error("Error in deleteReview:", error);
+        throw error;
+    }
 }
