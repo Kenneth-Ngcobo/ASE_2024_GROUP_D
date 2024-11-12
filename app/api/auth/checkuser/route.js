@@ -11,15 +11,20 @@ import connectToDatabase from "../../../../db";
  *                              - 404 if the user is not found.
  */
 export async function POST(req) {
-  const { email } = await req.json();
-  const db = await connectToDatabase();
+  try {
+    const { email } = await req.json();
+    const db = await connectToDatabase();
 
-  // Check if the user exists
-  const user = await db.collection("users").findOne({ email });
+    // Check if the user exists
+    const user = await db.collection("users").findOne({ email });
 
-  if (user) {
-    return new Response(JSON.stringify({ message: "User exists" }), { status: 200 });
-  } else {
-    return new Response(JSON.stringify({ message: "User not found" }), { status: 404 });
+    if (user) {
+      return new Response(JSON.stringify({ message: "User exists" }), { status: 200 });
+    } else {
+      return new Response(JSON.stringify({ message: "User not found" }), { status: 404 });
+    }
+  } catch (error) {
+    console.error("Error in checking user existence:", error);
+    return new Response(JSON.stringify({ message: "An error occurred" }), { status: 500 });
   }
 }
