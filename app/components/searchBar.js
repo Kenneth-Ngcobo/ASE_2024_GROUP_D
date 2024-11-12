@@ -108,7 +108,7 @@ const RecipeSearchBar = ({
                 setLoading(true);
                 const params = new URLSearchParams({
                     search,
-                    limit: '5',
+                    limit: '10',
                     page: '1'
                 });
 
