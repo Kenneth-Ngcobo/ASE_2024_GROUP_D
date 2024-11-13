@@ -25,7 +25,7 @@ async function validateRecipe(recipeId) {
 }
 
 // Create review
-export async function POST(request, { params }) {
+export async function POST(request) {
   try {
     //const body2 = await request.text();  // Get the raw body as text for debugging
     //console.log("Raw request body:", body2);  // Log the body for debugging
@@ -44,9 +44,8 @@ export async function POST(request, { params }) {
     
     // Connect to database and create review
     const db = await connectToDatabase();
-    console.log("error 6 idk")
-    const review = await createReview(db, newReview, recipeId);
-    console.log("error 7 idk")
+    const review = await createReview(db, body);
+    
     return NextResponse.json(review, { status: 201 });
   } catch (error) {
     return NextResponse.json(
@@ -59,8 +58,7 @@ export async function POST(request, { params }) {
 // Update review
 export async function PUT(request, { params }) {
   try {
-    const { id } = params;
-    const reviewId = id
+    const { reviewId } = params;
     const body = await request.json();
     
     const db = await connectToDatabase();

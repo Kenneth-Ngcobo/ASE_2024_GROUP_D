@@ -1,117 +1,67 @@
+// components/ReviewsSection.js
 "use client";
 import { useState, useEffect } from 'react';
 
 const ReviewsSection = ({ recipeId }) => {
   const [reviews, setReviews] = useState([]);
   const [newReview, setNewReview] = useState({ rating: 0, comment: '', recipeId });
-  const [editMode, setEditMode] = useState(false);
-  const [editReviewId, setEditReviewId] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [message, setMessage] = useState({ text: '', type: '' }); // For success/error messages
-  const [sortOption, setSortOption] = useState({ sortBy: 'rating', order: 'desc' });
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchReviews = async () => {
       try {
-        const response = await fetch(`/api/recipes/${recipeId}/reviews?sortBy=${sortOption.sortBy}&order=${sortOption.order}`);
-        if (!response.ok) throw new Error('Failed to fetch reviews.');
+        const response = await fetch(`/api/recipes/${recipeId}/reviews`);
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch reviews.');
+        }
         const data = await response.json();
         setReviews(data);
       } catch (error) {
-        setMessage({ text: 'Failed to fetch reviews.', type: 'error' });
+        setError('Failed to fetch reviews.');
       }
     };
     fetchReviews();
-  }, [recipeId, sortOption]);
+  }, [recipeId]);
 
   const handleReviewSubmit = async () => {
     try {
       setIsLoading(true);
-      const method = editMode ? 'PUT' : 'POST';
-      const endpoint = editMode
-        ? `/api/recipes/${recipeId}/reviews/${editReviewId}`
-        : `/api/recipes/${recipeId}/reviews`;
-
-      const response = await fetch(endpoint, {
-        method,
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch(`/api/recipes/${recipeId}/reviews`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify(newReview),
       });
 
-      if (!response.ok) throw new Error('Failed to submit review.');
-
-      const updatedReview = await response.json();
-
-      if (editMode) {
-        setReviews(reviews.map((rev) => (rev._id === editReviewId ? updatedReview : rev)));
-      } else {
-        setReviews([updatedReview, ...reviews]);
+  
+      if (!response.ok) {
+        // Log the full response body (text) for debugging
+        const responseBody = await response.text();
+        console.log('Response Body:', responseBody);
+        throw new Error(`Failed to submit review: ${responseBody}`);
       }
-
-      setMessage({ text: editMode ? 'Review updated successfully!' : 'Review added successfully!', type: 'success' });
-      setNewReview({ rating: 0, comment: '', recipeId });
-      setEditMode(false);
-      setEditReviewId(null);
+      const data = await response.json();
+      setReviews([...reviews, data]);
+      setNewReview({ rating: 0, comment: '' });
     } catch (error) {
-      setMessage({ text: 'Failed to submit review.', type: 'error' });
+      setError('Failed to submit review.');
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const handleEdit = (review) => {
-    setEditMode(true);
-    setEditReviewId(review._id);
-    setNewReview({ rating: review.rating, comment: review.comment, recipeId });
-  };
-
-  const handleDelete = async (reviewId) => {
-    try {
-      setIsLoading(true);
-      const response = await fetch(`/api/recipes/${recipeId}/reviews/${reviewId}`, {
-        method: 'DELETE',
-      });
-
-      if (!response.ok) throw new Error('Failed to delete review.');
-
-      setReviews(reviews.filter((review) => review._id !== reviewId));
-      setMessage({ text: 'Review deleted successfully!', type: 'success' });
-    } catch (error) {
-      setMessage({ text: 'Failed to delete review.', type: 'error' });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleSortChange = (e) => {
-    const [sortBy, order] = e.target.value.split('-');
-    setSortOption({ sortBy, order });
   };
 
   return (
     <div>
       <h2 className="text-2xl font-bold mb-4">Reviews</h2>
-      {message.text && (
-        <div className={`mb-4 ${message.type === 'error' ? 'text-red-500' : 'text-green-500'}`}>
-          {message.text}
-        </div>
-      )}
-
-      <div className="mb-4">
-        <label htmlFor="sort" className="mr-2">Sort by:</label>
-        <select id="sort" onChange={handleSortChange} className="px-3 py-2 border rounded-md">
-          <option value="rating-desc">Rating (Highest)</option>
-          <option value="rating-asc">Rating (Lowest)</option>
-          <option value="date-desc">Newest</option>
-          <option value="date-asc">Oldest</option>
-        </select>
-      </div>
-
+      {error && <div className="text-red-500 mb-4">{error}</div>}
       <div className="space-y-4">
         {reviews.map((review, index) => (
           <div key={index} className="bg-white p-4 rounded-lg shadow-md">
             <div className="flex items-center mb-2">
-              <div className="font-bold mr-2">{review.username}</div>
+              <div className="font-bold mr-2">{review.userId}</div>
               <div className="text-yellow-500">
                 {[...Array(review.rating)].map((_, i) => (
                   <span key={i}>★</span>
@@ -122,24 +72,11 @@ const ReviewsSection = ({ recipeId }) => {
             <div className="text-gray-500 text-sm mt-2">
               {new Date(review.createdAt).toLocaleString()}
             </div>
-            <button
-              onClick={() => handleEdit(review)}
-              className="text-blue-500 hover:underline mt-2"
-            >
-              Edit
-            </button>
-            <button
-        onClick={() => handleDelete(review._id)} // Ensure review._id is passed
-  className="text-red-500 hover:underline mt-2 ml-4"
->
-  Delete
-</button>
           </div>
         ))}
       </div>
-
       <div className="mt-8">
-        <h3 className="text-xl font-bold mb-2">{editMode ? 'Edit Review' : 'Add a Review'}</h3>
+        <h3 className="text-xl font-bold mb-2">Add a Review</h3>
         <div className="flex items-center mb-2">
           <label htmlFor="rating" className="mr-2">
             Rating:
@@ -147,7 +84,7 @@ const ReviewsSection = ({ recipeId }) => {
           <select
             id="rating"
             value={newReview.rating}
-            onChange={(e) => setNewReview({ ...newReview, rating: Number(e.target.value) })}
+            onChange={(e) => setNewReview({ ...newReview, rating: e.target.value })}
             className="px-3 py-2 border rounded-md"
           >
             <option value={0}>Select a rating</option>
@@ -175,7 +112,7 @@ const ReviewsSection = ({ recipeId }) => {
           disabled={isLoading}
           className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md"
         >
-          {isLoading ? 'Submitting...' : editMode ? 'Update Review' : 'Submit Review'}
+          {isLoading ? 'Submitting...' : 'Submit Review'}
         </button>
       </div>
     </div>

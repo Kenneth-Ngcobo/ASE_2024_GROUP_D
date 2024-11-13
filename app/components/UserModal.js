@@ -1,22 +1,20 @@
-"use client";
+'use client';
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../hook/useAuth";
 import Link from "next/link";
-import { signIn } from "next-auth/react";
 
 export default function UserModal({ show, onClose }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [fullName, setfullName] = useState("");
+  const [firstName, setFirstName] = useState(""); 
+  const [lastName, setLastName] = useState("");
   const [isCheckingUser, setIsCheckingUser] = useState(false);
-  const [isLogin, setIsLogin] = useState(null);
+  const [isLogin, setIsLogin] = useState(null); 
   const [prevModal, setPrevModal] = useState(null);
   const { signup, login, logout, error } = useAuth();
   const [loggedInUser, setLoggedInUser] = useState(null);
-  const [isLoggingIn, setIsLoggingIn] = useState(false);
-  const [isConfirmingLogout, setIsConfirmingLogout] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -60,57 +58,42 @@ export default function UserModal({ show, onClose }) {
   };
 
   const handleSubmit = async () => {
-    setIsLoggingIn(true);
-
-    try {
-      if (isLogin) {
-        await login(email, password);
-        if (!error) {
-          alert("Login successful!");
-          setLoggedInUser(email);
-          localStorage.setItem("loggedInUserEmail", email);
-          router.push("/");
-          onClose();
-        } else {
-          alert("Login failed. Please check your credentials.");
-        }
+    if (isLogin) {
+      await login(email, password);
+      if (!error) {
+        alert("Login successful!");
+        setLoggedInUser(email);
+        localStorage.setItem("loggedInUserEmail", email);
+        router.push("/");
+        onClose();
       } else {
-        if (!fullName || !password) {
-          alert("Please fill in all fields.");
-          return;
-        }
-
-        await signup(email, password, fullName);
-        if (!error) {
-          alert("Sign-up successful!");
-          setLoggedInUser(email);
-          localStorage.setItem("loggedInUserEmail", email);
-          router.push("/");
-          onClose();
-        } else {
-          alert("Sign-up failed. Please try again.");
-        }
+        alert("Login failed. Please check your credentials.");
       }
-    } finally {
-      setIsLoggingIn(false);
+    } else {
+      if (!firstName || !lastName || !password) {
+        alert("Please fill in all fields.");
+        return;
+      }
+
+      await signup(email, password, firstName, lastName); 
+      if (!error) {
+        alert("Sign-up successful!");
+        setLoggedInUser(email);
+        localStorage.setItem("loggedInUserEmail", email);
+        router.push("/");
+        onClose();
+      } else {
+        alert("Sign-up failed. Please try again.");
+      }
     }
   };
 
-  const handleLogout = () => {
-    setIsConfirmingLogout(true);
-  };
-
-  const confirmLogout = async () => {
-    setIsConfirmingLogout(false);
+  const handleLogout = async () => {
     await logout();
     setLoggedInUser(null);
     localStorage.removeItem("loggedInUserEmail");
     alert("Logged out successfully!");
     router.push("/");
-  };
-
-  const cancelLogout = () => {
-    setIsConfirmingLogout(false);
   };
 
   const handleBack = () => {
@@ -120,7 +103,6 @@ export default function UserModal({ show, onClose }) {
   };
 
   if (!show) return null;
-
   return (
     <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-end z-50">
       <div className="bg-white w-96 p-6 rounded-l-3xl shadow-lg relative">
@@ -146,10 +128,7 @@ export default function UserModal({ show, onClose }) {
               Welcome, {loggedInUser}!
             </h2>
             <Link href="/editdetails">
-              <button
-                onClick={onClose}
-                className="w-full bg-teal-700 text-white py-3 rounded-md mb-4"
-              >
+              <button className="w-full bg-teal-700 text-white py-3 rounded-md mb-4">
                 Edit Profile
               </button>
             </Link>
@@ -166,10 +145,6 @@ export default function UserModal({ show, onClose }) {
               <h2 className="text-2xl font-bold text-center mb-4">
                 Verifying...
               </h2>
-            ) : isLoggingIn ? (
-              <h2 className="text-2xl font-bold text-center mb-4">
-                Logging in...
-              </h2>
             ) : isLogin === null ? (
               <h2 className="text-2xl font-bold text-center mb-4">
                 Sign Up or Login
@@ -180,6 +155,7 @@ export default function UserModal({ show, onClose }) {
               <h2 className="text-2xl font-bold text-center mb-4">Sign Up</h2>
             )}
 
+            {/* Email Input */}
             {isLogin === null && (
               <input
                 type="email"
@@ -190,16 +166,23 @@ export default function UserModal({ show, onClose }) {
               />
             )}
 
+            {/* Conditional Rendering for First Name, Lastname, and Password (only for Sign-Up) */}
             {isLogin === false && (
               <>
                 <input
                   type="text"
-                  placeholder="full Name"
-                  value={fullName}
-                  onChange={(e) => setfullName(e.target.value)}
+                  placeholder="First Name"
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
                   className="w-full border rounded-md p-3 text-gray-700 mb-4"
                 />
-
+                <input
+                  type="text"
+                  placeholder="Last Name"
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                  className="w-full border rounded-md p-3 text-gray-700 mb-4"
+                />
                 <input
                   type="email"
                   placeholder="Email"
@@ -210,6 +193,7 @@ export default function UserModal({ show, onClose }) {
               </>
             )}
 
+            {/* Password Input */}
             {isLogin !== null && (
               <input
                 type="password"
@@ -220,6 +204,7 @@ export default function UserModal({ show, onClose }) {
               />
             )}
 
+            {/* Continue with Email Button */}
             {isLogin === null && (
               <button
                 onClick={handleContinueWithEmail}
@@ -229,6 +214,7 @@ export default function UserModal({ show, onClose }) {
               </button>
             )}
 
+            {/* Login or Sign Up Button */}
             {isLogin !== null && (
               <button
                 onClick={handleSubmit}
@@ -242,7 +228,7 @@ export default function UserModal({ show, onClose }) {
 
         <div className="text-center text-gray-500 mb-4">OR</div>
 
-
+        {/* Social Login Buttons */}
         <button className="w-full border rounded-md py-3 flex items-center justify-center mb-2">
           <Image
             src="/google.svg"
@@ -256,37 +242,16 @@ export default function UserModal({ show, onClose }) {
 
         <p className="text-gray-500 text-xs text-center mt-4">
           By continuing you agree to our{" "}
-          <Link href="#" className="underline">
+          <a href="#" className="underline">
             Terms of Use
-          </Link>
+          </a>
           . Learn how we collect, use, and share your data in our{" "}
-          <Link href="#" className="underline">
+          <a href="#" className="underline">
             Privacy Policy
-          </Link>
+          </a>
+          .
         </p>
       </div>
-
-      {/* Logout Confirmation Modal */}
-      {isConfirmingLogout && (
-        <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-50">
-          <div className="bg-white p-6 rounded-md shadow-lg text-center">
-            <h2 className="text-lg font-bold mb-4">Confirm Logout</h2>
-            <p className="mb-4">Are you sure you want to log out?</p>
-            <button
-              onClick={confirmLogout}
-              className="bg-red-500 text-white py-2 px-4 rounded-md mr-2"
-            >
-              Yes
-            </button>
-            <button
-              onClick={cancelLogout}
-              className="bg-gray-300 text-gray-700 py-2 px-4 rounded-md"
-            >
-              No
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
