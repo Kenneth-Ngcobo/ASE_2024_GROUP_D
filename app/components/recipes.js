@@ -3,7 +3,8 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
-import { FaHeart, FaCalendarDay, FaClock, FaUtensils, FaCaretDown } from "react-icons/fa";
+import { FaClock, FaUtensils, FaCaretDown } from "react-icons/fa";
+import { PiCookingPotDuotone,PiHeart } from 'react-icons/pi';
 import Head from 'next/head';
 import Carousel from './Carousel';
 import { SortControl } from './SortControl';
@@ -99,7 +100,7 @@ export default function Recipes({ recipes: initialRecipes }) {
             onClick={() => setDropdownVisible(!dropdownVisible)}
             className="flex items-center text-gray-800 font-roboto"
           >
-            <FaHeart className="mr-2" size={20} />
+            <PiHeart className="mr-2" size={20} />
             <span>Favorites</span>
             <FaCaretDown className={`ml-2 ${dropdownVisible ? 'transform rotate-180' : ''}`} />
           </button>
@@ -149,13 +150,13 @@ export default function Recipes({ recipes: initialRecipes }) {
                   {recipe.title}
                 </h2>
                 <button
-                  className={`ml-2 ${favoritedRecipes.has(recipe._id) ? 'text-red-300' : 'text-gray-400'} hover:text-red-300`}
+                  className={`ml-2 ${favoritedRecipes.has(recipe._id) ? 'text-red-500' : 'text-gray-400'} hover:text-red-500`}
                   onClick={(e) => {
                     e.preventDefault();
                     toggleFavorite(recipe._id);
                   }}
                 >
-                  <FaHeart size={24} />
+                  <PiHeart size={24} />
                 </button>
               </div>
 
@@ -165,7 +166,7 @@ export default function Recipes({ recipes: initialRecipes }) {
                   {recipe.prep + recipe.cook} mins
                 </p>
                 <p className="text-sm text-gray-600 flex items-center">
-                  <FaClock className="text-[#1e455c] mr-2" />
+                  <PiCookingPotDuotone className="text-[#1e455c] mr-2" />
                   {recipe.cook} mins
                 </p>
                 <p className="text-sm text-gray-600 flex items-center">

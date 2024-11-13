@@ -89,11 +89,11 @@ export default async function RecipePage({ params }) {
                             <h1 className="text-4xl font-bold text-[#1e455c] mb-4">
                                 {recipe.title || 'Untitled Recipe'}
                             </h1>
-                            <div className="flex flex-wrap gap-2 mb-4">
-                                {recipe.tags?.map((tag, index) => (
-                                    <span key={index} className="px-3 py-1 bg-gray-200 text-[#1e455c] rounded-full text-sm">
-                                        {tag}
-                                    </span>
+                            <div className="flex flex-wrap gap-3 mb-6">
+                             {recipe.tags?.map((tag, index) => (
+                            <span key={index} className="px-4 py-2 bg-[#F5F3F3] hover:bg-[#e5e3e3] text-[#415462] rounded-2xl text-sm font-medium uppercase tracking-wide transition-colors">
+                             {tag}
+                            </span>
                                 ))}
                             </div>
                         </div>
