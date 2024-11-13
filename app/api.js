@@ -8,16 +8,16 @@ const API_BASE_URL = process.env.API_BASE_URL;
  * @param {number} [page] - The current page number (optional).
  * @returns {Promise<Object>} - Returns a promise that resolves with the recipe data, or throws an error if the request fails.
  */
-export async function fetchRecipes(limit = 20, page,search, tags, category, ingredients, instructions) {
-    if (instructions == 0){
+export async function fetchRecipes(limit = 20, page, search, tags, category, ingredients, instructions) {
+    if (instructions == 0) {
         instructions = '';
-    } 
-    
+    }
+
     // Construct query string with limit and page parameters
     const query = new URLSearchParams({
         limit, // Set the limit of items per page
         ...(page && { page }), // Conditionally add 'page' to the query if it's provided
-        ...(search && {search}),
+        ...(search && { search }),
         ...(tags && { tags }), // Conditionally add 'tags' to the query if it
         ...(category && { category }), // Conditionally add 'category' to the query if it's provided
         ...(ingredients && { ingredients }), // Conditionally add 'ingredients' to the query if it's provided
@@ -26,6 +26,7 @@ export async function fetchRecipes(limit = 20, page,search, tags, category, ingr
 
     try {
         // Make a GET request to the API with the constructed query string
+        console.log(`${API_BASE_URL}/api/recipes?${query}`)
         const response = await fetch(`${API_BASE_URL}/api/recipes?${query}`);
 
         // Check if the response is successful (HTTP status code 200-299)
