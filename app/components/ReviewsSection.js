@@ -37,9 +37,7 @@ const ReviewsSection = ({ recipeId, userId }) => {
       });
 
       if (!response.ok) {
-        const responseBody = await response.text();
-        console.log('Response Body:', responseBody);
-        throw new Error(`Failed to submit review: ${responseBody}`);
+        throw new Error('Failed to submit review.');
       }
       const data = await response.json();
       setReviews([...reviews, data]);
