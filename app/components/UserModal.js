@@ -4,12 +4,14 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../hook/useAuth";
 import Link from "next/link";
+import { signIn } from "next-auth/react";
 
 export default function UserModal({ show, onClose }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setfullName] = useState("");
-  const [isCheckingUser, setIsCheckingUser] = useState(false);
+  const [phoneNumber, setPhoneNumber] = useState(0);
+  const [isCheckingUser, setIsCheckingUser] = useState(false); 
   const [isLogin, setIsLogin] = useState(null);
   const [prevModal, setPrevModal] = useState(null);
   const { signup, login, logout, error } = useAuth();
@@ -74,12 +76,12 @@ export default function UserModal({ show, onClose }) {
           alert("Login failed. Please check your credentials.");
         }
       } else {
-        if (!fullName || !password) {
+        if (!fullName || !phoneNumber || !password) {
           alert("Please fill in all fields.");
           return;
         }
 
-        await signup(email, password, fullName);
+        await signup(email, password, fullName, phoneNumber);
         if (!error) {
           alert("Sign-up successful!");
           setLoggedInUser(email);
@@ -206,6 +208,13 @@ export default function UserModal({ show, onClose }) {
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full border rounded-md p-3 text-gray-700 mb-4"
                 />
+                <input
+                  type="phone number"
+                  placeholder="Phone Number"
+                  value={phoneNumber}
+                  onChange={(e) => setPhoneNumber(e.target.value)}
+                  className="w-full border rounded-md p-3 text-gray-700 mb-4"
+                />
               </>
             )}
 
@@ -241,16 +250,27 @@ export default function UserModal({ show, onClose }) {
 
         <div className="text-center text-gray-500 mb-4">OR</div>
 
-        <button className="w-full border rounded-md py-3 flex items-center justify-center mb-2">
-          <Image
-            src="/google.svg"
-            alt="Google icon"
-            width={20}
-            height={20}
-            className="w-5 mr-2"
-          />
-          Continue with Google
-        </button>
+        <form
+          action={async () => {
+            await signIn("google", {
+              callbackUrl: `${window.location.origin}/`,
+            });
+          }}
+        >
+          <button
+            type="submit"
+            className="w-full border rounded-md py-3 flex items-center justify-center mb-2"
+          >
+            <Image
+              src="/google.svg"
+              alt="Google icon"
+              width={20}
+              height={20}
+              className="w-5 mr-2"
+            />
+            Continue with Google
+          </button>
+        </form>
 
         <p className="text-gray-500 text-xs text-center mt-4">
           By continuing you agree to our{" "}
