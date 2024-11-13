@@ -3,7 +3,8 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
-import { FaHeart, FaCalendarDay, FaClock, FaUtensils, FaCaretDown } from "react-icons/fa";
+import { FaClock, FaUtensils, FaCaretDown } from "react-icons/fa";
+import { PiCookingPotDuotone,PiHeart } from 'react-icons/pi';
 import Head from 'next/head';
 import Carousel from './Carousel';
 import { SortControl } from './SortControl';
@@ -99,7 +100,7 @@ export default function Recipes({ recipes: initialRecipes }) {
             onClick={() => setDropdownVisible(!dropdownVisible)}
             className="flex items-center text-gray-800 font-roboto"
           >
-            <FaHeart className="mr-2" size={20} />
+            <PiHeart className="mr-2" size={20} />
             <span>Favorites</span>
             <FaCaretDown className={`ml-2 ${dropdownVisible ? 'transform rotate-180' : ''}`} />
           </button>
@@ -129,16 +130,6 @@ export default function Recipes({ recipes: initialRecipes }) {
               key={recipe._id}
               className="block p-4 bg-white border border-gray-200 rounded-lg shadow-lg hover:shadow-2xl transition-transform transform hover:scale-105 duration-300 ease-in-out"
             >
-              <button
-                className={`absolute top-2 right-2 ${favoritedRecipes.has(recipe._id) ? 'text-red-500' : 'text-gray-400'} hover:text-red-500`}
-                onClick={(e) => {
-                  e.preventDefault();
-                  toggleFavorite(recipe._id);
-                }}
-              >
-                <FaHeart size={24} />
-              </button>
-
               <div className="relative w-full h-64">
                 {recipe.images.length > 1 ? (
                   <Carousel images={recipe.images} />
@@ -154,38 +145,47 @@ export default function Recipes({ recipes: initialRecipes }) {
                 )}
               </div>
 
-              <div className="p-4">
+              <div className="p-4 flex justify-between items-center">
                 <h2 className="text-[#1e455c] font-bold text-xl mb-3 font-montserrat group-hover:text-[#2b617f]">
                   {recipe.title}
                 </h2>
+                <button
+                  className={`ml-2 ${favoritedRecipes.has(recipe._id) ? 'text-red-500' : 'text-gray-400'} hover:text-red-500`}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    toggleFavorite(recipe._id);
+                  }}
+                >
+                  <PiHeart size={24} />
+                </button>
+              </div>
 
-                <div className="space-y-2">
-                  <p className="text-sm text-gray-600 flex items-center">
-                    <FaClock className="text-[#1e455c] mr-2" />
-                    {recipe.prep + recipe.cook} mins
-                  </p>
-                  <p className="text-sm text-gray-600 flex items-center">
-                    <FaClock className="text-[#1e455c] mr-2" />
-                    {recipe.cook} mins
-                  </p>
-                  <p className="text-sm text-gray-600 flex items-center">
-                    <FaUtensils className="text-[#1e455c] mr-2" />
-                    Serves {recipe.servings}
-                  </p>
-                </div>
-                <div className="flex flex-wrap gap-2 mt-3">
-                  {recipe.category && (
-                    <span className="inline-block bg-gray-100 text-gray-600 text-sm px-2 py-1 rounded">
-                      {recipe.category}
-                    </span>
-                  )}
+              <div className="space-y-2">
+                <p className="text-sm text-gray-600 flex items-center">
+                  <FaClock className="text-[#1e455c] mr-2" />
+                  {recipe.prep + recipe.cook} mins
+                </p>
+                <p className="text-sm text-gray-600 flex items-center">
+                  <PiCookingPotDuotone className="text-[#1e455c] mr-2" />
+                  {recipe.cook} mins
+                </p>
+                <p className="text-sm text-gray-600 flex items-center">
+                  <FaUtensils className="text-[#1e455c] mr-2" />
+                  Serves {recipe.servings}
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-2 mt-3">
+                {recipe.category && (
                   <span className="inline-block bg-gray-100 text-gray-600 text-sm px-2 py-1 rounded">
-                    {recipe.instructions.length} steps
+                    {recipe.category}
                   </span>
-                  <span className="inline-block bg-gray-100 text-gray-600 text-sm px-2 py-1 rounded">
-                    {new Date(recipe.published).toDateString()}
-                  </span>
-                </div>
+                )}
+                <span className="inline-block bg-gray-100 text-gray-600 text-sm px-2 py-1 rounded">
+                  {recipe.instructions.length} steps
+                </span>
+                <span className="inline-block bg-gray-100 text-gray-600 text-sm px-2 py-1 rounded">
+                  {new Date(recipe.published).toDateString()}
+                </span>
               </div>
             </Link>
           ))}

@@ -61,7 +61,7 @@ export default function Carousel({ images }) {
                             <button
                                 key={index}
                                 className={`w-3 h-3 rounded-full ${
-                                    currentIndex === index ? 'bg-green-600' : 'bg-gray-300'
+                                    currentIndex === index ? 'bg-[#1e455c]' : 'bg-gray-300'
                                 } focus:outline-none`}
                                 onClick={() => goToIndex(index)}
                             />
