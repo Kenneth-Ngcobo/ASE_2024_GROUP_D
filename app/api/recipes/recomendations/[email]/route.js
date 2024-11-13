@@ -1,5 +1,5 @@
 // /pages/api/recipes/high-rated/[email].js
-const connectToDatabase = require('../../../../db'); // Adjust path as necessary
+const connectToDatabase = require('../../../../../db'); // Adjust path as necessary
 
 export async function GET(req, { params }) {
   const { email } = params; // Extract the user's email from the URL parameters
