@@ -1,21 +1,20 @@
-// components/ReviewsSection.js
 "use client";
 import { useState, useEffect } from 'react';
 
-const ReviewsSection = ({ recipeId, userId }) => {
+const ReviewsSection = ({ recipeId }) => {
   const [reviews, setReviews] = useState([]);
   const [newReview, setNewReview] = useState({ rating: 0, comment: '', recipeId });
+  const [editMode, setEditMode] = useState(false);
+  const [editReviewId, setEditReviewId] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [sortOption, setSortOption] = useState({ sortBy: 'rating', order: 'desc' });
 
   useEffect(() => {
     const fetchReviews = async () => {
       try {
-        const response = await fetch(`/api/recipes/${recipeId}/reviews`);
-
-        if (!response.ok) {
-          throw new Error('Failed to fetch reviews.');
-        }
+        const response = await fetch(`/api/recipes/${recipeId}/reviews?sortBy=${sortOption.sortBy}&order=${sortOption.order}`);
+        if (!response.ok) throw new Error('Failed to fetch reviews.');
         const data = await response.json();
         setReviews(data);
       } catch (error) {
@@ -23,25 +22,35 @@ const ReviewsSection = ({ recipeId, userId }) => {
       }
     };
     fetchReviews();
-  }, [recipeId]);
+  }, [recipeId, sortOption]);
 
   const handleReviewSubmit = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch(`/api/recipes/${recipeId}/reviews`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+      const method = editMode ? 'PUT' : 'POST';
+      const endpoint = editMode
+        ? `/api/recipes/${recipeId}/reviews/${editReviewId}`
+        : `/api/recipes/${recipeId}/reviews`;
+
+      const response = await fetch(endpoint, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newReview),
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to submit review.');
+      if (!response.ok) throw new Error('Failed to submit review.');
+
+      const updatedReview = await response.json();
+
+      if (editMode) {
+        setReviews(reviews.map((rev) => (rev._id === editReviewId ? updatedReview : rev)));
+      } else {
+        setReviews([...reviews, updatedReview]);
       }
-      const data = await response.json();
-      setReviews([...reviews, data]);
-      setNewReview({ rating: 0, comment: '' });
+
+      setNewReview({ rating: 0, comment: '', recipeId });
+      setEditMode(false);
+      setEditReviewId(null);
     } catch (error) {
       setError('Failed to submit review.');
     } finally {
@@ -49,63 +58,59 @@ const ReviewsSection = ({ recipeId, userId }) => {
     }
   };
 
-  const handleDeleteReview = async (reviewId) => {
-    const confirmed = window.confirm("Are you sure you want to delete this review?");
-    if (!confirmed) return;
+  const handleEdit = (review) => {
+    setEditMode(true);
+    setEditReviewId(review._id);
+    setNewReview({ rating: review.rating, comment: review.comment, recipeId });
+  };
 
-    try {
-      setIsLoading(true);
-      const response = await fetch(`/api/recipes/${recipeId}/reviews/${reviewId}`, {
-        method: 'DELETE',
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to delete review.');
-      }
-
-      // Update the reviews state by filtering out the deleted review
-      setReviews(reviews.filter(review => review._id !== reviewId));
-    } catch (error) {
-      setError('Failed to delete review.');
-    } finally {
-      setIsLoading(false);
-    }
+  const handleSortChange = (e) => {
+    const [sortBy, order] = e.target.value.split('-');
+    setSortOption({ sortBy, order });
   };
 
   return (
     <div>
       <h2 className="text-2xl font-bold mb-4">Reviews</h2>
       {error && <div className="text-red-500 mb-4">{error}</div>}
+
+      <div className="mb-4">
+        <label htmlFor="sort" className="mr-2">Sort by:</label>
+        <select id="sort" onChange={handleSortChange} className="px-3 py-2 border rounded-md">
+          <option value="rating-desc">Rating (Highest)</option>
+          <option value="rating-asc">Rating (Lowest)</option>
+          <option value="date-desc">Newest</option>
+          <option value="date-asc">Oldest</option>
+        </select>
+      </div>
+
       <div className="space-y-4">
-        {reviews.map((review) => (
-          <div key={review._id} className="bg-white p-4 rounded-lg shadow-md">
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center">
-                <div className="font-bold mr-2">{review.userId}</div>
-                <div className="text-yellow-500">
-                  {[...Array(review.rating)].map((_, i) => (
-                    <span key={i}>★</span>
-                  ))}
-                </div>
+        {reviews.map((review, index) => (
+          <div key={index} className="bg-white p-4 rounded-lg shadow-md">
+            <div className="flex items-center mb-2">
+              <div className="font-bold mr-2">{review.username}</div>
+              <div className="text-yellow-500">
+                {[...Array(review.rating)].map((_, i) => (
+                  <span key={i}>★</span>
+                ))}
               </div>
-              {review.userId === userId && (
-                <button
-                  onClick={() => handleDeleteReview(review._id)}
-                  className="text-red-500 hover:text-red-700 text-sm"
-                >
-                  Delete
-                </button>
-              )}
             </div>
             <p>{review.comment}</p>
             <div className="text-gray-500 text-sm mt-2">
               {new Date(review.createdAt).toLocaleString()}
             </div>
+            <button
+              onClick={() => handleEdit(review)}
+              className="text-blue-500 hover:underline mt-2"
+            >
+              Edit
+            </button>
           </div>
         ))}
       </div>
+
       <div className="mt-8">
-        <h3 className="text-xl font-bold mb-2">Add a Review</h3>
+        <h3 className="text-xl font-bold mb-2">{editMode ? 'Edit Review' : 'Add a Review'}</h3>
         <div className="flex items-center mb-2">
           <label htmlFor="rating" className="mr-2">
             Rating:
@@ -113,7 +118,7 @@ const ReviewsSection = ({ recipeId, userId }) => {
           <select
             id="rating"
             value={newReview.rating}
-            onChange={(e) => setNewReview({ ...newReview, rating: e.target.value })}
+            onChange={(e) => setNewReview({ ...newReview, rating: Number(e.target.value) })}
             className="px-3 py-2 border rounded-md"
           >
             <option value={0}>Select a rating</option>
@@ -141,7 +146,7 @@ const ReviewsSection = ({ recipeId, userId }) => {
           disabled={isLoading}
           className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md"
         >
-          {isLoading ? 'Submitting...' : 'Submit Review'}
+          {isLoading ? 'Submitting...' : editMode ? 'Update Review' : 'Submit Review'}
         </button>
       </div>
     </div>
