@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../hook/useAuth";
 import Link from "next/link";
+import { signIn } from "next-auth/react";
 
 export default function UserModal({ show, onClose }) {
   const [email, setEmail] = useState("");
