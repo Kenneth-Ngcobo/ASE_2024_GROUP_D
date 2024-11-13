@@ -7,7 +7,7 @@ const ReviewsSection = ({ recipeId }) => {
   const [editMode, setEditMode] = useState(false);
   const [editReviewId, setEditReviewId] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [message, setMessage] = useState({ text: '', type: '' }); // For success/error messages
   const [sortOption, setSortOption] = useState({ sortBy: 'rating', order: 'desc' });
 
   useEffect(() => {
@@ -18,7 +18,7 @@ const ReviewsSection = ({ recipeId }) => {
         const data = await response.json();
         setReviews(data);
       } catch (error) {
-        setError('Failed to fetch reviews.');
+        setMessage({ text: 'Failed to fetch reviews.', type: 'error' });
       }
     };
     fetchReviews();
@@ -45,14 +45,15 @@ const ReviewsSection = ({ recipeId }) => {
       if (editMode) {
         setReviews(reviews.map((rev) => (rev._id === editReviewId ? updatedReview : rev)));
       } else {
-        setReviews([...reviews, updatedReview]);
+        setReviews([updatedReview, ...reviews]);
       }
 
+      setMessage({ text: editMode ? 'Review updated successfully!' : 'Review added successfully!', type: 'success' });
       setNewReview({ rating: 0, comment: '', recipeId });
       setEditMode(false);
       setEditReviewId(null);
     } catch (error) {
-      setError('Failed to submit review.');
+      setMessage({ text: 'Failed to submit review.', type: 'error' });
     } finally {
       setIsLoading(false);
     }
@@ -64,6 +65,24 @@ const ReviewsSection = ({ recipeId }) => {
     setNewReview({ rating: review.rating, comment: review.comment, recipeId });
   };
 
+  const handleDelete = async (reviewId) => {
+    try {
+      setIsLoading(true);
+      const response = await fetch(`/api/recipes/${recipeId}/reviews/${reviewId}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) throw new Error('Failed to delete review.');
+
+      setReviews(reviews.filter((review) => review._id !== reviewId));
+      setMessage({ text: 'Review deleted successfully!', type: 'success' });
+    } catch (error) {
+      setMessage({ text: 'Failed to delete review.', type: 'error' });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleSortChange = (e) => {
     const [sortBy, order] = e.target.value.split('-');
     setSortOption({ sortBy, order });
@@ -72,7 +91,11 @@ const ReviewsSection = ({ recipeId }) => {
   return (
     <div>
       <h2 className="text-2xl font-bold mb-4">Reviews</h2>
-      {error && <div className="text-red-500 mb-4">{error}</div>}
+      {message.text && (
+        <div className={`mb-4 ${message.type === 'error' ? 'text-red-500' : 'text-green-500'}`}>
+          {message.text}
+        </div>
+      )}
 
       <div className="mb-4">
         <label htmlFor="sort" className="mr-2">Sort by:</label>
@@ -105,6 +128,12 @@ const ReviewsSection = ({ recipeId }) => {
             >
               Edit
             </button>
+            <button
+        onClick={() => handleDelete(review._id)} // Ensure review._id is passed
+  className="text-red-500 hover:underline mt-2 ml-4"
+>
+  Delete
+</button>
           </div>
         ))}
       </div>

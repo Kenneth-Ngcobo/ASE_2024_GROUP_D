@@ -22,7 +22,7 @@ async function createReview(db, reviewData) {
       { _id: recipeId },
       {
         $push: { reviews: review },  // Add the review to the reviews array
-        $set: { updatedAt: new Date() }  // Update the recipe's `updatedAt` field
+        $set: { updatedAt: new Date() }  // Update the recipe's updatedAt field
       }
     );
 
