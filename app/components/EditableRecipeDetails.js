@@ -32,21 +32,18 @@ export default function EditableRecipeDetails({ id, initialDescription, lastEdit
             });
 
             const data = await response.json();
+
             if (response.ok) {
                 setMessage({ type: 'success', text: data.message });
                 setEditor(data.lastEditedBy);
                 setEditDate(new Date(data.lastEditedAt).toLocaleString());
+                setDescription(data.description);
                 setIsEditing(false);
-                localStorage.setItem("editMessage", JSON.stringify({
-                    type: 'success',
-                    text: data.message
-                }));
             } else {
+                if (response.status === 401) {
+                    setIsEditing(false);
+                }
                 setMessage({ type: 'error', text: data.error });
-                localStorage.setItem("editMessage", JSON.stringify({
-                    type: 'error',
-                    text: data.error
-                }));
             }
         } catch (error) {
             console.error('Error updating recipe:', error);
@@ -65,6 +62,7 @@ export default function EditableRecipeDetails({ id, initialDescription, lastEdit
             });
             return;
         }
+        setMessage(null);
         setIsEditing(true);
     };
 

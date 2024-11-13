@@ -1,5 +1,5 @@
 import connectToDatabase from '../../../../db';
-import { getSession } from 'next-auth/react';
+import { getServerSession } from 'next-auth';
 
 /**
  * Update a recipe's description in the MongoDB database.
@@ -18,7 +18,7 @@ import { getSession } from 'next-auth/react';
  */
 export async function PATCH(req, { params }) {
     const { id } = params;
-    const session = await getSession({ req });
+    const session = await getServerSession({ req });
 
     // Check if the user is logged in
     if (!session || !session.user) {
@@ -60,7 +60,7 @@ export async function PATCH(req, { params }) {
             {
                 $set: {
                     description: description.trim(),
-                    lastEditedBy: session.user.id,
+                    lastEditedBy: session.user.name,
                     lastEditedAt: timestamp,
                 },
             }
@@ -79,6 +79,7 @@ export async function PATCH(req, { params }) {
                 message: 'Recipe updated successfully',
                 lastEditedBy: session.user.name,
                 lastEditedAt: timestamp,
+                description: description.trim(),
             }),
             {
                 status: 200,
