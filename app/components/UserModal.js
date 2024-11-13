@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../hook/useAuth";
 import Link from "next/link";
+import { signIn } from "next-auth/react";
 
 export default function UserModal({ show, onClose }) {
   const [email, setEmail] = useState("");
@@ -240,6 +241,7 @@ export default function UserModal({ show, onClose }) {
         )}
 
         <div className="text-center text-gray-500 mb-4">OR</div>
+
 
         <button className="w-full border rounded-md py-3 flex items-center justify-center mb-2">
           <Image
