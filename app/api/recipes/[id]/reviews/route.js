@@ -1,3 +1,4 @@
+//api/recipes/[id]/reviews/routes.js
 
 import { NextResponse } from 'next/server';
 import connectToDatabase from '../../../../../db';
@@ -7,7 +8,6 @@ import {
   deleteReview,
   getRecipeReviews
 } from '../../../../review';
-
 
 async function validateRecipe(recipeId) {
   const db = await connectToDatabase();
@@ -27,9 +27,22 @@ async function validateRecipe(recipeId) {
 // Create review
 export async function POST(request) {
   try {
-    const body = await request.json();
-    await validateRecipe(body.recipeId);
+    //const body2 = await request.text();  // Get the raw body as text for debugging
+    //console.log("Raw request body:", body2);  // Log the body for debugging
+
+    const body = await request.json(); // Parse JSON from the request body
+
+    // Destructure and log each field individually
+    const {rating, comment, recipeId } = body;
+    console.log("recipeId:", recipeId);
+    console.log("rating:", rating);
+    console.log("comment:", comment);
+
+
+    // Validate the recipe ID
+    await validateRecipe(recipeId);
     
+    // Connect to database and create review
     const db = await connectToDatabase();
     const review = await createReview(db, body);
     
@@ -42,6 +55,7 @@ export async function POST(request) {
   }
 }
 
+// Update review
 export async function PUT(request, { params }) {
   try {
     const { reviewId } = params;
@@ -59,6 +73,7 @@ export async function PUT(request, { params }) {
   }
 }
 
+// Delete review
 export async function DELETE(request, { params }) {
   try {
     const { reviewId } = params;
@@ -75,13 +90,12 @@ export async function DELETE(request, { params }) {
   }
 }
 
-
+// Get reviews for a recipe
 export async function GET(request, { params }) {
-
   try {
     const { id } = params;
     const recipeId = id;
-    validateRecipe(recipeId);
+    await validateRecipe(recipeId);
     
     console.log('Did we get ValidateRecipe?')
 
@@ -92,9 +106,7 @@ export async function GET(request, { params }) {
       order: searchParams.get('order') || 'desc'
     };
     
-   
     const db = await connectToDatabase();
-   
     const reviews = await getRecipeReviews(db, recipeId, sortOptions);
     
     return NextResponse.json(reviews);
@@ -108,5 +120,3 @@ export async function GET(request, { params }) {
     );
   }
 }
-
-
