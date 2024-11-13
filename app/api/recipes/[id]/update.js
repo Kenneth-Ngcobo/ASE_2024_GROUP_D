@@ -17,79 +17,49 @@ import { getServerSession } from 'next-auth';
  * @returns {Promise<Response>} A Response object with success or error messages.
  */
 export async function PATCH(req, { params }) {
-    const { id } = params;
-    const session = await getServerSession({ req });
-
-    // Check if the user is logged in
-    if (!session || !session.user) {
-        return new Response(
-            JSON.stringify({
-                error: 'You must be logged in to edit recipes'
-            }),
-            { status: 401 }
-        );
-    }
-
-    // Parse the request body
-    let body;
     try {
-        body = await req.json();
-    } catch (error) {
-        return new Response(
-            JSON.stringify({ error: 'Invalid JSON' }),
-            { status: 400 }
-        );
-    }
+        // Get session and parse request in one try block
+        const [session, { description }] = await Promise.all([
+            getServerSession({ req }),
+            req.json()
+        ]);
 
-    // Validate the new description
-    const { description } = body;
-    if (!description || typeof description !== 'string' || description.trim().length === 0) {
-        return new Response(
-            JSON.stringify({ error: 'Invalid description' }),
-            { status: 400 }
-        );
-    }
+        // Early return if not authenticated or invalid input
+        if (!session?.user) {
+            return Response.json({ error: 'Unauthorized' }, { status: 401 });
+        }
 
-    try {
+        if (!description?.trim()) {
+            return Response.json({ error: 'Description is required' }, { status: 400 });
+        }
+
         const db = await connectToDatabase();
-        const timestamp = new Date();
 
-        // Update the recipe document in the 'recipes' collection
+        // Update recipe with all required fields in one operation
         const result = await db.collection('recipes').updateOne(
-            { _id: id },
+            { _id: params.id },
             {
                 $set: {
                     description: description.trim(),
-                    lastEditedBy: session.user.name,
-                    lastEditedAt: timestamp,
-                },
+                    lastEditedBy: session.user.id,
+                    lastEditedAt: new Date()
+                }
             }
         );
 
-        if (result.matchedCount === 0) {
-            return new Response(
-                JSON.stringify({ error: 'Recipe not found' }),
-                { status: 404 }
-            );
+        // Handle recipe not found
+        if (!result.matchedCount) {
+            return Response.json({ error: 'Recipe not found' }, { status: 404 });
         }
 
-        // Return the update confirmation with editor details
-        return new Response(
-            JSON.stringify({
-                message: 'Recipe updated successfully',
-                lastEditedBy: session.user.name,
-                lastEditedAt: timestamp,
-                description: description.trim(),
-            }),
-            {
-                status: 200,
-            }
-        );
+        // Success response
+        return Response.json({
+            message: 'Recipe updated successfully',
+            description: description.trim()
+        });
+
     } catch (error) {
-        console.error('Error updating recipe:', error);
-        return new Response(
-            JSON.stringify({ error: 'Failed to update recipe' }),
-            { status: 500 }
-        );
+        console.error('Recipe update failed:', error);
+        return Response.json({ error: 'Update failed' }, { status: 500 });
     }
 }
