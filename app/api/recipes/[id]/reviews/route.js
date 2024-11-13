@@ -25,14 +25,21 @@ async function validateRecipe(recipeId) {
 }
 
 // Create review
-export async function POST(request) {
+export async function POST(request, { params }) {
   try {
-    const body = await request.json();
-    await validateRecipe(body.recipeId);
-    
+    console.log("error 1 idk")
+    const { id } = params;
+    console.log("error 2 idk", id)
+    const recipeId = id;
+    console.log("error 3 idk")
+    const newReview = await request.json();
+    console.log("error 4 idk",newReview)
+    await validateRecipe(recipeId);
+    console.log("error 5 idk")
     const db = await connectToDatabase();
-    const review = await createReview(db, body);
-    
+    console.log("error 6 idk")
+    const review = await createReview(db, newReview, recipeId);
+    console.log("error 7 idk")
     return NextResponse.json(review, { status: 201 });
   } catch (error) {
     return NextResponse.json(
@@ -44,7 +51,8 @@ export async function POST(request) {
 
 export async function PUT(request, { params }) {
   try {
-    const { reviewId } = params;
+    const { id } = params;
+    const reviewId = id
     const body = await request.json();
     
     const db = await connectToDatabase();

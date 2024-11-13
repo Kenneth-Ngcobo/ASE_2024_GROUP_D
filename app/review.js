@@ -1,14 +1,29 @@
 // review.js
-async function createReview(db, reviewData) {
+async function createReview(db, reviewData, recipeId) {
+  try {
   const collection = db.collection('recipes');
-  const recipeId = reviewData.recipeId;
+  // const recipeId = reviewData.recipeId;
+
+  const userEmail = localStorage.getItem("LoggedInUserEmail")
+  // try {
+    const response = await fetch(`/api/user/profile?${userEmail}`)
+    if(!response.ok) throw new Error("User Email not found")
+    
+      const userData = await response.json();
+
+      const userId = userData.userId;
+      console.log("user id ", userId)
+      return userId
+  }catch(error){
+    console.log(error)
+  }
 
   // Validate the recipe
   await validateRecipe(db, recipeId);
 
   const review = {
     _id: new Date().getTime().toString(),
-    userId: reviewData.userId,
+    userId: userId,
     rating: Number(reviewData.rating),
     comment: reviewData.comment,
     createdAt: new Date(),
