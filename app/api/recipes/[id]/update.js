@@ -18,16 +18,6 @@ import { getServerSession } from 'next-auth';
  */
 export async function PATCH(req, { params }) {
     try {
-        // Get session and parse request in one try block
-        const [session, { description }] = await Promise.all([
-            getServerSession({ req }),
-            req.json()
-        ]);
-
-        // Early return if not authenticated or invalid input
-        if (!session?.user) {
-            return Response.json({ error: 'Unauthorized' }, { status: 401 });
-        }
 
         if (!description?.trim()) {
             return Response.json({ error: 'Description is required' }, { status: 400 });
@@ -41,7 +31,7 @@ export async function PATCH(req, { params }) {
             {
                 $set: {
                     description: description.trim(),
-                    lastEditedBy: session.user.id,
+                    lastEditedBy: user.id,
                     lastEditedAt: new Date()
                 }
             }

@@ -1,13 +1,10 @@
 "use client"
 
 import { useState, useEffect } from 'react';
-import { Alert, AlertTitle, AlertDescription } from './ui/alert';
 import { Button } from './ui/button';
 import { Pencil, X, Check } from 'lucide-react';
-import { useSession } from 'next-auth/react';
 
 export default function EditableRecipeDetails({ id, initialDescription, lastEditedBy, lastEditedAt }) {
-    const { data: session } = useSession();
     const [isEditing, setIsEditing] = useState(false);
     const [description, setDescription] = useState(initialDescription);
     const [message, setMessage] = useState(null);
@@ -33,38 +30,30 @@ export default function EditableRecipeDetails({ id, initialDescription, lastEdit
 
             const data = await response.json();
 
-            if (response.ok) {
-                setMessage({ type: 'success', text: data.message });
-                setEditor(data.lastEditedBy);
-                setEditDate(new Date(data.lastEditedAt).toLocaleString());
-                setDescription(data.description);
-                setIsEditing(false);
-            } else {
-                if (response.status === 401) {
-                    setIsEditing(false);
-                }
-                setMessage({ type: 'error', text: data.error });
+            if (!response.ok) {
+                const data = await response.json();
+                setMessage({ type: 'error', text: data.error || 'Something went wrong.' });
+                localStorage.setItem("editMessage", JSON.stringify(message));
+                return;
             }
+
+            setMessage({ type: 'success', text: 'Recipe description updated successfully!' });
+            setEditor(data.lastEditedBy);
+            setEditDate(new Date(data.lastEditedAt).toLocaleString());
+            setDescription(data.description);
+            setIsEditing(false);
+
+            localStorage.setItem("editMessage", JSON.stringify(message))
         } catch (error) {
             console.error('Error updating recipe:', error);
             setMessage({
                 type: 'error',
                 text: 'Something went wrong. Please try again later.'
             });
+            localStorage.setItem("editMessage", JSON.stringify(message))
         }
     };
 
-    const handleEditClick = () => {
-        if (!session) {
-            setMessage({
-                type: 'error',
-                text: 'You must be logged in to edit recipes'
-            });
-            return;
-        }
-        setMessage(null);
-        setIsEditing(true);
-    };
 
     const handleCancel = () => {
         setDescription(initialDescription);
@@ -82,7 +71,7 @@ export default function EditableRecipeDetails({ id, initialDescription, lastEdit
                     <Button
                         variant="ghost"
                         size="sm"
-                        onClick={handleEditClick}
+                        onClick={() => setIsEditing(true)}
                         className="flex items-center gap-2"
                     >
                         <Pencil className="h-4 w-4" />
@@ -92,15 +81,14 @@ export default function EditableRecipeDetails({ id, initialDescription, lastEdit
             </div>
 
             {message && (
-                <Alert
-                    variant={message.type === 'error' ? 'destructive' : 'default'}
-                    className="mb-4"
+                <div
+                    className={`p-4 mb-4 rounded-lg ${message.type === 'error'
+                        ? 'bg-red-100 text-red-800 dark:bg-red-800 dark:text-red-100'
+                        : 'bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100'
+                        }`}
                 >
-                    <AlertTitle>
-                        {message.type === 'error' ? 'Error' : 'Success'}
-                    </AlertTitle>
-                    <AlertDescription>{message.text}</AlertDescription>
-                </Alert>
+                    {message.text}
+                </div>
             )}
 
             {isEditing ? (
