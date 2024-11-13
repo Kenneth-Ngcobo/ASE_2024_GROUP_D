@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 
 const ReviewsSection = ({ recipeId }) => {
   const [reviews, setReviews] = useState([]);
-  const [newReview, setNewReview] = useState({ rating: 0, comment: '' });
+  const [newReview, setNewReview] = useState({ rating: 0, comment: '', recipeId });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -12,6 +12,7 @@ const ReviewsSection = ({ recipeId }) => {
     const fetchReviews = async () => {
       try {
         const response = await fetch(`/api/recipes/${recipeId}/reviews`);
+
         if (!response.ok) {
           throw new Error('Failed to fetch reviews.');
         }
@@ -35,10 +36,13 @@ const ReviewsSection = ({ recipeId }) => {
         body: JSON.stringify(newReview),
       });
 
+  
       if (!response.ok) {
-        throw new Error('Failed to submit review.');
+        // Log the full response body (text) for debugging
+        const responseBody = await response.text();
+        console.log('Response Body:', responseBody);
+        throw new Error(`Failed to submit review: ${responseBody}`);
       }
-
       const data = await response.json();
       setReviews([...reviews, data]);
       setNewReview({ rating: 0, comment: '' });
