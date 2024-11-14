@@ -2,7 +2,7 @@
 "use client";
 import { useState, useEffect } from 'react';
 
-const ReviewsSection = ({ recipeId }) => {
+const ReviewsSection = ({ recipeId, userId }) => {
   const [reviews, setReviews] = useState([]);
   const [newReview, setNewReview] = useState({ rating: 0, comment: '', recipeId });
   const [isLoading, setIsLoading] = useState(false);
@@ -36,12 +36,8 @@ const ReviewsSection = ({ recipeId }) => {
         body: JSON.stringify(newReview),
       });
 
-  
       if (!response.ok) {
-        // Log the full response body (text) for debugging
-        const responseBody = await response.text();
-        console.log('Response Body:', responseBody);
-        throw new Error(`Failed to submit review: ${responseBody}`);
+        throw new Error('Failed to submit review.');
       }
       const data = await response.json();
       setReviews([...reviews, data]);
@@ -53,20 +49,53 @@ const ReviewsSection = ({ recipeId }) => {
     }
   };
 
+  const handleDeleteReview = async (reviewId) => {
+    const confirmed = window.confirm("Are you sure you want to delete this review?");
+    if (!confirmed) return;
+
+    try {
+      setIsLoading(true);
+      const response = await fetch(`/api/recipes/${recipeId}/reviews/${reviewId}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete review.');
+      }
+
+      // Update the reviews state by filtering out the deleted review
+      setReviews(reviews.filter(review => review._id !== reviewId));
+    } catch (error) {
+      setError('Failed to delete review.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div>
       <h2 className="text-2xl font-bold mb-4">Reviews</h2>
       {error && <div className="text-red-500 mb-4">{error}</div>}
       <div className="space-y-4">
-        {reviews.map((review, index) => (
-          <div key={index} className="bg-white p-4 rounded-lg shadow-md">
-            <div className="flex items-center mb-2">
-              <div className="font-bold mr-2">{review.userId}</div>
-              <div className="text-yellow-500">
-                {[...Array(review.rating)].map((_, i) => (
-                  <span key={i}>★</span>
-                ))}
+        {reviews.map((review) => (
+          <div key={review._id} className="bg-white p-4 rounded-lg shadow-md">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center">
+                <div className="font-bold mr-2">{review.userId}</div>
+                <div className="text-yellow-500">
+                  {[...Array(review.rating)].map((_, i) => (
+                    <span key={i}>★</span>
+                  ))}
+                </div>
               </div>
+              {review.userId === userId && (
+                <button
+                  onClick={() => handleDeleteReview(review._id)}
+                  className="text-red-500 hover:text-red-700 text-sm"
+                >
+                  Delete
+                </button>
+              )}
             </div>
             <p>{review.comment}</p>
             <div className="text-gray-500 text-sm mt-2">
