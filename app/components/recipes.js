@@ -85,13 +85,6 @@ export default function Recipes({ recipes: initialRecipes }) {
 
   return (
     <>
-      <Head>
-        <link
-          href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap"
-          rel="stylesheet"
-        />
-      </Head>
-
       <div className="container mx-auto p-4 pt-6 md:p-6 lg:p-12">
         <SortControl />
 
