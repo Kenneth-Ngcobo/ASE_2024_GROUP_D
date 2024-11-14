@@ -10,6 +10,7 @@ import ThemeButton from "./ThemeButton";
 import RecipeSearchBar from "./searchBar";
 import UserModal from "./UserModal.js";
 import { FilterModal } from "./FilterButton";
+import Loading from "../loading.js";
 
 const Header = ({ isAuthenticated, onLogout }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -73,7 +74,7 @@ const Header = ({ isAuthenticated, onLogout }) => {
           </Link>
           <div className="hidden md:flex items-center space-x-8">
             {/* Wrapping CategoryList in Suspense */}
-            <Suspense fallback={<div>Loading categories...</div>}>
+            <Suspense fallback={<Loading />}>
               <CategoryList
                 totalRecipes={totalRecipes}
                 onCategoryChange={() => {}}
@@ -139,10 +140,13 @@ const Header = ({ isAuthenticated, onLogout }) => {
             Favourites
           </Link>
           <div className="py-2">
-            <CategoryList
-              totalRecipes={totalRecipes}
-              onCategoryChange={() => {}}
-            />
+            <Suspense fallback={<Loading />}>
+              <CategoryList
+                totalRecipes={totalRecipes}
+                onCategoryChange={() => {}}
+              />
+            </Suspense>
+            
           </div>
           <div className="py-2">
             <FilterButton onClick={() => setIsFilterOpen(!isFilterOpen)} />
