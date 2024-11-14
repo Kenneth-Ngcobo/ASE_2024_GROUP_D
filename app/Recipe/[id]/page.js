@@ -86,7 +86,7 @@ export default async function RecipePage({ params }) {
                         </div>
 
                         {/* Title and Tags Section */}
-                        <div className="bg-white rounded-2xl shadow-xl p-8">
+                        <div className="bg-white dark:border-gray-950 rounded-2xl shadow-xl p-8">
                             <h1 className="text-4xl font-bold text-[#1e455c] mb-4">
                                 {recipe.title || 'Untitled Recipe'}
                             </h1>
