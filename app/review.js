@@ -1,43 +1,52 @@
+import { ObjectId } from 'mongodb';
+
 async function createReview(db, reviewData) {
+  const collection = db.collection('recipes');
+  const recipeId = reviewData.recipeId;
+
+  // Validation
   try {
-    const collection = db.collection('recipes');
-    const recipeId = reviewData.recipeId;
-
-    // Validate the recipe
     await validateRecipe(db, recipeId);
+  } catch (error) {
+    console.error(`Recipe validation error: ${error.message}`);
+    throw new Error(`Recipe validation error: ${error.message}`);
+  }
 
-    const review = {
-      _id: new Date().getTime().toString(), // Unique review ID based on the timestamp
-      userId: reviewData.userId || 'test', // Default userId if none is provided
-      rating: Number(reviewData.rating),   // Rating should be a number
-      comment: reviewData.comment,         // Comment provided by the user
-      createdAt: new Date(),               // Current timestamp
-      updatedAt: new Date()                // Current timestamp
-    };
+  // Prepare review object
+  const review = {
+    _id: new ObjectId(),  // Using ObjectId for MongoDB compatibility
+    userId: reviewData.userId || 'test',
+    rating: Number(reviewData.rating),
+    comment: reviewData.comment,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  };
 
-    console.log("Review document:", review); // Log the review document to ensure it looks correct
-
-    // Insert the review into the recipe's reviews array
+  // Attempt to update the database
+  try {
     const updateResult = await collection.updateOne(
       { _id: recipeId },
-      {
-        $push: { reviews: review },  // Add the review to the reviews array
-        $set: { updatedAt: new Date() }  // Update the recipe's updatedAt field
-      }
+      { $push: { reviews: review }, $set: { updatedAt: new Date() } }
     );
-
     if (updateResult.modifiedCount === 0) {
       throw new Error('Failed to add review to the recipe');
     }
-
-    // Update the average rating for the recipe
-    await updateAverageRating(db, recipeId);
-
-    return review;  // Return the created review document
   } catch (error) {
-    throw new Error(`Error creating review: ${error.message}`);
+    console.error(`Database update error: ${error.message}`);
+    throw new Error(`Database update error: ${error.message}`);
   }
+
+  // Update average rating
+  try {
+    await updateAverageRating(db, recipeId);
+  } catch (error) {
+    console.error(`Error updating average rating: ${error.message}`);
+    throw new Error(`Error updating average rating: ${error.message}`);
+  }
+
+  return review;
 }
+
 
 async function validateRecipe(db, recipeId) {
   const recipe = await db.collection('recipes').findOne({ _id: recipeId });

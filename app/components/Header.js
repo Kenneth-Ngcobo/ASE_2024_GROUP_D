@@ -65,8 +65,6 @@ const Header = ({ isAuthenticated, onLogout }) => {
             </Link>
           </div>
 
-
-
           <Link href="/" className="flex items-center">
             <Image
               src="/Kwa.png"
