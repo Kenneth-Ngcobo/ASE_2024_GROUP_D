@@ -1,21 +1,29 @@
-import connectToDatabase from "../../../db.js";
+import connectToDatabase from '../../../db.js';
 
+/**
+ * GET handler for fetching paginated and sorted recipes from the database.
+ * @param {Request} req - The incoming HTTP request.
+ * @returns {Response} - JSON response containing paginated recipes and metadata.
+ */
 export async function GET(req) {
   try {
+    // Connect to the database and get the recipes collection
     const db = await connectToDatabase();
-    const recipesCollection = db.collection("recipes");
+    const recipesCollection = db.collection('recipes');
 
-    // Parse query parameters
+    // Use req.nextUrl to parse query parameters
+    const { searchParams } = req.nextUrl;
+
     const url = new URL(req.url);
-    const page = parseInt(url.searchParams.get("page")) || 1;
-    const limit = Math.min(parseInt(url.searchParams.get("limit")) || 50, 50);
-    const sort = url.searchParams.get("sort") || "createdAt"; // Default to createdAt
-    const order = url.searchParams.get("order")?.toLowerCase() === "desc" ? -1 : 1;
-    const searchTerm = url.searchParams.get("search") || "";
-    const category = url.searchParams.get("category");
-    const tags = url.searchParams.get("tags");
-    const ingredients = url.searchParams.get("ingredients");
-    const instructions = parseInt(url.searchParams.get("instructions"));
+    const page = parseInt(searchParams.get("page")) || 1;
+    const limit = Math.min(parseInt(searchParams.get("limit")) || 50, 50);
+    const sort = searchParams.get("sort") || "createdAt"; // Default to createdAt
+    const order = searchParams.get("order")?.toLowerCase() === "desc" ? -1 : 1;
+    const searchTerm = searchParams.get("search") || "";
+    const category = searchParams.get("category");
+    const tags = searchParams.get("tags");
+    const ingredients = searchParams.get("ingredients");
+    const instructions = parseInt(searchParams.get("instructions"));
 
     let query = {};
 
@@ -27,15 +35,14 @@ export async function GET(req) {
       'createdAt': 'createdAt'  // Added creation date sorting
     };
 
-    // Check if the sort field is valid
     if (!validSortFields[sort]) {
       return new Response(
         JSON.stringify({
-          error: 'Invalid sort parameter. Valid options are: cookTime, prepTime, instructions, createdAt'
+          error: `Invalid sort parameter '${sort}'. Valid options are: cookingTime, preparationTime, published, calories, title, instructionsCount`
         }), {
-          status: 400,
+        status: 400,
         headers: { 'Content-Type': 'application/json' }
-        }
+      }
       );
     }
 
@@ -57,11 +64,11 @@ export async function GET(req) {
       };
     }
 
-       // Filter by ingredients (object structure)
+    // Filter by ingredients (object structure)
     if (ingredients) {
       const ingredientArray = ingredients.split(",").map((ingredient) => ingredient.trim().toLowerCase());
-  
-        // Create a filter for each ingredient key, allowing case-insensitive matching
+
+      // Create a filter for each ingredient key, allowing case-insensitive matching
       query.$and = ingredientArray.map((ingredient) => ({
         [`ingredients.${ingredient}`]: { $exists: true },
       }));
@@ -71,9 +78,6 @@ export async function GET(req) {
     if (!isNaN(instructions)) {
       query.instructions = { $size: instructions }; // Match recipes with exactly the specified number of instructions
     }
-
-    // Log constructed query
-    console.log("Constructed query:", JSON.stringify(query, null, 2));
 
     const skip = (page - 1) * limit;
 
@@ -112,9 +116,12 @@ export async function GET(req) {
     );
   } catch (error) {
     console.error('Error fetching recipes:', error);
-    return new Response(JSON.stringify({ error: 'Failed to fetch recipes' }), {
+    return new Response(JSON.stringify({
+      error: 'Failed to fetch recipes',
+      details: error.message
+    }), {
       status: 500,
-      headers: { "Content-Type": "application/json" },
+      headers: { 'Content-Type': 'application/json' },
     });
   }
 }
