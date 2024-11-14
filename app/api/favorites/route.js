@@ -104,9 +104,13 @@ export async function GET(req) {
     // Ensure favorites exists
     const favorites = user.favorites || [];
 
+    // Fetch the details of all favorited recipes from the 'recipes' collection
+    const recipesCollection = db.collection('recipes');
+    const favoritedRecipes = await recipesCollection.find({ _id: { $in: favorites } }).toArray();
+
     return NextResponse.json({
-      favorites: favorites,
-      favoritesCount: favorites.length
+      favorites: favoritedRecipes,
+      favoritesCount: favoritedRecipes.length
     }, { status: 200 });
 
   } catch (error) {
