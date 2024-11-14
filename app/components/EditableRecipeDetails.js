@@ -12,16 +12,26 @@ export default function EditableRecipeDetails({ id, initialDescription, lastEdit
     const [editDate, setEditDate] = useState(lastEditedAt);
 
     useEffect(() => {
-        const savedMessage = localStorage.getItem("editMessage");
-        if (savedMessage) {
-            setMessage(JSON.parse(savedMessage));
-            // Clear the message after displaying it
-            localStorage.removeItem("editMessage");
-        }
-    }, []);
+        const fetchRecipeData = async () => {
+            try {
+                const response = await fetch(`/api/recipes/${id}`);
+                const data = await response.json();
+                setDescription(data.description);
+                setEditor(data.lastEditedBy);
+                setEditDate(data.lastEditedAt);
+            } catch (error) {
+                console.error('Error fetching recipe data:', error);
+                setMessage({
+                    type: 'error',
+                    text: 'Something went wrong. Please try again later.'
+                });
+            }
+        };
+
+        fetchRecipeData();
+    }, [id]);
 
     const handleEdit = async () => {
-
         try {
             const response = await fetch(`/api/recipes/${id}/update`, {
                 method: "PATCH",
@@ -32,9 +42,7 @@ export default function EditableRecipeDetails({ id, initialDescription, lastEdit
             const data = await response.json();
 
             if (!response.ok) {
-                const data = await response.json();
                 setMessage({ type: 'error', text: data.error || 'Something went wrong.' });
-                localStorage.setItem("editMessage", JSON.stringify(message));
                 return;
             }
 
@@ -44,7 +52,6 @@ export default function EditableRecipeDetails({ id, initialDescription, lastEdit
             setDescription(data.description);
             setIsEditing(false);
 
-            localStorage.setItem("editMessage", JSON.stringify(message))
             console.log(response)
         }
         catch (error) {
@@ -53,7 +60,6 @@ export default function EditableRecipeDetails({ id, initialDescription, lastEdit
                 type: 'error',
                 text: 'Something went wrong. Please try again later.'
             });
-            localStorage.setItem("editMessage", JSON.stringify(message))
         }
 
     };
@@ -63,8 +69,6 @@ export default function EditableRecipeDetails({ id, initialDescription, lastEdit
         setDescription(initialDescription);
         setIsEditing(false);
         setMessage(null);
-        // Clear the message in localStorage
-        localStorage.removeItem("editMessage");
     };
 
     return (
