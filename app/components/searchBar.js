@@ -32,7 +32,7 @@ const HighlightedText = ({ text, searchTerms }) => {
         <span>
             {parts.map((part, i) => (
                 regex.test(part) ? (
-                    <span key={i} className="bg-yellow-200 font-medium">{part}</span>
+                    <span key={i} className="bg-teal-100 text-teal-800 font-medium">{part}</span>
                 ) : (
                     <span key={i}>{part}</span>
                 )
@@ -61,15 +61,9 @@ const RecipeSearchBar = ({
     const [suggestions, setSuggestions] = useState([]);
     const [loading, setLoading] = useState(false);
     const [recentSearches, setRecentSearches] = useState([]);
-    const [selectedRecipe, setSelectedRecipe] = useState(null); // New state for selected recipe
+    const [selectedRecipe, setSelectedRecipe] = useState(null);
     const router = useRouter();
-
-    useEffect(() => {
-        const savedSearches = localStorage.getItem('recentRecipeSearches');
-        if (savedSearches) {
-            setRecentSearches(JSON.parse(savedSearches));
-        }
-    }, []);
+  
 
     useEffect(() => {
         setSearch(currentSearch);
@@ -114,7 +108,7 @@ const RecipeSearchBar = ({
                 setLoading(true);
                 const params = new URLSearchParams({
                     search,
-                    limit: '5',
+                    limit: '10',
                     page: '1'
                 });
 
@@ -201,10 +195,12 @@ const RecipeSearchBar = ({
     const searchTerms = getSearchTerms(search);
 
     return (
-        <div className="border-t border-gray-200">
+        <div className="max-w-3xl mx-auto">
             <form onSubmit={handleSearchSubmit} className="relative">
                 <div className="relative flex items-center">
-                    <FaSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 dark:text-white text-gray-400 hover:text-gray-600" />
+                <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-teal-500"> 
+                        <FaSearch className="h-4 w-4" />
+                        </div>
                     <input
                         type="text"
                         value={search}
@@ -213,8 +209,8 @@ const RecipeSearchBar = ({
                             setShowSuggestions(true);
                         }}
                         onFocus={() => setShowSuggestions(true)}
-                        placeholder="Search for recipes by name, ingredient, or cuisine..."
-                        className="w-full pl-12 pr-4 py-2 bg-gray-50  dark:bg-gray-950 border border-gray-200 dark:border-gray-800  rounded-full focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                        placeholder="Search for recipes by title, ingredient, or category..."
+                        className="w-full pl-12 pr-12 py-4 bg-white border-2 border-gray-100 rounded-xl focus:outline-none focus:border-teal-500 focus:ring-0 text-gray-700 placeholder-gray-400 transition-all duration-200"
                         aria-label="Search recipes"
                     />
                     <div className="absolute right-0 flex items-center space-x-1 mr-2">
@@ -222,30 +218,30 @@ const RecipeSearchBar = ({
                             <button
                                 type="button"
                                 onClick={clearSearch}
-                                className="p-2 text-gray-400 hover:text-gray-600"
+                                className="absolute right-4 p-2 text-gray-400 hover:text-teal-500 transition-colors duration-200"
                                 aria-label="Clear search"
                             >
-                                <XCircle className="h-5 w-5 mr-2" />
+                                <XCircle className="h-5 w-5" />
                             </button>
                         )}
-                        <button 
+                       {/* <button 
                             type="submit" 
                             className=" text-gray-400 p-3 "
                             aria-label="Search"
                         >
-                        </button>
+                        </button>*/}
                     </div>
                 </div>
     
                 {showSuggestions && (
                     <div 
-                        className="absolute z-10 w-full mt-2 bg-white rounded-lg shadow-lg border"
+                         className="absolute z-10 w-full mt-2 bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden"
                         onMouseDown={(e) => e.preventDefault()}
                     >
                         {loading ? (
-                            <div className="p-4 text-gray-600 flex items-center justify-center">
-                                <Coffee className="animate-spin mr-2" />
-                                <span>Finding recipes...</span>
+                            <div className="p-6 text-gray-600 flex items-center justify-center">
+                                <Coffee className="animate-spin mr-2 text-teal-500" />
+                                <span className="font-medium" >Finding recipes...</span>
                             </div>
                         ) : suggestions.length > 0 ? (
                             <ul className="divide-y divide-gray-100">
@@ -256,26 +252,18 @@ const RecipeSearchBar = ({
                                         onClick={() => handleSuggestionClick(suggestion)}
                                     >
                                         <div className="p-4">
-                                            <div className="flex items-center mb-1">
-                                                <Utensils className="h-4 w-4 text-green-600 mr-2" />
-                                                <span className="font-medium">
+                                            <div className="flex items-center mb-2">
+                                                <Utensils className="h-4 w-4 text-teal-500 mr-3" />
+                                                <span className="font-medium text-gray-800">
                                                     <HighlightedText 
                                                         text={suggestion.title}
                                                         searchTerms={searchTerms}
                                                     />
                                                 </span>
                                             </div>
-                                            {suggestion.description && (
-                                                <div className="text-sm text-gray-600 ml-6">
-                                                    <HighlightedText 
-                                                        text={suggestion.description}
-                                                        searchTerms={searchTerms}
-                                                    />
-                                                </div>
-                                            )}
                                             {suggestion.cookTime && (
-                                                <div className="flex items-center text-sm text-gray-500 mt-1 ml-6">
-                                                    <Timer className="h-4 w-4 mr-1" />
+                                                <div className="flex items-center text-sm text-gray-500 mt-2 ml-7">
+                                                    <Timer className="h-4 w-4 mr-1 text-teal-500" />
                                                     <span>{suggestion.cookTime} mins</span>
                                                 </div>
                                             )}
@@ -284,24 +272,24 @@ const RecipeSearchBar = ({
                                 ))}
                             </ul>
                         ) : search.length >= minCharacters ? (
-                            <div className="p-4 text-gray-600 text-center">
+                            <div className="p-6 text-gray-600 text-center font-medium">
                                 No recipes found matching "{search}"
                             </div>
                         ) : recentSearches.length > 0 ? (
                             <div className="p-4">
-                                <h3 className="text-sm font-medium text-gray-500 mb-2">Recent Searches</h3>
+                                <h3 className="text-sm font-medium text-gray-400 uppercase tracking-wider mb-3 px-2">Recent Searches</h3>
                                 <ul className="space-y-2">
                                     {recentSearches.map((term, index) => (
                                         <li 
                                             key={index}
-                                            className="cursor-pointer text-gray-600 hover:text-green-600 flex items-center"
+                                            className="cursor-pointer text-gray-700 hover:text-teal-500 flex items-center p-2 rounded-lg hover:bg-gray-50 transition-colors duration-200"
                                             onClick={() => {
                                                 setSearch(term);
                                                 setShowSuggestions(false);
                                                 if (onSearch) onSearch(term);
                                             }}
                                         >
-                                            <FaSearch className="h-3 w-3 mr-2" />
+                                            <FaSearch className="h-3 w-3 mr-3 text-gray-400" />
                                             {term}
                                         </li>
                                     ))}
@@ -313,11 +301,11 @@ const RecipeSearchBar = ({
             </form>
     
             {selectedRecipe && (
-                <div className="mt-8 p-4 bg-white rounded-lg shadow-md">
-                    <h2 className="text-2xl font-bold mb-2">{selectedRecipe.title}</h2>
-                    <p className="text-gray-600 mb-4">{selectedRecipe.description}</p>
-                    <div className="flex items-center text-sm text-gray-500 mb-2">
-                        <Timer className="h-4 w-4 mr-1" />
+                <div className="mt-8 p-6 bg-white rounded-xl shadow-md border border-gray-100">
+                    <h2 className="text-2xl font-bold text-gray-800 mb-3">{selectedRecipe.title}</h2>
+                    <p className="text-gray-600 mb-4 leading-relaxed">{selectedRecipe.description}</p>
+                    <div className="flex items-center text-sm text-gray-500">
+                        <Timer className="h-4 w-4 mr-2 text-teal-500" />
                         <span>{selectedRecipe.cookTime} mins</span>
                     </div>
                 </div>

@@ -68,19 +68,28 @@ const Recipes = ({ recipes: initialRecipes }) => {
     const newOrder = searchParams.get("order") || "ascending";
     setSortBy(newSort);
     setSortOrder(newOrder);
+
+    const fetchRecipes = async () => {
+      setLoading(true);
+      try {
+        const queryString = searchParams.toString();
+        const response = await fetch(`/api/recipes?${queryString}`);
+        const data = await response.json();
+
+        if (response.ok) {
+          setRecipes(data.recipes);
+        } else {
+          console.error('Failed to fetch recipes:', data.error);
+        }
+      } catch (error) {
+        console.error('Error fetching recipes:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchRecipes();
   }, [searchParams]);
-
-  const handleSort = (newSortBy, newSortOrder) => {
-    setSortBy(newSortBy);
-    setSortOrder(newSortOrder);
-    const sortedRecipes = sortRecipes(initialRecipes, newSortBy, newSortOrder);
-    setRecipes(sortedRecipes);
-  };
-
-  useEffect(() => {
-    const sortedRecipes = sortRecipes(initialRecipes, sortBy, sortOrder);
-    setRecipes(sortedRecipes);
-  }, [initialRecipes, sortBy, sortOrder]);
 
   const toggleFavorite = async (recipeId) => {
     const loggedInEmail = localStorage.getItem("loggedInUserEmail");
@@ -131,10 +140,8 @@ const Recipes = ({ recipes: initialRecipes }) => {
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center h-64">Loading...</div>
-    );
+  if (loading) {
+    return <div className="container mx-auto p-4 text-center">Loading recipes...</div>;
   }
 
   return (
@@ -286,6 +293,24 @@ const Recipes = ({ recipes: initialRecipes }) => {
       </div>
     </>
   );
-};
+}
 
-export default Recipes;
+
+
+ 
+
+      
+
+    
+
+
+    
+            
+           
+
+
+
+
+
+             
+                
