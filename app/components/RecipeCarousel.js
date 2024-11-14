@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import { ChevronLeft, ChevronRight, Star, Clock, User } from 'lucide-react';
 
+
 const RecipeCarousel = ({ recipes = [] }) => {
   const router = useRouter();
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -119,4 +120,4 @@ const RecipeCarousel = ({ recipes = [] }) => {
   );
 };
 
-export default RecipeCarousel;
+export default RecipeCarousel; 
