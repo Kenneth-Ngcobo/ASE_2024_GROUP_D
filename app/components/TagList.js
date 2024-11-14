@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import {  useSearchParams } from 'next/navigation';
 
 export default function TagDisplay({ selectedTags, onTagsChange }) {
   const [tags, setTags] = useState([]);
@@ -29,7 +29,7 @@ export default function TagDisplay({ selectedTags, onTagsChange }) {
         }
         const data = await response.json();
         setTags(data);
-        console.log('Fetched tags:', data);
+        // console.log('Fetched tags:', data);
       } catch (err) {
         setError(err.message);
       } finally {
