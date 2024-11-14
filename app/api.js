@@ -26,7 +26,6 @@ export async function fetchRecipes(limit = 20, page, search, tags, category, ing
 
     try {
         // Make a GET request to the API with the constructed query string
-        console.log(`${API_BASE_URL}/api/recipes?${query}`)
         const response = await fetch(`${API_BASE_URL}/api/recipes?${query}`);
 
         // Check if the response is successful (HTTP status code 200-299)

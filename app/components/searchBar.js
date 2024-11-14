@@ -210,7 +210,7 @@ const RecipeSearchBar = ({
                         }}
                         onFocus={() => setShowSuggestions(true)}
                         placeholder="Search for recipes by title, ingredient, or category..."
-                        className="w-full pl-12 pr-12 py-4 bg-white border-2 border-gray-100 rounded-xl focus:outline-none focus:border-teal-500 focus:ring-0 text-gray-700 placeholder-gray-400 transition-all duration-200"
+                        className="w-full pl-12 pr-12 py-4 bg-white border-2 dark:bg-black dark:border-gray-950 border-gray-100 rounded-xl focus:outline-none focus:border-teal-500 focus:ring-0 text-gray-700 placeholder-gray-400 transition-all duration-200"
                         aria-label="Search recipes"
                     />
                     <div className="absolute right-0 flex items-center space-x-1 mr-2">
@@ -273,7 +273,7 @@ const RecipeSearchBar = ({
                             </ul>
                         ) : search.length >= minCharacters ? (
                             <div className="p-6 text-gray-600 text-center font-medium">
-                                No recipes found matching "{search}"
+                                No recipes found matching &quot;{search}&quot;
                             </div>
                         ) : recentSearches.length > 0 ? (
                             <div className="p-4">

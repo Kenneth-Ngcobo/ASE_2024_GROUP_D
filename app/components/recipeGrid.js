@@ -11,7 +11,7 @@ const Recipes = ({ recipes }) => {
           <Link
             href={`/Recipe/${recipe._id}`}
             key={recipe._id}
-            className="group block bg-white rounded-lg overflow-hidden transform transition-transform duration-300 hover:scale-105"
+            className="group block bg-white dark:border-gray-950 rounded-lg overflow-hidden transform transition-transform duration-300 hover:scale-105"
           >
             {/* Image Container */}
             <div className="relative w-full h-64">
