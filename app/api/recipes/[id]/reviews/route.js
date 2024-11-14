@@ -78,7 +78,8 @@ export async function PUT(request, { params }) {
 // Delete review
 export async function DELETE(request, { params }) {
   try {
-    const { reviewId } = params;
+
+    const { editId: reviewId } = req.query; 
     
     const db = await connectToDatabase();
     await deleteReview(db, reviewId);

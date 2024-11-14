@@ -29,7 +29,7 @@ const ReviewsSection = ({ recipeId }) => {
       setIsLoading(true);
       const method = editMode ? 'PUT' : 'POST';
       const endpoint = editMode
-        ? `/api/recipes/${recipeId}/reviews/${editReviewId}`
+       ? `/api/recipes/${recipeId}/reviews?editId=${editReviewId} `
         : `/api/recipes/${recipeId}/reviews`;
 
       const response = await fetch(endpoint, {
@@ -61,7 +61,7 @@ const ReviewsSection = ({ recipeId }) => {
 
   const handleEdit = (review) => {
     setEditMode(true);
-    setEditReviewId(review._id);
+    setEditReviewId(review,reviewId);
     setNewReview({ rating: review.rating, comment: review.comment, recipeId });
   };
 
