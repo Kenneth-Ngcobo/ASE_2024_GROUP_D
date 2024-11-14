@@ -90,28 +90,34 @@ async function updateAverageRating(db, recipeId) {
 async function updateReview(db, reviewId, updateData) {
   const collection = db.collection('recipes');
 
+  // Convert reviewId to ObjectId if it's a string
+  const objectId = typeof reviewId === 'string' ? new ObjectId(reviewId) : reviewId;
+
   const update = {
     $set: {
       "reviews.$.rating": Number(updateData.rating),
       "reviews.$.comment": updateData.comment,
       "reviews.$.updatedAt": new Date(),
-      updatedAt: new Date()
+      updatedAt: new Date(),
     }
   };
 
   try {
+    // Attempt to update the specific review within the recipe
     const result = await collection.updateOne(
-      { "reviews._id": reviewId },
+      { "reviews._id": objectId },
       update
     );
 
     if (result.matchedCount === 0) {
       throw new Error('Review not found');
+    } else if (result.modifiedCount === 0) {
+      throw new Error('Review found, but no changes were made');
     }
 
-    // Update average rating for the recipe
+    // Find the recipe containing the review to update the average rating
     const recipe = await collection.findOne(
-      { "reviews._id": reviewId },
+      { "reviews._id": objectId },
       { projection: { _id: 1 } }
     );
 
@@ -129,9 +135,12 @@ async function deleteReview(db, reviewId) {
   const collection = db.collection('recipes');
 
   try {
-    // First find the recipe containing the review
+    // Convert reviewId to ObjectId if it's a string
+    const objectId = typeof reviewId === 'string' ? new ObjectId(reviewId) : reviewId;
+
+    // Find the recipe containing the review
     const recipe = await collection.findOne(
-      { "reviews._id": reviewId },
+      { "reviews._id": objectId },
       { projection: { _id: 1 } }
     );
 
@@ -143,7 +152,7 @@ async function deleteReview(db, reviewId) {
     const result = await collection.updateOne(
       { _id: recipe._id },
       {
-        $pull: { reviews: { _id: reviewId } },
+        $pull: { reviews: { _id: objectId } },
         $set: { updatedAt: new Date() }
       }
     );
