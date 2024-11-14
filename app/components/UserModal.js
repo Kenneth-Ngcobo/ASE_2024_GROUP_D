@@ -127,7 +127,7 @@ export default function UserModal({ show, onClose }) {
       <div className="bg-white w-96 p-6 rounded-l-3xl shadow-lg relative">
         <button
           onClick={onClose}
-          className="absolute top-3 right-3 text-gray-500 text-2xl"
+          className="text-gray-600 hover:text-teal-500 font-medium uppercase text-sm"
         >
           &times;
         </button>

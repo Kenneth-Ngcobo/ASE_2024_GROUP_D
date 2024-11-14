@@ -150,7 +150,7 @@ export const FilterButton = ({ onClick }) => {
     return (
         <button
             onClick={onClick}
-            className="text-gray-600 dark:text-white hover:text-teal-500 font-medium uppercase text-sm"
+            className="text-teal-600 hover:text-teal-500 font-medium uppercase text-sm"
         >
             <span className="material-icons mr-2"></span>
             Filter
