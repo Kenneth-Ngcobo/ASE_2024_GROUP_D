@@ -65,16 +65,15 @@ const ReviewsSection = ({ recipeId }) => {
     setEditReviewId(stringId); // Only pass the stringId
     setNewReview({ rating: review.rating, comment: review.comment, recipeId });
   };
-
   const handleDelete = async (reviewId) => {
     try {
       setIsLoading(true);
-      const response = await fetch(`/api/recipes/${recipeId}/reviews/${reviewId}`, {
+      const response = await fetch(`/api/recipes/${recipeId}/reviews?deleteId=${reviewId}`, {
         method: 'DELETE',
       });
-
+  
       if (!response.ok) throw new Error('Failed to delete review.');
-
+  
       setReviews(reviews.filter((review) => review._id !== reviewId));
       setMessage({ text: 'Review deleted successfully!', type: 'success' });
     } catch (error) {
@@ -83,6 +82,7 @@ const ReviewsSection = ({ recipeId }) => {
       setIsLoading(false);
     }
   };
+  
 
   const handleSortChange = (e) => {
     const [sortBy, order] = e.target.value.split('-');

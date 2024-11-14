@@ -135,9 +135,12 @@ async function deleteReview(db, reviewId) {
   const collection = db.collection('recipes');
 
   try {
-    // First find the recipe containing the review
+    // Convert reviewId to ObjectId if it's a string
+    const objectId = typeof reviewId === 'string' ? new ObjectId(reviewId) : reviewId;
+
+    // Find the recipe containing the review
     const recipe = await collection.findOne(
-      { "reviews._id": reviewId },
+      { "reviews._id": objectId },
       { projection: { _id: 1 } }
     );
 
@@ -149,7 +152,7 @@ async function deleteReview(db, reviewId) {
     const result = await collection.updateOne(
       { _id: recipe._id },
       {
-        $pull: { reviews: { _id: reviewId } },
+        $pull: { reviews: { _id: objectId } },
         $set: { updatedAt: new Date() }
       }
     );

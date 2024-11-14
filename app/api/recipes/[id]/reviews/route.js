@@ -84,13 +84,18 @@ export async function PUT(request) {
   }
 }
 // Delete review
-export async function DELETE(request, { params }) {
+export async function DELETE(request) {
   try {
-    const { reviewId } = params;
-    
+    const url = new URL(request.url);
+    const deleteId = url.searchParams.get('deleteId');
+
+    if (!deleteId) {
+      return NextResponse.json({ error: 'deleteId query parameter is required' }, { status: 400 });
+    }
+
     const db = await connectToDatabase();
-    await deleteReview(db, reviewId);
-    
+    await deleteReview(db, deleteId);
+
     return NextResponse.json({ message: 'Review deleted successfully' });
   } catch (error) {
     return NextResponse.json(
@@ -99,6 +104,7 @@ export async function DELETE(request, { params }) {
     );
   }
 }
+
 
 // Get reviews for a recipe
 export async function GET(request, { params }) {
