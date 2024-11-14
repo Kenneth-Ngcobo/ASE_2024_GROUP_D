@@ -55,11 +55,11 @@ export default function Pagination({ currentPage, totalPages }) {
                     // Navigate to the first page
                     onClick={() => onPageChange(1)}
                     className={`items-center justify-center w-8 h-8 text-sm border rounded-full shadow-md ${page === 1
-                        ? "bg-green-600 text-white font-semibold" // Active page styling
-                        : "bg-white text-green-600 border-green-600 hover:bg-green-100" // Default button styling
+                        ? "bg-blue-900 text-white font-semibold" // Active page styling
+                        : "bg-white text-blue-900 border-blue-900 hover:bg-blue-100" // Default button styling
                         }`}
                 >
-                    1
+                    
                 </button>
             );
         }
@@ -80,8 +80,8 @@ export default function Pagination({ currentPage, totalPages }) {
                     key={i}
                     onClick={() => onPageChange(i)} // Navigate to the clicked page
                     className={`items-center justify-center w-8 h-8 text-sm border rounded-full shadow-md ${page === i
-                        ? "bg-green-600 text-white font-semibold" // Active page styling
-                        : "bg-white text-green-600 border-green-600 hover:bg-green-100" // Default button styling
+                        ? "bg-blue-900 text-white font-semibold" // Active page styling
+                        : "bg-white text-blue-900 border-blue-900 hover:bg-blue-100" // Default button styling
                         }`}
                 >
                     {i}
@@ -101,8 +101,8 @@ export default function Pagination({ currentPage, totalPages }) {
                     key={totalPages}
                     onClick={() => onPageChange(totalPages)} // Navigate to the last page
                     className={`items-center justify-center w-8 h-8 text-sm border rounded-full shadow-md ${page === totalPages
-                        ? "bg-green-600 text-white font-semibold" // Active page styling
-                        : "bg-white text-green-600 border-green-600 hover:bg-green-100" // Default button styling
+                        ? "bg-blue-900 text-white font-semibold" // Active page styling
+                        : "bg-white text-blue-900 border-blue-900 hover:bg-blue-100" // Default button styling
                         }`}
                 >
                     {totalPages}
@@ -123,7 +123,7 @@ export default function Pagination({ currentPage, totalPages }) {
                 onClick={() => onPageChange(page - 1)} // Navigate to the previous page
                 className={`inline-flex items-center justify-center w-8 h-8 border rounded-full shadow-md ${page === 1
                     ? "bg-gray-200 text-gray-400 cursor-not-allowed" // Disabled button styling
-                    : "bg-white text-green-600 border-green-600 hover:bg-green-100" // Enabled button styling
+                    : "bg-white text-blue-900 border-blue-900 hover:bg-blue-100" // Enabled button styling
                     }`}
             >
                 {/* Icon for previous arrow */}
@@ -151,7 +151,7 @@ export default function Pagination({ currentPage, totalPages }) {
                 onClick={() => onPageChange(page + 1)} // Navigate to the next page
                 className={`inline-flex items-center justify-center w-8 h-8 border rounded-full shadow-md ${page === totalPages
                     ? "bg-gray-200 text-gray-400 cursor-not-allowed" // Disabled button styling
-                    : "bg-white text-green-600 border-green-600 hover:bg-green-100" // Enabled button styling
+                    : "bg-white text-blue-900 border-blue-900 hover:bg-blue-100" // Enabled button styling
                     }`}
             >
                 {/* Icon for next arrow */}
