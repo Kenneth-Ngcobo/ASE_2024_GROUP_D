@@ -29,9 +29,8 @@ const ReviewsSection = ({ recipeId }) => {
       setIsLoading(true);
       const method = editMode ? 'PUT' : 'POST';
       const endpoint = editMode
-       ? `/api/recipes/${recipeId}/reviews?editId=${editReviewId} `
-        : `/api/recipes/${recipeId}/reviews`;
-
+  ? `/api/recipes/${recipeId}/reviews?editId=${editReviewId}`
+  : `/api/recipes/${recipeId}/reviews`;
       const response = await fetch(endpoint, {
         method,
         headers: { 'Content-Type': 'application/json' },
@@ -61,7 +60,9 @@ const ReviewsSection = ({ recipeId }) => {
 
   const handleEdit = (review) => {
     setEditMode(true);
-    setEditReviewId(review,reviewId);
+    const objectId = review._id;
+    const stringId = objectId.toString();
+    setEditReviewId(stringId); // Only pass the stringId
     setNewReview({ rating: review.rating, comment: review.comment, recipeId });
   };
 
