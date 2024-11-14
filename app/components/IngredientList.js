@@ -28,7 +28,6 @@ export default function IngDisplay({ selectedIngs = [], onIngsChange = () => {} 
         }
         const data = await response.json();
         setIngs(data);
-        console.log('Fetched ingredients:', data);
       } catch (err) {
         setError(err.message);
       } finally {
