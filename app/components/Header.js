@@ -1,11 +1,11 @@
 "use client";
 import Link from "next/link";
 import Image from "next/image";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { FaUser, FaShoppingBag } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import CategoryList from "./CategoryList";
-import FilterButton from "./FilterButton";
+import {FilterButton} from "./FilterButton";
 import ThemeButton from "./ThemeButton";
 import RecipeSearchBar from "./searchBar";
 import UserModal from "./UserModal.js";
@@ -19,10 +19,7 @@ const Header = ({ isAuthenticated, onLogout }) => {
   const router = useRouter();
 
   const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
-  const toggleFilterModal = () => {
-    setIsFilterOpen((prev) => !prev); // Toggle modal open/close state
-  };
-
+  const toggleFilterModal = () => setIsFilterOpen((prev) => !prev);
   const toggleModal = () => setShowModal((prev) => !prev);
 
   useEffect(() => {
@@ -55,7 +52,7 @@ const Header = ({ isAuthenticated, onLogout }) => {
               href="/Recomended"
               className="text-gray-600 dark:text-white hover:text-teal-500 font-medium uppercase text-sm"
             >
-              Recomended
+              Recommended
             </Link>
             <Link
               href="/Favourite"
@@ -64,8 +61,6 @@ const Header = ({ isAuthenticated, onLogout }) => {
               Favourite
             </Link>
           </div>
-
-
 
           <Link href="/" className="flex items-center">
             <Image
@@ -77,14 +72,16 @@ const Header = ({ isAuthenticated, onLogout }) => {
             />
           </Link>
           <div className="hidden md:flex items-center space-x-8">
-            <CategoryList
-              totalRecipes={totalRecipes}
-              onCategoryChange={() => { }}
-            />
+            {/* Wrapping CategoryList in Suspense */}
+            <Suspense fallback={<div>Loading categories...</div>}>
+              <CategoryList
+                totalRecipes={totalRecipes}
+                onCategoryChange={() => {}}
+              />
+            </Suspense>
             <FilterButton onClick={toggleFilterModal} />
 
             {/* User Icon Toggle */}
-
             <button
               onClick={toggleModal}
               className="text-gray-600 dark:text-white hover:text-teal-500"
@@ -121,7 +118,7 @@ const Header = ({ isAuthenticated, onLogout }) => {
       </div>
       <div className="border-t border-gray-200">
         <div className="container mx-auto px-4 py-3">
-          {/* Add any additional content for the search bar or other elements here */}
+          {/* Additional content for the search bar or other elements */}
         </div>
       </div>
       {isFilterOpen && <FilterModal onClose={toggleFilterModal} />}
