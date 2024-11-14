@@ -39,7 +39,7 @@ const Header = ({ isAuthenticated, onLogout }) => {
   }, []);
 
   return (
-    <header className="bg-gray-100 top-0 z-50">
+    <header className="bg-gray-100 dark:bg-gray-950 top-0 z-50">
       <div className="container mx-auto px-4">
         <nav className="flex items-center justify-between h-16">
           <div className="hidden md:flex space-x-8">
