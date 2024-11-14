@@ -21,6 +21,7 @@ export default function EditableRecipeDetails({ id, initialDescription, lastEdit
     }, []);
 
     const handleEdit = async () => {
+
         try {
             const response = await fetch(`/api/recipes/${id}/update`, {
                 method: "PATCH",
@@ -44,7 +45,9 @@ export default function EditableRecipeDetails({ id, initialDescription, lastEdit
             setIsEditing(false);
 
             localStorage.setItem("editMessage", JSON.stringify(message))
-        } catch (error) {
+            console.log(response)
+        }
+        catch (error) {
             console.error('Error updating recipe:', error);
             setMessage({
                 type: 'error',
@@ -52,6 +55,7 @@ export default function EditableRecipeDetails({ id, initialDescription, lastEdit
             });
             localStorage.setItem("editMessage", JSON.stringify(message))
         }
+
     };
 
 
@@ -59,6 +63,8 @@ export default function EditableRecipeDetails({ id, initialDescription, lastEdit
         setDescription(initialDescription);
         setIsEditing(false);
         setMessage(null);
+        // Clear the message in localStorage
+        localStorage.removeItem("editMessage");
     };
 
     return (

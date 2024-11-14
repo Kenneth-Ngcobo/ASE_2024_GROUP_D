@@ -1,5 +1,4 @@
-import connectToDatabase from '../../../../db';
-import { getServerSession } from 'next-auth';
+import connectToDatabase from '../../../../../db';
 
 /**
  * Update a recipe's description in the MongoDB database.
@@ -17,8 +16,10 @@ import { getServerSession } from 'next-auth';
  * @returns {Promise<Response>} A Response object with success or error messages.
  */
 export async function PATCH(req, { params }) {
+    console.log("update endpoint")
     try {
-
+        const { description } = await req.json();
+        console.log("description =", description);
         if (!description?.trim()) {
             return Response.json({ error: 'Description is required' }, { status: 400 });
         }
@@ -31,7 +32,7 @@ export async function PATCH(req, { params }) {
             {
                 $set: {
                     description: description.trim(),
-                    lastEditedBy: user.id,
+                    //lastEditedBy: user.id,
                     lastEditedAt: new Date()
                 }
             }
