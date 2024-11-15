@@ -35,13 +35,20 @@ export default function EditableRecipeDetails({ id, initialDescription, lastEdit
         try {
             const response = await fetch(`/api/recipes/${id}/update`, {
                 method: "PATCH",
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                credentials: "include",
                 body: JSON.stringify({ description }),
             });
 
             const data = await response.json();
 
             if (!response.ok) {
+                if (response.status === 401) {
+                    setMessage({ type: 'error', text: 'Please log in to edit recipes.' });
+                    return;
+                }
                 setMessage({ type: 'error', text: data.error || 'Something went wrong.' });
                 return;
             }

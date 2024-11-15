@@ -17,7 +17,11 @@ export const authOptions = {
                 const user = await db.collection("users").findOne({ email: credentials.email });
 
                 if (user && await bcrypt.compare(credentials.password, user.password)) {
-                    return { id: user._id, email: user.email };
+                    return {
+                        id: user._id.toString(),
+                        email: user.email,
+                        name: user.name
+                    };
                 }
                 return null;
             },
@@ -33,12 +37,16 @@ export const authOptions = {
             if (user) {
                 token.id = user.id;
                 token.email = user.email;
+                token.name = user.name;
             }
             return token;
         },
         async session({ session, token }) {
-            session.user.id = token.id;
-            session.user.email = token.email;
+            if (token) {
+                session.user.id = token.id;
+                session.user.email = token.email;
+                session.user.name = token.name;
+            }
             return session;
         },
         async signIn({ user, account }) {

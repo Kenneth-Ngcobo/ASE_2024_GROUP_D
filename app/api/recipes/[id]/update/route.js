@@ -1,4 +1,8 @@
 import connectToDatabase from '../../../../../db';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '../../../auth/[...nextauth]/route';
+import { NextResponse } from 'next/server';
+import { ObjectId } from 'mongodb';
 
 /**
  * Update a recipe's description in the MongoDB database.
@@ -15,42 +19,89 @@ import connectToDatabase from '../../../../../db';
  *
  * @returns {Promise<Response>} A Response object with success or error messages.
  */
-export async function PATCH(req, { params }) {
-    console.log("update endpoint")
+export async function PATCH(request, { params }) {
     try {
-        const { description } = await req.json();
-        console.log("description =", description);
+        const session = await getServerSession(authOptions);
+
+        // Check if user is authenticated
+        if (!session?.user?.email) {
+            console.log("No session found - authentication failed");
+            return NextResponse.json(
+                { error: "Authentication required" },
+                { status: 401 }
+            );
+        }
+
+        // Log the authenticated user
+        console.log("Authenticated user:", session.user);
+
+        // Parse the request body
+        let body;
+        try {
+            body = await request.json();
+        } catch (error) {
+            return NextResponse.json(
+                { error: "Invalid request body" },
+                { status: 400 }
+            );
+        }
+
+        const { description } = body;
+
         if (!description?.trim()) {
-            return Response.json({ error: 'Description is required' }, { status: 400 });
+            return Response.json(
+                { error: 'Description is required' },
+                { status: 400 }
+            );
         }
 
         const db = await connectToDatabase();
 
+        // Convert string ID to MongoDB ObjectId
+        let objectId;
+        try {
+            objectId = new ObjectId(params.id);
+        } catch (error) {
+            return NextResponse.json(
+                { error: 'Invalid recipe ID format' },
+                { status: 400 }
+            );
+        }
+
         // Update recipe with all required fields in one operation
-        const result = await db.collection('recipes').updateOne(
-            { _id: params.id },
+        const result = await db.collection('recipes').findOneAndUpdate(
+            { _id: objectId },
             {
                 $set: {
                     description: description.trim(),
-                    //lastEditedBy: user.id,
-                    lastEditedAt: new Date()
+                    lastEditedBy: session.user.email,
+                    lastEditedAt: new Date(),
                 }
-            }
+            },
+            { returnDocument: 'after' } // This returns the updated document
         );
 
         // Handle recipe not found
-        if (!result.matchedCount) {
-            return Response.json({ error: 'Recipe not found' }, { status: 404 });
+        if (!result.value) {
+            return NextResponse.json(
+                { error: 'Recipe not found' },
+                { status: 404 }
+            );
         }
 
-        // Success response
-        return Response.json({
+        // Return success response with updated data
+        return NextResponse.json({
             message: 'Recipe updated successfully',
-            description: description.trim()
+            description: result.value.description,
+            lastEditedBy: result.value.lastEditedBy,
+            lastEditedAt: result.value.lastEditedAt
         });
 
     } catch (error) {
         console.error('Recipe update failed:', error);
-        return Response.json({ error: 'Update failed' }, { status: 500 });
+        return NextResponse.json(
+            { error: 'Internal server error' },
+            { status: 500 }
+        );
     }
 }
