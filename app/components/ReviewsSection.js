@@ -31,26 +31,38 @@ const ReviewsSection = ({ recipeId, username }) => {
       const endpoint = editMode
         ? `/api/recipes/${recipeId}/reviews?editId=${editReviewId}`
         : `/api/recipes/${recipeId}/reviews`;
-
+  
       const response = await fetch(endpoint, {
         method,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...newReview,
-          username: username, // Include the username
+          username: 'yourUsername', // Replace with dynamically fetched username
         }),
       });
-
+  
       if (!response.ok) throw new Error('Failed to submit review.');
+  
       const updatedReview = await response.json();
-
+  
       if (editMode) {
-        setReviews(reviews.map((rev) => (rev._id === editReviewId ? updatedReview : rev)));
+        // Replace the edited review in the state
+        setReviews((prevReviews) =>
+          prevReviews.map((review) =>
+            review._id === editReviewId ? updatedReview : review
+          )
+        );
       } else {
-        setReviews([updatedReview, ...reviews]);
+        // Add the new review to the state
+        setReviews((prevReviews) => [updatedReview, ...prevReviews]);
       }
-
-      setMessage({ text: editMode ? 'Review updated successfully!' : 'Review added successfully!', type: 'success' });
+  
+      setMessage({
+        text: editMode ? 'Review updated successfully!' : 'Review added successfully!',
+        type: 'success',
+      });
+  
+      // Reset the form and edit mode
       setNewReview({ rating: 0, comment: '', recipeId });
       setEditMode(false);
       setEditReviewId(null);
@@ -60,7 +72,7 @@ const ReviewsSection = ({ recipeId, username }) => {
       setIsLoading(false);
     }
   };
-
+  
   const handleEdit = (review) => {
     setEditMode(true);
     setEditReviewId(review._id);
