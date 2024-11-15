@@ -24,6 +24,7 @@ const Recipes = ({ recipes: initialRecipes }) => {
   const [sortOrder, setSortOrder] = useState("ascending");
   const [recipes, setRecipes] = useState(initialRecipes || []);
   const [favoritedRecipes, setFavoritedRecipes] = useState(new Set());
+  const [favoriteDetails, setFavoriteDetails] = useState([]);
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -51,7 +52,11 @@ const Recipes = ({ recipes: initialRecipes }) => {
         }
 
         const data = await response.json();
-        setFavoritedRecipes(new Set(data.favorites));
+        // Store the complete favorite recipes data
+        setFavoriteDetails(data.favorites);
+        // Create a Set of just the IDs for quick lookup
+        const favoriteIds = new Set(data.favorites.map(recipe => recipe._id));
+        setFavoritedRecipes(favoriteIds);
       } catch (err) {
         setError("Failed to load favorites. Please try again later.");
         console.error("Error fetching favorites:", err);
@@ -90,10 +95,11 @@ const Recipes = ({ recipes: initialRecipes }) => {
     }
 
     const isFavorited = favoritedRecipes.has(recipeId);
+    const recipe = recipes.find(r => r._id === recipeId);
 
     try {
       // Optimistically update UI
-      setFavoritedRecipes((prev) => {
+      setFavoritedRecipes(prev => {
         const updated = new Set(prev);
         if (isFavorited) {
           updated.delete(recipeId);
@@ -101,6 +107,16 @@ const Recipes = ({ recipes: initialRecipes }) => {
           updated.add(recipeId);
         }
         return updated;
+      });
+
+      // Also update the favorite details
+      setFavoriteDetails(prev => {
+        if (isFavorited) {
+          return prev.filter(r => r._id !== recipeId);
+        } else if (recipe) {
+          return [...prev, recipe];
+        }
+        return prev;
       });
 
       const response = await fetch("/api/favorites", {
@@ -116,8 +132,8 @@ const Recipes = ({ recipes: initialRecipes }) => {
         throw new Error("Failed to update favorites");
       }
     } catch (err) {
-      // Revert optimistic update on error
-      setFavoritedRecipes((prev) => {
+      // Revert optimistic updates on error
+      setFavoritedRecipes(prev => {
         const reverted = new Set(prev);
         if (isFavorited) {
           reverted.add(recipeId);
@@ -126,6 +142,15 @@ const Recipes = ({ recipes: initialRecipes }) => {
         }
         return reverted;
       });
+
+      setFavoriteDetails(prev => {
+        if (isFavorited && recipe) {
+          return [...prev, recipe];
+        } else {
+          return prev.filter(r => r._id !== recipeId);
+        }
+      });
+
       setError("Failed to update favorites. Please try again.");
       console.error("Error updating favorites:", err);
     }
@@ -176,25 +201,20 @@ const Recipes = ({ recipes: initialRecipes }) => {
 
           {dropdownVisible && (
             <div className="mt-2 absolute bg-white border border-gray-200 rounded-lg shadow-lg w-60 z-10">
-              {favoritedRecipes.size === 0 ? (
+              {favoriteDetails.length === 0 ? (
                 <p className="p-4 text-gray-500">No favorites yet</p>
               ) : (
                 <ul className="max-h-60 overflow-y-auto p-2">
-                  {Array.from(favoritedRecipes).map((recipeId) => {
-                    const recipe = recipes.find((r) => r._id === recipeId);
-                    return (
-                      recipe && (
-                        <li key={recipe._id} className="p-2 hover:bg-gray-100">
-                          <Link
-                            href={`/Recipe/${recipe._id}`}
-                            className="block text-sm text-gray-800"
-                          >
-                            {recipe.title}
-                          </Link>
-                        </li>
-                      )
-                    );
-                  })}
+                  {favoriteDetails.map((recipe) => (
+                    <li key={recipe._id} className="p-2 hover:bg-gray-100">
+                      <Link
+                        href={`/Recipe/${recipe._id}`}
+                        className="block text-sm text-gray-800"
+                      >
+                        {recipe.title}
+                      </Link>
+                    </li>
+                  ))}
                 </ul>
               )}
             </div>
