@@ -1,9 +1,10 @@
 "use client";
 import { useState, useEffect } from 'react';
 
-const ReviewsSection = ({ recipeId, username }) => {
+const ReviewsSection = ({ recipeId }) => {
   const [reviews, setReviews] = useState([]);
   const [newReview, setNewReview] = useState({ rating: 0, comment: '', recipeId });
+  const [username, setUsername] = useState(''); // State to hold the typed username
   const [editMode, setEditMode] = useState(false);
   const [editReviewId, setEditReviewId] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -31,39 +32,37 @@ const ReviewsSection = ({ recipeId, username }) => {
       const endpoint = editMode
         ? `/api/recipes/${recipeId}/reviews?editId=${editReviewId}`
         : `/api/recipes/${recipeId}/reviews`;
-  
+
       const response = await fetch(endpoint, {
         method,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...newReview,
-          username: 'yourUsername', 
+          username: username.trim() || 'Anonymous', // Ensure trimmed value or default to "Anonymous"
         }),
       });
-  
+
       if (!response.ok) throw new Error('Failed to submit review.');
-  
+
       const updatedReview = await response.json();
-  
+
       if (editMode) {
-        
         setReviews((prevReviews) =>
           prevReviews.map((review) =>
             review._id === editReviewId ? updatedReview : review
           )
         );
       } else {
-        // Add the new review to the state
         setReviews((prevReviews) => [updatedReview, ...prevReviews]);
       }
-  
+
       setMessage({
         text: editMode ? 'Review updated successfully!' : 'Review added successfully!',
         type: 'success',
       });
-  
-      // Reset the form and edit mode
+
       setNewReview({ rating: 0, comment: '', recipeId });
+      setUsername(''); // Reset username field after submitting
       setEditMode(false);
       setEditReviewId(null);
     } catch (error) {
@@ -72,7 +71,7 @@ const ReviewsSection = ({ recipeId, username }) => {
       setIsLoading(false);
     }
   };
-  
+
   const handleEdit = (review) => {
     setEditMode(true);
     setEditReviewId(review._id);
@@ -80,19 +79,17 @@ const ReviewsSection = ({ recipeId, username }) => {
   };
 
   const handleDelete = async (reviewId) => {
-    // Ask for confirmation before proceeding with deletion
     const confirmDelete = window.confirm("Are you sure you want to delete this review?");
-    if (!confirmDelete) return; // Exit if the user cancels
-  
+    if (!confirmDelete) return;
+
     try {
       setIsLoading(true);
       const response = await fetch(`/api/recipes/${recipeId}/reviews?deleteId=${reviewId}`, {
         method: 'DELETE',
       });
-  
+
       if (!response.ok) throw new Error('Failed to delete review.');
-  
-      // Update the state to remove the deleted review
+
       setReviews((prevReviews) => prevReviews.filter((review) => review._id !== reviewId));
       setMessage({ text: 'Review deleted successfully!', type: 'success' });
     } catch (error) {
@@ -101,7 +98,6 @@ const ReviewsSection = ({ recipeId, username }) => {
       setIsLoading(false);
     }
   };
-  
 
   const handleSortChange = (e) => {
     const [sortBy, order] = e.target.value.split('-');
@@ -128,17 +124,17 @@ const ReviewsSection = ({ recipeId, username }) => {
       </div>
 
       <div className="space-y-4">
-        {reviews.map((review, index) => (
-          <div key={index} className="bg-white p-4 rounded-lg shadow-md">
+        {reviews.map((review) => (
+          <div key={review._id} className="bg-white p-4 rounded-lg shadow-md">
             <div className="flex items-center mb-2">
-              <div className="font-bold mr-2">{review.username}</div>
+              <div className="font-bold mr-2">{review.username || "Anonymous"}</div>
               <div className="text-yellow-500">
                 {[...Array(review.rating)].map((_, i) => (
                   <span key={i}>★</span>
                 ))}
               </div>
             </div>
-            <p>{review.comment}</p>
+            <p className="text-gray-800">{review.comment}</p>
             <div className="text-gray-500 text-sm mt-2">
               {new Date(review.updatedAt || review.createdAt).toLocaleString()}
             </div>
@@ -160,10 +156,19 @@ const ReviewsSection = ({ recipeId, username }) => {
 
       <div className="mt-8">
         <h3 className="text-xl font-bold mb-2">{editMode ? 'Edit Review' : 'Add a Review'}</h3>
+        <div className="mb-4">
+          <label htmlFor="username" className="mr-2">Your Name:</label>
+          <input
+            type="text"
+            id="username"
+            value={username}  // Bind the input to username state
+            onChange={(e) => setUsername(e.target.value)} // Update username state on change
+            placeholder="Enter your name"
+            className="px-3 py-2 border rounded-md"
+          />
+        </div>
         <div className="flex items-center mb-2">
-          <label htmlFor="rating" className="mr-2">
-            Rating:
-          </label>
+          <label htmlFor="rating" className="mr-2">Rating:</label>
           <select
             id="rating"
             value={newReview.rating}
@@ -179,9 +184,7 @@ const ReviewsSection = ({ recipeId, username }) => {
           </select>
         </div>
         <div className="mb-4">
-          <label htmlFor="comment" className="block mb-2">
-            Comment:
-          </label>
+          <label htmlFor="comment" className="block mb-2">Comment:</label>
           <textarea
             id="comment"
             value={newReview.comment}
