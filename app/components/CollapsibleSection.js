@@ -13,7 +13,7 @@ function CollapsibleSection({ title, content, defaultOpen = true }) {
                 onClick={() => setIsOpen(!isOpen)}
                 className={`w-full text-xl font-semibold font-serif flex items-center justify-between 
                             transition-all duration-300 
-                            ${isOpen ? 'bg-gradient-to-r from-blue-300 to-blue-400 text-gray-600' : 'bg-transparent text-blue-800'}
+                            ${isOpen ? 'bg-gradient-to-r from-blue-300 to-blue-400 text-gray-600 dark:from-bg-black dark:to-bg-black dark:text-gray-600' : 'bg-transparent dark:bg-black dark:text-gray-400 text-blue-800'}
                             rounded-lg px-4 py-2 hover:bg-gradient-to-r hover:from--200 hover:to-blue-300 
                             focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
                             shadow-md hover:shadow-lg active:shadow-sm`}
@@ -26,7 +26,7 @@ function CollapsibleSection({ title, content, defaultOpen = true }) {
                 />
             </button>
             {isOpen && (
-                <div className="mt-4 text-gray-700">
+                <div className="mt-4 text-gray-700 dark:text-gray-500">
                     {content}
                 </div>
             )}

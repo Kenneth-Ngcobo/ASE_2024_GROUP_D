@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 const CategoryList = ({ onCategoryChange, totalRecipes }) => {
@@ -11,9 +11,12 @@ const CategoryList = ({ onCategoryChange, totalRecipes }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredCategories, setFilteredCategories] = useState([]);
   const [totalRecipesState, setTotalRecipes] = useState(0);
-
+  
   const router = useRouter();
   const searchParams = useSearchParams();
+  
+  // Ref to hold a reference to the modal element for away click detection
+  const modalRef = useRef(null); // Added reference for modal
 
   useEffect(() => {
     console.log('Total recipes:', totalRecipes);
@@ -36,6 +39,26 @@ const CategoryList = ({ onCategoryChange, totalRecipes }) => {
     };
     fetchCategories();
   }, []);
+
+  // Handle clicks outside of the modal to close it
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      // Check if the click is outside the modal
+      if (modalRef.current && !modalRef.current.contains(event.target)) {
+        setIsOpen(false); // Close modal on outside click
+      }
+    };
+
+    // Attach event listener when modal is open
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    // Cleanup event listener on close or component unmount
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen]); // Dependencies include isOpen to trigger on open/close
 
   const handleSearch = (event) => {
     event.preventDefault();
@@ -81,8 +104,11 @@ const CategoryList = ({ onCategoryChange, totalRecipes }) => {
       </button>
 
       {isOpen && (
-        <div className="absolute left-0 w-64 mt-2 bg-white shadow-lg rounded-lg overflow-hidden z-50">
-          <div className="p-4 border-b border-gray-100">
+        <div
+          ref={modalRef} // Attach the modal ref to the dropdown div
+          className="absolute left-0 w-64 mt-2 dark:bg-gray-950 bg-white shadow-lg rounded-lg overflow-hidden z-50"
+        >
+          <div className="p-4 border-b border-gray-100 dark:border-gray-850">
             <form onSubmit={handleSearch} className="space-y-2">
               <input
                 type="text"
@@ -131,4 +157,3 @@ const CategoryList = ({ onCategoryChange, totalRecipes }) => {
 };
 
 export default CategoryList;
-

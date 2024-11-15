@@ -99,7 +99,7 @@ export default function Recipes({ recipes: initialRecipes }) {
           </button>
 
           {dropdownVisible && (
-            <div className="mt-2 absolute bg-white border border-gray-200 rounded-lg shadow-lg w-60 z-10">
+            <div className="mt-2 absolute bg-white border dark:bg-gray-950 border-gray-200 rounded-lg shadow-lg w-60 z-10">
               <ul className="max-h-60 overflow-y-auto p-2">
                 {Array.from(favoritedRecipes).map((recipeId) => {
                   const recipe = recipes.find((r) => r._id === recipeId);
@@ -121,7 +121,7 @@ export default function Recipes({ recipes: initialRecipes }) {
             <Link
               href={`/Recipe/${recipe._id}`}
               key={recipe._id}
-              className="block p-4 bg-white border border-gray-200 rounded-lg shadow-lg hover:shadow-2xl transition-transform transform hover:scale-105 duration-300 ease-in-out"
+              className="block p-4 bg-white dark:bg-black dark:border-gray-950 border border-gray-200 rounded-lg shadow-lg hover:shadow-2xl transition-transform transform hover:scale-105 duration-300 ease-in-out"
             >
               <div className="relative w-full h-64">
                 {recipe.images.length > 1 ? (
@@ -169,14 +169,14 @@ export default function Recipes({ recipes: initialRecipes }) {
               </div>
               <div className="flex flex-wrap gap-2 mt-3">
                 {recipe.category && (
-                  <span className="inline-block bg-gray-100 text-gray-600 text-sm px-2 py-1 rounded">
+                  <span className="inline-block bg-gray-100 dark:bg-gray-950 dark:text-gray-400  text-gray-600 text-sm px-2 py-1 rounded">
                     {recipe.category}
                   </span>
                 )}
-                <span className="inline-block bg-gray-100 text-gray-600 text-sm px-2 py-1 rounded">
+                <span className="inline-block bg-gray-100 text-gray-600  dark:bg-gray-950 dark:text-gray-400 text-sm px-2 py-1 rounded">
                   {recipe.instructions.length} steps
                 </span>
-                <span className="inline-block bg-gray-100 text-gray-600 text-sm px-2 py-1 rounded">
+                <span className="inline-block bg-gray-100 text-gray-600  dark:bg-gray-950 dark:text-gray-400 text-sm px-2 py-1 rounded">
                   {new Date(recipe.published).toDateString()}
                 </span>
               </div>
