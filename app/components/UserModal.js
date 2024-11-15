@@ -9,9 +9,9 @@ import { signIn } from "next-auth/react";
 export default function UserModal({ show, onClose }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [fullName, setfullName] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState(0);
-  const [isCheckingUser, setIsCheckingUser] = useState(false); 
+  const [fullName, setFullName] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [isCheckingUser, setIsCheckingUser] = useState(false);
   const [isLogin, setIsLogin] = useState(null);
   const [prevModal, setPrevModal] = useState(null);
   const { signup, login, logout, error } = useAuth();
@@ -78,18 +78,38 @@ export default function UserModal({ show, onClose }) {
       } else {
         if (!fullName || !phoneNumber || !password) {
           alert("Please fill in all fields.");
+          setIsLoggingIn(false);
           return;
         }
 
-        await signup(email, password, fullName, phoneNumber);
-        if (!error) {
-          alert("Sign-up successful!");
-          setLoggedInUser(email);
-          localStorage.setItem("loggedInUserEmail", email);
-          router.push("/");
-          onClose();
-        } else {
-          alert("Sign-up failed. Please try again.");
+        try {
+          const response = await fetch("/api/auth/signup", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              fullName,
+              email,
+              phone: phoneNumber,
+              password,
+            }),
+          });
+
+          const result = await response.json();
+
+          if (response.ok) {
+            alert("Sign-up successful!");
+            setLoggedInUser(email);
+            localStorage.setItem("loggedInUserEmail", email);
+            router.push("/");
+            onClose();
+          } else {
+            alert(result.message || "Sign-up failed. Please try again.");
+          }
+        } catch (err) {
+          alert("An error occurred while signing up. Please try again.");
+          console.error("Sign-up error:", err);
         }
       }
     } finally {
@@ -118,6 +138,11 @@ export default function UserModal({ show, onClose }) {
     setIsLogin(null);
     setPrevModal(null);
     setEmail("");
+  };
+
+  const handleGoogleLogin = (event) => {
+    event.preventDefault();
+    signIn("google", { callbackUrl: `${window.location.origin}/` });
   };
 
   if (!show) return null;
@@ -195,21 +220,13 @@ export default function UserModal({ show, onClose }) {
               <>
                 <input
                   type="text"
-                  placeholder="full Name"
+                  placeholder="Full Name"
                   value={fullName}
-                  onChange={(e) => setfullName(e.target.value)}
-                  className="w-full border rounded-md p-3 text-gray-700 mb-4"
-                />
-
-                <input
-                  type="email"
-                  placeholder="Email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e) => setFullName(e.target.value)}
                   className="w-full border rounded-md p-3 text-gray-700 mb-4"
                 />
                 <input
-                  type="phone number"
+                  type="tel"
                   placeholder="Phone Number"
                   value={phoneNumber}
                   onChange={(e) => setPhoneNumber(e.target.value)}
@@ -250,13 +267,7 @@ export default function UserModal({ show, onClose }) {
 
         <div className="text-center text-gray-500 mb-4">OR</div>
 
-        <form
-          action={async () => {
-            await signIn("google", {
-              callbackUrl: `${window.location.origin}/`,
-            });
-          }}
-        >
+        <form onSubmit={handleGoogleLogin}>
           <button
             type="submit"
             className="w-full border rounded-md py-3 flex items-center justify-center mb-2"
@@ -284,7 +295,6 @@ export default function UserModal({ show, onClose }) {
         </p>
       </div>
 
-      {/* Logout Confirmation Modal */}
       {isConfirmingLogout && (
         <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-50">
           <div className="bg-white p-6 rounded-md shadow-lg text-center">
