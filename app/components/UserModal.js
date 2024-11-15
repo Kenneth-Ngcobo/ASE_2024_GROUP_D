@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { signIn, getSession } from "next-auth/react"; // Import next-auth methods
+import { signIn, getSession, signOut } from "next-auth/react";
 import Link from "next/link";
 
 export default function UserModal({ show, onClose }) {
@@ -11,52 +11,39 @@ export default function UserModal({ show, onClose }) {
   const [fullName, setFullName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [isCheckingUser, setIsCheckingUser] = useState(false);
-  const [isLogin, setIsLogin] = useState(null);
-  const [prevModal, setPrevModal] = useState(null);
+  const [isLogin, setIsLogin] = useState(null); // null: undecided, true: login, false: signup
   const [loggedInUser, setLoggedInUser] = useState(null);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [isConfirmingLogout, setIsConfirmingLogout] = useState(false);
   const router = useRouter();
 
-  // Check for logged-in user on component mount
   useEffect(() => {
-    try {
-      const storedEmail = localStorage.getItem("loggedInUserEmail");
-      if (storedEmail) {
-        setLoggedInUser(storedEmail);  // Set the email from localStorage if exists
-      }
-    } catch (error) {
-      console.error("Error accessing localStorage:", error);
+    const storedEmail = localStorage.getItem("loggedInUserEmail");
+    if (storedEmail) {
+      setLoggedInUser(storedEmail);
     }
 
-    // Check session when the component is mounted
     const fetchSession = async () => {
       const session = await getSession();
       if (session?.user?.email) {
-        setLoggedInUser(session.user.email); // Set email from session if logged in
-        localStorage.setItem("loggedInUserEmail", session.user.email); // Store email in localStorage
+        setLoggedInUser(session.user.email);
+        localStorage.setItem("loggedInUserEmail", session.user.email);
       }
     };
-    fetchSession(); // Call fetch session function
+
+    fetchSession();
   }, []);
 
-  // Handle Google login
   const handleGoogleSignIn = async () => {
     try {
-      // Initiate Google login
-      const result = await signIn("google", {
-        redirect: false, // Prevent redirection to callback URL after sign-in
-      });
+      const result = await signIn("google", { redirect: false });
 
       if (result?.ok) {
-        // Retrieve the session data after successful login
         const session = await getSession();
-
         if (session?.user?.email) {
-          // Store the user's email in localStorage
           localStorage.setItem("loggedInUserEmail", session.user.email);
-          setLoggedInUser(session.user.email); // Update the local state
-          onClose(); // Close the modal after login
+          setLoggedInUser(session.user.email);
+          onClose();
         } else {
           alert("Error: Unable to retrieve email.");
         }
@@ -69,42 +56,63 @@ export default function UserModal({ show, onClose }) {
     }
   };
 
-  // Handle Email-based Sign Up / Login
+  const handleEmailCheck = async () => {
+    if (!email) {
+      alert("Please enter an email.");
+      return;
+    }
+
+    setIsCheckingUser(true);
+    try {
+      const response = await fetch("/api/auth/checkuser", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+
+      if (response.status === 200) {
+        setIsLogin(true); 
+      } else if (response.status === 404) {
+        setIsLogin(false); 
+      } else {
+        alert("Error checking user. Please try again.");
+      }
+    } catch (error) {
+      alert("Error checking user. Please try again.");
+      console.error("Error checking user:", error);
+    } finally {
+      setIsCheckingUser(false);
+    }
+  };
+
   const handleSubmit = async () => {
     setIsLoggingIn(true);
-
     try {
       if (isLogin) {
-        // Perform email login
-        await login(email, password);
-        if (!error) {
-          alert("Login successful!");
+        const result = await signIn("credentials", {
+          email,
+          password,
+          redirect: false, 
+        });
+
+        if (result?.error) {
+          alert("Login failed. Please check your credentials.");
+        } else {
           setLoggedInUser(email);
           localStorage.setItem("loggedInUserEmail", email);
           router.push("/");
           onClose();
-        } else {
-          alert("Login failed. Please check your credentials.");
         }
       } else {
-        // Perform email-based sign-up
         const response = await fetch("/api/auth/signup", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            fullName,
-            email,
-            phone: phoneNumber,
-            password,
-          }),
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ fullName, email, phone: phoneNumber, password }),
         });
 
         const result = await response.json();
 
         if (response.ok) {
-          alert("Sign-up successful!");
           setLoggedInUser(email);
           localStorage.setItem("loggedInUserEmail", email);
           router.push("/");
@@ -118,42 +126,6 @@ export default function UserModal({ show, onClose }) {
     }
   };
 
-  // Check for user existence (email-based check)
-  const handleContinueWithEmail = async () => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!email || !emailRegex.test(email)) {
-      alert("Please enter a valid email.");
-      return;
-    }
-
-    setIsCheckingUser(true);
-    setPrevModal("email");
-
-    try {
-      const response = await fetch("/api/auth/checkuser", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email }),
-      });
-
-      if (response.status === 200) {
-        setIsLogin(true);
-      } else if (response.status === 404) {
-        setIsLogin(false);
-      } else {
-        const errorData = await response.json();
-        alert(errorData.message || "An unexpected error occurred.");
-      }
-    } catch (error) {
-      console.error("Error checking user existence:", error);
-      alert("An error occurred. Please try again.");
-    } finally {
-      setIsCheckingUser(false);
-    }
-  };
-
   const handleLogout = () => {
     setIsConfirmingLogout(true);
   };
@@ -162,6 +134,7 @@ export default function UserModal({ show, onClose }) {
     setIsConfirmingLogout(false);
     localStorage.removeItem("loggedInUserEmail");
     setLoggedInUser(null);
+    await signOut();
     alert("Logged out successfully!");
     router.push("/");
   };
@@ -171,9 +144,9 @@ export default function UserModal({ show, onClose }) {
   };
 
   const handleBack = () => {
-    setIsLogin(null);
-    setPrevModal(null);
-    setEmail("");
+    setIsLogin(null); 
+    setFullName("");
+    setPhoneNumber("");
   };
 
   const getModalTitle = () => {
@@ -195,7 +168,7 @@ export default function UserModal({ show, onClose }) {
           &times;
         </button>
 
-        {isLogin !== null && prevModal && (
+        {isLogin !== null && (
           <button
             onClick={handleBack}
             className="absolute top-3 left-3 text-gray-500 text-2xl"
@@ -269,7 +242,7 @@ export default function UserModal({ show, onClose }) {
 
             {isLogin === null && (
               <button
-                onClick={handleContinueWithEmail}
+                onClick={handleEmailCheck}
                 className="w-full bg-teal-700 text-white py-3 rounded-md mb-4"
               >
                 Continue with Email
@@ -320,7 +293,5 @@ export default function UserModal({ show, onClose }) {
     </div>
   );
 }
-
-
 
 
