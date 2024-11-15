@@ -74,7 +74,7 @@ const RecipeCarousel = () => {
             {topRecipes.map((recipe) => (
               <div
                 key={recipe}
-                className="flex-none w-full group cursor-pointer"
+                className="flex-none w-1/3 group cursor-pointer"
               >
                 <div className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
                   <div className="relative pt-[70%]">
