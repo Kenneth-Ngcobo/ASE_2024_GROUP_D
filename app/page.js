@@ -35,6 +35,7 @@ export default async function Home({ searchParams }) {
     // Return the rendered JS for the Home component
     return (
         <>
+        <RecipeCarousel />
             <Suspense fallback={<Loading />}>
                 {/*<CategoryList totalRecipes={recipes.totalRecipes} />*/}
                 {/* Render the Recipes component, passing the fetched recipes as props */}
@@ -43,7 +44,7 @@ export default async function Home({ searchParams }) {
                     initialSort={sort}
                     initialOrder={order}
                 />
-                <RecipeCarousel />
+                
     
                 {/* Render the Pagination component, passing the current page and total pages */}
                 <Pagination

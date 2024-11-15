@@ -188,7 +188,6 @@ export default function Recipes({ recipes: initialRecipes }) {
                 </span>
               </div>
             </Link>
-            </Link>
           ))}
         </div>
       </div>

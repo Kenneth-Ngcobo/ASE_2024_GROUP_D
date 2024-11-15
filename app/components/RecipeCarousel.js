@@ -40,7 +40,8 @@ const RecipeCarousel = () => {
   const StarRating = ({ rating }) => (
     <div className="flex items-center gap-1.5 bg-yellow-50 px-2 py-1 rounded-full">
       <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-      <span className="text-sm font-medium text-yellow-700">{rating.toFixed(1)}</span>
+      <span className="text-sm font-medium text-yellow-700">
+        {rating !== undefined ? rating.toFixed(1) : "N/A"}</span>
     </div>
   );
 
@@ -68,7 +69,11 @@ const RecipeCarousel = () => {
               <div key={recipe.recipeId} className="flex-none w-1/3 group cursor-pointer" onClick={(e) => handleRecipeClick(recipe.recipeId, e)}>
                 <div className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
                   <div className="relative pt-[70%]">
-                    <img src={recipe.image || "/api/placeholder/400/240"} alt={recipe.title} className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                    <img 
+                      src={recipe.images && recipe.images.length > 0 ? recipe.images[0] : "/fallback-placeholder.jpg"} 
+                      alt={recipe.title} 
+                      className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                    />
                     <div className="absolute top-4 left-4">
                       <StarRating rating={recipe.rating} />
                     </div>
