@@ -67,19 +67,19 @@ export const FavoriteButton = ({ recipeId }) => {
   };
 
   if (isLoading) {
-    return <div className="absolute top-2 right-2 z-10 animate-pulse w-6 h-6 bg-gray-200 rounded-full"></div>;
+    return <div className="absolute top-2 right-2 z-10 animate-pulse w-6 h-6 bg-gray-200  dark:bg-gray-950 rounded-full"></div>;
   }
 
   return (
     <button
       onClick={handleFavoriteClick}
-      className="absolute top-2 right-2 z-10 p-2 bg-white rounded-full shadow-md hover:bg-gray-100 transition-colors"
+      className="absolute top-2 right-2 z-10 p-2 bg-white dark:bg-gray-950 rounded-full shadow-md hover:bg-gray-100 transition-colors"
       aria-label={isFavorited ? 'Remove from favorites' : 'Add to favorites'}
     >
       {isFavorited ? (
         <FaHeart className="text-red-500 w-5 h-5" />
       ) : (
-        <FaRegHeart className="text-gray-600 w-5 h-5" />
+        <FaRegHeart className="text-gray-600 dark:text-white w-5 h-5" />
       )}
     </button>
   );
