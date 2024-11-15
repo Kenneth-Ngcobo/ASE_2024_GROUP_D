@@ -13,6 +13,7 @@ import {
   FaListUl,
   FaCaretDown,
 } from "react-icons/fa";
+import { PiCookingPotDuotone,PiHeart } from 'react-icons/pi';
 import Head from "next/head";
 import Carousel from "./Carousel";
 import { SortControl } from "./SortControl";
@@ -164,13 +165,6 @@ const Recipes = ({ recipes: initialRecipes }) => {
 
   return (
     <>
-      <Head>
-        <Link
-          href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Roboto:wght@300;400;500&display=swap"
-          rel="stylesheet"
-        />
-      </Head>
-
       <div className="container mx-auto p-4 pt-6 md:p-6 lg:p-12">
         {error && (
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
@@ -222,13 +216,31 @@ const Recipes = ({ recipes: initialRecipes }) => {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {recipes && recipes.length > 0 ? (
-            recipes.map((recipe) => (
-              <Link
-                href={`/Recipe/${recipe._id}`}
-                key={recipe._id}
-                className="block p-4 bg-white border border-gray-200 rounded-lg shadow-lg hover:shadow-2xl transition-transform transform hover:scale-105 duration-300 ease-in-out relative"
-              >
+          {recipes.map((recipe) => (
+            <Link
+              href={`/Recipe/${recipe._id}`}
+              key={recipe._id}
+              className="block p-4 bg-white dark:bg-black dark:border-gray-950 border border-gray-200 rounded-lg shadow-lg hover:shadow-2xl transition-transform transform hover:scale-105 duration-300 ease-in-out"
+            >
+              <div className="relative w-full h-64">
+                {recipe.images.length > 1 ? (
+                  <Carousel images={recipe.images} />
+                ) : (
+                  <div className="relative w-full h-full">
+                    <Image
+                      src={recipe.images[0]}
+                      alt={recipe.title}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                )}
+              </div>
+
+              <div className="p-4 flex justify-between items-center">
+                <h2 className="text-[#1e455c] font-bold text-xl mb-3 font-montserrat group-hover:text-[#2b617f]">
+                  {recipe.title}
+                </h2>
                 <button
                   className={`absolute top-2 right-2 z-10 ${
                     favoritedRecipes.has(recipe._id)
@@ -266,42 +278,30 @@ const Recipes = ({ recipes: initialRecipes }) => {
                 <p className="text-gray-600 mb-4 line-clamp-2">
                   {recipe.description}
                 </p>
-
-                <div className="space-y-2">
-                  <div className="flex items-center text-gray-600">
-                    <FaClock className="mr-2" />
-                    <span>{recipe.cookingTime} mins</span>
-                  </div>
-
-                  <div className="flex items-center text-gray-600">
-                    <FaUtensilSpoon className="mr-2" />
-                    <span>
-                      {recipe.ingredients ? recipe.ingredients.length : 0}{" "}
-                      ingredients
-                    </span>
-                  </div>
-
-                  {recipe.category && (
-                    <div className="flex items-center text-gray-600">
-                      <FaTags className="mr-2" />
-                      <span>{recipe.category}</span>
-                    </div>
-                  )}
-
-                  {recipe.createdAt && (
-                    <div className="flex items-center text-gray-600">
-                      <FaCalendarDay className="mr-2" />
-                      <span>
-                        {new Date(recipe.createdAt).toLocaleDateString()}
-                      </span>
-                    </div>
-                  )}
-                </div>
-              </Link>
-            ))
-          ) : (
-            <p className="text-center text-gray-500">No recipes available.</p>
-          )}
+                <p className="text-sm text-gray-600 flex items-center">
+                  <PiCookingPotDuotone className="text-[#1e455c] mr-2" />
+                  {recipe.cook} mins
+                </p>
+                <p className="text-sm text-gray-600 flex items-center">
+                  <FaUtensils className="text-[#1e455c] mr-2" />
+                  Serves {recipe.servings}
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-2 mt-3">
+                {recipe.category && (
+                  <span className="inline-block bg-gray-100 dark:bg-gray-950 dark:text-gray-400  text-gray-600 text-sm px-2 py-1 rounded">
+                    {recipe.category}
+                  </span>
+                )}
+                <span className="inline-block bg-gray-100 text-gray-600  dark:bg-gray-950 dark:text-gray-400 text-sm px-2 py-1 rounded">
+                  {recipe.instructions.length} steps
+                </span>
+                <span className="inline-block bg-gray-100 text-gray-600  dark:bg-gray-950 dark:text-gray-400 text-sm px-2 py-1 rounded">
+                  {new Date(recipe.published).toDateString()}
+                </span>
+              </div>
+            </Link>
+          ))}
         </div>
       </div>
     </>

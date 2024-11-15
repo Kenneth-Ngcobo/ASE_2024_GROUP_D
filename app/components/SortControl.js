@@ -1,3 +1,5 @@
+"use client"
+
 import React from 'react';
 import { ChevronDown } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -28,7 +30,7 @@ export const SortControl = () => {
                 <select
                     value={searchParams.get('sort') || 'createdAt'}
                     onChange={handleSortChange}
-                    className="appearance-none bg-white border dark:bg-black border-gray-300 rounded-md py-2 pl-3 pr-10 text-sm leading-5 focus:outline-none focus:ring-2 focus:ring-green-500"
+                    className="appearance-none bg-white border dark:border-gray-800 dark:bg-black border-gray-300 rounded-md py-2 pl-3 pr-10 text-sm leading-5 focus:outline-none focus:ring-2 focus:ring-green-500"
                 >
                     <option value="default">Default</option>
                     <option value="published">Newest</option>
@@ -43,7 +45,7 @@ export const SortControl = () => {
                 <select
                     value={searchParams.get('order') || 'desc'}
                     onChange={handleOrderChange}
-                    className="appearance-none bg-white border border-gray-300 rounded-md py-2 pl-3 pr-10 text-sm leading-5 focus:outline-none focus:ring-2 focus:ring-green-500"
+                    className="appearance-none bg-white dark:bg-black dark:border-gray-800 border border-gray-300 rounded-md py-2 pl-3 pr-10 text-sm leading-5 focus:outline-none focus:ring-2 focus:ring-green-500"
                 >
                     <option value="asc">Ascending</option>
                     <option value="desc">Descending</option>

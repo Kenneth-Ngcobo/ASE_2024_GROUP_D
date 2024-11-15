@@ -90,18 +90,22 @@ async function updateAverageRating(db, recipeId) {
 async function updateReview(db, reviewId, updateData) {
   const collection = db.collection('recipes');
 
+  // Convert reviewId to ObjectId if it's a string
+  const objectId = typeof reviewId === 'string' ? new ObjectId(reviewId) : reviewId;
+
   const update = {
     $set: {
       "reviews.$.rating": Number(updateData.rating),
       "reviews.$.comment": updateData.comment,
-      "reviews.$.updatedAt": new Date(),
-      updatedAt: new Date()
+      "reviews.$.updatedAt": new Date(), // Update timestamp for the review
+      updatedAt: new Date(), // Update recipe's overall timestamp
     }
   };
 
   try {
+    // Attempt to update the specific review within the recipe
     const result = await collection.updateOne(
-      { "reviews._id": reviewId },
+      { "reviews._id": objectId },
       update
     );
 
@@ -109,9 +113,9 @@ async function updateReview(db, reviewId, updateData) {
       throw new Error('Review not found');
     }
 
-    // Update average rating for the recipe
+    // Find the recipe containing the review to update the average rating
     const recipe = await collection.findOne(
-      { "reviews._id": reviewId },
+      { "reviews._id": objectId },
       { projection: { _id: 1 } }
     );
 
@@ -119,19 +123,29 @@ async function updateReview(db, reviewId, updateData) {
       await updateAverageRating(db, recipe._id);
     }
 
-    return result;
+    // Return the updated review from the recipe
+    const updatedRecipe = await collection.findOne(
+      { _id: recipe._id, "reviews._id": objectId },
+      { projection: { "reviews.$": 1 } }
+    );
+
+    return updatedRecipe.reviews[0];
   } catch (error) {
     throw new Error(`Error updating review: ${error.message}`);
   }
 }
 
+
 async function deleteReview(db, reviewId) {
   const collection = db.collection('recipes');
 
   try {
-    // First find the recipe containing the review
+    // Convert reviewId to ObjectId if it's a string
+    const objectId = typeof reviewId === 'string' ? new ObjectId(reviewId) : reviewId;
+
+    // Find the recipe containing the review
     const recipe = await collection.findOne(
-      { "reviews._id": reviewId },
+      { "reviews._id": objectId },
       { projection: { _id: 1 } }
     );
 
@@ -143,7 +157,7 @@ async function deleteReview(db, reviewId) {
     const result = await collection.updateOne(
       { _id: recipe._id },
       {
-        $pull: { reviews: { _id: reviewId } },
+        $pull: { reviews: { _id: objectId } },
         $set: { updatedAt: new Date() }
       }
     );
