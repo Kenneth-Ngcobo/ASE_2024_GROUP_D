@@ -35,7 +35,7 @@ const RecipeCarousel = () => {
 
   const handleRecipeClick = (recipeId, e) => {
     if (e.target.closest('button')) return;
-    router.push(`/recipes/${recipeId}`);
+    router.push(`/Recipe/${recipeId}`);
   };
 
   const StarRating = ({ rating }) => (
