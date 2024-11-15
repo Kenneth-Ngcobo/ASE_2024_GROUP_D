@@ -5,6 +5,7 @@ import { Suspense } from "react";
 import Loading from "./loading";
 import { ThemeProvider } from "next-themes";
 import Providers from "./providers";
+import { Montserrat } from 'next/font/google';
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -17,9 +18,16 @@ const geistMono = localFont({
   weight: "100 900",
 });
 
+const montserrat = Montserrat({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+});
+
+
+
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html lang="en" className={montserrat.className}>
       <head>
         <title>KwaMai Eatery</title>
         <link rel="icon" href="/Kwa.png" />

@@ -1,15 +1,16 @@
 "use client";
 import Link from "next/link";
 import Image from "next/image";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { FaUser } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import CategoryList from "./CategoryList";
-import FilterButton from "./FilterButton";
+import {FilterButton} from "./FilterButton";
 import ThemeButton from "./ThemeButton";
 import RecipeSearchBar from "./searchBar";
 import UserModal from "./UserModal.js";
 import { FilterModal } from "./FilterButton";
+import Loading from "../loading.js";
 
 const Header = ({ isAuthenticated, onLogout }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -19,10 +20,7 @@ const Header = ({ isAuthenticated, onLogout }) => {
   const router = useRouter();
 
   const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
-  const toggleFilterModal = () => {
-    setIsFilterOpen((prev) => !prev); // Toggle modal open/close state
-  };
-
+  const toggleFilterModal = () => setIsFilterOpen((prev) => !prev);
   const toggleModal = () => setShowModal((prev) => !prev);
 
   useEffect(() => {
@@ -41,7 +39,7 @@ const Header = ({ isAuthenticated, onLogout }) => {
   }, []);
 
   return (
-    <header className="bg-gray-100 top-0 z-50">
+    <header className="bg-gray-100 dark:bg-gray-950 top-0 z-50">
       <div className="container mx-auto px-4">
         <nav className="flex items-center justify-between h-16">
           <div className="hidden md:flex space-x-8">
@@ -55,7 +53,7 @@ const Header = ({ isAuthenticated, onLogout }) => {
               href="/Recomended"
               className="text-gray-600 dark:text-white hover:text-teal-500 font-medium uppercase text-sm"
             >
-              Recomended
+              Recommended
             </Link>
             <Link
               href="/Favourite"
@@ -75,14 +73,16 @@ const Header = ({ isAuthenticated, onLogout }) => {
             />
           </Link>
           <div className="hidden md:flex items-center space-x-8">
-            <CategoryList
-              totalRecipes={totalRecipes}
-              onCategoryChange={() => { }}
-            />
+            {/* Wrapping CategoryList in Suspense */}
+            <Suspense fallback={<Loading />}>
+              <CategoryList
+                totalRecipes={totalRecipes}
+                onCategoryChange={() => {}}
+              />
+            </Suspense>
             <FilterButton onClick={toggleFilterModal} />
 
             {/* User Icon Toggle */}
-
             <button
               onClick={toggleModal}
               className="text-gray-600 dark:text-white hover:text-teal-500"
@@ -140,10 +140,13 @@ const Header = ({ isAuthenticated, onLogout }) => {
             Favourites
           </Link>
           <div className="py-2">
-            <CategoryList
-              totalRecipes={totalRecipes}
-              onCategoryChange={() => {}}
-            />
+            <Suspense fallback={<Loading />}>
+              <CategoryList
+                totalRecipes={totalRecipes}
+                onCategoryChange={() => {}}
+              />
+            </Suspense>
+            
           </div>
           <div className="py-2">
             <FilterButton onClick={() => setIsFilterOpen(!isFilterOpen)} />
