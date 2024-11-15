@@ -1,13 +1,13 @@
 "use client";
 import { useState, useEffect } from 'react';
 
-const ReviewsSection = ({ recipeId }) => {
+const ReviewsSection = ({ recipeId, username }) => {
   const [reviews, setReviews] = useState([]);
   const [newReview, setNewReview] = useState({ rating: 0, comment: '', recipeId });
   const [editMode, setEditMode] = useState(false);
   const [editReviewId, setEditReviewId] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [message, setMessage] = useState({ text: '', type: '' }); // For success/error messages
+  const [message, setMessage] = useState({ text: '', type: '' });
   const [sortOption, setSortOption] = useState({ sortBy: 'rating', order: 'desc' });
 
   useEffect(() => {
@@ -29,16 +29,19 @@ const ReviewsSection = ({ recipeId }) => {
       setIsLoading(true);
       const method = editMode ? 'PUT' : 'POST';
       const endpoint = editMode
-  ? `/api/recipes/${recipeId}/reviews?editId=${editReviewId}`
-  : `/api/recipes/${recipeId}/reviews`;
+        ? `/api/recipes/${recipeId}/reviews?editId=${editReviewId}`
+        : `/api/recipes/${recipeId}/reviews`;
+
       const response = await fetch(endpoint, {
         method,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newReview),
+        body: JSON.stringify({
+          ...newReview,
+          username: username, // Include the username
+        }),
       });
 
       if (!response.ok) throw new Error('Failed to submit review.');
-
       const updatedReview = await response.json();
 
       if (editMode) {
@@ -60,20 +63,19 @@ const ReviewsSection = ({ recipeId }) => {
 
   const handleEdit = (review) => {
     setEditMode(true);
-    const objectId = review._id;
-    const stringId = objectId.toString();
-    setEditReviewId(stringId); // Only pass the stringId
+    setEditReviewId(review._id);
     setNewReview({ rating: review.rating, comment: review.comment, recipeId });
   };
+
   const handleDelete = async (reviewId) => {
     try {
       setIsLoading(true);
       const response = await fetch(`/api/recipes/${recipeId}/reviews?deleteId=${reviewId}`, {
         method: 'DELETE',
       });
-  
+
       if (!response.ok) throw new Error('Failed to delete review.');
-  
+
       setReviews(reviews.filter((review) => review._id !== reviewId));
       setMessage({ text: 'Review deleted successfully!', type: 'success' });
     } catch (error) {
@@ -82,7 +84,6 @@ const ReviewsSection = ({ recipeId }) => {
       setIsLoading(false);
     }
   };
-  
 
   const handleSortChange = (e) => {
     const [sortBy, order] = e.target.value.split('-');
@@ -121,7 +122,7 @@ const ReviewsSection = ({ recipeId }) => {
             </div>
             <p>{review.comment}</p>
             <div className="text-gray-500 text-sm mt-2">
-              {new Date(review.createdAt).toLocaleString()}
+              {new Date(review.updatedAt || review.createdAt).toLocaleString()}
             </div>
             <button
               onClick={() => handleEdit(review)}
@@ -130,11 +131,11 @@ const ReviewsSection = ({ recipeId }) => {
               Edit
             </button>
             <button
-        onClick={() => handleDelete(review._id)} // Ensure review._id is passed
-  className="text-red-500 hover:underline mt-2 ml-4"
->
-  Delete
-</button>
+              onClick={() => handleDelete(review._id)}
+              className="text-red-500 hover:underline mt-2 ml-4"
+            >
+              Delete
+            </button>
           </div>
         ))}
       </div>

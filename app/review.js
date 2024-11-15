@@ -97,8 +97,8 @@ async function updateReview(db, reviewId, updateData) {
     $set: {
       "reviews.$.rating": Number(updateData.rating),
       "reviews.$.comment": updateData.comment,
-      "reviews.$.updatedAt": new Date(),
-      updatedAt: new Date(),
+      "reviews.$.updatedAt": new Date(), // Update timestamp for the review
+      updatedAt: new Date(), // Update recipe's overall timestamp
     }
   };
 
@@ -111,8 +111,6 @@ async function updateReview(db, reviewId, updateData) {
 
     if (result.matchedCount === 0) {
       throw new Error('Review not found');
-    } else if (result.modifiedCount === 0) {
-      throw new Error('Review found, but no changes were made');
     }
 
     // Find the recipe containing the review to update the average rating
@@ -125,11 +123,18 @@ async function updateReview(db, reviewId, updateData) {
       await updateAverageRating(db, recipe._id);
     }
 
-    return result;
+    // Return the updated review from the recipe
+    const updatedRecipe = await collection.findOne(
+      { _id: recipe._id, "reviews._id": objectId },
+      { projection: { "reviews.$": 1 } }
+    );
+
+    return updatedRecipe.reviews[0];
   } catch (error) {
     throw new Error(`Error updating review: ${error.message}`);
   }
 }
+
 
 async function deleteReview(db, reviewId) {
   const collection = db.collection('recipes');
