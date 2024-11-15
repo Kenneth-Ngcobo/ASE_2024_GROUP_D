@@ -2,9 +2,8 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useAuth } from "../hook/useAuth";
+import { signIn, getSession } from "next-auth/react"; // Import next-auth methods
 import Link from "next/link";
-import { signIn } from "next-auth/react";
 
 export default function UserModal({ show, onClose }) {
   const [email, setEmail] = useState("");
@@ -14,17 +13,112 @@ export default function UserModal({ show, onClose }) {
   const [isCheckingUser, setIsCheckingUser] = useState(false);
   const [isLogin, setIsLogin] = useState(null);
   const [prevModal, setPrevModal] = useState(null);
-  const { signup, login, logout, error } = useAuth();
   const [loggedInUser, setLoggedInUser] = useState(null);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [isConfirmingLogout, setIsConfirmingLogout] = useState(false);
   const router = useRouter();
 
+  // Check for logged-in user on component mount
   useEffect(() => {
-    const storedEmail = localStorage.getItem("loggedInUserEmail");
-    if (storedEmail) setLoggedInUser(storedEmail);
+    try {
+      const storedEmail = localStorage.getItem("loggedInUserEmail");
+      if (storedEmail) {
+        setLoggedInUser(storedEmail);  // Set the email from localStorage if exists
+      }
+    } catch (error) {
+      console.error("Error accessing localStorage:", error);
+    }
+
+    // Check session when the component is mounted
+    const fetchSession = async () => {
+      const session = await getSession();
+      if (session?.user?.email) {
+        setLoggedInUser(session.user.email); // Set email from session if logged in
+        localStorage.setItem("loggedInUserEmail", session.user.email); // Store email in localStorage
+      }
+    };
+    fetchSession(); // Call fetch session function
   }, []);
 
+  // Handle Google login
+  const handleGoogleSignIn = async () => {
+    try {
+      // Initiate Google login
+      const result = await signIn("google", {
+        redirect: false, // Prevent redirection to callback URL after sign-in
+      });
+
+      if (result?.ok) {
+        // Retrieve the session data after successful login
+        const session = await getSession();
+
+        if (session?.user?.email) {
+          // Store the user's email in localStorage
+          localStorage.setItem("loggedInUserEmail", session.user.email);
+          setLoggedInUser(session.user.email); // Update the local state
+          onClose(); // Close the modal after login
+        } else {
+          alert("Error: Unable to retrieve email.");
+        }
+      } else {
+        alert("Google sign-in failed. Please try again.");
+      }
+    } catch (error) {
+      alert("Google sign-in failed. Please try again.");
+      console.error("Google sign-in error:", error);
+    }
+  };
+
+  // Handle Email-based Sign Up / Login
+  const handleSubmit = async () => {
+    setIsLoggingIn(true);
+
+    try {
+      if (isLogin) {
+        // Perform email login
+        await login(email, password);
+        if (!error) {
+          alert("Login successful!");
+          setLoggedInUser(email);
+          localStorage.setItem("loggedInUserEmail", email);
+          router.push("/");
+          onClose();
+        } else {
+          alert("Login failed. Please check your credentials.");
+        }
+      } else {
+        // Perform email-based sign-up
+        const response = await fetch("/api/auth/signup", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            fullName,
+            email,
+            phone: phoneNumber,
+            password,
+          }),
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+          alert("Sign-up successful!");
+          setLoggedInUser(email);
+          localStorage.setItem("loggedInUserEmail", email);
+          router.push("/");
+          onClose();
+        } else {
+          alert(result.message || "Sign-up failed. Please try again.");
+        }
+      }
+    } finally {
+      setIsLoggingIn(false);
+    }
+  };
+
+  // Check for user existence (email-based check)
   const handleContinueWithEmail = async () => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!email || !emailRegex.test(email)) {
@@ -60,72 +154,14 @@ export default function UserModal({ show, onClose }) {
     }
   };
 
-  const handleSubmit = async () => {
-    setIsLoggingIn(true);
-
-    try {
-      if (isLogin) {
-        await login(email, password);
-        if (!error) {
-          alert("Login successful!");
-          setLoggedInUser(email);
-          localStorage.setItem("loggedInUserEmail", email);
-          router.push("/");
-          onClose();
-        } else {
-          alert("Login failed. Please check your credentials.");
-        }
-      } else {
-        if (!fullName || !phoneNumber || !password) {
-          alert("Please fill in all fields.");
-          setIsLoggingIn(false);
-          return;
-        }
-
-        try {
-          const response = await fetch("/api/auth/signup", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              fullName,
-              email,
-              phone: phoneNumber,
-              password,
-            }),
-          });
-
-          const result = await response.json();
-
-          if (response.ok) {
-            alert("Sign-up successful!");
-            setLoggedInUser(email);
-            localStorage.setItem("loggedInUserEmail", email);
-            router.push("/");
-            onClose();
-          } else {
-            alert(result.message || "Sign-up failed. Please try again.");
-          }
-        } catch (err) {
-          alert("An error occurred while signing up. Please try again.");
-          console.error("Sign-up error:", err);
-        }
-      }
-    } finally {
-      setIsLoggingIn(false);
-    }
-  };
-
   const handleLogout = () => {
     setIsConfirmingLogout(true);
   };
 
   const confirmLogout = async () => {
     setIsConfirmingLogout(false);
-    await logout();
-    setLoggedInUser(null);
     localStorage.removeItem("loggedInUserEmail");
+    setLoggedInUser(null);
     alert("Logged out successfully!");
     router.push("/");
   };
@@ -140,9 +176,11 @@ export default function UserModal({ show, onClose }) {
     setEmail("");
   };
 
-  const handleGoogleLogin = (event) => {
-    event.preventDefault();
-    signIn("google", { callbackUrl: `${window.location.origin}/` });
+  const getModalTitle = () => {
+    if (isCheckingUser) return "Verifying...";
+    if (isLoggingIn) return "Logging in...";
+    if (isLogin === null) return "Sign Up or Login";
+    return isLogin ? "Login" : "Sign Up";
   };
 
   if (!show) return null;
@@ -166,6 +204,8 @@ export default function UserModal({ show, onClose }) {
           </button>
         )}
 
+        <h2 className="text-2xl font-bold text-center mb-4">{getModalTitle()}</h2>
+
         {loggedInUser ? (
           <div className="text-center">
             <h2 className="text-2xl font-bold mb-4">
@@ -188,24 +228,6 @@ export default function UserModal({ show, onClose }) {
           </div>
         ) : (
           <>
-            {isCheckingUser ? (
-              <h2 className="text-2xl font-bold text-center mb-4">
-                Verifying...
-              </h2>
-            ) : isLoggingIn ? (
-              <h2 className="text-2xl font-bold text-center mb-4">
-                Logging in...
-              </h2>
-            ) : isLogin === null ? (
-              <h2 className="text-2xl font-bold text-center mb-4">
-                Sign Up or Login
-              </h2>
-            ) : isLogin ? (
-              <h2 className="text-2xl font-bold text-center mb-4">Login</h2>
-            ) : (
-              <h2 className="text-2xl font-bold text-center mb-4">Sign Up</h2>
-            )}
-
             {isLogin === null && (
               <input
                 type="email"
@@ -267,54 +289,38 @@ export default function UserModal({ show, onClose }) {
 
         <div className="text-center text-gray-500 mb-4">OR</div>
 
-        <form onSubmit={handleGoogleLogin}>
-          <button
-            type="submit"
-            className="w-full border rounded-md py-3 flex items-center justify-center mb-2"
-          >
-            <Image
-              src="/google.svg"
-              alt="Google icon"
-              width={20}
-              height={20}
-              className="w-5 mr-2"
-            />
-            Continue with Google
-          </button>
-        </form>
+        <button
+          onClick={handleGoogleSignIn}
+          className="w-full border rounded-md py-3 flex items-center justify-center mb-2"
+        >
+          <Image
+            src="/google.svg"
+            alt="Google icon"
+            width={20}
+            height={20}
+            className="w-5 mr-2"
+          />
+          Continue with Google
+        </button>
 
-        <p className="text-gray-500 text-xs text-center mt-4">
-          By continuing you agree to our{" "}
-          <Link href="#" className="underline">
-            Terms of Use
-          </Link>
-          . Learn how we collect, use, and share your data in our{" "}
-          <Link href="#" className="underline">
-            Privacy Policy
-          </Link>
-        </p>
-      </div>
-
-      {isConfirmingLogout && (
-        <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-50">
-          <div className="bg-white p-6 rounded-md shadow-lg text-center">
-            <h2 className="text-lg font-bold mb-4">Confirm Logout</h2>
-            <p className="mb-4">Are you sure you want to log out?</p>
-            <button
-              onClick={confirmLogout}
-              className="bg-red-500 text-white py-2 px-4 rounded-md mr-2"
-            >
-              Yes
-            </button>
-            <button
-              onClick={cancelLogout}
-              className="bg-gray-300 text-gray-700 py-2 px-4 rounded-md"
-            >
-              No
-            </button>
+        {isConfirmingLogout && (
+          <div className="text-center mt-4">
+            <p>Are you sure you want to log out?</p>
+            <div className="flex justify-center gap-4 mt-4">
+              <button onClick={confirmLogout} className="bg-teal-700 text-white px-4 py-2 rounded-md">
+                Yes
+              </button>
+              <button onClick={cancelLogout} className="bg-gray-400 text-white px-4 py-2 rounded-md">
+                No
+              </button>
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }
+
+
+
+
