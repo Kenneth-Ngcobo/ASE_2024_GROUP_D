@@ -1,8 +1,9 @@
-"use client"
+"use client";
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ChevronLeft, ChevronRight, Star, Clock, User } from 'lucide-react';
+import Image from 'next/image';
 
 const RecipeCarousel = () => {
   const router = useRouter();
@@ -69,9 +70,11 @@ const RecipeCarousel = () => {
               <div key={recipe.recipeId} className="flex-none w-1/3 group cursor-pointer" onClick={(e) => handleRecipeClick(recipe.recipeId, e)}>
                 <div className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
                   <div className="relative pt-[70%]">
-                    <img 
+                    <Image
                       src={recipe.images && recipe.images.length > 0 ? recipe.images[0] : "/fallback-placeholder.jpg"} 
                       alt={recipe.title} 
+                      fill
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                       className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
                     />
                     <div className="absolute top-4 left-4">
