@@ -10,7 +10,6 @@ export default function EditableRecipeDetails({ id, initialDescription, lastEdit
     const [message, setMessage] = useState(null);
     const [editor, setEditor] = useState(lastEditedBy);
     const [editDate, setEditDate] = useState(lastEditedAt);
-
     useEffect(() => {
         const fetchRecipeData = async () => {
             try {
@@ -32,34 +31,67 @@ export default function EditableRecipeDetails({ id, initialDescription, lastEdit
     }, [id]);
 
     const handleEdit = async () => {
+        //validate the email is logged in correctly
+        const emailData = localStorage.getItem("loggedInUserEmail");
+
+
+        if (!emailData) {
+          setMessage({
+            type: "error",
+            text: "Please sign in to edit recipes.",
+          });
+          return;
+        }
         try {
-            const response = await fetch(`/api/recipes/${id}/update`, {
-                method: "PATCH",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                credentials: "include",
-                body: JSON.stringify({ description }),
-            });
+            const userDetails = await fetch(`/api/auth/user/${[emailData]}/profile`);
+            if (userDetails.ok) {
+                const data = await userDetails.json();
+                if (data._id) {
+                    try {
+                        const response = await fetch(`/api/recipes/${id}/update?email=${emailData}`, {
+                            method: "PATCH",
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                            credentials: "include",
+                            body: JSON.stringify({ description }),
+                        });
 
-            const data = await response.json();
+                        const data = await response.json();
 
-            if (!response.ok) {
-                if (response.status === 401) {
-                    setMessage({ type: 'error', text: 'Please log in to edit recipes.' });
+                        if (!response.ok) {
+                            if (response.status === 401) {
+                                setMessage({ type: 'error', text: 'Please log in to edit recipes.' });
+                                return;
+                            }
+                            setMessage({ type: 'error', text: data.error || 'Something went wrong.' });
+                            return;
+                        }
+
+                        setMessage({ type: 'success', text: 'Recipe description updated successfully!' });
+                        setEditor(data.lastEditedBy);
+                        setEditDate(new Date(data.lastEditedAt).toLocaleString());
+                        setDescription(data.description);
+                        setIsEditing(false);
+
+                        console.log(response)
+                    }
+                    catch (error) {
+                        console.error('Error updating recipe:', error);
+                        setMessage({
+                            type: 'error',
+                            text: 'Something went wrong. Please try again later.'
+                        });
+                    }
+                } else {
+                    setMessage({ type: 'error', text: 'Please sign in to edit recipes.' });
                     return;
                 }
-                setMessage({ type: 'error', text: data.error || 'Something went wrong.' });
-                return;
             }
-
-            setMessage({ type: 'success', text: 'Recipe description updated successfully!' });
-            setEditor(data.lastEditedBy);
-            setEditDate(new Date(data.lastEditedAt).toLocaleString());
-            setDescription(data.description);
-            setIsEditing(false);
-
-            console.log(response)
+         else {
+            setMessage({ type: 'error', text: 'Please sign in to edit recipes.' });
+            return;
+        }
         }
         catch (error) {
             console.error('Error updating recipe:', error);
@@ -68,8 +100,11 @@ export default function EditableRecipeDetails({ id, initialDescription, lastEdit
                 text: 'Something went wrong. Please try again later.'
             });
         }
+             
 
-    };
+       
+    }
+
 
 
     const handleCancel = () => {

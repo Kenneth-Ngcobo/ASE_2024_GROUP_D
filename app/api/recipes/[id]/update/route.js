@@ -2,7 +2,6 @@ import connectToDatabase from '../../../../../db';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../../../auth/[...nextauth]/route';
 import { NextResponse } from 'next/server';
-import { ObjectId } from 'mongodb';
 
 /**
  * Update a recipe's description in the MongoDB database.
@@ -21,70 +20,80 @@ import { ObjectId } from 'mongodb';
  */
 export async function PATCH(request, { params }) {
     try {
-        const session = await getServerSession(authOptions);
-
-        // Check if user is authenticated
-        if (!session?.user?.email) {
-            console.log("No session found - authentication failed");
-            return NextResponse.json(
-                { error: "Authentication required" },
-                { status: 401 }
-            );
-        }
-
-        // Log the authenticated user
-        console.log("Authenticated user:", session.user);
-
+        //gets url params
+        const url = new URL(request.url);
+  
         // Parse the request body
         let body;
         try {
             body = await request.json();
+            console.log("Request Body:", body);
         } catch (error) {
             return NextResponse.json(
                 { error: "Invalid request body" },
                 { status: 400 }
             );
         }
-
+        //get new desciption input
         const { description } = body;
 
         if (!description?.trim()) {
-            return Response.json(
+            return NextResponse.json(
                 { error: 'Description is required' },
                 { status: 400 }
             );
         }
-
+    
         const db = await connectToDatabase();
 
-        // Convert string ID to MongoDB ObjectId
-        let objectId;
-        try {
-            objectId = new ObjectId(params.id);
-        } catch (error) {
+        // Validate recipe ID as a string
+        if (!params.id || typeof params.id !== 'string') {
             return NextResponse.json(
                 { error: 'Invalid recipe ID format' },
                 { status: 400 }
             );
         }
 
+        const recipeId = params.id; // Use the string ID directly
+
+        console.log("Looking for recipe with ID:", recipeId);
+//_________________________________________________________________________________________
+
+
+
+        // Log the existing recipes in the collection for debugging// Logs new Info into DataBase with email
+        const recipe = await db.collection('recipes').findOne({ _id: recipeId });
+        if (!recipe) {
+            return NextResponse.json(
+                { error: 'Recipe not found' },
+                { status: 404 }
+            );
+        }
+
         // Update recipe with all required fields in one operation
+       const emailData= url.searchParams.get('email')
+       console.log("Description to update:", description);
+       console.log("Email of editor:", emailData);
         const result = await db.collection('recipes').findOneAndUpdate(
-            { _id: objectId },
+            { _id: recipeId },
             {
                 $set: {
                     description: description.trim(),
-                    lastEditedBy: session.user.email,
+                   lastEditedBy: emailData,
                     lastEditedAt: new Date(),
                 }
             },
             { returnDocument: 'after' } // This returns the updated document
         );
+//______________________________________________________________________________
 
-        // Handle recipe not found
+
+
+
+        // Handle recipe not found or no update
         if (!result.value) {
             return NextResponse.json(
-                { error: 'Recipe not found' },
+                { error: 'Recipe not found or no changes made' },
                 { status: 404 }
             );
         }
