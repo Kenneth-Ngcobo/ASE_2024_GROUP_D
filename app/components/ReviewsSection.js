@@ -37,7 +37,7 @@ const ReviewsSection = ({ recipeId, username }) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...newReview,
-          username: 'yourUsername', // Replace with dynamically fetched username
+          username: 'yourUsername', 
         }),
       });
   
@@ -46,7 +46,7 @@ const ReviewsSection = ({ recipeId, username }) => {
       const updatedReview = await response.json();
   
       if (editMode) {
-        // Replace the edited review in the state
+        
         setReviews((prevReviews) =>
           prevReviews.map((review) =>
             review._id === editReviewId ? updatedReview : review
@@ -80,15 +80,20 @@ const ReviewsSection = ({ recipeId, username }) => {
   };
 
   const handleDelete = async (reviewId) => {
+    // Ask for confirmation before proceeding with deletion
+    const confirmDelete = window.confirm("Are you sure you want to delete this review?");
+    if (!confirmDelete) return; // Exit if the user cancels
+  
     try {
       setIsLoading(true);
       const response = await fetch(`/api/recipes/${recipeId}/reviews?deleteId=${reviewId}`, {
         method: 'DELETE',
       });
-
+  
       if (!response.ok) throw new Error('Failed to delete review.');
-
-      setReviews(reviews.filter((review) => review._id !== reviewId));
+  
+      // Update the state to remove the deleted review
+      setReviews((prevReviews) => prevReviews.filter((review) => review._id !== reviewId));
       setMessage({ text: 'Review deleted successfully!', type: 'success' });
     } catch (error) {
       setMessage({ text: 'Failed to delete review.', type: 'error' });
@@ -96,6 +101,7 @@ const ReviewsSection = ({ recipeId, username }) => {
       setIsLoading(false);
     }
   };
+  
 
   const handleSortChange = (e) => {
     const [sortBy, order] = e.target.value.split('-');
