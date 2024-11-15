@@ -56,14 +56,25 @@ export async function POST(request) {
 }
 
 // Update review
-export async function PUT(request, { params }) {
+// Update review
+export async function PUT(request) {
   try {
-    const { reviewId } = params;
+    // Retrieve `editId` from the query parameters
+    const url = new URL(request.url);
+    const reviewId = url.searchParams.get('editId');
+
+    if (!reviewId) {
+      return NextResponse.json(
+        { error: 'Review ID is required for update' },
+        { status: 400 }
+      );
+    }
+
     const body = await request.json();
-    
+
     const db = await connectToDatabase();
     await updateReview(db, reviewId, body);
-    
+
     return NextResponse.json({ message: 'Review updated successfully' });
   } catch (error) {
     return NextResponse.json(
@@ -72,15 +83,19 @@ export async function PUT(request, { params }) {
     );
   }
 }
-
 // Delete review
-export async function DELETE(request, { params }) {
+export async function DELETE(request) {
   try {
-    const { reviewId } = params;
-    
+    const url = new URL(request.url);
+    const deleteId = url.searchParams.get('deleteId');
+
+    if (!deleteId) {
+      return NextResponse.json({ error: 'deleteId query parameter is required' }, { status: 400 });
+    }
+
     const db = await connectToDatabase();
-    await deleteReview(db, reviewId);
-    
+    await deleteReview(db, deleteId);
+
     return NextResponse.json({ message: 'Review deleted successfully' });
   } catch (error) {
     return NextResponse.json(
@@ -89,6 +104,7 @@ export async function DELETE(request, { params }) {
     );
   }
 }
+
 
 // Get reviews for a recipe
 export async function GET(request, { params }) {

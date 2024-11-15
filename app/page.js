@@ -4,8 +4,6 @@ import Pagination from "./components/pagination";
 import Recipes from "./components/recipes";
 import Footer from "./components/footer";
 import Loading from "./loading";
-import SearchBar from "./components/searchBar";
-import CategoryList from "./components/CategoryList";
 import RecipeCarousel from "./components/RecipeCarousel";
 import { Suspense } from 'react';
 
