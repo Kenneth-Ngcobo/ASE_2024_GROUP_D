@@ -11,7 +11,7 @@ export default function UserModal({ show, onClose }) {
   const [fullName, setFullName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [isCheckingUser, setIsCheckingUser] = useState(false);
-  const [isLogin, setIsLogin] = useState(null); // null: undecided, true: login, false: signup
+  const [isLogin, setIsLogin] = useState(null); 
   const [loggedInUser, setLoggedInUser] = useState(null);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [isConfirmingLogout, setIsConfirmingLogout] = useState(false);
