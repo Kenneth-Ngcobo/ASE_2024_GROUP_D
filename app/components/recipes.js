@@ -1,23 +1,13 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import {
-  FaHeart,
-  FaCalendarDay,
-  FaClock,
-  FaUtensils,
-  FaTags,
-  FaUtensilSpoon,
-  FaListUl,
-  FaCaretDown,
-} from "react-icons/fa";
+import { FaClock, FaUtensils, FaCaretDown } from "react-icons/fa";
 import { PiCookingPotDuotone,PiHeart } from 'react-icons/pi';
 import Head from "next/head";
 import Carousel from "./Carousel";
 import { SortControl } from "./SortControl";
-import { sortRecipes } from "./sortUtils";
 import { useSearchParams } from "next/navigation";
 
 const Recipes = ({ recipes: initialRecipes }) => {
@@ -28,7 +18,7 @@ const Recipes = ({ recipes: initialRecipes }) => {
   const [favoriteDetails, setFavoriteDetails] = useState([]);
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [error, setError] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
   const searchParams = useSearchParams();
 
   // Fetch favorites when component mounts
@@ -36,7 +26,7 @@ const Recipes = ({ recipes: initialRecipes }) => {
     const fetchFavorites = async () => {
       const loggedInEmail = localStorage.getItem("loggedInUserEmail");
       if (!loggedInEmail) {
-        setIsLoading(false);
+        setLoading(false);
         return;
       }
 
@@ -62,7 +52,7 @@ const Recipes = ({ recipes: initialRecipes }) => {
         setError("Failed to load favorites. Please try again later.");
         console.error("Error fetching favorites:", err);
       } finally {
-        setIsLoading(false);
+        setLoading(false);
       }
     };
 
@@ -74,19 +64,40 @@ const Recipes = ({ recipes: initialRecipes }) => {
     const newOrder = searchParams.get("order") || "ascending";
     setSortBy(newSort);
     setSortOrder(newOrder);
+
+    const fetchRecipes = async () => {
+      setLoading(true);
+      try {
+        const queryString = searchParams.toString();
+        const response = await fetch(`/api/recipes?${queryString}`);
+        const data = await response.json();
+
+        if (response.ok) {
+          setRecipes(data.recipes);
+        } else {
+          console.error('Failed to fetch recipes:', data.error);
+        }
+      } catch (error) {
+        console.error('Error fetching recipes:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchRecipes();
   }, [searchParams]);
 
-  const handleSort = (newSortBy, newSortOrder) => {
-    setSortBy(newSortBy);
-    setSortOrder(newSortOrder);
-    const sortedRecipes = sortRecipes(initialRecipes, newSortBy, newSortOrder);
-    setRecipes(sortedRecipes);
-  };
+  // const handleSort = (newSortBy, newSortOrder) => {
+  //   setSortBy(newSortBy);
+  //   setSortOrder(newSortOrder);
+  //   const sortedRecipes = sortRecipes(initialRecipes, newSortBy, newSortOrder);
+  //   setRecipes(sortedRecipes);
+  // };
 
-  useEffect(() => {
-    const sortedRecipes = sortRecipes(initialRecipes, sortBy, sortOrder);
-    setRecipes(sortedRecipes);
-  }, [initialRecipes, sortBy, sortOrder]);
+  // useEffect(() => {
+  //   const sortedRecipes = sortRecipes(initialRecipes, sortBy, sortOrder);
+  //   setRecipes(sortedRecipes);
+  // }, [initialRecipes, sortBy, sortOrder]);
 
   const toggleFavorite = async (recipeId) => {
     const loggedInEmail = localStorage.getItem("loggedInUserEmail");
@@ -157,7 +168,7 @@ const Recipes = ({ recipes: initialRecipes }) => {
     }
   };
 
-  if (isLoading) {
+  if (loading) {
     return (
       <div className="flex justify-center items-center h-64">Loading...</div>
     );
@@ -173,18 +184,14 @@ const Recipes = ({ recipes: initialRecipes }) => {
           </div>
         )}
 
-        <SortControl
-          onSortChange={handleSort}
-          sortBy={sortBy}
-          sortOrder={sortOrder}
-        />
+        <SortControl />
 
-        <div className="mb-4 relative">
+        <div className="mb-4">
           <button
             onClick={() => setDropdownVisible(!dropdownVisible)}
             className="flex items-center text-gray-800 font-roboto"
           >
-            <FaHeart className="mr-2" size={20} />
+            <PiHeart className="mr-2" size={20} />
             <span>Favorites ({favoritedRecipes.size})</span>
             <FaCaretDown
               className={`ml-2 ${
@@ -252,7 +259,7 @@ const Recipes = ({ recipes: initialRecipes }) => {
                     toggleFavorite(recipe._id);
                   }}
                 >
-                  <FaHeart size={24} />
+                  <PiHeart size={24} />
                 </button>
 
                 <div className="mb-4 relative w-full h-48">
