@@ -228,8 +228,17 @@ export default function UserModal({ show, onClose }) {
 
         <div className="text-center text-gray-500 mb-4">OR</div>
 
-        {/* Social Login Buttons */}
-        <button className="w-full border rounded-md py-3 flex items-center justify-center mb-2">
+        <form 
+          action={async () =>  {
+            await signIn("google", {
+              callbackUrl: `${window.location.origin}/`,
+            })
+          }}
+        >
+          <button 
+          type="submit"
+          className="w-full border rounded-md py-3 flex items-center justify-center mb-2"
+          >
           <Image
             src="/google.svg"
             alt="Google icon"
@@ -239,6 +248,9 @@ export default function UserModal({ show, onClose }) {
           />
           Continue with Google
         </button>
+        </form>
+
+        
 
         <p className="text-gray-500 text-xs text-center mt-4">
           By continuing you agree to our{" "}
