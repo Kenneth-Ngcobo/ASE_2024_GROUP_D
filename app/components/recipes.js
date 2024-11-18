@@ -87,17 +87,6 @@ const Recipes = ({ recipes: initialRecipes }) => {
     fetchRecipes();
   }, [searchParams]);
 
-  // const handleSort = (newSortBy, newSortOrder) => {
-  //   setSortBy(newSortBy);
-  //   setSortOrder(newSortOrder);
-  //   const sortedRecipes = sortRecipes(initialRecipes, newSortBy, newSortOrder);
-  //   setRecipes(sortedRecipes);
-  // };
-
-  // useEffect(() => {
-  //   const sortedRecipes = sortRecipes(initialRecipes, sortBy, sortOrder);
-  //   setRecipes(sortedRecipes);
-  // }, [initialRecipes, sortBy, sortOrder]);
 
   const toggleFavorite = async (recipeId) => {
     const loggedInEmail = localStorage.getItem("loggedInUserEmail");
@@ -121,7 +110,7 @@ const Recipes = ({ recipes: initialRecipes }) => {
         return updated;
       });
 
-      // Also update the favorite details
+    
       setFavoriteDetails(prev => {
         if (isFavorited) {
           return prev.filter(r => r._id !== recipeId);
@@ -144,7 +133,7 @@ const Recipes = ({ recipes: initialRecipes }) => {
         throw new Error("Failed to update favorites");
       }
     } catch (err) {
-      // Revert optimistic updates on error
+      
       setFavoritedRecipes(prev => {
         const reverted = new Set(prev);
         if (isFavorited) {
