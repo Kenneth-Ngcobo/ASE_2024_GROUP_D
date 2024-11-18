@@ -1,15 +1,16 @@
 "use client";
 import Link from "next/link";
 import Image from "next/image";
-import { useState, useEffect } from "react";
-import { FaUser, FaShoppingBag } from "react-icons/fa";
+import { useState, useEffect, Suspense } from "react";
+import { FaUser } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import CategoryList from "./CategoryList";
-import FilterButton from "./FilterButton";
+import {FilterButton} from "./FilterButton";
 import ThemeButton from "./ThemeButton";
 import RecipeSearchBar from "./searchBar";
 import UserModal from "./UserModal.js";
 import { FilterModal } from "./FilterButton";
+import Loading from "../loading.js";
 
 const Header = ({ isAuthenticated, onLogout }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -19,10 +20,7 @@ const Header = ({ isAuthenticated, onLogout }) => {
   const router = useRouter();
 
   const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
-  const toggleFilterModal = () => {
-    setIsFilterOpen((prev) => !prev); // Toggle modal open/close state
-  };
-
+  const toggleFilterModal = () => setIsFilterOpen((prev) => !prev);
   const toggleModal = () => setShowModal((prev) => !prev);
 
   useEffect(() => {
@@ -41,7 +39,7 @@ const Header = ({ isAuthenticated, onLogout }) => {
   }, []);
 
   return (
-    <header className="bg-white dark:bg-gray-950 shadow-sm sticky top-0 z-50">
+    <header className="bg-gray-100 dark:bg-gray-950 top-0 z-50">
       <div className="container mx-auto px-4">
         <nav className="flex items-center justify-between h-16">
           <div className="hidden md:flex space-x-8">
@@ -55,7 +53,7 @@ const Header = ({ isAuthenticated, onLogout }) => {
               href="/Recomended"
               className="text-gray-600 dark:text-white hover:text-teal-500 font-medium uppercase text-sm"
             >
-              Recomended
+              Recommended
             </Link>
             <Link
               href="/Favourite"
@@ -65,26 +63,26 @@ const Header = ({ isAuthenticated, onLogout }) => {
             </Link>
           </div>
 
-
-
           <Link href="/" className="flex items-center">
             <Image
               src="/Kwa.png"
               alt="Logo"
               width={150}
               height={60}
-              className="h-10 w-auto"
+              className="h-10 w-auto "
             />
           </Link>
           <div className="hidden md:flex items-center space-x-8">
-            <CategoryList
-              totalRecipes={totalRecipes}
-              onCategoryChange={() => { }}
-            />
+            {/* Wrapping CategoryList in Suspense */}
+            <Suspense fallback={<Loading />}>
+              <CategoryList
+                totalRecipes={totalRecipes}
+                onCategoryChange={() => {}}
+              />
+            </Suspense>
             <FilterButton onClick={toggleFilterModal} />
 
             {/* User Icon Toggle */}
-
             <button
               onClick={toggleModal}
               className="text-gray-600 dark:text-white hover:text-teal-500"
@@ -95,10 +93,6 @@ const Header = ({ isAuthenticated, onLogout }) => {
             {/* Authentication Modal */}
             <UserModal show={showModal} onClose={toggleModal} />
             <ThemeButton />
-
-            <Link href="/cart" className="text-gray-600 dark:text-white hover:text-teal-500">
-              <FaShoppingBag className="w-5 h-5" />
-            </Link>
           </div>
           <button
             className="md:hidden text-gray-600 dark:text-white"
@@ -119,13 +113,52 @@ const Header = ({ isAuthenticated, onLogout }) => {
           </button>
         </nav>
       </div>
-      <div className="border-t border-gray-200">
-        <div className="container mx-auto px-4 py-3">
-          {/* Add any additional content for the search bar or other elements here */}
+
+      {/* Mobile Menu */}
+      <div
+        className={`md:hidden bg-white border-t transition-all duration-300 ${
+          isDropdownOpen ? 'max-h-screen py-4' : 'max-h-0 overflow-hidden'
+        }`}
+      >
+        <div className="container mx-auto px-4 space-y-4">
+          <Link
+            href="/recipes"
+            className="block text-[#1e455c] hover:text-[#2b617f] font-medium py-2"
+          >
+            Recipes
+          </Link>
+          <Link
+            href="/Recomended"
+            className="block text-[#1e455c] hover:text-[#2b617f] font-medium py-2"
+          >
+            Recommended
+          </Link>
+          <Link
+            href="/Favourite"
+            className="block text-[#1e455c] hover:text-[#2b617f] font-medium py-2"
+          >
+            Favourites
+          </Link>
+          <div className="py-2">
+            <Suspense fallback={<Loading />}>
+              <CategoryList
+                totalRecipes={totalRecipes}
+                onCategoryChange={() => {}}
+              />
+            </Suspense>
+            
+          </div>
+          <div className="py-2">
+            <FilterButton onClick={() => setIsFilterOpen(!isFilterOpen)} />
+          </div>
         </div>
       </div>
-      {isFilterOpen && <FilterModal onClose={toggleFilterModal} />}
+
+
+      {/* Modals */}
+      {isFilterOpen && <FilterModal onClose={() => setIsFilterOpen(false)} />}
       <RecipeSearchBar />
+      <UserModal show={showModal} onClose={() => setShowModal(false)} />
     </header>
   );
 };

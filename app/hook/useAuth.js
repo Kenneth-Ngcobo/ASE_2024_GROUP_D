@@ -28,12 +28,12 @@ export function useAuth() {
      * @param {string} password - The password of the user.
      * @throws {Error} Throws an error if the signup request fails.
      */
-    const signup = async (email, password) => {
+    const signup = async (email, fullName,password) => {
         try {
             const res = await fetch("/api/auth/signup", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email, password }),
+                body: JSON.stringify({ email, fullName, password }),
             });
             if (!res.ok) throw new Error(await res.text());
             router.push("/login");
@@ -60,12 +60,16 @@ export function useAuth() {
                 body: JSON.stringify({ email, password }),
             });
             if (!res.ok) throw new Error(await res.text());
+    
+            const data = await res.json();
+            localStorage.setItem("loggedInUserEmail", data.email);
+            localStorage.setItem("userData", JSON.stringify(data));
             router.push("/");
         } catch (err) {
             setError(err.message);
         }
     };
-
+    
     /**
      * Logs out the currently authenticated user.
      * Redirects to the login page after logging out.

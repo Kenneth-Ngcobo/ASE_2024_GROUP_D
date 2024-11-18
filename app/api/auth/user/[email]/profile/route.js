@@ -1,10 +1,9 @@
 import { NextResponse } from 'next/server';
-import connectToDatabase from '../../../../../db';
+import connectToDatabase from '../../../../../../db';
 
-export async function GET(req) {
+export async function GET(req, { params }) {
     try {
-        const { searchParams } = new URL(req.url);
-        const email = searchParams.get('email');
+        const { email } = params;
 
         if (!email) {
             return NextResponse.json({ error: 'Email is required' }, { status: 400 });

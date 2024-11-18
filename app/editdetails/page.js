@@ -1,4 +1,11 @@
+"use client";
 
+import { useEffect, useState } from "react";
+import { useAuth } from "../hook/useAuth";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { Suspense } from "react";
+import Loading from "../loading";
 
 export default function EditDetails() {
   const { logout } = useAuth();
@@ -40,31 +47,6 @@ export default function EditDetails() {
   }, []);
 
   const handleToggleEdit = () => setIsEditing((prev) => !prev);
-
-  const handleUpdate = async (e) => {
-    e.preventDefault();
-    try {
-      const userEmail = localStorage.getItem("loggedInUserEmail");
-      if (!userEmail) throw new Error("User email not found");
-
-      const response = await fetch(`/api/auth/user/${userEmail}/profile`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email: userDetails.email , fullName: userDetails.fullName }),
-      });
-
-      if (!response.ok) throw new Error("Failed to update user details");
-
-      alert("Profile updated successfully");
-    } catch (error) {
-      console.error("Error updating profile:", error);
-      alert("Failed to update profile");
-    }
-
-    handleToggleEdit();
-  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -173,7 +155,7 @@ export default function EditDetails() {
 
                 <div className="flex space-x-4">
                   <button
-                    onClick={handleUpdate}
+                    onClick={handleToggleEdit}
                     className="flex-1 bg-teal-700 text-white py-3 rounded-md font-semibold hover:bg-teal-800 transition duration-200 ease-in-out"
                   >
                     Save Changes
@@ -206,31 +188,6 @@ export default function EditDetails() {
             )}
           </div>
         </main>
-      </div>
-
-      <div class="w-3/4 p-6">
-        <h2 class="text-3xl font-bold">Welcome Back!</h2>
-        <div class="mt-6">
-          <h3 class="text-xl">About You:</h3>
-          <input
-            type="text"
-            placeholder="First Name"
-            value=""
-            className="w-full border rounded-md p-3 text-gray-700 mb-4"
-          ></input>
-          <input
-            type="text"
-            placeholder="Last Name"
-            value=""
-            className="w-full border rounded-md p-3 text-gray-700 mb-4"
-          ></input>
-            <input
-            type="text"
-            placeholder="Email"
-            value=""
-            className="w-full border rounded-md p-3 text-gray-700 mb-4"
-          ></input>
-        </div>
       </div>
     </Suspense>
   );

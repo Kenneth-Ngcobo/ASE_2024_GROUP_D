@@ -12,9 +12,9 @@ export async function GET(req) {
     const recipesCollection = db.collection('recipes');
 
     // Use req.nextUrl to parse query parameters
-    const { searchParams } = req.nextUrl;
-
+    // Changing the req.nextUrl to use new URL(req.url) instead because of vercel errors
     const url = new URL(req.url);
+    const searchParams = url.searchParams;
     const page = parseInt(searchParams.get("page")) || 1;
     const limit = Math.min(parseInt(searchParams.get("limit")) || 50, 50);
     const sort = searchParams.get("sort") || "published"; // Default to createdAt
