@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import {  useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 
 export default function TagDisplay({ selectedTags, onTagsChange }) {
   const [tags, setTags] = useState([]);
@@ -12,13 +12,19 @@ export default function TagDisplay({ selectedTags, onTagsChange }) {
 
   const searchParams = useSearchParams();
 
+  // This effect is responsible for updating the URL when selected tags change
   useEffect(() => {
-    // Initialize selected tags from URL search params if present
-    const urlTags = searchParams.get('tags')?.split(',') || [];
-    if (urlTags.length && urlTags !== ' ' && urlTags !== '') {
-      onTagsChange(urlTags); // Populate selectedTags from URL
+    const currentTags = searchParams.get('tags')?.split(',') || [];
+    
+    // Only update the URL if the selectedTags have changed
+    if (JSON.stringify(currentTags) !== JSON.stringify(selectedTags)) {
+      const params = new URLSearchParams(searchParams);
+      params.set('tags', selectedTags.join(','));
+      
+      // Update the URL without triggering a re-render
+     
     }
-  }, [searchParams, onTagsChange]);
+  }, [selectedTags, searchParams]);
 
   useEffect(() => {
     const fetchTags = async () => {
@@ -29,7 +35,6 @@ export default function TagDisplay({ selectedTags, onTagsChange }) {
         }
         const data = await response.json();
         setTags(data);
-        // console.log('Fetched tags:', data);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -39,20 +44,6 @@ export default function TagDisplay({ selectedTags, onTagsChange }) {
 
     fetchTags();
   }, []);
-
-  useEffect(() => {
-    // Update URL with selected tags as query parameters
-    const params = new URLSearchParams(searchParams);
-    params.set('tags', selectedTags.join(','));
-  }, [selectedTags, searchParams]);
-
-  if (loading) {
-    return <div className="text-center py-4">Loading tags...</div>;
-  }
-
-  if (error) {
-    return <div className="text-red-500 text-center py-4">Error: {error}</div>;
-  }
 
   const handleTagSelect = (tag) => {
     if (!selectedTags.includes(tag)) {
@@ -66,6 +57,14 @@ export default function TagDisplay({ selectedTags, onTagsChange }) {
   const filteredTags = tags.filter(tag =>
     tag.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  if (loading) {
+    return <div className="text-center py-4">Loading tags...</div>;
+  }
+
+  if (error) {
+    return <div className="text-red-500 text-center py-4">Error: {error}</div>;
+  }
 
   return (
     <div className="p-6 bg-white dark:bg-gray-950 shadow-md rounded-lg">
