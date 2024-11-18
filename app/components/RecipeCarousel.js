@@ -47,11 +47,11 @@ const RecipeCarousel = () => {
   );
 
   return (
-    <div className="w-full max-w-6xl mx-auto p-8 bg-gradient-to-b from-gray-50 to-white">
+    <div className="w-full max-w-6xl mx-auto p-8 bg-[#fcfde2] dark:bg-[#1c1d02]">
       <div className="flex justify-between items-center mb-8">
-        <h2 className="text-3xl font-bold text-gray-800 tracking-tight">
+        <h2 className="text-3xl font-bold text-[#ff4f1a] tracking-tight">
           Top Rated Recipes
-          <div className="h-1 w-20 bg-blue-500 mt-2 rounded-full" />
+          <div className="h-1 w-20 bg-[#fc9d4f] mt-2 rounded-full" />
         </h2>
         <div className="flex gap-2">
           <button onClick={prevSlide} disabled={currentIndex === 0} className="p-2 rounded-full border border-gray-200 hover:border-gray-300 hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed" aria-label="Previous recipes">
@@ -68,7 +68,7 @@ const RecipeCarousel = () => {
           <div className="flex gap-6 transition-transform duration-500 ease-out" style={{ transform: `translateX(-${currentIndex * (100 / visibleRecipes)}%)` }}>
             {topRecipes.map((recipe) => (
               <div key={recipe.recipeId} className="flex-none w-1/3 group cursor-pointer" onClick={(e) => handleRecipeClick(recipe.recipeId, e)}>
-                <div className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                <div className="bg-[#fcfde2] rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
                   <div className="relative pt-[70%]">
                     <Image
                       src={recipe.images && recipe.images.length > 0 ? recipe.images[0] : "/fallback-placeholder.jpg"} 
@@ -82,7 +82,7 @@ const RecipeCarousel = () => {
                     </div>
                   </div>
                   <div className="p-6">
-                    <h3 className="font-semibold text-xl text-gray-800 mb-3 line-clamp-2 group-hover:text-blue-600 transition-colors">{recipe.title}</h3>
+                    <h3 className="font-semibold text-xl text-[#fc9d4f] mb-3 line-clamp-2">{recipe.title}</h3>
                     <div className="flex items-center gap-4 text-gray-600">
                       <div className="flex items-center gap-1.5">
                         <Clock className="w-4 h-4" />
@@ -94,7 +94,7 @@ const RecipeCarousel = () => {
                       </div>
                     </div>
                     <div className="mt-4 flex justify-end">
-                      <span className="text-sm font-medium text-blue-600 group-hover:text-blue-700 transition-colors">View Recipe →</span>
+                      <span className="text-sm font-medium text-[#edd282] group-hover:text-[#fc9d4f] transition-colors">View Recipe →</span>
                     </div>
                   </div>
                 </div>

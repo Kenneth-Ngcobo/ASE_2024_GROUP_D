@@ -5,7 +5,6 @@ import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import { FaClock, FaUtensils, FaCaretDown } from "react-icons/fa";
 import { PiCookingPotDuotone,PiHeart } from 'react-icons/pi';
-import Head from 'next/head';
 import Carousel from './Carousel';
 import { SortControl } from './SortControl';
 import { useSearchParams } from 'next/navigation';
@@ -99,7 +98,7 @@ export default function Recipes({ recipes: initialRecipes }) {
           </button>
 
           {dropdownVisible && (
-            <div className="mt-2 absolute bg-white border dark:bg-gray-950 border-gray-200 rounded-lg shadow-lg w-60 z-10">
+            <div className="mt-2 absolute bg-[#fcfde2]border dark:bg-[#1c1d02] border-gray-200 rounded-lg shadow-lg w-60 z-10">
               <ul className="max-h-60 overflow-y-auto p-2">
                 {Array.from(favoritedRecipes).map((recipeId) => {
                   const recipe = recipes.find((r) => r._id === recipeId);
@@ -121,7 +120,7 @@ export default function Recipes({ recipes: initialRecipes }) {
             <Link
               href={`/Recipe/${recipe._id}`}
               key={recipe._id}
-              className="block p-4 bg-white dark:bg-black dark:border-gray-950 border border-gray-200 rounded-lg shadow-lg hover:shadow-2xl transition-transform transform hover:scale-105 duration-300 ease-in-out"
+              className="block p-4 bg-[#fcfde2] dark:bg-black dark:border-gray-950 border border-gray-200 rounded-lg shadow-lg hover:shadow-2xl transition-transform transform hover:scale-105 duration-300 ease-in-out"
             >
               <div className="relative w-full h-64">
                 {recipe.images.length > 1 ? (
@@ -139,7 +138,7 @@ export default function Recipes({ recipes: initialRecipes }) {
               </div>
 
               <div className="p-4 flex justify-between items-center">
-                <h2 className="text-[#1e455c] font-bold text-xl mb-3 font-montserrat group-hover:text-[#2b617f]">
+                <h2 className="text-[#fc9d4f] font-bold text-xl mb-3 font-montserrat group-hover:text-[#2b617f]">
                   {recipe.title}
                 </h2>
                 <button
@@ -155,28 +154,28 @@ export default function Recipes({ recipes: initialRecipes }) {
 
               <div className="space-y-2">
                 <p className="text-sm text-gray-600 flex items-center">
-                  <FaClock className="text-[#1e455c] mr-2" />
+                  <FaClock className="text-[#020123] mr-2" />
                   {recipe.prep + recipe.cook} mins
                 </p>
                 <p className="text-sm text-gray-600 flex items-center">
-                  <PiCookingPotDuotone className="text-[#1e455c] mr-2" />
+                  <PiCookingPotDuotone className="text-[#020123] mr-2" />
                   {recipe.cook} mins
                 </p>
                 <p className="text-sm text-gray-600 flex items-center">
-                  <FaUtensils className="text-[#1e455c] mr-2" />
+                  <FaUtensils className="text-[#020123] mr-2" />
                   Serves {recipe.servings}
                 </p>
               </div>
               <div className="flex flex-wrap gap-2 mt-3">
                 {recipe.category && (
-                  <span className="inline-block bg-gray-100 dark:bg-gray-950 dark:text-gray-400  text-gray-600 text-sm px-2 py-1 rounded">
+                  <span className="inline-block bg-[#edd282] dark:bg-[#1c1d02] dark:text-gray-400  text-[#020123] text-sm px-2 py-1 rounded">
                     {recipe.category}
                   </span>
                 )}
-                <span className="inline-block bg-gray-100 text-gray-600  dark:bg-gray-950 dark:text-gray-400 text-sm px-2 py-1 rounded">
+                <span className="inline-block bg-[#edd282] text-[#020123]  dark:bg-[#1c1d02] dark:text-gray-400 text-sm px-2 py-1 rounded">
                   {recipe.instructions.length} steps
                 </span>
-                <span className="inline-block bg-gray-100 text-gray-600  dark:bg-gray-950 dark:text-gray-400 text-sm px-2 py-1 rounded">
+                <span className="inline-block bg-[#edd282] text-[#020123]  dark:bg-[#1c1d02] dark:text-gray-400 text-sm px-2 py-1 rounded">
                   {new Date(recipe.published).toDateString()}
                 </span>
               </div>
