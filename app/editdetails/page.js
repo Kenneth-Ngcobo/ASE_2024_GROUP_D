@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import LoadingSpinner from "../components/LoadingSpinner";
+import Loading from "../components/loadingSpinner";
 
 export default function EditDetails() {
   const [userDetails, setUserDetails] = useState({
