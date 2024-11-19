@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import {  useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 
 export default function TagDisplay({ selectedTags, onTagsChange }) {
   const [tags, setTags] = useState([]);
@@ -16,9 +16,11 @@ export default function TagDisplay({ selectedTags, onTagsChange }) {
     // Initialize selected tags from URL search params if present
     const urlTags = searchParams.get('tags')?.split(',') || [];
     if (urlTags.length && urlTags !== ' ' && urlTags !== '') {
-      onTagsChange(urlTags); // Populate selectedTags from URL
+      if (urlTags.join(',') !== selectedTags.join(',')) {
+        onTagsChange(urlTags); // Populate selectedTags from URL
+      }
     }
-  }, [searchParams, onTagsChange]);
+  }, [searchParams]); // Only dependent on searchParams
 
   useEffect(() => {
     const fetchTags = async () => {
@@ -29,7 +31,6 @@ export default function TagDisplay({ selectedTags, onTagsChange }) {
         }
         const data = await response.json();
         setTags(data);
-        // console.log('Fetched tags:', data);
       } catch (err) {
         setError(err.message);
       } finally {
