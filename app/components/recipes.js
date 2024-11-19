@@ -182,9 +182,7 @@ const Recipes = ({ recipes: initialRecipes }) => {
               <ul className="max-h-60 overflow-y-auto p-2">
                 {favoriteDetails.map((recipe) => (
                   <li key={recipe._id} className="p-2 hover:bg-gray-100">
-                    <Link href={`/Recipe/${recipe._id}`}>
-                      {recipe.title}
-                    </Link>
+                    <Link href={`/Recipe/${recipe._id}`}>{recipe.title}</Link>
                   </li>
                 ))}
               </ul>
@@ -233,10 +231,17 @@ const Recipes = ({ recipes: initialRecipes }) => {
             <p className="text-gray-600 mb-2 line-clamp-2">
               {recipe.description}
             </p>
+
+            {/* Prep and Cook Time */}
+            <p className="text-sm text-gray-600 flex items-center">
+              <FaClock className="text-[#1e455c] mr-2" />
+              {recipe.prep + recipe.cook} mins
+            </p>
             <p className="text-sm text-gray-600 flex items-center">
               <PiCookingPotDuotone className="text-[#1e455c] mr-2" />
               {recipe.cook} mins
             </p>
+
             <p className="text-sm text-gray-600 flex items-center">
               <FaUtensils className="text-[#1e455c] mr-2" />
               Serves {recipe.servings}
