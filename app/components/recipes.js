@@ -4,7 +4,6 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import {
-  FaHeart,
   FaCalendarDay,
   FaClock,
   FaUtensils,
@@ -13,6 +12,7 @@ import {
   FaListUl,
   FaCaretDown,
 } from "react-icons/fa";
+import { PiCookingPotDuotone, PiHeart } from "react-icons/pi";
 import Head from "next/head";
 import Carousel from "./Carousel";
 import { SortControl } from "./SortControl";
@@ -55,7 +55,7 @@ const Recipes = ({ recipes: initialRecipes }) => {
         // Store the complete favorite recipes data
         setFavoriteDetails(data.favorites);
         // Create a Set of just the IDs for quick lookup
-        const favoriteIds = new Set(data.favorites.map(recipe => recipe._id));
+        const favoriteIds = new Set(data.favorites.map((recipe) => recipe._id));
         setFavoritedRecipes(favoriteIds);
       } catch (err) {
         setError("Failed to load favorites. Please try again later.");
@@ -95,11 +95,11 @@ const Recipes = ({ recipes: initialRecipes }) => {
     }
 
     const isFavorited = favoritedRecipes.has(recipeId);
-    const recipe = recipes.find(r => r._id === recipeId);
+    const recipe = recipes.find((r) => r._id === recipeId);
 
     try {
       // Optimistically update UI
-      setFavoritedRecipes(prev => {
+      setFavoritedRecipes((prev) => {
         const updated = new Set(prev);
         if (isFavorited) {
           updated.delete(recipeId);
@@ -110,9 +110,9 @@ const Recipes = ({ recipes: initialRecipes }) => {
       });
 
       // Also update the favorite details
-      setFavoriteDetails(prev => {
+      setFavoriteDetails((prev) => {
         if (isFavorited) {
-          return prev.filter(r => r._id !== recipeId);
+          return prev.filter((r) => r._id !== recipeId);
         } else if (recipe) {
           return [...prev, recipe];
         }
@@ -133,7 +133,7 @@ const Recipes = ({ recipes: initialRecipes }) => {
       }
     } catch (err) {
       // Revert optimistic updates on error
-      setFavoritedRecipes(prev => {
+      setFavoritedRecipes((prev) => {
         const reverted = new Set(prev);
         if (isFavorited) {
           reverted.add(recipeId);
@@ -143,11 +143,11 @@ const Recipes = ({ recipes: initialRecipes }) => {
         return reverted;
       });
 
-      setFavoriteDetails(prev => {
+      setFavoriteDetails((prev) => {
         if (isFavorited && recipe) {
           return [...prev, recipe];
         } else {
-          return prev.filter(r => r._id !== recipeId);
+          return prev.filter((r) => r._id !== recipeId);
         }
       });
 
@@ -164,7 +164,6 @@ const Recipes = ({ recipes: initialRecipes }) => {
 
   return (
     <>
-
       <div className="container mx-auto p-4 pt-6 md:p-6 lg:p-12">
         {error && (
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
@@ -184,7 +183,7 @@ const Recipes = ({ recipes: initialRecipes }) => {
             onClick={() => setDropdownVisible(!dropdownVisible)}
             className="flex items-center text-gray-800 font-roboto"
           >
-            <FaHeart className="mr-2" size={20} />
+            <PiHeart className="mr-2" size={20} />
             <span>Favorites ({favoritedRecipes.size})</span>
             <FaCaretDown
               className={`ml-2 ${
@@ -200,7 +199,6 @@ const Recipes = ({ recipes: initialRecipes }) => {
               ) : (
                 <ul className="max-h-60 overflow-y-auto p-2">
                   {favoriteDetails.map((recipe) => (
-
                     <li key={recipe._id} className="p-2 hover:bg-gray-100">
                       <Link
                         href={`/Recipe/${recipe._id}`}
@@ -217,7 +215,6 @@ const Recipes = ({ recipes: initialRecipes }) => {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-
           {recipes.map((recipe) => (
             <Link
               href={`/Recipe/${recipe._id}`}
@@ -244,7 +241,7 @@ const Recipes = ({ recipes: initialRecipes }) => {
                   {recipe.title}
                 </h2>
                 <button
-                  className={`absolute top-2 right-2 z-10 ${
+                  className={`ml-2 ${
                     favoritedRecipes.has(recipe._id)
                       ? "text-red-500"
                       : "text-gray-400"
@@ -254,9 +251,8 @@ const Recipes = ({ recipes: initialRecipes }) => {
                     toggleFavorite(recipe._id);
                   }}
                 >
-                  <FaHeart size={24} />
+                  <PiHeart size={24} />
                 </button>
-
               </div>
 
               <div className="space-y-2">
@@ -292,77 +288,7 @@ const Recipes = ({ recipes: initialRecipes }) => {
       </div>
     </>
   );
-}
-
-
-
- 
-
-      
-
-                <div className="mb-4 relative w-full h-48">
-                  {recipe.images && recipe.images.length > 0 ? (
-                    <Image
-                      src={recipe.images[0]}
-                      alt={recipe.title}
-                      className="rounded-lg object-cover"
-                      fill
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    />
-                  ) : (
-                    <div className="w-full h-full bg-gray-200 rounded-lg flex items-center justify-center">
-                      <FaUtensils className="text-gray-400" size={32} />
-                    </div>
-                  )}
-                </div>
-
-                <h3 className="text-xl font-playfair font-bold mb-2 text-gray-800">
-                  {recipe.title}
-                </h3>
-
-                <p className="text-gray-600 mb-4 line-clamp-2">
-                  {recipe.description}
-                </p>
-
-                <div className="space-y-2">
-                  <div className="flex items-center text-gray-600">
-                    <FaClock className="mr-2" />
-                    <span>{recipe.cookingTime} mins</span>
-                  </div>
-
-                  <div className="flex items-center text-gray-600">
-                    <FaUtensilSpoon className="mr-2" />
-                    <span>
-                      {recipe.ingredients ? recipe.ingredients.length : 0}{" "}
-                      ingredients
-                    </span>
-                  </div>
-
-                  {recipe.category && (
-                    <div className="flex items-center text-gray-600">
-                      <FaTags className="mr-2" />
-                      <span>{recipe.category}</span>
-                    </div>
-                  )}
-
-                  {recipe.createdAt && (
-                    <div className="flex items-center text-gray-600">
-                      <FaCalendarDay className="mr-2" />
-                      <span>
-                        {new Date(recipe.createdAt).toLocaleDateString()}
-                      </span>
-                    </div>
-                  )}
-                </div>
-              </Link>
-            ))
-          ) : (
-            <p className="text-center text-gray-500">No recipes available.</p>
-          )}
-        </div>
-      </div>
-    </>
-  );
 };
+
 
 export default Recipes;
