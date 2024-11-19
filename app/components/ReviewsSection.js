@@ -1,6 +1,12 @@
 "use client";
 import { useState, useEffect } from "react";
 
+const LoadingSpinner = () => (
+  <div className="flex justify-center items-center">
+    <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
+  </div>
+);
+
 const StarRating = ({ averageRating, editable = false, onRatingChange }) => {
   const [hoverRating, setHoverRating] = useState(0);
 
@@ -50,6 +56,7 @@ const ReviewsSection = ({ recipeId }) => {
   const [editMode, setEditMode] = useState(false);
   const [editReviewId, setEditReviewId] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isReviewsLoading, setIsReviewsLoading] = useState(true);
   const [message, setMessage] = useState({ text: "", type: "" });
   const [sortOption, setSortOption] = useState({ sortBy: "rating", order: "desc" });
   const [averageRating, setAverageRating] = useState(0);
@@ -57,24 +64,31 @@ const ReviewsSection = ({ recipeId }) => {
   useEffect(() => {
     const fetchReviews = async () => {
       try {
+        setIsReviewsLoading(true);
         const response = await fetch(
           `/api/recipes/${recipeId}/reviews?sortBy=${sortOption.sortBy}&order=${sortOption.order}`
         );
         if (!response.ok) throw new Error("Failed to fetch reviews.");
         const data = await response.json();
         
-        // Use data.reviews with a fallback, set average rating from API response
         setReviews(data.reviews || []); 
         setAverageRating(data.averageRating || 0);
       } catch (error) {
         setMessage({ text: "Failed to fetch reviews.", type: "error" });
-        setReviews([]); // Ensure reviews is always an array
+        setReviews([]); 
+      } finally {
+        setIsReviewsLoading(false);
       }
     };
     fetchReviews();
   }, [recipeId, sortOption]);
 
   const handleReviewSubmit = async () => {
+    if (!newReview.rating) {
+      setMessage({ text: "Please select a rating.", type: "error" });
+      return;
+    }
+
     try {
       setIsLoading(true);
       const method = editMode ? "PUT" : "POST";
@@ -194,36 +208,50 @@ const ReviewsSection = ({ recipeId }) => {
         </select>
       </div>
 
-      <div className="space-y-4">
-        {reviews.map((review) => (
-          <div key={review._id} className="bg-white p-4 rounded-lg shadow-md">
-            <div className="flex justify-between items-center mb-2">
-              <div className="flex items-center space-x-2">
-                <span className="font-bold">{review.username || "Anonymous"}</span>
-                <StarRating averageRating={review.rating} />
+      {isReviewsLoading ? (
+        <LoadingSpinner />
+      ) : (
+        <div className="space-y-4">
+          {reviews.map((review) => (
+            <div 
+              key={review._id} 
+              className="bg-white p-4 rounded-lg shadow-md relative"
+            >
+              {isLoading && (
+                <div className="absolute inset-0 bg-white bg-opacity-50 flex items-center justify-center z-10">
+                  <LoadingSpinner />
+                </div>
+              )}
+              <div className="flex justify-between items-center mb-2">
+                <div className="flex items-center space-x-2">
+                  <span className="font-bold">{review.username || "Anonymous"}</span>
+                  <StarRating averageRating={review.rating} />
+                </div>
+                <div className="text-sm text-gray-500">
+                  {new Date(review.updatedAt || review.createdAt).toLocaleString()}
+                </div>
               </div>
-              <div className="text-sm text-gray-500">
-                {new Date(review.updatedAt || review.createdAt).toLocaleString()}
+              <p className="text-gray-800 mb-2">{review.comment}</p>
+              <div className="flex space-x-4">
+                <button
+                  onClick={() => handleEdit(review)}
+                  className="text-blue-500 hover:underline"
+                  disabled={isLoading}
+                >
+                  Edit
+                </button>
+                <button
+                  onClick={() => handleDelete(review._id)}
+                  className="text-red-500 hover:underline"
+                  disabled={isLoading}
+                >
+                  Delete
+                </button>
               </div>
             </div>
-            <p className="text-gray-800 mb-2">{review.comment}</p>
-            <div className="flex space-x-4">
-              <button
-                onClick={() => handleEdit(review)}
-                className="text-blue-500 hover:underline"
-              >
-                Edit
-              </button>
-              <button
-                onClick={() => handleDelete(review._id)}
-                className="text-red-500 hover:underline"
-              >
-                Delete
-              </button>
-            </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
 
       <div className="mt-8">
         <h3 className="text-xl font-bold mb-4">
@@ -262,9 +290,9 @@ const ReviewsSection = ({ recipeId }) => {
         <button
           onClick={handleReviewSubmit}
           disabled={isLoading}
-          className="px-4 py-2 bg-blue-500 text-white rounded-md disabled:opacity-50"
+          className="px-4 py-2 bg-blue-500 text-white rounded-md disabled:opacity-50 flex items-center justify-center"
         >
-          {isLoading ? "Submitting..." : editMode ? "Update Review" : "Add Review"}
+          {isLoading ? <LoadingSpinner /> : editMode ? "Update Review" : "Add Review"}
         </button>
       </div>
     </div>
