@@ -98,6 +98,7 @@ const RecipeCarousel = () => {
                       {recipe.title}
                     </h3>
                     <div className="flex items-center gap-4 text-gray-600">
+                      <starRating rating={recipe.averageRating || 0} />
                       <div className="flex items-center gap-1.5">
                         <FaClock className="w-4 h-4" />
                         <span className="text-sm">
