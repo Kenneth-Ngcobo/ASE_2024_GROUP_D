@@ -4,25 +4,21 @@ async function createReview(db, reviewData) {
   const collection = db.collection('recipes');
   const recipeId = reviewData.recipeId;
 
-  // Validation
   try {
     await validateRecipe(db, recipeId);
   } catch (error) {
-    console.error(`Recipe validation error: ${error.message}`);
     throw new Error(`Recipe validation error: ${error.message}`);
   }
 
-  // Prepare review object
   const review = {
-    _id: new ObjectId(),  // Using ObjectId for MongoDB compatibility
-    userId: reviewData.userId || 'test',
+    _id: new ObjectId(),
     rating: Number(reviewData.rating),
     comment: reviewData.comment,
+    username: reviewData.username || 'Anonymous',
     createdAt: new Date(),
     updatedAt: new Date(),
   };
 
-  // Attempt to update the database
   try {
     const updateResult = await collection.updateOne(
       { _id: recipeId },
@@ -32,21 +28,17 @@ async function createReview(db, reviewData) {
       throw new Error('Failed to add review to the recipe');
     }
   } catch (error) {
-    console.error(`Database update error: ${error.message}`);
     throw new Error(`Database update error: ${error.message}`);
   }
 
-  // Update average rating
   try {
     await updateAverageRating(db, recipeId);
   } catch (error) {
-    console.error(`Error updating average rating: ${error.message}`);
     throw new Error(`Error updating average rating: ${error.message}`);
   }
 
   return review;
 }
-
 
 async function validateRecipe(db, recipeId) {
   const recipe = await db.collection('recipes').findOne({ _id: recipeId });
@@ -65,22 +57,29 @@ async function updateAverageRating(db, recipeId) {
     );
 
     if (!recipe || !recipe.reviews || recipe.reviews.length === 0) {
-      // Set the average rating to 0 if there are no reviews
       await collection.updateOne(
         { _id: recipeId },
-        { $set: { averageRating: 0 } }
+        { 
+          $set: { 
+            averageRating: 0,
+            reviewCount: 0 
+          } 
+        }
       );
       return;
     }
 
-    // Calculate the total rating
     const totalRating = recipe.reviews.reduce((sum, review) => sum + review.rating, 0);
-    const averageRating = Number((totalRating / recipe.reviews.length).toFixed(1));  // Round to 1 decimal
+    const averageRating = Number((totalRating / recipe.reviews.length).toFixed(1));
 
-    // Update the average rating for the recipe
     await collection.updateOne(
       { _id: recipeId },
-      { $set: { averageRating } }
+      { 
+        $set: { 
+          averageRating,
+          reviewCount: recipe.reviews.length 
+        } 
+      }
     );
   } catch (error) {
     throw new Error(`Error updating average rating: ${error.message}`);
@@ -89,21 +88,18 @@ async function updateAverageRating(db, recipeId) {
 
 async function updateReview(db, reviewId, updateData) {
   const collection = db.collection('recipes');
-
-  // Convert reviewId to ObjectId if it's a string
   const objectId = typeof reviewId === 'string' ? new ObjectId(reviewId) : reviewId;
 
   const update = {
     $set: {
       "reviews.$.rating": Number(updateData.rating),
       "reviews.$.comment": updateData.comment,
-      "reviews.$.updatedAt": new Date(), // Update timestamp for the review
-      updatedAt: new Date(), // Update recipe's overall timestamp
+      "reviews.$.updatedAt": new Date(),
+      updatedAt: new Date(),
     }
   };
 
   try {
-    // Attempt to update the specific review within the recipe
     const result = await collection.updateOne(
       { "reviews._id": objectId },
       update
@@ -113,7 +109,6 @@ async function updateReview(db, reviewId, updateData) {
       throw new Error('Review not found');
     }
 
-    // Find the recipe containing the review to update the average rating
     const recipe = await collection.findOne(
       { "reviews._id": objectId },
       { projection: { _id: 1 } }
@@ -123,7 +118,6 @@ async function updateReview(db, reviewId, updateData) {
       await updateAverageRating(db, recipe._id);
     }
 
-    // Return the updated review from the recipe
     const updatedRecipe = await collection.findOne(
       { _id: recipe._id, "reviews._id": objectId },
       { projection: { "reviews.$": 1 } }
@@ -135,15 +129,12 @@ async function updateReview(db, reviewId, updateData) {
   }
 }
 
-
 async function deleteReview(db, reviewId) {
   const collection = db.collection('recipes');
 
   try {
-    // Convert reviewId to ObjectId if it's a string
     const objectId = typeof reviewId === 'string' ? new ObjectId(reviewId) : reviewId;
 
-    // Find the recipe containing the review
     const recipe = await collection.findOne(
       { "reviews._id": objectId },
       { projection: { _id: 1 } }
@@ -153,7 +144,6 @@ async function deleteReview(db, reviewId) {
       throw new Error('Review not found');
     }
 
-    // Remove the review from the recipe's reviews array
     const result = await collection.updateOne(
       { _id: recipe._id },
       {
@@ -162,7 +152,6 @@ async function deleteReview(db, reviewId) {
       }
     );
 
-    // Update the average rating after review deletion
     await updateAverageRating(db, recipe._id);
 
     return result;
@@ -177,7 +166,7 @@ async function getRecipeReviews(db, recipeId, sortOptions) {
   try {
     const recipe = await collection.findOne(
       { _id: recipeId },
-      { projection: { reviews: 1 } }
+      { projection: { reviews: 1, averageRating: 1, reviewCount: 1 } }
     );
 
     if (!recipe) {
@@ -196,16 +185,58 @@ async function getRecipeReviews(db, recipeId, sortOptions) {
           case 'rating':
             return (a.rating - b.rating) * multiplier;
           case 'date':
-            return (a.createdAt - b.createdAt) * multiplier;
+            return (new Date(a.createdAt) - new Date(b.createdAt)) * multiplier;
           default:
             return 0;
         }
       });
     }
 
-    return reviews;
+    // Return reviews with additional recipe metadata
+    return {
+      reviews,
+      averageRating: recipe.averageRating || 0,
+      reviewCount: recipe.reviewCount || 0
+    };
   } catch (error) {
     throw new Error(`Error getting recipe reviews: ${error.message}`);
+  }
+}
+
+async function getReviewStatistics(db, recipeId) {
+  const collection = db.collection('recipes');
+
+  try {
+    const recipe = await collection.findOne(
+      { _id: recipeId },
+      { projection: { reviews: 1 } }
+    );
+
+    if (!recipe || !recipe.reviews) {
+      return {
+        totalReviews: 0,
+        averageRating: 0,
+        ratingDistribution: [0, 0, 0, 0, 0]
+      };
+    }
+
+    const reviews = recipe.reviews;
+    const totalReviews = reviews.length;
+    const totalRating = reviews.reduce((sum, review) => sum + review.rating, 0);
+    const averageRating = totalReviews > 0 ? Number((totalRating / totalReviews).toFixed(1)) : 0;
+
+    // Calculate rating distribution
+    const ratingDistribution = [1, 2, 3, 4, 5].map(rating => 
+      reviews.filter(review => review.rating === rating).length
+    );
+
+    return {
+      totalReviews,
+      averageRating,
+      ratingDistribution
+    };
+  } catch (error) {
+    throw new Error(`Error getting review statistics: ${error.message}`);
   }
 }
 
@@ -214,5 +245,6 @@ module.exports = {
   updateReview,
   deleteReview,
   getRecipeReviews,
-  updateAverageRating
+  updateAverageRating,
+  getReviewStatistics
 };
