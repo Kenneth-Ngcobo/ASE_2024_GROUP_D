@@ -16,8 +16,8 @@ export async function GET(req) {
     const url = new URL(req.url);
     const searchParams = url.searchParams;
     const page = parseInt(searchParams.get("page")) || 1;
-    const limit = Math.min(parseInt(searchParams.get("limit")) || 50, 50);
-    const sort = searchParams.get("sort") || "createdAt"; // Default to createdAt
+    const limit = Math.min(parseInt(searchParams.get("limit")) || 20);
+    const sort = searchParams.get("sort") || "published"; // Default to createdAt
     const order = searchParams.get("order")?.toLowerCase() === "desc" ? -1 : 1;
     const searchTerm = searchParams.get("search") || "";
     const category = searchParams.get("category");
@@ -29,10 +29,10 @@ export async function GET(req) {
 
     // Validate sort parameter
     const validSortFields = {
-      'cookTime': 'cookingTime',
-      'prepTime': 'preparationTime',
+      'cook': 'cook',
+      'prep': 'prep',
       'instructions': 'instructions',
-      'createdAt': 'createdAt'  // Added creation date sorting
+      'published': 'published'  // Added creation date sorting
     };
 
     if (!validSortFields[sort]) {

@@ -4,6 +4,7 @@ import Pagination from "./components/pagination";
 import Recipes from "./components/recipes";
 import Footer from "./components/footer";
 import Loading from "./loading";
+import RecipeCarousel from "./components/RecipeCarousel";
 import { Suspense } from 'react';
 
 export default async function Home({ searchParams }) {
@@ -32,6 +33,7 @@ export default async function Home({ searchParams }) {
     // Return the rendered JS for the Home component
     return (
         <>
+        <RecipeCarousel />
             <Suspense fallback={<Loading />}>
                 {/*<CategoryList totalRecipes={recipes.totalRecipes} />*/}
                 {/* Render the Recipes component, passing the fetched recipes as props */}
@@ -40,6 +42,7 @@ export default async function Home({ searchParams }) {
                     initialSort={sort}
                     initialOrder={order}
                 />
+                
     
                 {/* Render the Pagination component, passing the current page and total pages */}
                 <Pagination
