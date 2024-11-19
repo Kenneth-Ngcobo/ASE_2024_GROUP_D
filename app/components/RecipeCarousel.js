@@ -76,9 +76,10 @@ const RecipeCarousel = () => {
                 key={recipe}
                 className="flex-none w-1/3 group cursor-pointer"
               >
+                <Link href={`/Recipe/${recipe._id}`}> 
                 <div className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
                   <div className="relative pt-[70%]">
-                    <Link href={`/Recipe/${recipe._id}`}>
+                    
                       <Image
                         src={
                           recipe.images && recipe.images.length > 0
@@ -90,7 +91,7 @@ const RecipeCarousel = () => {
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                         className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       />
-                    </Link>
+                    
                   </div>
                   <div className="p-6">
                     <h3 className="font-semibold text-xl text-gray-800 mb-3 line-clamp-2 group-hover:text-blue-600 transition-colors">
@@ -112,6 +113,7 @@ const RecipeCarousel = () => {
                     </div>
                   </div>
                 </div>
+                </Link>
               </div>
             ))}
           </div>
