@@ -16,11 +16,13 @@ const RecipeCarousel = () => {
     // Fetch recommended recipes from API
     const fetchTopRecipes = async () => {
       try {
-        const response = await fetch("/api/recipes/recommendations");
+        const response = await fetch("/api/recipes/recommendations?limit=10");
         if (!response.ok) throw new Error("Failed to fetch recipes");
 
         const recipes = await response.json();
-        setTopRecipes(recipes);
+        // Sort recipes by rating in descending order
+        const sortedRecipes = recipes.sort((a, b) => b.averageRating - a.averageRating);
+        setTopRecipes(sortedRecipes);
       } catch (error) {
         console.error("Error fetching top recipes:", error);
       }
@@ -32,8 +34,7 @@ const RecipeCarousel = () => {
   const visibleRecipes = 3;
   const maxIndex = Math.max(0, topRecipes.length - visibleRecipes);
 
-  const nextSlide = () =>
-    setCurrentIndex((prev) => Math.min(prev + 1, maxIndex));
+  const nextSlide = () => setCurrentIndex((prev) => Math.min(prev + 1, maxIndex));
   const prevSlide = () => setCurrentIndex((prev) => Math.max(prev - 1, 0));
 
   // Render star rating
@@ -59,7 +60,6 @@ const RecipeCarousel = () => {
       </div>
     );
   };
-
 
   return (
     <div className="w-full max-w-6xl mx-auto p-8 bg-gradient-to-b from-gray-50 to-white">
@@ -98,10 +98,10 @@ const RecipeCarousel = () => {
           >
             {topRecipes.map((recipe) => (
               <div
-                key={recipe}
+                key={recipe._id}
                 className="flex-none w-1/3 group cursor-pointer"
               >
-                <Link href={`/Recipe/${recipe._id}`}> 
+                <Link href={`/Recipe/${recipe._id}`}>             
                 <div className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
                   <div className="relative pt-[70%]">
                     
@@ -122,19 +122,21 @@ const RecipeCarousel = () => {
                     <h3 className="font-semibold text-xl text-gray-800 mb-3 line-clamp-2 group-hover:text-blue-600 transition-colors">
                       {recipe.title}
                     </h3>
-                    <div className="flex items-center gap-4 text-gray-600">
-                      <starRating rating={recipe.averageRating || 0} />
-                      <div className="flex items-center gap-1.5">
-                        <FaClock className="w-4 h-4" />
-                        <span className="text-sm">
-                          {recipe.cookTime || "30 mins"}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <FaUtensils className="w-4 h-4" />
-                        <span className="text-sm">
-                          serves {recipe.servings || "4"}
-                        </span>
+                    <div className="flex flex-col gap-3">
+                      <StarRating rating={recipe.averageRating || 0} />
+                      <div className="flex items-center gap-4 text-gray-600">
+                        <div className="flex items-center gap-1.5">
+                          <FaClock className="w-4 h-4" />
+                          <span className="text-sm">
+                            {recipe.cookTime || "30 mins"}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <FaUtensils className="w-4 h-4" />
+                          <span className="text-sm">
+                            serves {recipe.servings || "4"}
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </div>
