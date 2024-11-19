@@ -36,6 +36,31 @@ const RecipeCarousel = () => {
     setCurrentIndex((prev) => Math.min(prev + 1, maxIndex));
   const prevSlide = () => setCurrentIndex((prev) => Math.max(prev - 1, 0));
 
+  // Render star rating
+  const StarRating = ({ rating }) => {
+    const fullStars = Math.floor(rating);
+    const hasHalfStar = rating % 1 >= 0.5;
+    
+    return (
+      <div className="flex items-center gap-1">
+        {[...Array(5)].map((_, index) => (
+          <Star
+            key={index}
+            className={`w-4 h-4 ${
+              index < fullStars
+                ? 'fill-yellow-400 text-yellow-400'
+                : index === fullStars && hasHalfStar
+                ? 'fill-yellow-400 text-yellow-400'
+                : 'fill-gray-200 text-gray-200'
+            }`}
+          />
+        ))}
+        <span className="text-sm text-gray-600 ml-1">({rating.toFixed(1)})</span>
+      </div>
+    );
+  };
+
+
   return (
     <div className="w-full max-w-6xl mx-auto p-8 bg-gradient-to-b from-gray-50 to-white">
       <div className="flex justify-between items-center mb-8">
