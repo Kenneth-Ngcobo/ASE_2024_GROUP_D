@@ -1,10 +1,9 @@
 import { NextResponse } from 'next/server';
-import connectToDatabase from '../../../../../db';
+import connectToDatabase from '../../../../../../db';
 
-export async function GET(req) {
+export async function GET(req, { params }) {
     try {
-        const { searchParams } = new URL(req.url);
-        const email = searchParams.get('email');
+        const { email } = params;
 
         if (!email) {
             return NextResponse.json({ error: 'Email is required' }, { status: 400 });
@@ -30,7 +29,7 @@ export async function GET(req) {
 
 export async function PUT(req) {
     try {
-        const { email, fullName, phoneNumber } = await req.json();
+        const {  fullName, email, phoneNumber, password } = await req.json();
 
         if (!email) {
             return NextResponse.json({ error: 'Email is required' }, { status: 400 });
@@ -42,7 +41,7 @@ export async function PUT(req) {
         // Update user profile with provided data
         const updateResult = await usersCollection.updateOne(
             { email: email },
-            { $set: { fullName, phoneNumber } }
+            { $set: { fullName, phoneNumber, password } }
         );
 
         if (updateResult.modifiedCount === 0) {

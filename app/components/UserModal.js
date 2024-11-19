@@ -2,18 +2,16 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useAuth } from "../hook/useAuth";
+import { signIn, getSession, signOut } from "next-auth/react";
 import Link from "next/link";
-import { signIn } from "next-auth/react";
 
 export default function UserModal({ show, onClose }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [fullName, setfullName] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
   const [isCheckingUser, setIsCheckingUser] = useState(false);
-  const [isLogin, setIsLogin] = useState(null);
-  const [prevModal, setPrevModal] = useState(null);
-  const { signup, login, logout, error } = useAuth();
+  const [isLogin, setIsLogin] = useState(null); 
   const [loggedInUser, setLoggedInUser] = useState(null);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [isConfirmingLogout, setIsConfirmingLogout] = useState(false);
@@ -21,39 +19,67 @@ export default function UserModal({ show, onClose }) {
 
   useEffect(() => {
     const storedEmail = localStorage.getItem("loggedInUserEmail");
-    if (storedEmail) setLoggedInUser(storedEmail);
+    if (storedEmail) {
+      setLoggedInUser(storedEmail);
+    }
+
+    const fetchSession = async () => {
+      const session = await getSession();
+      if (session?.user?.email) {
+        setLoggedInUser(session.user.email);
+        localStorage.setItem("loggedInUserEmail", session.user.email);
+      }
+    };
+
+    fetchSession();
   }, []);
 
-  const handleContinueWithEmail = async () => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!email || !emailRegex.test(email)) {
-      alert("Please enter a valid email.");
+  const handleGoogleSignIn = async () => {
+    try {
+      const result = await signIn("google", { redirect: false });
+
+      if (result?.ok) {
+        const session = await getSession();
+        if (session?.user?.email) {
+          localStorage.setItem("loggedInUserEmail", session.user.email);
+          setLoggedInUser(session.user.email);
+          onClose();
+        } else {
+          alert("Error: Unable to retrieve email.");
+        }
+      } else {
+        alert("Google sign-in failed. Please try again.");
+      }
+    } catch (error) {
+      alert("Google sign-in failed. Please try again.");
+      console.error("Google sign-in error:", error);
+    }
+  };
+
+  const handleEmailCheck = async () => {
+    if (!email) {
+      alert("Please enter an email.");
       return;
     }
 
     setIsCheckingUser(true);
-    setPrevModal("email");
-
     try {
       const response = await fetch("/api/auth/checkuser", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
       });
 
       if (response.status === 200) {
-        setIsLogin(true);
+        setIsLogin(true); 
       } else if (response.status === 404) {
-        setIsLogin(false);
+        setIsLogin(false); 
       } else {
-        const errorData = await response.json();
-        alert(errorData.message || "An unexpected error occurred.");
+        alert("Error checking user. Please try again.");
       }
     } catch (error) {
-      console.error("Error checking user existence:", error);
-      alert("An error occurred. Please try again.");
+      alert("Error checking user. Please try again.");
+      console.error("Error checking user:", error);
     } finally {
       setIsCheckingUser(false);
     }
@@ -61,34 +87,38 @@ export default function UserModal({ show, onClose }) {
 
   const handleSubmit = async () => {
     setIsLoggingIn(true);
-
     try {
       if (isLogin) {
-        await login(email, password);
-        if (!error) {
-          alert("Login successful!");
+        const result = await signIn("credentials", {
+          email,
+          password,
+          redirect: false, 
+        });
+
+        if (result?.error) {
+          alert("Login failed. Please check your credentials.");
+        } else {
           setLoggedInUser(email);
           localStorage.setItem("loggedInUserEmail", email);
           router.push("/");
           onClose();
-        } else {
-          alert("Login failed. Please check your credentials.");
         }
       } else {
-        if (!fullName || !password) {
-          alert("Please fill in all fields.");
-          return;
-        }
+        const response = await fetch("/api/auth/signup", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ fullName, email, phone: phoneNumber, password }),
+        });
 
-        await signup(email, password, fullName);
-        if (!error) {
-          alert("Sign-up successful!");
+        const result = await response.json();
+
+        if (response.ok) {
           setLoggedInUser(email);
           localStorage.setItem("loggedInUserEmail", email);
           router.push("/");
           onClose();
         } else {
-          alert("Sign-up failed. Please try again.");
+          alert(result.message || "Sign-up failed. Please try again.");
         }
       }
     } finally {
@@ -102,9 +132,9 @@ export default function UserModal({ show, onClose }) {
 
   const confirmLogout = async () => {
     setIsConfirmingLogout(false);
-    await logout();
-    setLoggedInUser(null);
     localStorage.removeItem("loggedInUserEmail");
+    setLoggedInUser(null);
+    await signOut();
     alert("Logged out successfully!");
     router.push("/");
   };
@@ -114,9 +144,16 @@ export default function UserModal({ show, onClose }) {
   };
 
   const handleBack = () => {
-    setIsLogin(null);
-    setPrevModal(null);
-    setEmail("");
+    setIsLogin(null); 
+    setFullName("");
+    setPhoneNumber("");
+  };
+
+  const getModalTitle = () => {
+    if (isCheckingUser) return "Verifying...";
+    if (isLoggingIn) return "Logging in...";
+    if (isLogin === null) return "Sign Up or Login";
+    return isLogin ? "Login" : "Sign Up";
   };
 
   if (!show) return null;
@@ -131,7 +168,7 @@ export default function UserModal({ show, onClose }) {
           &times;
         </button>
 
-        {isLogin !== null && prevModal && (
+        {isLogin !== null && (
           <button
             onClick={handleBack}
             className="absolute top-3 left-3 text-gray-500 text-2xl"
@@ -139,6 +176,8 @@ export default function UserModal({ show, onClose }) {
             &#8592;
           </button>
         )}
+
+        <h2 className="text-2xl font-bold text-center mb-4">{getModalTitle()}</h2>
 
         {loggedInUser ? (
           <div className="text-center">
@@ -162,24 +201,6 @@ export default function UserModal({ show, onClose }) {
           </div>
         ) : (
           <>
-            {isCheckingUser ? (
-              <h2 className="text-2xl font-bold text-center mb-4">
-                Verifying...
-              </h2>
-            ) : isLoggingIn ? (
-              <h2 className="text-2xl font-bold text-center mb-4">
-                Logging in...
-              </h2>
-            ) : isLogin === null ? (
-              <h2 className="text-2xl font-bold text-center mb-4">
-                Sign Up or Login
-              </h2>
-            ) : isLogin ? (
-              <h2 className="text-2xl font-bold text-center mb-4">Login</h2>
-            ) : (
-              <h2 className="text-2xl font-bold text-center mb-4">Sign Up</h2>
-            )}
-
             {isLogin === null && (
               <input
                 type="email"
@@ -194,17 +215,16 @@ export default function UserModal({ show, onClose }) {
               <>
                 <input
                   type="text"
-                  placeholder="full Name"
+                  placeholder="Full Name"
                   value={fullName}
-                  onChange={(e) => setfullName(e.target.value)}
+                  onChange={(e) => setFullName(e.target.value)}
                   className="w-full border rounded-md p-3 text-gray-700 mb-4"
                 />
-
                 <input
-                  type="email"
-                  placeholder="Email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  type="tel"
+                  placeholder="Phone Number"
+                  value={phoneNumber}
+                  onChange={(e) => setPhoneNumber(e.target.value)}
                   className="w-full border rounded-md p-3 text-gray-700 mb-4"
                 />
               </>
@@ -222,7 +242,7 @@ export default function UserModal({ show, onClose }) {
 
             {isLogin === null && (
               <button
-                onClick={handleContinueWithEmail}
+                onClick={handleEmailCheck}
                 className="w-full bg-teal-700 text-white py-3 rounded-md mb-4"
               >
                 Continue with Email
@@ -242,8 +262,10 @@ export default function UserModal({ show, onClose }) {
 
         <div className="text-center text-gray-500 mb-4">OR</div>
 
-
-        <button className="w-full border rounded-md py-3 flex items-center justify-center mb-2">
+        <button
+          onClick={handleGoogleSignIn}
+          className="w-full border rounded-md py-3 flex items-center justify-center mb-2"
+        >
           <Image
             src="/google.svg"
             alt="Google icon"
@@ -254,39 +276,22 @@ export default function UserModal({ show, onClose }) {
           Continue with Google
         </button>
 
-        <p className="text-gray-500 text-xs text-center mt-4">
-          By continuing you agree to our{" "}
-          <Link href="#" className="underline">
-            Terms of Use
-          </Link>
-          . Learn how we collect, use, and share your data in our{" "}
-          <Link href="#" className="underline">
-            Privacy Policy
-          </Link>
-        </p>
-      </div>
-
-      {/* Logout Confirmation Modal */}
-      {isConfirmingLogout && (
-        <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-50">
-          <div className="bg-white p-6 rounded-md shadow-lg text-center">
-            <h2 className="text-lg font-bold mb-4">Confirm Logout</h2>
-            <p className="mb-4">Are you sure you want to log out?</p>
-            <button
-              onClick={confirmLogout}
-              className="bg-red-500 text-white py-2 px-4 rounded-md mr-2"
-            >
-              Yes
-            </button>
-            <button
-              onClick={cancelLogout}
-              className="bg-gray-300 text-gray-700 py-2 px-4 rounded-md"
-            >
-              No
-            </button>
+        {isConfirmingLogout && (
+          <div className="text-center mt-4">
+            <p>Are you sure you want to log out?</p>
+            <div className="flex justify-center gap-4 mt-4">
+              <button onClick={confirmLogout} className="bg-teal-700 text-white px-4 py-2 rounded-md">
+                Yes
+              </button>
+              <button onClick={cancelLogout} className="bg-gray-400 text-white px-4 py-2 rounded-md">
+                No
+              </button>
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }
+
+

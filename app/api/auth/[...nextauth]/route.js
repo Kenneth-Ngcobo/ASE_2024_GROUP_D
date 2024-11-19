@@ -3,6 +3,9 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import bcrypt from "bcryptjs";
 import connectToDatabase from "../../../../db";
+import { OAuth2Client } from "google-auth-library";
+
+const client = new OAuth2Client(process.env.AUTH_GOOGLE_ID);
 
 export const authOptions = {
     providers: [
@@ -17,7 +20,11 @@ export const authOptions = {
                 const user = await db.collection("users").findOne({ email: credentials.email });
 
                 if (user && await bcrypt.compare(credentials.password, user.password)) {
-                    return { id: user._id, email: user.email };
+                    return {
+                        id: user._id.toString(),
+                        email: user.email,
+                        name: user.name
+                    };
                 }
                 return null;
             },
@@ -33,25 +40,43 @@ export const authOptions = {
             if (user) {
                 token.id = user.id;
                 token.email = user.email;
+                token.name = user.name;
             }
             return token;
         },
         async session({ session, token }) {
-            session.user.id = token.id;
-            session.user.email = token.email;
+            if (token) {
+                session.user.id = token.id;
+                session.user.email = token.email;
+                session.user.name = token.name;
+            }
             return session;
         },
         async signIn({ user, account }) {
             if (account.provider === "google") {
-                const db = await connectToDatabase();
-                const existingUser = await db.collection("users").findOne({ email: user.email });
-                if (!existingUser) {
-                    await db.collection("users").insertOne({
-                        email: user.email,
-                        name: user.name,
-                        image: user.image,
-                        createdAt: new Date(),
+                const { id_token } = account;
+                try {
+                    // Verify the Google ID token
+                    const ticket = await client.verifyIdToken({
+                        idToken: id_token,
+                        audience: process.env.AUTH_GOOGLE_ID,
                     });
+                    const payload = ticket.getPayload();
+
+                    const db = await connectToDatabase();
+                    const existingUser = await db.collection("users").findOne({ email: payload.email });
+
+                    if (!existingUser) {
+                        await db.collection("users").insertOne({
+                            email: payload.email,
+                            name: payload.name,
+                            image: payload.picture,
+                            createdAt: new Date(),
+                        });
+                    }
+                } catch (error) {
+                    console.error("Google ID token verification failed:", error);
+                    return false; // Prevent sign-in if verification fails
                 }
             }
             return true;
@@ -62,18 +87,3 @@ export const authOptions = {
 const handler = NextAuth(authOptions);
 
 export { handler as GET, handler as POST }
-
-
-
-// // export { GET, POST} from "../../../../auth";
-// import { handlers } from "../../../../auth";
-
-// // /**
-// //  * Re-exports the authentication handlers for handling HTTP requests.
-// //  * 
-// //  * @constant
-// //  * @type {{ GET: function, POST: function }}
-// //  * @property {function} GET - The handler function for GET requests related to authentication.
-// //  * @property {function} POST - The handler function for POST requests related to authentication.
-// //  */
-// export const { GET, POST } = handlers;

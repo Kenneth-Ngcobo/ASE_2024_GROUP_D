@@ -15,9 +15,11 @@ export default function IngDisplay({ selectedIngs = [], onIngsChange = () => {} 
   useEffect(() => {
     const urlIngs = searchParams.get('ingredients')?.split(',') || [];
     if (urlIngs.length && urlIngs !== ' ' && urlIngs !== '') {
-      onIngsChange(urlIngs); 
+      if (urlIngs.join(',') !== selectedIngs.join(',')) {
+        onIngsChange(urlIngs); // Populate selectedIngs from URL
+      }
     }
-  }, [searchParams , onIngsChange]);
+  }, [searchParams]); // Only dependent on searchParams
 
   useEffect(() => {
     const fetchIngs = async () => {
@@ -28,7 +30,6 @@ export default function IngDisplay({ selectedIngs = [], onIngsChange = () => {} 
         }
         const data = await response.json();
         setIngs(data);
-        console.log('Fetched ingredients:', data);
       } catch (err) {
         setError(err.message);
       } finally {
