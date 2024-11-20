@@ -1,5 +1,3 @@
-// pages/recipes/[id].js
-
 import { Suspense } from 'react';
 import Image from 'next/image';
 import BackButton from '../../components/BackButton';
@@ -91,10 +89,10 @@ export default async function RecipePage({ params }) {
                                 {recipe.title || 'Untitled Recipe'}
                             </h1>
                             <div className="flex flex-wrap gap-3 mb-6">
-                             {recipe.tags?.map((tag, index) => (
-                            <span key={index} className="px-4 py-2 bg-[#F5F3F3] dark:bg-gray-800 dark:text-gray-400 hover:bg-[#e5e3e3] text-[#415462] rounded-2xl text-sm font-medium uppercase tracking-wide transition-colors">
-                             {tag}
-                            </span>
+                                {recipe.tags?.map((tag, index) => (
+                                    <span key={index} className="px-4 py-2 bg-[#F5F3F3] dark:bg-gray-800 dark:text-gray-400 hover:bg-[#e5e3e3] text-[#415462] rounded-2xl text-sm font-medium uppercase tracking-wide transition-colors">
+                                        {tag}
+                                    </span>
                                 ))}
                             </div>
                         </div>
