@@ -1,5 +1,5 @@
-export default function manifest() {
-    return {
+export async function GET(request) {
+    const manifest = {
       name: 'Next.js App',
       short_name: 'Next.js App',
       description: 'Next.js App',
@@ -9,10 +9,16 @@ export default function manifest() {
       theme_color: '#fff',
       icons: [
         {
-          src: '/public/favicon/android-chrome-192x192.png',
+          src: '/Kwa.png',
           sizes: '192x192',
           type: 'image/png',
         },
       ],
-    }
+    };
+    return new Response(JSON.stringify(manifest), {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
   }
+  
