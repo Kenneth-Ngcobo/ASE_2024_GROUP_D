@@ -6,13 +6,17 @@ export async function GET(params) {
         const db = await connectToDatabase();
         const { id } = params;
 
-        // Convert string ID to ObjectId if needed
-        const ObjectId = require('mongodb').ObjectId;
-        const recipeId = new ObjectId(id);
+        // Validate the id
+        if (!id) {
+            return NextResponse.json(
+                { error: 'Recipe ID is required' },
+                { status: 400 }
+            );
+        }
 
         const recipe = await db.collection('recipes').findOne(
-            { _id: recipeId },
-            { projection: { allergens: 0 } }
+            { _id: idd },
+            { projection: { allergens: 1 } }
         );
 
         if (!recipe) {
@@ -29,7 +33,7 @@ export async function GET(params) {
     } catch (error) {
         console.error('Error fetching allergens:', error);
         return NextResponse.json(
-            { error: 'Failed to fetch allergens' },
+            { error: 'Failed to fetch allergens', details: error.message },
             { status: 500 }
         );
     }
@@ -42,11 +46,16 @@ export async function PUT(request, { params }) {
         const { id } = params;
         const { allergens } = await request.json();
 
-        const ObjectId = require('mongodb').ObjectId;
-        const recipeId = new ObjectId(id);
+        // Validate inputs
+        if (!id) {
+            return NextResponse.json(
+                { error: 'Recipe ID is required' },
+                { status: 400 }
+            );
+        }
 
         const result = await db.collection('recipes').updateOne(
-            { _id: recipeId },
+            { _id: id },
             { $set: { allergens } }
         );
 
@@ -61,7 +70,7 @@ export async function PUT(request, { params }) {
     } catch (error) {
         console.error('Error updating allergens:', error);
         return NextResponse.json(
-            { error: 'Failed to update allergens' },
+            { error: 'Failed to update allergens', details: error.message },
             { status: 500 }
         );
     }
