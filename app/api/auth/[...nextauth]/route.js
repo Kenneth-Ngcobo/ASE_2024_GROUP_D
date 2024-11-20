@@ -20,11 +20,7 @@ export const authOptions = {
                 const user = await db.collection("users").findOne({ email: credentials.email });
 
                 if (user && await bcrypt.compare(credentials.password, user.password)) {
-                    return {
-                        id: user._id.toString(),
-                        email: user.email,
-                        name: user.name
-                    };
+                    return { id: user._id, email: user.email };
                 }
                 return null;
             },
@@ -40,16 +36,12 @@ export const authOptions = {
             if (user) {
                 token.id = user.id;
                 token.email = user.email;
-                token.name = user.name;
             }
             return token;
         },
         async session({ session, token }) {
-            if (token) {
-                session.user.id = token.id;
-                session.user.email = token.email;
-                session.user.name = token.name;
-            }
+            session.user.id = token.id;
+            session.user.email = token.email;
             return session;
         },
         async signIn({ user, account }) {
@@ -87,3 +79,18 @@ export const authOptions = {
 const handler = NextAuth(authOptions);
 
 export { handler as GET, handler as POST }
+
+
+
+// // export { GET, POST} from "../../../../auth";
+// import { handlers } from "../../../../auth";
+
+// // /**
+// //  * Re-exports the authentication handlers for handling HTTP requests.
+// //  * 
+// //  * @constant
+// //  * @type {{ GET: function, POST: function }}
+// //  * @property {function} GET - The handler function for GET requests related to authentication.
+// //  * @property {function} POST - The handler function for POST requests related to authentication.
+// //  */
+// export const { GET, POST } = handlers;

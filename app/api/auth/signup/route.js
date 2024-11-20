@@ -15,7 +15,7 @@ import connectToDatabase from "../../../../db";
  *                             - If the user is created successfully, a 201 status with a success message is returned.
  */
 export async function POST(request) {
-    const { fullName, email, phoneNumber, password } = await request.json();
+    const { email, password } = await request.json();
     const db = await connectToDatabase();
 
     const existingUser = await db.collection("users").findOne({ email });
@@ -24,14 +24,7 @@ export async function POST(request) {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    await db.collection("users").insertOne({ fullName, email, phoneNumber, password: hashedPassword });
+    await db.collection("users").insertOne({ email, password: hashedPassword });
 
     return new Response(JSON.stringify({ message: "User created successfully" }), { status: 201 });
 }
-
-
-
-
-
-
-

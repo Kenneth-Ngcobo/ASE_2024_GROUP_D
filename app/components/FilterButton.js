@@ -9,7 +9,7 @@ import StepsDropdown from "./StepsDropdown"; // Import StepsDropdown
 export const FilterModal = ({ onClose }) => {
     const [cookTime, setCookTime] = useState(0);
     const [selectedTags, setSelectedTags] = useState([]); // State to store selected tags
-    const [selectedIngs, setSelectedIngs] = useState([]); // State to store selected ingredients
+    const [selectedIngs, setSelectedIngs] = useState([]);// State to store selected ingredients
     const [steps, setSteps] = useState(0); // State for steps
     const searchParams = useSearchParams();
     const router = useRouter();
@@ -34,52 +34,41 @@ export const FilterModal = ({ onClose }) => {
         const value = Number(e.target.value);
         setValue(snapToNearest(value));
     };
-
     const handleStepsChange = (steps) => {
         setSteps(steps);
     };
-
     const handleTagsChange = (tags) => {
-        console.log("Handling tags change:", tags); // Log the selected tags
-        if (JSON.stringify(tags) !== JSON.stringify(selectedTags)) {
-            setSelectedTags(tags);
-            console.log("Updated Selected Tags:", tags); // Log updated tags
-        }
+        setSelectedTags(tags);
+        console.log("Selected Tags", tags); // Log selected tags
     };
-
     const handleIngsChange = (ing) => {
-        console.log("Handling ingredients change:", ing); // Log the selected ingredients
-        if (JSON.stringify(ing) !== JSON.stringify(selectedIngs)) {
-            setSelectedIngs(ing);
-            console.log("Updated Selected Ingredients:", ing); // Log updated ingredients
-        }
-    };
+        setSelectedIngs(ing);
+        console.log("Selected Ings", ing); // Log selected ingredients
+    }
 
     const handleSubmit = async () => {
         const currentQuery = Object.fromEntries(searchParams.entries());
-
-        console.log("Current Query Params Before Submit:", currentQuery); // Log current query
-
-        if (steps === 0) {
-            setSteps(""); // Clear steps if zero
+        if (steps===0){
+            setSteps('')
         }
-
+        // Create a new query including selected tags
         const newQuery = {
             ...currentQuery,
             page: 1, // Reset to the first page
             tags: selectedTags.join(","), // Join tags for the query string
             ingredients: selectedIngs.join(","), // Join ingredients for the query string
-            instructions: steps,
+            instructions: steps
+
+            // Add any other parameters as needed
         };
+      // Construct the new query string
+      const queryString = new URLSearchParams(newQuery).toString();
 
-        const queryString = new URLSearchParams(newQuery).toString();
+      // Push the new URL with updated query
+      router.push(`?${queryString}`);
 
-        // Only push if the query string is different
-        if (window.location.search !== `?${queryString}`) {
-            console.log("Updating URL with New Query:", queryString); // Log query string
-            router.push(`?${queryString}`);
-            onClose(); // Close the modal after submitting
-        }
+        // Optional: Close the modal after updating (if needed)
+        onClose(); 
     };
 
     return (
@@ -90,7 +79,7 @@ export const FilterModal = ({ onClose }) => {
                     <h2 className="text-lg font-bold text-gray-800 dark:text-white">Filter</h2>
                     <button
                         onClick={onClose}
-                        className="text-gray-500 dark:text-white hover:text-gray-700 dark:hover:text-green-500 text-xl"
+                        className="text-gray-500  dark:text-white hover:text-gray-700 dark:hover:text-green-500 text-xl"
                     >
                         &times;
                     </button>
@@ -104,11 +93,11 @@ export const FilterModal = ({ onClose }) => {
                         <TagDisplay selectedTags={selectedTags} onTagsChange={handleTagsChange} /> {/* Pass selected tags and function */}
                         <IngDisplay selectedIngs={selectedIngs} onIngsChange={handleIngsChange} />
                         <StepsDropdown selectedSteps={steps} onStepsChange={handleStepsChange} />
+                        
                     </div>
 
-                    {/* Time Slider */}
-                    {/* Uncomment to enable */}
-                    {/* <div className="flex flex-col">
+                    {/* Time Slider
+                    <div className="flex flex-col">
                         <label className="text-sm font-medium text-gray-700">Time for meal</label>
                         <input
                             type="range"
@@ -141,7 +130,7 @@ export const FilterModal = ({ onClose }) => {
                 <div className="flex justify-end gap-2">
                     <button
                         onClick={onClose}
-                        className="px-4 py-2 text-white bg-red-600 border rounded-md hover:bg-gray-100"
+                        className="px-4 py-2 text-white  bg-red-600 border   rounded-md hover:bg-gray-100"
                     >
                         Cancel
                     </button>
@@ -186,3 +175,4 @@ const ParentComponent = () => {
 };
 
 export default ParentComponent;
+
