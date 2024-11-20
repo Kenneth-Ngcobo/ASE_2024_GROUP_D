@@ -90,7 +90,7 @@ export default function UserModal({ show, onClose }) {
           setError("Unable to retrieve email from Google login");
         }
       } else {
-        setError("Google sign-in failed. Please try again");
+        setSuccessMessage("Veryfing");
       }
     } catch (error) {
       setError("An error occurred during Google sign-in");
