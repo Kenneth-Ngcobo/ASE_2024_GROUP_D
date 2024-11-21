@@ -70,6 +70,7 @@ export async function PATCH(request, { params }) {
             );
         }
 
+
         // Update recipe with all required fields in one operation
        const emailData= url.searchParams.get('email')
        console.log("Description to update:", description);
@@ -91,19 +92,20 @@ export async function PATCH(request, { params }) {
 
 
         // Handle recipe not found or no update
-        if (!result.value) {
+        if (!result) {
             return NextResponse.json(
                 { error: 'Recipe not found or no changes made' },
                 { status: 404 }
             );
         }
 
+
         // Return success response with updated data
         return NextResponse.json({
             message: 'Recipe updated successfully',
-            description: result.value.description,
-            lastEditedBy: result.value.lastEditedBy,
-            lastEditedAt: result.value.lastEditedAt
+            description: result.description,
+            lastEditedBy: result.lastEditedBy,
+            lastEditedAt: result.lastEditedAt
         });
 
     } catch (error) {
