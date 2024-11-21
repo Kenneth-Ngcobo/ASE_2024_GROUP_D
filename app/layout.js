@@ -7,6 +7,7 @@ import { ThemeProvider } from "next-themes";
 import Providers from "./providers";
 import { Montserrat } from "next/font/google";
 import DynamicManifest from "./components/DanamicLink";
+import RegisterServiceWorker from "./components/Register-Service-Worker";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -75,6 +76,7 @@ export default function RootLayout({ children }) {
             </Suspense>
           </ThemeProvider>
         </Providers>
+        <RegisterServiceWorker /> {/* Register the service worker */}
       </body>
     </html>
   );
