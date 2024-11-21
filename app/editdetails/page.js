@@ -15,6 +15,9 @@ export default function EditDetails() {
     password: "********",
   });
   const [isEditing, setIsEditing] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+
   const router = useRouter();
 
   useEffect(() => {
@@ -46,7 +49,39 @@ export default function EditDetails() {
     fetchUserData();
   }, []);
 
-  const handleToggleEdit = () => setIsEditing((prev) => !prev);
+  const handleToggleEdit = () => {
+    setIsEditing((prev) => !prev);
+    setShowSuccessMessage(false);
+  };
+
+  const handleUpdate = async (e) => {
+    e.preventDefault();
+    try {
+      const loggedInUserEmail = localStorage.getItem("loggedInUserEmail");
+      if (!loggedInUserEmail) throw new Error("User email not found");
+
+      const response = await fetch(
+        `/api/auth/user/${loggedInUserEmail}/profile`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: userDetails.email,
+            fullName: userDetails.fullName,
+            phoneNumber: userDetails.phoneNumber,
+          }),
+        }
+      );
+      if (!response.ok) throw new Error("Failed to update user details");
+      setShowSuccessMessage(true);
+      setIsEditing(false);
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      alert("Failed to update");
+    }
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -56,139 +91,136 @@ export default function EditDetails() {
     }));
   };
 
-  const handleLogout = async () => {
-    try {
-      await logout();
-      localStorage.removeItem("loggedInUserEmail");
-      alert("Logged out successfully!");
-      router.push("/");
-      router.refresh();
-    } catch (error) {
-      console.error("Logout failed:", error);
-    }
-  };
+  if (loading) {
+    return <LoadingSpinner />;
+  }
 
   return (
-    <Suspense fallback={<Loading />}>
-      <div className="flex min-h-screen bg-gray-100">
-        {/* Left Sidebar */}
-        <div className="w-1/4 bg-teal-700 text-white p-6 space-y-12">
-          <h1 className="text-3xl font-semibold mb-8">KWAMAIMAI</h1>
-          <div className="mb-12">
-            <p className="text-2xl">Account:</p>
-            <p className="text-lg opacity-75 mt-2">
-              Logged in as {userDetails.email}
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex justify-center items-center p-4">
+      <div className="bg-white rounded-2xl shadow-xl max-w-md w-full transform transition-all duration-300 ease-in-out">
+        <div className="p-6 space-y-6">
+          {/* Header */}
+          <div className="space-y-2">
+            <h1 className="text-3xl font-bold text-teal-700 tracking-tight">
+              KWAMAIMAI
+            </h1>
+            <p className="text-sm text-gray-500">
+              Logged in as:{" "}
+              <span className="font-medium text-gray-700">{userDetails.email}</span>
             </p>
           </div>
-          <button
-            onClick={handleLogout}
-            className="w-full bg-red-500 text-white py-3 rounded-md mb-8"
-          >
-            Log Out
-          </button>
-          <Link
-            href="/"
-            className="text-lg text-center block mt-8 hover:underline"
-          >
-            Back to Website
-          </Link>
-        </div>
 
-        {/* Right Profile Edit Section */}
-        <main className="w-3/4 p-8 space-y-8">
-          <div className="bg-white shadow-lg rounded-xl p-6">
-            <h2 className="text-2xl font-semibold text-gray-800">
-              Welcome back!
-            </h2>
-            <p className="text-sm text-gray-500">{userDetails.email}</p>
-          </div>
+          {/* Success Message */}
+          {showSuccessMessage && (
+            <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+              <p className="text-green-700 font-medium">
+                Profile updated successfully!
+              </p>
+            </div>
+          )}
 
-          <div className="bg-white shadow-lg rounded-xl p-8">
-            <h3 className="text-xl font-semibold mb-4">Edit Profile</h3>
-
-            {isEditing ? (
-              <div className="space-y-6">
-                <label className="block">
-                  <span className="block text-sm font-medium text-gray-700">
-                    Full Name:
-                  </span>
-                  <input
-                    type="text"
-                    name="fullName"
-                    value={userDetails.fullName}
-                    onChange={handleInputChange}
-                    className="w-full border-2 border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-teal-600"
-                  />
+          {/* Edit Form */}
+          {isEditing ? (
+            <form className="space-y-4" onSubmit={handleUpdate}>
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">
+                  Full Name
                 </label>
-
-                <label className="block">
-                  <span className="block text-sm font-medium text-gray-700">
-                    Email:
-                  </span>
-                  <input
-                    type="text"
-                    name="email"
-                    value={userDetails.email}
-                    onChange={handleInputChange}
-                    className="w-full border-2 border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-teal-600"
-                    disabled
-                  />
-                </label>
-
-                <label className="block">
-                  <span className="block text-sm font-medium text-gray-700">
-                    Password:
-                  </span>
-                  <input
-                    type="password"
-                    name="password"
-                    value={
-                      userDetails.password === "********"
-                        ? ""
-                        : userDetails.password
-                    }
-                    onChange={handleInputChange}
-                    placeholder="Enter new password"
-                    className="w-full border-2 border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-teal-600"
-                  />
-                </label>
-
-                <div className="flex space-x-4">
-                  <button
-                    onClick={handleToggleEdit}
-                    className="flex-1 bg-teal-700 text-white py-3 rounded-md font-semibold hover:bg-teal-800 transition duration-200 ease-in-out"
-                  >
-                    Save Changes
-                  </button>
-                  <button
-                    onClick={() => setIsEditing(false)}
-                    className="flex-1 bg-gray-300 text-gray-700 py-3 rounded-md font-semibold hover:bg-gray-400 transition duration-200 ease-in-out"
-                  >
-                    Cancel
-                  </button>
-                </div>
+                <input
+                  type="text"
+                  name="fullName"
+                  value={userDetails.fullName}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                />
               </div>
-            ) : (
-              <div className="space-y-4">
-                <p className="text-lg text-gray-600">
-                  Full Name: {userDetails.fullName}
-                </p>
-                <p className="text-lg text-gray-600">
-                  Email: {userDetails.email}
-                </p>
-                <p className="text-lg text-gray-600">Password: ********</p>
 
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">
+                  Email
+                </label>
+                <input
+                  type="email"
+                  name="email"
+                  value={userDetails.email}
+                  disabled
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-500"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">
+                  Phone Number
+                </label>
+                <input
+                  type="tel"
+                  name="phoneNumber"
+                  value={userDetails.phoneNumber}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                  placeholder="Enter your phone number"
+                />
+              </div>
+
+              <div className="flex gap-4 pt-4">
                 <button
-                  onClick={handleToggleEdit}
-                  className="w-full bg-teal-700 text-white py-3 rounded-md font-semibold hover:bg-teal-800 transition duration-200 ease-in-out"
+                  type="submit"
+                  className="flex-1 bg-teal-600 hover:bg-teal-700 text-white font-medium py-2 px-4 rounded-lg transition duration-150 ease-in-out"
                 >
-                  Edit Details
+                  Save Changes
+                </button>
+                <button
+                  type="button"
+                  onClick={handleToggleEdit}
+                  className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 px-4 rounded-lg transition duration-150 ease-in-out"
+                >
+                  Cancel
                 </button>
               </div>
-            )}
+            </form>
+          ) : (
+            <div className="space-y-4">
+              <div className="bg-gray-50 rounded-lg p-4 space-y-3">
+                <div>
+                  <p className="text-sm text-gray-500">Full Name</p>
+                  <p className="text-gray-900 font-medium">{userDetails.fullName}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">Email</p>
+                  <p className="text-gray-900 font-medium">{userDetails.email}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">Phone Number</p>
+                  <p className="text-gray-900 font-medium">
+                    {userDetails.phoneNumber || "Not set"}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">Password</p>
+                  <p className="text-gray-900 font-medium">********</p>
+                </div>
+              </div>
+
+              <button
+                onClick={handleToggleEdit}
+                className="w-full bg-teal-600 hover:bg-teal-700 text-white font-medium py-2 px-4 rounded-lg transition duration-150 ease-in-out"
+              >
+                Edit Details
+              </button>
+            </div>
+          )}
+
+          {/* Footer Buttons */}
+          <div className="space-y-4">
+            <button
+              onClick={() => router.push('/')}
+              className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 px-4 rounded-lg transition duration-150 ease-in-out"
+            >
+              Back to Website
+            </button>
           </div>
-        </main>
+        </div>
       </div>
-    </Suspense>
+    </div>
   );
 }
