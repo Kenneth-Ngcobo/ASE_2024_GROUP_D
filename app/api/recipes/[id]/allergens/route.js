@@ -1,12 +1,6 @@
 import { NextResponse } from "next/server";
 import connectToDatabase from "../../../../../db";
 
-// Common allergens list as a fallback
-const COMMON_ALLERGENS = [
-    "nut", "soy", "wheat", "milk", "cheese", "cream", "egg", "fish",
-    "sesame", "mustard", "corn", "clam", "mussel", "oyster", "celery"
-];
-
 export async function GET(request, { params }) {
     try {
         const db = await connectToDatabase();
@@ -19,6 +13,18 @@ export async function GET(request, { params }) {
                 { status: 400 }
             );
         }
+
+        // Fetch common allergens from the database
+        const allergensCollection = db.collection('commonAllergens');
+        const commonAllergens = await allergensCollection.find({}).toArray();
+
+        // Extract allergen names, with a fallback
+        const allergenNames = commonAllergens.length > 0
+            ? commonAllergens.map(allergen => allergen.name)
+            : [
+                "nut", "soy", "wheat", "milk", "cheese", "cream", "egg", "fish",
+                "sesame", "mustard", "corn", "clam", "mussel", "oyster", "celery"
+            ];
 
         const recipe = await db.collection('recipes').findOne(
             { _id: id },
@@ -37,7 +43,7 @@ export async function GET(request, { params }) {
 
         // Match ingredients with common allergens if ingredients exist
         const detectedAllergens = recipe.ingredients
-            ? matchIngredientsWithAllergens(recipe.ingredients, COMMON_ALLERGENS)
+            ? matchIngredientsWithAllergens(recipe.ingredients, allergenNames)
             : [];
 
         // Combine existing and detected allergens, removing duplicates
