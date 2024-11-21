@@ -1,441 +1,344 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { signIn, getSession, signOut } from "next-auth/react";
 import Link from "next/link";
 
 export default function UserModal({ show, onClose }) {
-  const [formData, setFormData] = useState({
+  const router = useRouter();
+  const [formState, setFormState] = useState({
     email: "",
     password: "",
     fullName: "",
     phoneNumber: "",
   });
-  const [isCheckingUser, setIsCheckingUser] = useState(false);
-  const [isLogin, setIsLogin] = useState(null);
-  const [loggedInUser, setLoggedInUser] = useState(null);
-  const [isLoggingIn, setIsLoggingIn] = useState(false);
-  const [isConfirmingLogout, setIsConfirmingLogout] = useState(false);
-  const [logoutMessage, setLogoutMessage] = useState("");
-  const [successMessage, setSuccessMessage] = useState(""); // New state for success message
-  const [error, setError] = useState("");
-  const router = useRouter();
+  const [authState, setAuthState] = useState({
+    isCheckingUser: false,
+    isLogin: null,
+    loggedInUser: null,
+    isLoggingIn: false,
+    isConfirmingLogout: false,
+    isVerifyingGoogle: false,
+    isLoggingOut: false,
+  });
 
-  useEffect(() => {
-    const checkLoginStatus = async () => {
-      try {
-        const session = await getSession();
-        const storedEmail = localStorage.getItem("loggedInUserEmail");
-        
-        if (session?.user?.email || storedEmail) {
-          setLoggedInUser(session?.user?.email || storedEmail);
-        }
-      } catch (error) {
-        console.error("Session check error:", error);
-      }
-    };
-
-    checkLoginStatus();
-  }, []);
-
+  // Handle form input changes
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
+    setFormState((prev) => ({
       ...prev,
       [name]: value,
     }));
-    setError("");
   };
 
-  const validateForm = () => {
-    if (!formData.email) {
-      setError("Email is required");
-      return false;
-    }
-    if (isLogin !== null && !formData.password) {
-      setError("Password is required");
-      return false;
-    }
-    if (isLogin === false) {
-      if (!formData.fullName) {
-        setError("Full name is required");
-        return false;
+  // Fetch session on mount
+  useEffect(() => {
+    const initializeAuth = async () => {
+      const storedEmail = localStorage.getItem("loggedInUserEmail");
+      if (storedEmail) {
+        setAuthState((prev) => ({ ...prev, loggedInUser: storedEmail }));
       }
-      if (!formData.phoneNumber) {
-        setError("Phone number is required");
-        return false;
-      }
-    }
-    return true;
-  };
 
-  const handleGoogleSignIn = async () => {
+      const session = await getSession();
+      if (session?.user?.email) {
+        localStorage.setItem("loggedInUserEmail", session.user.email);
+        setAuthState((prev) => ({ ...prev, loggedInUser: session.user.email }));
+      }
+    };
+
+    initializeAuth();
+  }, []);
+
+  // Google Sign In
+  const handleGoogleSignIn = useCallback(async () => {
+    setAuthState((prev) => ({ ...prev, isVerifyingGoogle: true }));
     try {
-      setIsLoggingIn(true);
-      setError("");
       const result = await signIn("google", { redirect: false });
-
       if (result?.ok) {
         const session = await getSession();
         if (session?.user?.email) {
           localStorage.setItem("loggedInUserEmail", session.user.email);
-          setLoggedInUser(session.user.email);
-          alert("Successfully logged in!");
-          setTimeout(() => {
-            router.refresh();
-            onClose();
-          }, 1500);
+          setAuthState((prev) => ({
+            ...prev,
+            loggedInUser: session.user.email,
+          }));
+          onClose();
         } else {
-          setError("Unable to retrieve email from Google login");
+          alert("Error: Unable to retrieve email.");
         }
-      } else {
-        setError("Google sign-in failed. Please try again");
       }
     } catch (error) {
-      setError("An error occurred during Google sign-in");
       console.error("Google sign-in error:", error);
+      alert("Error signing in with Google");
     } finally {
-      setIsLoggingIn(false);
+      setAuthState((prev) => ({ ...prev, isVerifyingGoogle: false }));
     }
-  };
+  }, [onClose]);
 
-  const handleEmailCheck = async () => {
-    if (!validateForm()) return;
+  // Email check
+  const handleEmailCheck = useCallback(async () => {
+    if (!formState.email) {
+      alert("Please enter an email.");
+      return;
+    }
 
-    setIsCheckingUser(true);
-    setError("");
-
+    setAuthState((prev) => ({ ...prev, isCheckingUser: true }));
     try {
       const response = await fetch("/api/auth/checkuser", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: formData.email }),
+        body: JSON.stringify({ email: formState.email }),
       });
 
-      const data = await response.json();
-
-      if (response.ok) {
-        setIsLogin(true);
-      } else if (response.status === 404) {
-        setIsLogin(false);
-      } else {
-        setError(data.message || "Error checking user status");
-      }
+      setAuthState((prev) => ({
+        ...prev,
+        isCheckingUser: false,
+        isLogin: response.status === 200,
+      }));
     } catch (error) {
-      setError("Network error. Please try again");
       console.error("Error checking user:", error);
-    } finally {
-      setIsCheckingUser(false);
+      alert("Error checking user. Please try again.");
+      setAuthState((prev) => ({ ...prev, isCheckingUser: false }));
     }
-  };
+  }, [formState.email]);
 
-  const handleSubmit = async (e) => {
-    e?.preventDefault();
-    if (!validateForm()) return;
-
-    setIsLoggingIn(true);
-    setError("");
-
+  // Form submission
+  const handleSubmit = useCallback(async () => {
+    setAuthState((prev) => ({ ...prev, isLoggingIn: true }));
     try {
-      if (isLogin) {
-        // Handle login
+      if (authState.isLogin) {
         const result = await signIn("credentials", {
-          email: formData.email,
-          password: formData.password,
+          email: formState.email,
+          password: formState.password,
           redirect: false,
         });
 
         if (result?.error) {
-          setError("Invalid email or password");
-          setIsLoggingIn(false);
+          alert("Login failed. Please check your credentials.");
           return;
         }
-
-        // Successfully logged in
-        const session = await getSession();
-        if (session?.user) {
-          setLoggedInUser(formData.email);
-          localStorage.setItem("loggedInUserEmail", formData.email);
-          alert("Successfully logged in!");
-          setTimeout(() => {
-            router.refresh();
-            onClose();
-          }, 1500);
-        } else {
-          setError("Login failed. Please try again.");
-        }
       } else {
-        // Handle signup
         const response = await fetch("/api/auth/signup", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            fullName: formData.fullName,
-            email: formData.email,
-            phone: formData.phoneNumber,
-            password: formData.password,
+            fullName: formState.fullName,
+            email: formState.email,
+            phone: formState.phoneNumber,
+            password: formState.password,
           }),
         });
 
-        const data = await response.json();
-
-        if (response.ok) {
-          // Auto-login after successful signup
-          const loginResult = await signIn("credentials", {
-            email: formData.email,
-            password: formData.password,
-            redirect: false,
-          });
-
-          if (loginResult?.error) {
-            setError("Account created but login failed. Please try logging in.");
-            return;
-          }
-
-          setLoggedInUser(formData.email);
-          localStorage.setItem("loggedInUserEmail", formData.email);
-          alert("Successfully signed up and logged in!");
-          setTimeout(() => {
-            router.refresh();
-            onClose();
-          }, 1500);
-        } else {
-          setError(data.message || "Sign-up failed");
+        if (!response.ok) {
+          const result = await response.json();
+          alert(result.message || "Sign-up failed. Please try again.");
+          return;
         }
       }
-    } catch (error) {
-      setError("An unexpected error occurred");
-      console.error("Form submission error:", error);
+
+      localStorage.setItem("loggedInUserEmail", formState.email);
+      setAuthState((prev) => ({ ...prev, loggedInUser: formState.email }));
+      router.push("/");
+      onClose();
     } finally {
-      setIsLoggingIn(false);
+      setAuthState((prev) => ({ ...prev, isLoggingIn: false }));
     }
-  };
+  }, [authState.isLogin, formState, router, onClose]);
 
-  const handleLogout = async () => {
+  // Logout handling
+  const handleLogout = () =>
+    setAuthState((prev) => ({ ...prev, isConfirmingLogout: true }));
+  const confirmLogout = useCallback(async () => {
+    setAuthState((prev) => ({ ...prev, isLoggingOut: true }));
     try {
-      setIsConfirmingLogout(false);
-      setLogoutMessage("Logging out...");
-      
-      await signOut({ redirect: false });
       localStorage.removeItem("loggedInUserEmail");
-      setLoggedInUser(null);
-      
-      alert("Successfully logged out!");
-      setTimeout(() => {
-        setLogoutMessage("");
-        router.refresh();
-        onClose();
-      }, 1500);
+      setAuthState((prev) => ({ ...prev, loggedInUser: null }));
+      await signOut();
+      alert("Logged out successfully!");
+      router.push("/");
     } catch (error) {
-      setError("Logout failed. Please try again");
-      console.error("Logout error:", error);
-      setLogoutMessage("");
+      console.error("Error during logout:", error);
+      alert("Error logging out. Please try again.");
+    } finally {
+      setAuthState((prev) => ({ ...prev, isLoggingOut: false }));
     }
-  };
+  }, [router]);
 
-  const handleBack = () => {
-    setIsLogin(null);
-    setError("");
-    setFormData({
-      email: formData.email,
-      password: "",
+  const cancelLogout = () =>
+    setAuthState((prev) => ({ ...prev, isConfirmingLogout: false }));
+
+  const handleBack = useCallback(() => {
+    setAuthState((prev) => ({ ...prev, isLogin: null }));
+    setFormState((prev) => ({
+      ...prev,
       fullName: "",
       phoneNumber: "",
-    });
-  };
+    }));
+  }, []);
 
   if (!show) return null;
-
-  const shouldShowHeader = () => {
-    if (successMessage || loggedInUser || isLoggingIn) return false;
-    return true;
-  };
-
-  const getHeaderText = () => {
-    if (isCheckingUser) return "Verifying...";
-    if (isLoggingIn) return "Processing...";
-    if (isLogin === true) return "Login";
-    if (isLogin === false) return "Sign Up";
-    if (isLogin === null) return "Sign Up or Login";
-    return "";
-  };
 
   return (
     <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-end z-50">
       <div className="bg-white w-96 p-6 rounded-l-3xl shadow-lg relative">
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-gray-600 hover:text-teal-500"
-          aria-label="Close"
+          className="text-gray-600 hover:text-teal-500 font-medium uppercase text-sm"
         >
-          <span className="text-2xl">&times;</span>
+          &times;
         </button>
 
-        {isLogin !== null && !successMessage && (
+        {authState.isLogin !== null && (
           <button
             onClick={handleBack}
-            className="absolute top-4 left-4 text-gray-500 hover:text-teal-500"
-            aria-label="Go back"
+            className="absolute top-3 left-3 text-gray-500 text-2xl"
           >
-            <span className="text-2xl">←</span>
+            &#8592;
           </button>
         )}
 
-        {shouldShowHeader() && (
-          <h2 className="text-2xl font-bold text-center mb-6">
-            {getHeaderText()}
-          </h2>
-        )}
+        <h2 className="text-2xl font-bold text-center mb-4">
+          {authState.isCheckingUser
+            ? "Verifying..."
+            : authState.isLoggingIn
+              ? "Logging in..."
+              : authState.isLogin === null
+                ? "Sign Up or Login"
+                : authState.isLogin
+                  ? "Login"
+                  : "Sign Up"}
+        </h2>
 
-        {successMessage && (
-          <div className="text-center mt-4">
-            <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
-              {successMessage}
-            </div>
-            <div className="text-gray-600">Redirecting...</div>
+        {authState.loggedInUser ? (
+          <div className="text-center">
+            <h2 className="text-2xl font-bold mb-4">
+              Welcome, {authState.loggedInUser}!
+            </h2>
+            <Link href="/editdetails">
+              <button
+                onClick={onClose}
+                className="w-full bg-teal-700 text-white py-3 rounded-md mb-4"
+              >
+                Edit Profile
+              </button>
+            </Link>
+            <button
+              onClick={handleLogout}
+              className="w-full bg-red-500 text-white py-3 rounded-md mb-4"
+            >
+              Log Out
+            </button>
           </div>
-        )}
-
-        {error && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded mb-4">
-            {error}
-          </div>
-        )}
-
-        {logoutMessage && (
-          <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded mb-4">
-            {logoutMessage}
-          </div>
-        )}
-
-        {!successMessage && (
+        ) : (
           <>
-            {loggedInUser ? (
-              <div className="text-center mt-16">
-                <h2 className="text-2xl font-semibold mb-6">
-                  Welcome back!
-                  <div className="text-sm text-gray-600 mt-1">{loggedInUser}</div>
-                </h2>
-                <Link href="/editdetails">
-                  <button className="w-full bg-teal-700 text-white py-3 rounded-md mb-4 hover:bg-teal-800 transition-colors">
-                    Edit Profile
-                  </button>
-                </Link>
-                <button
-                  onClick={() => setIsConfirmingLogout(true)}
-                  className="w-full bg-red-500 text-white py-3 rounded-md mb-4 hover:bg-red-600 transition-colors"
-                >
-                  Log Out
-                </button>
-              </div>
+            {authState.isLogin === null && (
+              <input
+                type="email"
+                name="email"
+                placeholder="Email"
+                value={formState.email}
+                onChange={handleInputChange}
+                className="w-full border rounded-md p-3 text-gray-700 mb-4"
+              />
+            )}
+
+            {authState.isLogin === false && (
+              <>
+                <input
+                  type="text"
+                  name="fullName"
+                  placeholder="Full Name"
+                  value={formState.fullName}
+                  onChange={handleInputChange}
+                  className="w-full border rounded-md p-3 text-gray-700 mb-4"
+                />
+                <input
+                  type="tel"
+                  name="phoneNumber"
+                  placeholder="Phone Number"
+                  value={formState.phoneNumber}
+                  onChange={handleInputChange}
+                  className="w-full border rounded-md p-3 text-gray-700 mb-4"
+                />
+              </>
+            )}
+
+            {authState.isLogin !== null && (
+              <input
+                type="password"
+                name="password"
+                placeholder="Password"
+                value={formState.password}
+                onChange={handleInputChange}
+                className="w-full border rounded-md p-3 text-gray-700 mb-4"
+              />
+            )}
+
+            {authState.isLogin === null ? (
+              <button
+                onClick={handleEmailCheck}
+                className="w-full bg-teal-700 text-white py-3 rounded-md mb-4"
+              >
+                Continue with Email
+              </button>
             ) : (
-              <form onSubmit={handleSubmit} className="space-y-4">
-                {isLogin === null && (
-                  <input
-                    type="email"
-                    name="email"
-                    placeholder="Email"
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    className="w-full border rounded-md p-3 text-gray-700"
-                    disabled={isCheckingUser}
-                  />
-                )}
-
-                {isLogin === false && (
-                  <>
-                    <input
-                      type="text"
-                      name="fullName"
-                      placeholder="Full Name"
-                      value={formData.fullName}
-                      onChange={handleInputChange}
-                      className="w-full border rounded-md p-3 text-gray-700"
-                    />
-                    <input
-                      type="tel"
-                      name="phoneNumber"
-                      placeholder="Phone Number"
-                      value={formData.phoneNumber}
-                      onChange={handleInputChange}
-                      className="w-full border rounded-md p-3 text-gray-700"
-                    />
-                  </>
-                )}
-
-                {isLogin !== null && (
-                  <input
-                    type="password"
-                    name="password"
-                    placeholder="Password"
-                    value={formData.password}
-                    onChange={handleInputChange}
-                    className="w-full border rounded-md p-3 text-gray-700"
-                  />
-                )}
-
-                <button
-                  type="button"
-                  onClick={isLogin === null ? handleEmailCheck : handleSubmit}
-                  disabled={isCheckingUser || isLoggingIn}
-                  className="w-full bg-teal-700 text-white py-3 rounded-md hover:bg-teal-800 transition-colors disabled:bg-teal-300"
-                >
-                  {isCheckingUser ? "Checking..." :
-                   isLoggingIn ? "Processing..." :
-                   isLogin === null ? "Continue with Email" :
-                   isLogin ? "Login" : "Sign Up"}
-                </button>
-
-                <div className="relative text-center my-6">
-                  <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-gray-300"></div>
-                  </div>
-                  <div className="relative">
-                    <span className="px-2 bg-white text-sm text-gray-500">OR</span>
-                  </div>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={handleGoogleSignIn}
-                  disabled={isLoggingIn}
-                  className="w-full border rounded-md py-3 flex items-center justify-center mb-2 hover:bg-gray-50 transition-colors"
-                >
-                  <Image
-                    src="/google.svg"
-                    alt="Google"
-                    width={20}
-                    height={20}
-                    className="w-5 mr-2"
-                  />
-                  Continue with Google
-                </button>
-              </form>
+              <button
+                onClick={handleSubmit}
+                className="w-full bg-teal-700 text-white py-3 rounded-md"
+              >
+                {authState.isLogin ? "Login" : "Sign Up"}
+              </button>
             )}
           </>
         )}
 
-        {isConfirmingLogout && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white p-6 rounded-lg max-w-sm w-full mx-4">
-              <h3 className="text-lg font-semibold mb-4">Confirm Logout</h3>
-              <p className="text-gray-600 mb-6">Are you sure you want to log out?</p>
-              <div className="flex justify-end space-x-4">
-                <button
-                  onClick={() => setIsConfirmingLogout(false)}
-                  className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleLogout}
-                  className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
-                >
-                  Logout
-                </button>
-              </div>
-            </div>
+        <div className="text-center text-gray-500 mb-4">OR</div>
+
+        <button
+          onClick={handleGoogleSignIn}
+          className="w-full border rounded-md py-3 flex items-center justify-center mb-2"
+          disabled={authState.isVerifyingGoogle}
+        >
+          {authState.isVerifyingGoogle ? (
+            "Verifying..."
+          ) : (
+            <>
+              <Image
+                src="/google.svg"
+                alt="Google icon"
+                width={20}
+                height={20}
+                className="w-5 mr-2"
+              />
+              Continue with Google
+            </>
+          )}
+        </button>
+
+        {authState.isConfirmingLogout && (
+          <div className="text-center mt-4">
+            {authState.isLoggingOut ? (
+              <p>Logging out...</p>
+            ) : (
+              <>
+                <p>Are you sure you want to log out?</p>
+                <div className="flex justify-center gap-4 mt-4">
+                  <button
+                    onClick={confirmLogout}
+                    className="bg-teal-700 text-white px-4 py-2 rounded-md"
+                  >
+                    Yes
+                  </button>
+                  <button
+                    onClick={cancelLogout}
+                    className="bg-gray-400 text-white px-4 py-2 rounded-md"
+                  >
+                    No
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         )}
       </div>

@@ -13,7 +13,7 @@ export default function EditDetails() {
   });
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [isModalOpen, setIsModalOpen] = useState(true);
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
 
   const router = useRouter();
 
@@ -51,7 +51,10 @@ export default function EditDetails() {
     fetchUserData();
   }, []);
 
-  const handleToggleEdit = () => setIsEditing((prev) => !prev);
+  const handleToggleEdit = () => {
+    setIsEditing((prev) => !prev);
+    setShowSuccessMessage(false);
+  };
 
   const handleUpdate = async (e) => {
     e.preventDefault();
@@ -74,13 +77,12 @@ export default function EditDetails() {
         }
       );
       if (!response.ok) throw new Error("Failed to update user details");
-      alert("Profile updated successfully");
+      setShowSuccessMessage(true);
+      setIsEditing(false);
     } catch (error) {
       console.error("Error updating profile:", error);
       alert("Failed to update");
     }
-    handleToggleEdit();
-    setIsModalOpen(false);
   };
 
   const handleInputChange = (e) => {
@@ -91,118 +93,136 @@ export default function EditDetails() {
     }));
   };
 
-  const handleClose = () => {
-    router.back();
-  };
-
   if (loading) {
     return <LoadingSpinner />;
   }
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100">
-      {isModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white shadow-lg rounded-xl p-6 w-96">
-            <h1 className="text-3xl font-semibold text-teal-700 mb-4">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex justify-center items-center p-4">
+      <div className="bg-white rounded-2xl shadow-xl max-w-md w-full transform transition-all duration-300 ease-in-out">
+        <div className="p-6 space-y-6">
+          {/* Header */}
+          <div className="space-y-2">
+            <h1 className="text-3xl font-bold text-teal-700 tracking-tight">
               KWAMAIMAI
             </h1>
-            <p className="text-sm text-gray-500 mb-6">
+            <p className="text-sm text-gray-500">
               Logged in as:{" "}
-              <span className="font-semibold">{userDetails.email}</span>
+              <span className="font-medium text-gray-700">{userDetails.email}</span>
             </p>
+          </div>
 
-            <h3 className="text-xl font-semibold mb-4">Edit Profile</h3>
+          {/* Success Message */}
+          {showSuccessMessage && (
+            <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+              <p className="text-green-700 font-medium">
+                Profile updated successfully!
+              </p>
+            </div>
+          )}
 
-            {isEditing ? (
-              <form className="space-y-6" onSubmit={handleUpdate}>
-                <label className="block">
-                  <span className="block text-sm font-medium text-gray-700">
-                    Full Name:
-                  </span>
-                  <input
-                    type="text"
-                    name="fullName"
-                    value={userDetails.fullName}
-                    onChange={handleInputChange}
-                    className="w-full border-2 border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-teal-600"
-                  />
+          {/* Edit Form */}
+          {isEditing ? (
+            <form className="space-y-4" onSubmit={handleUpdate}>
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">
+                  Full Name
                 </label>
+                <input
+                  type="text"
+                  name="fullName"
+                  value={userDetails.fullName}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                />
+              </div>
 
-                <label className="block">
-                  <span className="block text-sm font-medium text-gray-700">
-                    Email:
-                  </span>
-                  <input
-                    type="text"
-                    name="email"
-                    value={userDetails.email}
-                    onChange={handleInputChange}
-                    className="w-full border-2 border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-teal-600"
-                    disabled
-                  />
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">
+                  Email
                 </label>
+                <input
+                  type="email"
+                  name="email"
+                  value={userDetails.email}
+                  disabled
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-500"
+                />
+              </div>
 
-                <label className="block">
-                  <span className="block text-sm font-medium text-gray-700">
-                    Phone Number:
-                  </span>
-                  <input
-                    type="text"
-                    name="phoneNumber"
-                    value={userDetails.phoneNumber}
-                    onChange={handleInputChange}
-                    className="w-full border-2 border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-teal-600"
-                    placeholder="Enter your phone number"
-                  />
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">
+                  Phone Number
                 </label>
+                <input
+                  type="tel"
+                  name="phoneNumber"
+                  value={userDetails.phoneNumber}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                  placeholder="Enter your phone number"
+                />
+              </div>
 
-                <div className="flex space-x-4">
-                  <button
-                    type="submit"
-                    className="flex-1 bg-teal-700 text-white py-3 rounded-md font-semibold hover:bg-teal-800 transition duration-200 ease-in-out"
-                  >
-                    Save Changes
-                  </button>
-                  <button
-                    onClick={() => setIsEditing(false)}
-                    className="flex-1 bg-gray-300 text-gray-700 py-3 rounded-md font-semibold hover:bg-gray-400 transition duration-200 ease-in-out"
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </form>
-            ) : (
-              <div className="space-y-4">
-                <p className="text-lg text-gray-600">
-                  Full Name: {userDetails.fullName}
-                </p>
-                <p className="text-lg text-gray-600">
-                  Email: {userDetails.email}
-                </p>
-                <p className="text-lg text-gray-600">
-                  Phone Number: {userDetails.phoneNumber || "Not set"}
-                </p>
-                <p className="text-lg text-gray-600">Password: ********</p>
-
+              <div className="flex gap-4 pt-4">
                 <button
-                  onClick={() => setIsEditing(true)}
-                  className="w-full bg-teal-700 text-white py-3 rounded-md font-semibold hover:bg-teal-800 transition duration-200 ease-in-out"
+                  type="submit"
+                  className="flex-1 bg-teal-600 hover:bg-teal-700 text-white font-medium py-2 px-4 rounded-lg transition duration-150 ease-in-out"
                 >
-                  Edit Details
+                  Save Changes
+                </button>
+                <button
+                  type="button"
+                  onClick={handleToggleEdit}
+                  className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 px-4 rounded-lg transition duration-150 ease-in-out"
+                >
+                  Cancel
                 </button>
               </div>
-            )}
+            </form>
+          ) : (
+            <div className="space-y-4">
+              <div className="bg-gray-50 rounded-lg p-4 space-y-3">
+                <div>
+                  <p className="text-sm text-gray-500">Full Name</p>
+                  <p className="text-gray-900 font-medium">{userDetails.fullName}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">Email</p>
+                  <p className="text-gray-900 font-medium">{userDetails.email}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">Phone Number</p>
+                  <p className="text-gray-900 font-medium">
+                    {userDetails.phoneNumber || "Not set"}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">Password</p>
+                  <p className="text-gray-900 font-medium">********</p>
+                </div>
+              </div>
 
+              <button
+                onClick={handleToggleEdit}
+                className="w-full bg-teal-600 hover:bg-teal-700 text-white font-medium py-2 px-4 rounded-lg transition duration-150 ease-in-out"
+              >
+                Edit Details
+              </button>
+            </div>
+          )}
+
+          {/* Footer Buttons */}
+          <div className="space-y-4">
             <button
-              onClick={handleClose}
-              className="w-full mt-4 bg-red-500 text-white py-3 rounded-md font-semibold hover:bg-red-600 transition duration-200 ease-in-out"
+              onClick={() => router.push('/')}
+              className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 px-4 rounded-lg transition duration-150 ease-in-out"
             >
-              Close
+              Back to Website
             </button>
           </div>
         </div>
-      )}
+      </div>
     </div>
   );
 }
