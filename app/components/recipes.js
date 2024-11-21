@@ -124,19 +124,15 @@ export default function Recipes({ recipes: initialRecipes }) {
               className="block p-4 bg-white dark:bg-black dark:border-gray-950 border border-gray-200 rounded-lg shadow-lg hover:shadow-2xl transition-transform transform hover:scale-105 duration-300 ease-in-out"
             >
               <div className="relative w-full h-64">
-                {recipe.images.length > 1 ? (
-                  <Carousel images={recipe.images} />
-                ) : (
-                  <div className="relative w-full h-full">
-                    <Image
-                      src={recipe.images[0]}
-                      alt={recipe.title}
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-                )}
-              </div>
+  {recipe?.images?.length > 1 ? (
+    <Carousel images={recipe.images} />
+  ) : (
+    <div className="relative w-full h-full">
+     
+    </div>
+  )}
+</div>
+
 
               <div className="p-4 flex justify-between items-center">
                 <h2 className="text-[#1e455c] font-bold text-xl mb-3 font-montserrat group-hover:text-[#2b617f]">
@@ -173,9 +169,9 @@ export default function Recipes({ recipes: initialRecipes }) {
                     {recipe.category}
                   </span>
                 )}
-                <span className="inline-block bg-gray-100 text-gray-600  dark:bg-gray-950 dark:text-gray-400 text-sm px-2 py-1 rounded">
-                  {recipe.instructions.length} steps
-                </span>
+                <span className="inline-block bg-gray-100 text-gray-600 dark:bg-gray-950 dark:text-gray-400 text-sm px-2 py-1 rounded">
+                 {Array.isArray(recipe?.instructions) ? `${recipe.instructions.length} steps` : "No steps available"}
+               </span> 
                 <span className="inline-block bg-gray-100 text-gray-600  dark:bg-gray-950 dark:text-gray-400 text-sm px-2 py-1 rounded">
                   {new Date(recipe.published).toDateString()}
                 </span>
