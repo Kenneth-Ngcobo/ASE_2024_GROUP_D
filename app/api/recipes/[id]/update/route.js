@@ -26,6 +26,31 @@ export async function PATCH(req, { params }) {
 
         const db = await connectToDatabase();
 
+        // Validate recipe ID as a string
+        if (!params.id || typeof params.id !== 'string') {
+            return NextResponse.json(
+                { error: 'Invalid recipe ID format' },
+                { status: 400 }
+            );
+        }
+
+        const recipeId = params.id; // Use the string ID directly
+
+        console.log("Looking for recipe with ID:", recipeId);
+//_________________________________________________________________________________________
+
+
+
+        // Log the existing recipes in the collection for debugging// Logs new Info into DataBase with email
+        const recipe = await db.collection('recipes').findOne({ _id: recipeId });
+        if (!recipe) {
+            return NextResponse.json(
+                { error: 'Recipe not found' },
+                { status: 404 }
+            );
+        }
+
+
         // Update recipe with all required fields in one operation
         const result = await db.collection('recipes').updateOne(
             { _id: params.id },
@@ -38,15 +63,21 @@ export async function PATCH(req, { params }) {
             }
         );
 
-        // Handle recipe not found
-        if (!result.matchedCount) {
-            return Response.json({ error: 'Recipe not found' }, { status: 404 });
+        // Handle recipe not found or no update
+        if (!result) {
+            return NextResponse.json(
+                { error: 'Recipe not found or no changes made' },
+                { status: 404 }
+            );
         }
+
 
         // Success response
         return Response.json({
             message: 'Recipe updated successfully',
-            description: description.trim()
+            description: result.description,
+            lastEditedBy: result.lastEditedBy,
+            lastEditedAt: result.lastEditedAt
         });
 
     } catch (error) {
