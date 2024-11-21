@@ -5,6 +5,7 @@ import Recipes from "./components/recipes";
 import Footer from "./components/footer";
 import Loading from "./loading";
 import RecipeCarousel from "./components/RecipeCarousel";
+import { ShoppingListProvider } from "./context/shoppingListContext";
 import { Suspense } from 'react';
 
 export default async function Home({ searchParams }) {
@@ -32,6 +33,7 @@ export default async function Home({ searchParams }) {
 
     // Return the rendered JS for the Home component
     return (
+        <ShoppingListProvider>
         <>
         <RecipeCarousel />
             <Suspense fallback={<Loading />}>
@@ -55,5 +57,6 @@ export default async function Home({ searchParams }) {
             </Suspense>
 
         </>
+        </ShoppingListProvider>  
     );
 }

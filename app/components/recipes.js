@@ -1,3 +1,4 @@
+// components/Recipes.js
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -18,6 +19,8 @@ import Carousel from "./Carousel";
 import { SortControl } from "./SortControl";
 import { sortRecipes } from "./sortUtils";
 import { useSearchParams } from "next/navigation";
+import { useShoppingList } from "../context/shoppingListContext";
+import ShoppingList from "./shoppinglist";
 
 const Recipes = ({ recipes: initialRecipes }) => {
   const [sortBy, setSortBy] = useState("default");
@@ -29,6 +32,7 @@ const Recipes = ({ recipes: initialRecipes }) => {
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const searchParams = useSearchParams();
+  const { dispatch: dispatchShoppingList } = useShoppingList();
 
   // Fetch favorites when component mounts
   useEffect(() => {
@@ -52,9 +56,7 @@ const Recipes = ({ recipes: initialRecipes }) => {
         }
 
         const data = await response.json();
-        // Store the complete favorite recipes data
         setFavoriteDetails(data.favorites);
-        // Create a Set of just the IDs for quick lookup
         const favoriteIds = new Set(data.favorites.map((recipe) => recipe._id));
         setFavoritedRecipes(favoriteIds);
       } catch (err) {
@@ -98,7 +100,6 @@ const Recipes = ({ recipes: initialRecipes }) => {
     const recipe = recipes.find((r) => r._id === recipeId);
 
     try {
-      // Optimistically update UI
       setFavoritedRecipes((prev) => {
         const updated = new Set(prev);
         if (isFavorited) {
@@ -109,7 +110,6 @@ const Recipes = ({ recipes: initialRecipes }) => {
         return updated;
       });
 
-      // Also update the favorite details
       setFavoriteDetails((prev) => {
         if (isFavorited) {
           return prev.filter((r) => r._id !== recipeId);
@@ -132,7 +132,6 @@ const Recipes = ({ recipes: initialRecipes }) => {
         throw new Error("Failed to update favorites");
       }
     } catch (err) {
-      // Revert optimistic updates on error
       setFavoritedRecipes((prev) => {
         const reverted = new Set(prev);
         if (isFavorited) {
@@ -155,6 +154,27 @@ const Recipes = ({ recipes: initialRecipes }) => {
       console.error("Error updating favorites:", err);
     }
   };
+
+  const addIngredientsToShoppingList = (ingredients) => {
+    // Convert ingredients object to an array of {name, quantity}
+    const ingredientsArray = Object.keys(ingredients).map((key) => ({
+      name: key,
+      quantity: ingredients[key], // Use the quantity as the value
+    }));
+  
+    // Dispatch each ingredient to the shopping list
+    ingredientsArray.forEach((ingredient) => {
+      dispatchShoppingList({
+        type: 'ADD_ITEM',
+        payload: { 
+          id: ingredient.name,  
+          name: `${ingredient.name} - ${ingredient.quantity}`,  
+          purchased: false 
+        },
+      });
+    });
+  };
+  
 
   if (isLoading) {
     return (
@@ -281,14 +301,26 @@ const Recipes = ({ recipes: initialRecipes }) => {
                 <span className="inline-block bg-gray-100 text-gray-600  dark:bg-gray-950 dark:text-gray-400 text-sm px-2 py-1 rounded">
                   {new Date(recipe.published).toDateString()}
                 </span>
+                <button
+                  className="inline-block bg-blue-500 text-white text-sm px-2 py-1 rounded mt-2"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    addIngredientsToShoppingList(recipe.ingredients);
+                  }}
+                >
+                  Add Ingredients to Shopping List
+                </button>
               </div>
             </Link>
           ))}
         </div>
       </div>
+
+      <ShoppingList />
     </>
   );
 };
 
-
 export default Recipes;
+
+
