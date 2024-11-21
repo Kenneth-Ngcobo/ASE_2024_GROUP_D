@@ -1,9 +1,9 @@
 {
   "/page": "app/page.js",
+  "/api/recipes/categories/route": "app/api/recipes/categories/route.js",
   "/api/recipes/[id]/route": "app/api/recipes/[id]/route.js",
-  "/api/recipes/recommendations/route": "app/api/recipes/recommendations/route.js",
-  "/Recipe/[id]/page": "app/Recipe/[id]/page.js",
-  "/api/recipes/[id]/reviews/route": "app/api/recipes/[id]/reviews/route.js",
   "/api/recipes/route": "app/api/recipes/route.js",
-  "/_not-found/page": "app/_not-found/page.js"
+  "/api/recipes/recommendations/route": "app/api/recipes/recommendations/route.js",
+  "/_not-found/page": "app/_not-found/page.js",
+  "/api/auth/[...nextauth]/route": "app/api/auth/[...nextauth]/route.js"
 }
