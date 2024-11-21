@@ -1,7 +1,13 @@
 import { NextResponse } from "next/server";
 import connectToDatabase from "../../../../../db";
 
-export async function GET(params) {
+// Common allergens list as a fallback
+const COMMON_ALLERGENS = [
+    "nut", "soy", "wheat", "milk", "cheese", "cream", "egg", "fish",
+    "sesame", "mustard", "corn", "clam", "mussel", "oyster", "celery"
+];
+
+export async function GET(request, { params }) {
     try {
         const db = await connectToDatabase();
         const { id } = params;
@@ -15,8 +21,8 @@ export async function GET(params) {
         }
 
         const recipe = await db.collection('recipes').findOne(
-            { _id: idd },
-            { projection: { allergens: 1 } }
+            { _id: id },
+            { projection: { ingredients: 1, allergens: 1 } }
         );
 
         if (!recipe) {
@@ -26,10 +32,20 @@ export async function GET(params) {
             );
         }
 
-        // If allergens don't exist, return an empty array
-        const allergens = recipe.allergens || [];
+        // Existing allergens from the recipe
+        const existingAllergens = recipe.allergens || [];
 
-        return NextResponse.json({ allergens });
+        // Match ingredients with common allergens if ingredients exist
+        const detectedAllergens = recipe.ingredients
+            ? matchIngredientsWithAllergens(recipe.ingredients, COMMON_ALLERGENS)
+            : [];
+
+        // Combine existing and detected allergens, removing duplicates
+        const combinedAllergens = Array.from(
+            new Set([...existingAllergens, ...detectedAllergens])
+        );
+
+        return NextResponse.json({ allergens: combinedAllergens });
     } catch (error) {
         console.error('Error fetching allergens:', error);
         return NextResponse.json(
@@ -39,7 +55,39 @@ export async function GET(params) {
     }
 }
 
-// Add allergens to a recipe
+/**
+ * Match recipe ingredients with known allergens
+ * @param {Object} ingredients - Recipe ingredients object
+ * @param {string[]} allergens - List of common allergens
+ * @returns {string[]} Detected allergens in the recipe
+ */
+function matchIngredientsWithAllergens(ingredients, allergens) {
+    if (!ingredients || typeof ingredients !== 'object') return [];
+
+    // Normalize allergens to lowercase for case-insensitive matching
+    const normalizedAllergens = allergens.map(a => a.toLowerCase());
+
+    const detectedAllergens = new Set();
+
+    // Iterate through ingredients
+    Object.entries(ingredients).forEach(([ingredientName, quantity]) => {
+        const normalizedIngredient = ingredientName.toLowerCase();
+
+        // Check if any allergen is found in the ingredient name
+        normalizedAllergens.forEach(allergen => {
+            if (normalizedIngredient.includes(allergen)) {
+                detectedAllergens.add(allergen);
+            }
+        });
+    });
+
+    // Convert Set back to array with proper capitalization
+    return Array.from(detectedAllergens).map(a =>
+        a.charAt(0).toUpperCase() + a.slice(1)
+    );
+}
+
+// Add/update allergens to a recipe
 export async function PUT(request, { params }) {
     try {
         const db = await connectToDatabase();
