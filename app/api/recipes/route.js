@@ -17,7 +17,7 @@ export async function GET(req) {
     const searchParams = url.searchParams;
     const page = parseInt(searchParams.get("page")) || 1;
     const limit = Math.min(parseInt(searchParams.get("limit")) || 50, 50);
-    const sort = searchParams.get("sort") || "published"; // Default to createdAt
+    const sort = searchParams.get("sort") || ""; // Default to createdAt
     const order = searchParams.get("order")?.toLowerCase() === "desc" ? -1 : 1;
     const searchTerm = searchParams.get("search") || "";
     const category = searchParams.get("category");
@@ -25,41 +25,43 @@ export async function GET(req) {
     const ingredients = searchParams.get("ingredients");
     const instructions = parseInt(searchParams.get("instructions"));
 
-    let query = {};
+    // let query = {};
+    const pipeline = [];
+    const matchStage = {};
 
     // Validate sort parameter
-    const validSortFields = {
-      'cook': 'cook',
-      'prep': 'prep',
-      'instructions': 'instructions',
-      'published': 'published'  // Added creation date sorting
-    };
+    // const validSortFields = {
+    //   'cookTime': 'cookingTime',
+    //   'prepTime': 'preparationTime',
+    //   'instructionsCount': 'instructionsCount',
+    //   'published': 'published'
+    // };
 
-    if (!validSortFields[sort]) {
-      return new Response(
-        JSON.stringify({
-          error: `Invalid sort parameter '${sort}'. Valid options are: cookingTime, preparationTime, published, calories, title, instructionsCount`
-        }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' }
-      }
-      );
-    }
+    // if (!validSortFields[sort]) {
+    //   return new Response(
+    //     JSON.stringify({
+    //       error: `Invalid sort parameter '${sort}'. Valid options are: cookingTime, preparationTime, published, calories, title, instructionsCount`
+    //     }), {
+    //     status: 400,
+    //     headers: { 'Content-Type': 'application/json' }
+    //   }
+    //   );
+    // }
 
     // Construct query for text search
     if (searchTerm) {
-      query.$text = { $search: searchTerm };
+      matchStage.$text = { $search: searchTerm };
     }
 
     if (category) {
-      query.category = {
+      matchStage.category = {
         $regex: new RegExp(`^${category}$`, "i"),
       };
     }
 
     if (tags) {
       const tagArray = tags.split(",").map((tag) => tag.trim().toLowerCase());
-      query.tags = {
+      matchStage.tags = {
         $elemMatch: { $in: tagArray.map((tag) => new RegExp(`^${tag}$`, "i")) },
       };
     }
@@ -69,32 +71,63 @@ export async function GET(req) {
       const ingredientArray = ingredients.split(",").map((ingredient) => ingredient.trim().toLowerCase());
 
       // Create a filter for each ingredient key, allowing case-insensitive matching
-      query.$and = ingredientArray.map((ingredient) => ({
+      matchStage.$and = ingredientArray.map((ingredient) => ({
         [`ingredients.${ingredient}`]: { $exists: true },
       }));
     }
 
     // Filter by number of instructions
     if (!isNaN(instructions)) {
-      query.instructions = { $size: instructions }; // Match recipes with exactly the specified number of instructions
+      matchStage.instructions = { $size: instructions }; // Match recipes with exactly the specified number of instructions
     }
 
-    const skip = (page - 1) * limit;
+    // const skip = (page - 1) * limit;
 
     // Create sort object for MongoDB query
-    const sortObj = {};
-    sortObj[validSortFields[sort]] = order;
+    // const sortObj = {};
+    // sortObj[validSortFields[sort]] = order;
 
     // Fetch sorted and paginated recipes
-    const recipes = await recipesCollection
-      .find(query) // Use the constructed query
-      .sort(sortObj)
-      .skip(skip)
-      .limit(limit)
-      .toArray();
+    if (Object.keys(matchStage).length > 0) {
+      pipeline.push({ $match: matchStage});
+    }
+
+    // if (sort) {
+    //   const sortStage = { $sort: { [sort]: order }};
+    //   pipeline.push(sortStage);
+    // }
+    if (sort === "instructions") {
+      pipeline.push({
+          $addFields: {
+              instructionsLength: { $size: "$instructions" },
+          },
+      });
+  
+      // Use the computed `instructionsLength` for sorting
+      pipeline.push({
+          $sort: { instructionsLength: order },
+      });
+    } else if (sort) {
+        // Regular sorting for other fields
+        pipeline.push({
+            $sort: { [sort]: order },
+        });
+    }
+    
+
+    pipeline.push({ $skip: (page - 1) * limit });
+    pipeline.push({ $limit: limit })
+    // const recipes = await recipesCollection
+    //   .find(query) // Use the constructed query
+    //   .sort(sortObj)
+    //   .skip(skip)
+    //   .limit(limit)
+    //   .toArray();
+
+    const recipes = await recipesCollection.aggregate(pipeline).toArray();
 
     // Count total number of matching documents for pagination
-    const totalRecipes = await recipesCollection.countDocuments(query); // Count with query to match filters
+    const totalRecipes = await recipesCollection.countDocuments(matchStage); // Count with query to match filters
 
     return new Response(
       JSON.stringify({
