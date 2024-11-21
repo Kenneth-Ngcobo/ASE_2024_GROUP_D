@@ -7,6 +7,7 @@ import CollapsibleSection from '../../components/CollapsibleSection';
 import Loading from './loading';
 import EditableRecipeDetails from '../../components/EditableRecipeDetails';
 import ReviewsSection from '../../components/ReviewsSection';
+import AllergensSection from '../../components/AllergensSection';
 
 // Generate metadata for the recipe page dynamically
 export async function generateMetadata({ params }) {
@@ -104,6 +105,9 @@ export default async function RecipePage({ params }) {
                             lastEditedBy={recipe.lastEditedBy}
                             lastEditedAt={recipe.lastEditedAt}
                         />
+
+                        {/* Allergens Section */}
+                        <AllergensSection recipeId={id} />
 
                         {/** Collapsible Section */}
                         <CollapsibleSection
