@@ -67,7 +67,9 @@ export default function AllergensSection({ recipeId }) {
 
     return (
         <div className="bg-white dark:bg-gray-950 rounded-2xl shadow-xl p-4">
-            <h3 className="text-lg font-semibold text-[#1e455c] mb-2">Allergens</h3>
+            <h3 className="text-lg font-semibold text-[#1e455c] mb-2">
+                ⚠️ Potential Allergens
+            </h3>
             <div className="flex flex-wrap gap-2">
                 {allergens.map((allergen, index) => (
                     <span
@@ -78,6 +80,10 @@ export default function AllergensSection({ recipeId }) {
                     </span>
                 ))}
             </div>
+            <p className="text-sm text-gray-600 mt-2">
+                This recipe may contain ingredients that are common allergens.
+                Please check the full ingredient list carefully.
+            </p>
         </div>
     );
 }
