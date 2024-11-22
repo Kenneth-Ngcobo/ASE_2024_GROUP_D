@@ -12,7 +12,7 @@ const ShoppingList = () => {
   
   
   useEffect(() => {
-    setNewItemName(true)
+    setNewItemName()
   },[])
 
   const removeItem = (id) => {
@@ -119,7 +119,6 @@ const ShoppingList = () => {
     
           {/* Clear List Button */}
             <button onClick={clearList} className="mt-4 bg-red-500 text-white p-2 rounded">Clear List</button>
-            <addItemForm/>
         </div>
       );
     };
