@@ -1,7 +1,7 @@
 
 'use client'
 
-import React from 'react';
+import { useState, useEffect } from 'react';
 import { useShoppingList } from '../context/shoppingListContext';
 
 const ShoppingList = () => {
@@ -9,7 +9,11 @@ const ShoppingList = () => {
     
     const [newItemName, setNewItemName] = useState('');
     const [newItemQuantity, setNewItemQuantity] = useState('');
-    const [erro , setError]= useState('')
+  
+  
+  useEffect(() => {
+    setNewItemName(true)
+  },[])
 
   const removeItem = (id) => {
     dispatch({
@@ -58,14 +62,6 @@ const ShoppingList = () => {
         <div className="shopping-list p-4 bg-white rounded shadow-lg">
           <h2 className="text-2xl font-bold mb-4">Shopping List</h2>
     
-          {/* Error Message */}
-          {error && (
-            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
-              <strong className="font-bold">Error:</strong>
-              <span className="block sm:inline"> {error}</span>
-            </div>
-          )}
-    
           {/* Form to add items manually */}
           <form onSubmit={handleAddItem} className="mb-4 flex space-x-4">
             <input
@@ -82,13 +78,13 @@ const ShoppingList = () => {
               placeholder="Quantity (optional)"
               className="border p-2 rounded w-1/4"
             />
-            <button
+           <button
               type="submit"
               className="bg-blue-500 text-white p-2 rounded"
             >
               Add Item
             </button>
-          </form>
+          </form>*
     
           {/* List of items */}
           <ul>
