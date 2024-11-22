@@ -15,25 +15,16 @@ export default async function Home({ searchParams }) {
 
     // Extract search parameters with defaults
     const page = searchParams.page ? parseInt(searchParams.page) : 1;
-    const sort = searchParams.sort || "default";
-    const order = searchParams.order || "ascending";
-    const search = searchParams.search || "";
-    const tags = searchParams.tags || "";
-    const category = searchParams.category || "";
-    const ingredients = searchParams.ingredients || "";
-    const instructions = searchParams.instructions || "";
-
+    const sort = searchParams.sort || '';
+    const order = searchParams.order || 'desc';
+    const search = searchParams.search || '';
+    const tags = searchParams.tags ||'';
+    const category = searchParams.category || '';
+    const ingredients = searchParams.ingredients || ''
+    const instructions = searchParams.instructions || ''
     try {
         // Fetch recipes from the API with a limit of 20 per page
-        recipes = await fetchRecipes(
-            20,
-            page,
-            search,
-            tags,
-            category,
-            ingredients,
-            instructions
-        );
+        recipes = await fetchRecipes(20, page,search, tags, category, ingredients, instructions, sort, order);
     } catch (err) {
         // Capture any error that occurs during the fetch
         error = err.message; // Store the error message
