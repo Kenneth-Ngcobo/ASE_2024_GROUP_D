@@ -1,219 +1,102 @@
-const express = require('express');
-const { ObjectId } = require('mongodb');
-const connectToDatabase = require('../../../db');
+import { connectToDatabase } from '../../../db';
+import { ObjectId } from 'mongodb';
 
-const router = express.Router();
+export default async function handler(req, res) {
+  const { method } = req;
 
-// Create a new shopping list for a user
-router.post('/', async (req, res) => {
   try {
-    const { userId, name = 'My Shopping List', items = [] } = req.body;
-    
-    if (!userId) {
-      return res.status(400).json({ error: 'User ID is required' });
-    }
-
     const db = await connectToDatabase();
-    const shoppingListsCollection = db.collection('shopping_lists');
+    const collection = db.collection('shoppingLists'); // Ensure each user has a unique shopping list
 
-    const newShoppingList = {
-      userId,
-      name,
-      items: items.map(item => ({
-        ...item,
-        id: new ObjectId(),
-        purchased: false,
-        createdAt: new Date(),
-        updatedAt: new Date()
-      })),
-      createdAt: new Date(),
-      updatedAt: new Date()
-    };
+    switch (method) {
+      // Get a user's shopping list
+      case 'GET':
+        const { userId } = req.query;  // Assuming userId is passed in the query params
+        const shoppingList = await collection.findOne({ userId });
+        if (!shoppingList) {
+          return res.status(404).json({ success: false, message: 'Shopping list not found' });
+        }
+        res.status(200).json({ success: true, data: shoppingList });
+        break;
 
-    const result = await shoppingListsCollection.insertOne(newShoppingList);
-    
-    res.status(201).json({
-      message: 'Shopping list created successfully',
-      shoppingListId: result.insertedId
-    });
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to create shopping list', details: error.message });
-  }
-});
+      // Save a user's shopping list
+      case 'POST':
+        const { items } = req.body;  // Assuming userId and items are passed in the body
+        const existingList = await collection.findOne({ userId });
+        if (existingList) {
+          return res.status(400).json({ success: false, message: 'Shopping list already exists' });
+        }
+        const newList = await collection.insertOne({ userId, items });
+        res.status(201).json({ success: true, data: newList.ops[0] });
+        break;
 
-// Fetch a user's shopping list
-router.get('/:userId', async (req, res) => {
-  try {
-    const { userId } = req.params;
-    const db = await connectToDatabase();
-    const shoppingListsCollection = db.collection('shopping_lists');
+      // Add new items to an existing shopping list
+      case 'PUT': 
+        const { userId: userIdForAdd, newItem } = req.body;  // userId and newItem are passed in the body
+        const updatedList = await collection.updateOne(
+          { userId: userIdForAdd },
+          { $push: { items: newItem } }
+        );
+        if (!updatedList.matchedCount) {
+          return res.status(404).json({ success: false, message: 'Shopping list not found' });
+        }
+        res.status(200).json({ success: true, data: updatedList });
+        break;
 
-    const shoppingList = await shoppingListsCollection.findOne({ userId });
+      // Update an item in the shopping list
+      case 'PATCH':
+        const { userId: userIdForUpdate, itemId, updatedItem } = req.body;  // userId, itemId, and updatedItem are passed
+        const updatedShoppingList = await collection.updateOne(
+          { userId: userIdForUpdate, 'items._id': ObjectId(itemId) },
+          { $set: { 'items.$': updatedItem } }
+        );
+        if (!updatedShoppingList.matchedCount) {
+          return res.status(404).json({ success: false, message: 'Item not found in shopping list' });
+        }
+        res.status(200).json({ success: true, data: updatedShoppingList });
+        break;
 
-    if (!shoppingList) {
-      return res.status(404).json({ error: 'Shopping list not found' });
+      // Delete a shopping list
+      case 'DELETE':
+        const { userId: userIdToDelete } = req.body;  // userId to identify the list to delete
+        const deletedList = await collection.deleteOne({ userId: userIdToDelete });
+        if (!deletedList.deletedCount) {
+          return res.status(404).json({ success: false, message: 'Shopping list not found' });
+        }
+        res.status(200).json({ success: true });
+        break;
+
+      // Remove a specific item from the shopping list
+      case 'DELETE_ITEM':
+        const { userId: userIdForItemRemoval, itemId: itemToRemove } = req.body;  // userId and itemId passed
+        const itemRemoved = await collection.updateOne(
+          { userId: userIdForItemRemoval },
+          { $pull: { items: { _id: ObjectId(itemToRemove) } } }
+        );
+        if (!itemRemoved.matchedCount) {
+          return res.status(404).json({ success: false, message: 'Item not found in shopping list' });
+        }
+        res.status(200).json({ success: true });
+        break;
+
+      // Mark an item as purchased
+      case 'MARK_PURCHASED':
+        const { userId: userIdForMark, itemId: itemToMark } = req.body;  // userId and itemId passed
+        const markPurchased = await collection.updateOne(
+          { userId: userIdForMark, 'items._id': ObjectId(itemToMark) },
+          { $set: { 'items.$.purchased': true } }
+        );
+        if (!markPurchased.matchedCount) {
+          return res.status(404).json({ success: false, message: 'Item not found in shopping list' });
+        }
+        res.status(200).json({ success: true });
+        break;
+
+      default:
+        res.setHeader('Allow', ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'DELETE_ITEM', 'MARK_PURCHASED']);
+        res.status(405).end(`Method ${method} Not Allowed`);
     }
-
-    res.json(shoppingList);
   } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch shopping list', details: error.message });
+    res.status(500).json({ success: false, error: error.message });
   }
-});
-
-// Update a shopping list
-router.put('/:shoppingListId', async (req, res) => {
-  try {
-    const { shoppingListId } = req.params;
-    const { name, items } = req.body;
-
-    const db = await connectToDatabase();
-    const shoppingListsCollection = db.collection('shopping_lists');
-
-    const updateData = {
-      ...(name && { name }),
-      ...(items && { 
-        items: items.map(item => ({
-          ...item,
-          id: item.id ? (item.id) : new ObjectId(),
-          updatedAt: new Date()
-        })) 
-      }),
-      updatedAt: new Date()
-    };
-
-    const result = await shoppingListsCollection.updateOne(
-      { _id: new ObjectId(shoppingListId) },
-      { $set: updateData }
-    );
-
-    if (result.matchedCount === 0) {
-      return res.status(404).json({ error: 'Shopping list not found' });
-    }
-
-    res.json({ message: 'Shopping list updated successfully' });
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to update shopping list', details: error.message });
-  }
-});
-
-// Delete a shopping list
-router.delete('/:shoppingListId', async (req, res) => {
-  try {
-    const { shoppingListId } = req.params;
-    const db = await connectToDatabase();
-    const shoppingListsCollection = db.collection('shopping_lists');
-
-    const result = await shoppingListsCollection.deleteOne({ _id: new ObjectId(shoppingListId) });
-
-    if (result.deletedCount === 0) {
-      return res.status(404).json({ error: 'Shopping list not found' });
-    }
-
-    res.json({ message: 'Shopping list deleted successfully' });
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to delete shopping list', details: error.message });
-  }
-});
-
-// Add new items to a shopping list
-router.post('/:shoppingListId/items', async (req, res) => {
-  try {
-    const { shoppingListId } = req.params;
-    const { items } = req.body;
-
-    if (!items || !Array.isArray(items)) {
-      return res.status(400).json({ error: 'Invalid items data' });
-    }
-
-    const db = await connectToDatabase();
-    const shoppingListsCollection = db.collection('shopping_lists');
-
-    const newItems = items.map(item => ({
-      id: new ObjectId(),
-      ...item,
-      purchased: false,
-      createdAt: new Date(),
-      updatedAt: new Date()
-    }));
-
-    const result = await shoppingListsCollection.updateOne(
-      { _id: new ObjectId(shoppingListId) },
-      { 
-        $push: { items: { $each: newItems } },
-        $set: { updatedAt: new Date() }
-      }
-    );
-
-    if (result.matchedCount === 0) {
-      return res.status(404).json({ error: 'Shopping list not found' });
-    }
-
-    res.status(201).json({ 
-      message: 'Items added successfully', 
-      addedItems: newItems.map(item => item.id.toString()) 
-    });
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to add items', details: error.message });
-  }
-});
-
-// Remove specific items from a shopping list
-router.delete('/:shoppingListId/items/:itemId', async (req, res) => {
-  try {
-    const { shoppingListId, itemId } = req.params;
-
-    const db = await connectToDatabase();
-    const shoppingListsCollection = db.collection('shopping_lists');
-
-    const result = await shoppingListsCollection.updateOne(
-      { _id: new ObjectId(shoppingListId) },
-      { 
-        $pull: { items: { id: new ObjectId(itemId) } },
-        $set: { updatedAt: new Date() }
-      }
-    );
-
-    if (result.matchedCount === 0) {
-      return res.status(404).json({ error: 'Shopping list not found' });
-    }
-
-    res.json({ message: 'Item removed successfully' });
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to remove item', details: error.message });
-  }
-});
-
-// Mark items as purchased
-router.patch('/:shoppingListId/items/:itemId/purchase', async (req, res) => {
-  try {
-    const { shoppingListId, itemId } = req.params;
-    const { purchased } = req.body;
-
-    const db = await connectToDatabase();
-    const shoppingListsCollection = db.collection('shopping_lists');
-
-    const result = await shoppingListsCollection.updateOne(
-      { 
-        _id: new ObjectId(shoppingListId), 
-        'items.id': new ObjectId(itemId) 
-      },
-      { 
-        $set: { 
-          'items.$.purchased': purchased,
-          'items.$.updatedAt': new Date(),
-          updatedAt: new Date()
-        } 
-      }
-    );
-
-    if (result.matchedCount === 0) {
-      return res.status(404).json({ error: 'Shopping list or item not found' });
-    }
-
-    res.json({ message: 'Item purchase status updated successfully' });
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to update item purchase status', details: error.message });
-  }
-});
-
-module.exports = router;
+}
