@@ -5,6 +5,7 @@ import Recipes from "./components/recipes";
 import Footer from "./components/footer";
 import Loading from "./loading";
 import RecipeCarousel from "./components/RecipeCarousel";
+import { ShoppingListProvider } from "./context/shoppingListContext";
 import { Suspense } from 'react';
 
 export default async function Home({ searchParams }) {
@@ -15,8 +16,8 @@ export default async function Home({ searchParams }) {
 
     // Determine the current page from search parameters, defaulting to 1
     const page = searchParams.page ? parseInt(searchParams.page) : 1;
-    const sort = searchParams.sort || 'default';
-    const order = searchParams.order || 'ascending';
+    const sort = searchParams.sort || '';
+    const order = searchParams.order || 'desc';
     const search = searchParams.search || '';
     const tags = searchParams.tags ||'';
     const category = searchParams.category || '';
@@ -24,7 +25,7 @@ export default async function Home({ searchParams }) {
     const instructions = searchParams.instructions || ''
     try {
         // Fetch recipes from the API with a limit of 20 per page
-        recipes = await fetchRecipes(20, page,search, tags, category, ingredients, instructions);
+        recipes = await fetchRecipes(20, page,search, tags, category, ingredients, instructions, sort, order);
     } catch (err) {
         // Capture any error that occurs during the fetch
         error = err.message; // Store the error message
@@ -32,6 +33,7 @@ export default async function Home({ searchParams }) {
 
     // Return the rendered JS for the Home component
     return (
+        <ShoppingListProvider>
         <>
         <RecipeCarousel />
             <Suspense fallback={<Loading />}>
@@ -55,5 +57,6 @@ export default async function Home({ searchParams }) {
             </Suspense>
 
         </>
+        </ShoppingListProvider>  
     );
 }
