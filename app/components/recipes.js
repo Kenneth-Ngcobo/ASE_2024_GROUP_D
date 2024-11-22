@@ -17,15 +17,12 @@ import { PiCookingPotDuotone, PiHeart } from "react-icons/pi";
 import Head from "next/head";
 import Carousel from "./Carousel";
 import { SortControl } from "./SortControl";
-import { sortRecipes } from "./sortUtils";
 import { useSearchParams } from "next/navigation";
 import { useShoppingList } from "../context/shoppingListContext";
 import ShoppingList from "./shoppinglist";
 
 const Recipes = ({ recipes: initialRecipes }) => {
-  const [sortBy, setSortBy] = useState("default");
-  const [sortOrder, setSortOrder] = useState("ascending");
-  const [recipes, setRecipes] = useState(initialRecipes || []);
+  const [recipes, setRecipes] = useState(initialRecipes);
   const [favoritedRecipes, setFavoritedRecipes] = useState(new Set());
   const [favoriteDetails, setFavoriteDetails] = useState([]);
   const [dropdownVisible, setDropdownVisible] = useState(false);
@@ -71,23 +68,9 @@ const Recipes = ({ recipes: initialRecipes }) => {
   }, []);
 
   useEffect(() => {
-    const newSort = searchParams.get("sortBy") || "default";
-    const newOrder = searchParams.get("order") || "ascending";
-    setSortBy(newSort);
-    setSortOrder(newOrder);
+    setRecipes(initialRecipes)
   }, [searchParams]);
 
-  const handleSort = (newSortBy, newSortOrder) => {
-    setSortBy(newSortBy);
-    setSortOrder(newSortOrder);
-    const sortedRecipes = sortRecipes(initialRecipes, newSortBy, newSortOrder);
-    setRecipes(sortedRecipes);
-  };
-
-  useEffect(() => {
-    const sortedRecipes = sortRecipes(initialRecipes, sortBy, sortOrder);
-    setRecipes(sortedRecipes);
-  }, [initialRecipes, sortBy, sortOrder]);
 
   const toggleFavorite = async (recipeId) => {
     const loggedInEmail = localStorage.getItem("loggedInUserEmail");
@@ -155,6 +138,7 @@ const Recipes = ({ recipes: initialRecipes }) => {
     }
   };
 
+
   const addIngredientsToShoppingList = (ingredients) => {
     // Convert ingredients object to an array of {name, quantity}
     const ingredientsArray = Object.keys(ingredients).map((key) => ({
@@ -174,13 +158,6 @@ const Recipes = ({ recipes: initialRecipes }) => {
       });
     });
   };
-  
-
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center h-64">Loading...</div>
-    );
-  }
 
   return (
     <>
@@ -192,11 +169,7 @@ const Recipes = ({ recipes: initialRecipes }) => {
           </div>
         )}
 
-        <SortControl
-          onSortChange={handleSort}
-          sortBy={sortBy}
-          sortOrder={sortOrder}
-        />
+        <SortControl />
 
         <div className="mb-4 relative">
           <button
@@ -242,7 +215,7 @@ const Recipes = ({ recipes: initialRecipes }) => {
               className="block p-4 bg-white dark:bg-black dark:border-gray-950 border border-gray-200 rounded-lg shadow-lg hover:shadow-2xl transition-transform transform hover:scale-105 duration-300 ease-in-out"
             >
               <div className="relative w-full h-64">
-                {recipe.images.length > 1 ? (
+                {recipe.images?.length > 1 ? (
                   <Carousel images={recipe.images} />
                 ) : (
                   <div className="relative w-full h-full">
@@ -278,7 +251,7 @@ const Recipes = ({ recipes: initialRecipes }) => {
               <div className="space-y-2">
                 <p className="text-sm text-gray-600 flex items-center">
                   <FaClock className="text-[#1e455c] mr-2" />
-                  {recipe.prep + recipe.cook} mins
+                  {recipe.prep} mins
                 </p>
                 <p className="text-sm text-gray-600 flex items-center">
                   <PiCookingPotDuotone className="text-[#1e455c] mr-2" />
