@@ -222,12 +222,16 @@ const Recipes = ({ recipes: initialRecipes }) => {
               className="block p-4 bg-white dark:bg-black dark:border-gray-950 border border-gray-200 rounded-lg shadow-lg hover:shadow-2xl transition-transform transform hover:scale-105 duration-300 ease-in-out"
             >
               <div className="relative w-full h-64">
-                {recipe.images.length > 1 ? (
+                {Array.isArray(recipe.images) && recipe.images.length > 1 ? (
                   <Carousel images={recipe.images} />
                 ) : (
                   <div className="relative w-full h-full">
                     <Image
-                      src={recipe.images[0]}
+                      src={
+                        recipe.images && recipe.images[0]
+                          ? recipe.images[0]
+                          : "/placeholder.jpg"
+                      }
                       alt={recipe.title}
                       fill
                       className="object-cover"
@@ -262,25 +266,13 @@ const Recipes = ({ recipes: initialRecipes }) => {
                 </p>
                 <p className="text-sm text-gray-600 flex items-center">
                   <PiCookingPotDuotone className="text-[#1e455c] mr-2" />
-                  {recipe.cook} mins
+                  {recipe.servings} servings
                 </p>
                 <p className="text-sm text-gray-600 flex items-center">
-                  <FaUtensils className="text-[#1e455c] mr-2" />
-                  Serves {recipe.servings}
-                </p>
-              </div>
-              <div className="flex flex-wrap gap-2 mt-3">
-                {recipe.category && (
-                  <span className="inline-block bg-gray-100 dark:bg-gray-950 dark:text-gray-400  text-gray-600 text-sm px-2 py-1 rounded">
-                    {recipe.category}
-                  </span>
-                )}
-                <span className="inline-block bg-gray-100 text-gray-600  dark:bg-gray-950 dark:text-gray-400 text-sm px-2 py-1 rounded">
-                  {recipe.instructions.length} steps
-                </span>
-                <span className="inline-block bg-gray-100 text-gray-600  dark:bg-gray-950 dark:text-gray-400 text-sm px-2 py-1 rounded">
-                  {new Date(recipe.published).toDateString()}
-                </span>
+  <FaTags className="text-[#1e455c] mr-2" />
+  {Array.isArray(recipe.tags) ? recipe.tags.join(", ") : "No tags available"}
+</p>
+
               </div>
             </Link>
           ))}
@@ -289,6 +281,5 @@ const Recipes = ({ recipes: initialRecipes }) => {
     </>
   );
 };
-
 
 export default Recipes;
