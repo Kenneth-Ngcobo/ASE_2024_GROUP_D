@@ -33,7 +33,9 @@ export default async function Home({ searchParams }) {
     // Return the rendered JS for the Home component
     return (
         <>
+
         <RecipeCarousel />
+
             <Suspense fallback={<Loading />}>
                 {/*<CategoryList totalRecipes={recipes.totalRecipes} />*/}
                 {/* Render the Recipes component, passing the fetched recipes as props */}

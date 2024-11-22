@@ -74,7 +74,7 @@ router.put('/:shoppingListId', async (req, res) => {
       ...(items && { 
         items: items.map(item => ({
           ...item,
-          id: item.id ? new ObjectId(item.id) : new ObjectId(),
+          id: item.id ? (item.id) : new ObjectId(),
           updatedAt: new Date()
         })) 
       }),
