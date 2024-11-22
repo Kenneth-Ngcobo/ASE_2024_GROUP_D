@@ -91,6 +91,20 @@ export default async function handler(req, res) {
         }
         res.status(200).json({ success: true });
         break;
+      
+        // Update item quantity
+        case 'UPDATE_QUANTITY':
+         const { userId: userIdForQuantityUpdate, itemId: itemIdToUpdate, newQuantity } = req.body;
+         const quantityUpdated = await collection.updateOne(
+          { userId: userIdForQuantityUpdate, 'items._id': ObjectId(itemIdToUpdate) },
+         { $set: { 'items.$.quantity': newQuantity } }
+          );
+          if (!quantityUpdated.matchedCount) {
+         return res.status(404).json({ success: false, message: 'Item not found in shopping list' });
+         }
+         res.status(200).json({ success: true });
+          break;
+      
 
       default:
         res.setHeader('Allow', ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'DELETE_ITEM', 'MARK_PURCHASED']);
