@@ -53,7 +53,7 @@ const ShoppingList = () => {
       // Clear the input fields after adding
       setNewItemName('');
       setNewItemQuantity('');
-      setError('');
+     
     };
 
     
