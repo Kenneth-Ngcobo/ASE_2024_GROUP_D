@@ -62,11 +62,11 @@ const RecipeCarousel = () => {
   };
 
   return (
-    <div className="w-full max-w-6xl mx-auto p-8 bg-gradient-to-b from-gray-50 to-white">
+    <div className="w-full max-w-6xl mx-auto p-8 bg-[#fcfde2] dark:bg-[#1c1d02]">
       <div className="flex justify-between items-center mb-8">
-        <h2 className="text-3xl font-bold text-gray-800 tracking-tight">
+        <h2 className="text-3xl font-bold text-[#ff4f1a] tracking-tight">
           Top Rated Recipes
-          <div className="h-1 w-20 bg-blue-500 mt-2 rounded-full" />
+          <div className="h-1 w-20 bg-[#fc9d4f] mt-2 rounded-full" />
         </h2>
         <div className="flex gap-2">
           <button
