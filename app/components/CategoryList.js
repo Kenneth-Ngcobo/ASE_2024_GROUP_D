@@ -91,14 +91,14 @@ const CategoryList = ({ onCategoryChange, totalRecipes }) => {
     router.push(`?${queryString}`);
   };
 
-  if (loading) return <div className="text-gray-500">Loading categories...</div>;
+  if (loading) return <div className="text-gray-500"></div>;
   if (error) return <div className="text-red-500">Error: {error}</div>;
 
   return (
     <div className="relative">
       <button
         onClick={() => setIsOpen((prev) => !prev)}
-        className="flex items-center text-teal-600 hover:text-teal-500 font-medium uppercase tracking-wide text-sm focus:outline-none"
+        className="block text-[#020123] hover:text-[#fc9d4f] font-medium uppercase py-2"
       >
         {isOpen ? 'Close' : 'Categories'}
       </button>
@@ -115,19 +115,19 @@ const CategoryList = ({ onCategoryChange, totalRecipes }) => {
                 placeholder="Search categories"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-200 rounded-md text-sm focus:outline-none focus:border-teal-500"
+                className="w-full px-3 py-2 border border-gray-200 rounded-md text-sm focus:outline-none focus:border-[#fcf7e9]"
               />
               <div className="flex gap-2">
                 <button
                   type="submit"
-                  className="flex-1 bg-teal-500 text-white px-4 py-2 rounded-md text-sm hover:bg-teal-600 transition duration-200"
+                  className="flex-1 bg-[#ff4f1a] text-white px-4 py-2 rounded-md text-sm hover:bg-[#fc9d4f] transition duration-200"
                 >
                   Search
                 </button>
                 <button
                   onClick={clearCategory}
                   type="button"
-                  className="flex-1 bg-gray-100 text-gray-700 px-4 py-2 rounded-md text-sm hover:bg-gray-200 transition duration-200"
+                  className="flex-1 bg-gray-100 text-gray-700 px-4 py-2 rounded-md text-sm hover:bg-[#fcf7e9] transition duration-200"
                 >
                   Clear
                 </button>

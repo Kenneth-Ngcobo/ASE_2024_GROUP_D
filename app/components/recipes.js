@@ -3,14 +3,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
-import { FaClock, FaUtensils, FaCaretDown } from "react-icons/fa";
-import { PiCookingPotDuotone,PiHeart } from 'react-icons/pi';
-import Carousel from './Carousel';
-import { SortControl } from './SortControl';
-import { useSearchParams } from 'next/navigation';
-import React, { useState, useEffect } from "react";
-import Link from "next/link";
-import Image from "next/image";
 import {
   FaCalendarDay,
   FaClock,
@@ -164,6 +156,9 @@ const Recipes = ({ recipes: initialRecipes }) => {
     }
   };
 
+{/**  if (loading) {
+    return <div className="container mx-auto p-4 text-center">Loading recipes...</div>;
+  }*/} 
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-64">Loading...</div>
@@ -279,14 +274,14 @@ const Recipes = ({ recipes: initialRecipes }) => {
               </div>
               <div className="flex flex-wrap gap-2 mt-3">
                 {recipe.category && (
-                  <span className="inline-block bg-[#edd282] dark:bg-[#1c1d02] dark:text-gray-400  text-[#020123] text-sm px-2 py-1 rounded">
+                  <span className="inline-block bg-[#f9efd2] dark:bg-[#1c1d02] dark:text-gray-400  text-[#020123] text-sm px-2 py-1 rounded">
                     {recipe.category}
                   </span>
                 )}
-                <span className="inline-block bg-[#edd282] text-[#020123]  dark:bg-[#1c1d02] dark:text-gray-400 text-sm px-2 py-1 rounded">
+                <span className="inline-block bg-[#f9efd2] text-[#020123]  dark:bg-[#1c1d02] dark:text-gray-400 text-sm px-2 py-1 rounded">
                   {recipe.instructions.length} steps
                 </span>
-                <span className="inline-block bg-[#edd282] text-[#020123]  dark:bg-[#1c1d02] dark:text-gray-400 text-sm px-2 py-1 rounded">
+                <span className="inline-block bg-[#f9efd2] text-[#020123]  dark:bg-[#1c1d02] dark:text-gray-400 text-sm px-2 py-1 rounded">
                   {new Date(recipe.published).toDateString()}
                 </span>
               </div>

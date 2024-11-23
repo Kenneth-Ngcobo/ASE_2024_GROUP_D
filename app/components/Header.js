@@ -39,31 +39,31 @@ const Header = ({ isAuthenticated, onLogout }) => {
   }, []);
 
   return (
-    <header className="bg-gray-100 dark:bg-gray-950 top-0 z-50">
+    <header className="bg-[#f9efd2] dark:bg-gray-950 top-0 z-50">
       <div className="container mx-auto px-4">
         <nav className="flex items-center justify-between h-16">
           <div className="hidden md:flex space-x-8">
             <Link
               href="/recipes"
-              className="text-gray-600 dark:text-white hover:text-teal-500 font-medium uppercase text-sm"
+              className="block text-[ #020123] hover:text-[#fc9d4f] font-medium py-2 uppercase "
             >
               Recipes
             </Link>
             <Link
               href="/Recomended"
-              className="text-gray-600 dark:text-white hover:text-teal-500 font-medium uppercase text-sm"
+              className="block text-[ #020123] hover:text-[#fc9d4f] font-medium py-2 uppercase"
             >
               Recommended
             </Link>
             <Link
               href="/Favourite"
-              className="text-gray-600 dark:text-white hover:text-teal-500 font-medium uppercase text-sm"
+              className="block text-[ #020123] hover:text-[#fc9d4f] font-medium py-2 uppercase "
             >
               Favourite
             </Link>
           </div>
 
-          <Link href="/" className="flex items-center">
+        {/**   <Link href="/" className="flex items-center">
             <Image
               src="/Kwa.png"
               alt="Logo"
@@ -71,7 +71,7 @@ const Header = ({ isAuthenticated, onLogout }) => {
               height={60}
               className="h-10 w-auto "
             />
-          </Link>
+          </Link>*/}
           <div className="hidden md:flex items-center space-x-8">
             {/* Wrapping CategoryList in Suspense */}
             <Suspense fallback={<Loading />}>
@@ -85,7 +85,7 @@ const Header = ({ isAuthenticated, onLogout }) => {
             {/* User Icon Toggle */}
             <button
               onClick={toggleModal}
-              className="text-gray-600 dark:text-white hover:text-teal-500"
+              className="text-[#020123] dark:text-white hover:text-[#fc9d4f]"
             >
               <FaUser className="w-5 h-5" />
             </button>
@@ -123,19 +123,19 @@ const Header = ({ isAuthenticated, onLogout }) => {
         <div className="container mx-auto px-4 space-y-4">
           <Link
             href="/recipes"
-            className="block text-[#1e455c] hover:text-[#2b617f] font-medium py-2"
+            className="block text-[ #020123] hover:text-[#fc9d4f] font-medium py-2"
           >
             Recipes
           </Link>
           <Link
             href="/Recomended"
-            className="block text-[#1e455c] hover:text-[#2b617f] font-medium py-2"
+            className="block text-[#020123] hover:text-[#fc9d4f] font-medium py-2"
           >
             Recommended
           </Link>
           <Link
             href="/Favourite"
-            className="block text-[#1e455c] hover:text-[#2b617f] font-medium py-2"
+            className="block text-[#020123] hover:text-[#fc9d4f] font-medium py-2"
           >
             Favourites
           </Link>
