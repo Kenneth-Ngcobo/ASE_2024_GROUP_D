@@ -4,25 +4,13 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
-import { FaClock, FaUtensils, FaCaretDown } from "react-icons/fa";
-import { PiCookingPotDuotone,PiHeart } from 'react-icons/pi';
-import Carousel from './Carousel';
-import { SortControl } from './SortControl';
-import { useSearchParams } from 'next/navigation';
-import React, { useState, useEffect } from "react";
-import Link from "next/link";
-import Image from "next/image";
 import {
-  FaCalendarDay,
   FaClock,
   FaUtensils,
-  FaTags,
-  FaUtensilSpoon,
-  FaListUl,
   FaCaretDown,
+  FaShoppingBag,
 } from "react-icons/fa";
 import { PiCookingPotDuotone, PiHeart } from "react-icons/pi";
-import Head from "next/head";
 import Carousel from "./Carousel";
 import { SortControl } from "./SortControl";
 import { useSearchParams } from "next/navigation";
@@ -289,7 +277,7 @@ const Recipes = ({ recipes: initialRecipes }) => {
                     addIngredientsToShoppingList(recipe.ingredients);
                   }}
                 >
-                  Add Ingredients to Shopping List
+                  <FaShoppingBag className="text-[#020123] mr-2" />
                 </button>
               </div>
             </Link>
