@@ -137,7 +137,7 @@ export default function EditableRecipeDetails({ id, initialDescription, lastEdit
     return (
         <div className="bg-white dark:bg-gray-950 rounded-2xl shadow-xl p-8">
             <div className="flex justify-between items-center mb-4">
-                <h2 className="text-2xl font-semibold text-blue-800 dark:text-blue-400">
+                <h2 className="text-2xl font-semibold text-[#fc9d4f] dark:text-blue-400">
                     Description
                 </h2>
                 {!isEditing && (
@@ -200,13 +200,13 @@ export default function EditableRecipeDetails({ id, initialDescription, lastEdit
                 </div>
             ) : (
                 <div className="prose dark:prose-invert max-w-none">
-                    <p className="text-gray-600 dark:text-gray-400 whitespace-pre-wrap">
+                    <p className="text-[#020123] dark:text-gray-400 whitespace-pre-wrap">
                         {description}
                     </p>
                 </div>
             )}
 
-            <p className="mt-4 text-sm text-gray-600 dark:text-gray-400">
+            <p className="mt-4 text-sm text-[#020123] dark:text-gray-400">
                 <strong>Last edited by:</strong> {editor || 'Unknown'} on{' '}
                 {editDate ? new Date(editDate).toLocaleString() : 'N/A'}
             </p>

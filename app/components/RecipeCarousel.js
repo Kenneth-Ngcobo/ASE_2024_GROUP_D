@@ -119,24 +119,22 @@ const RecipeCarousel = () => {
                     
                   </div>
                   <div className="p-6">
-                    <h3 className="font-semibold text-xl text-gray-800 mb-3 line-clamp-2 group-hover:text-blue-600 transition-colors">
+                    <h3 className="font-semibold text-xl text-[#fc9d4f] mb-3 line-clamp-2 ">
                       {recipe.title}
                     </h3>
-                    <div className="flex flex-col gap-3">
-                      <StarRating rating={recipe.averageRating || 0} />
-                      <div className="flex items-center gap-4 text-gray-600">
-                        <div className="flex items-center gap-1.5">
-                          <FaClock className="w-4 h-4" />
-                          <span className="text-sm">
-                            {recipe.cookTime || "30 mins"}
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <FaUtensils className="w-4 h-4" />
-                          <span className="text-sm">
-                            serves {recipe.servings || "4"}
-                          </span>
-                        </div>
+                    <div className="flex items-center gap-4 text-[#020123]">
+                    <StarRating rating={recipe.averageRating || 0} />
+                      <div className="flex items-center gap-1.5">
+                        <FaClock className="w-4 h-4" />
+                        <span className="text-sm">
+                          {recipe.cookTime || "30 mins"}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <FaUtensils className="w-4 h-4" />
+                        <span className="text-sm">
+                          serves {recipe.servings || "4"}
+                        </span>
                       </div>
                     </div>
                   </div>

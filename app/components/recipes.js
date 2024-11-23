@@ -260,14 +260,14 @@ const Recipes = ({ recipes: initialRecipes }) => {
               </div>
               <div className="flex flex-wrap gap-2 mt-3">
                 {recipe.category && (
-                  <span className="inline-block bg-[#edd282] dark:bg-[#1c1d02] dark:text-gray-400  text-[#020123] text-sm px-2 py-1 rounded">
+                  <span className="inline-block bg-[#f9efd2] dark:bg-[#1c1d02] dark:text-gray-400  text-[#020123] text-sm px-2 py-1 rounded">
                     {recipe.category}
                   </span>
                 )}
-                <span className="inline-block bg-[#edd282] text-[#020123]  dark:bg-[#1c1d02] dark:text-gray-400 text-sm px-2 py-1 rounded">
+                <span className="inline-block bg-[#f9efd2] text-[#020123]  dark:bg-[#1c1d02] dark:text-gray-400 text-sm px-2 py-1 rounded">
                   {recipe.instructions.length} steps
                 </span>
-                <span className="inline-block bg-[#edd282] text-[#020123]  dark:bg-[#1c1d02] dark:text-gray-400 text-sm px-2 py-1 rounded">
+                <span className="inline-block bg-[#f9efd2] text-[#020123]  dark:bg-[#1c1d02] dark:text-gray-400 text-sm px-2 py-1 rounded">
                   {new Date(recipe.published).toDateString()}
                 </span>
                 <button

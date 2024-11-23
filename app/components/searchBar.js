@@ -153,7 +153,7 @@ const RecipeSearchBar = ({
         <div className="max-w-3xl mx-auto">
             <form onSubmit={handleSearchSubmit} className="relative">
                 <div className="relative flex items-center">
-                <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-teal-500"> 
+                <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-[#ff4f1a]"> 
                         <FaSearch className="h-4 w-4" />
                         </div>
                     <input
