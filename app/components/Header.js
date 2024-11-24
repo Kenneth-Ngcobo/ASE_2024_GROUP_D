@@ -63,15 +63,15 @@ const Header = ({ isAuthenticated, onLogout }) => {
             </Link>
           </div>
 
-        {/**   <Link href="/" className="flex items-center">
+           <Link href="/" className="flex items-center">
             <Image
-              src="/Kwa.png"
+              src="/0.png"
               alt="Logo"
               width={150}
-              height={60}
-              className="h-10 w-auto "
+              height={100}
+              className="h-20 w- "
             />
-          </Link>*/}
+          </Link>
           <div className="hidden md:flex items-center space-x-8">
             {/* Wrapping CategoryList in Suspense */}
             <Suspense fallback={<Loading />}>
