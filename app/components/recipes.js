@@ -19,7 +19,7 @@ import Carousel from "./Carousel";
 import { SortControl } from "./SortControl";
 import { useSearchParams } from "next/navigation";
 import { useShoppingList } from "../context/shoppingListContext";
-import ShoppingList from "./shoppinglist";
+import ShoppingList from "../components/shoppingList"
 
 const Recipes = ({ recipes: initialRecipes }) => {
   const [recipes, setRecipes] = useState(initialRecipes);
