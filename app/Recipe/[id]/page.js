@@ -9,7 +9,7 @@ import EditableRecipeDetails from '../../components/EditableRecipeDetails';
 import ReviewsSection from '../../components/ReviewsSection';
 import AllergensSection from '../../components/AllergensSection';
 import VoiceAssistant from '../../components/VoiceAssistant';
-import ShoppingList from '../../components/shoppinglist';
+import ShoppingList from '../../components/shoppingList';
 
 // Generate metadata for the recipe page dynamically
 export async function generateMetadata({ params }) {
