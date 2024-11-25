@@ -33,7 +33,7 @@ export default function ImageGallery({ images }) {
                 <>
                     <button
                         onClick={goToPrevious}
-                        className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-[#1e455c] text-white p-2 rounded-full hover:bg-blue-400 transition-colors"
+                        className="absolute left-2 top-1/2 transform -translate-y-1/2  text-[#edd282] p-2 rounded-full hover:bg-[#ffebe5] transition-colors"
                         aria-label="Previous image"
                     >
                         <FaChevronLeft size={24} />
@@ -41,7 +41,7 @@ export default function ImageGallery({ images }) {
 
                     <button
                         onClick={goToNext}
-                        className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-[#1e455c] text-white p-2 rounded-full hover:bg-blue-400 transition-colors"
+                        className="absolute right-2 top-1/2 transform -translate-y-1/2  text-[#edd282] p-2 rounded-full hover:bg-[#ffebe5] transition-colors"
                         aria-label="Next image"
                     >
                         <FaChevronRight size={24} />
@@ -53,7 +53,7 @@ export default function ImageGallery({ images }) {
                 {images.map((image, index) => (
                     <div 
                     key={index} 
-                    className={`relative w-32 h-28 cursor-pointer rounded-lg ${currentIndex === index ? 'shadow-lg shadow-[#1e455c]' : ''}`}
+                    className={`relative w-32 h-28 cursor-pointer rounded-lg ${currentIndex === index ? 'shadow-lg shadow-[#ffebe5]' : ''}`}
                     onClick={() => setCurrentIndex(index)}
                 >
                     <Image
