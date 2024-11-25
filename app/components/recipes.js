@@ -271,7 +271,7 @@ const Recipes = ({ recipes: initialRecipes }) => {
                   {new Date(recipe.published).toDateString()}
                 </span>
                 <button
-                  className="inline-block bg-blue-500 text-white text-sm px-2 py-1 rounded mt-2"
+                  className="inline-block bg-[#f9efd2] text-white text-sm px-2 py-1 rounded mt-2"
                   onClick={(e) => {
                     e.preventDefault();
                     addIngredientsToShoppingList(recipe.ingredients);
