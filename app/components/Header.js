@@ -30,19 +30,19 @@ const Header = ({ isAuthenticated, onLogout }) => {
         <nav className="flex items-center justify-between h-16">
           <div className="hidden md:flex space-x-8">
             <Link
-              href="/recipes"
+              href="/"
               className="block text-[ #020123] hover:text-[#fc9d4f] font-medium py-2 uppercase "
             >
               Recipes
             </Link>
             <Link
-              href="/Recomended"
+              href=""
               className="block text-[ #020123] hover:text-[#fc9d4f] font-medium py-2 uppercase"
             >
               Recommended
             </Link>
             <Link
-              href="/Favourite"
+              href=""
               className="block text-[ #020123] hover:text-[#fc9d4f] font-medium py-2 uppercase "
             >
               Favourite
