@@ -25,6 +25,7 @@ Kwamaimai is a dynamic recipe web application for designed users to discover, sh
 - Rate/review
 - Edit description
 - Image Carousel
+- Offline usage
 
 # Demo
 
@@ -110,9 +111,34 @@ root/
 ├── hook/
 ├── images/
 ├── Recipe/[id]/
-├── styles/
+├── styles/global.css
 ├── api.js
-└── error.js
+├── error.js
+├── layout.js
+├── loading.js
+├── not-found.js
+├── page.js
+├── providers.js
+├── review.js
+├── lib/
+│   ├── AuthMiddleware.js
+│   ├── utils.js
+├── components/
+├── public/
+├── auth.js
+├── db.js
+├── next.config.mjs
+├── packgae-lock.json
+├── package.json
+├── postcss.config.mjs
+├── ReadMe.md
+├── tailwind.config.js
+├── testConnection.js
+
+
+
+
+
 
 # API Documentation
 
@@ -139,6 +165,10 @@ This section outlines the key API endpoints available in the application, their 
 7. Reviews
 8. Update
 9. Categories
+
+- Route:api/recipes/categories
+- Description:
+
 10. Ingredients
 11. Recommendations
 12. Tags
