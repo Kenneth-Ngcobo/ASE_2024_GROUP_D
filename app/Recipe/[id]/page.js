@@ -8,7 +8,6 @@ import Loading from './loading';
 import EditableRecipeDetails from '../../components/EditableRecipeDetails';
 import ReviewsSection from '../../components/ReviewsSection';
 import AllergensSection from '../../components/AllergensSection';
-import ShoppingList from '../../components/shoppinglist';
 import DownloadButton from '../../components/DownLoadButton'; // Import the new component
 
 // Generate metadata for the recipe page dynamically
