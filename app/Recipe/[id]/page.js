@@ -8,7 +8,7 @@ import Loading from './loading';
 import EditableRecipeDetails from '../../components/EditableRecipeDetails';
 import ReviewsSection from '../../components/ReviewsSection';
 import AllergensSection from '../../components/AllergensSection';
-import ShoppingList from '../../components/shoppinglist';
+
 
 // Generate metadata for the recipe page dynamically
 export async function generateMetadata({ params }) {
@@ -28,7 +28,7 @@ export async function generateMetadata({ params }) {
         openGraph: {
             title: recipe.title || 'Untitled Recipe',
             description: recipe.description || 'No description available.',
-            images: recipe.images?.[0] || '/kwaMai.jpg',
+            images: recipe.images?.[0] || '/0.png',
             type: 'article'
         }
     };
@@ -151,7 +151,7 @@ export default async function RecipePage({ params }) {
                             content={<ReviewsSection recipeId={id} />}
                             defaultOpen={true}
                         />
-                        <ShoppingList/>
+                       
                         {/* Footer Information */}
                         <div className="mt-8 bg-white dark:bg-gray-950 p-6 rounded-xl shadow-xl">
                             <p className="text-sm text-[#020123]">
