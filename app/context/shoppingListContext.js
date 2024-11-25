@@ -32,12 +32,31 @@ const shoppingListReducer = (state, action) => {
         ...state,
         items: state.items.filter(item => item.id !== action.payload.id),
       };
-    case 'CLEAR_LIST':
-      return initialState;
-    default:
-      return state;
+      case 'CLEAR_LIST':
+        return {
+          ...state,
+          items: [],
   }
+
+  case 'TOGGLE_PURCHASED':
+    return {
+      ...state,
+      items: state.items.map(item =>
+        item.id === action.payload.id ? { ...item, purchased: !item.purchased } : item
+      ),
+    };
+  case 'UPDATE_QUANTITY':
+    return {
+      ...state,
+      items: state.items.map(item =>
+        item.id === action.payload.id ? { ...item, quantity: action.payload.quantity } : item
+      ),
+    };
+  default:
+    return state;
+}
 };
+
 
 export const ShoppingListProvider = ({ children }) => {
   const [state, dispatch] = useReducer(shoppingListReducer, initialState);
