@@ -9,7 +9,7 @@ import EditableRecipeDetails from '../../components/EditableRecipeDetails';
 import ReviewsSection from '../../components/ReviewsSection';
 import AllergensSection from '../../components/AllergensSection';
 import VoiceAssistant from '../../components/VoiceAssistant';
-import ShoppingList from '../../components/shoppingList';
+// import ShoppingLi////st from '../../components/shoppingList';
 
 // Generate metadata for the recipe page dynamically
 export async function generateMetadata({ params }) {
@@ -157,7 +157,7 @@ export default async function RecipePage({ params }) {
                             content={<ReviewsSection recipeId={id} />}
                             defaultOpen={true}
                         />
-                        <ShoppingList/>
+                        {/* <ShoppingList/> */}
                         {/* Footer Information */}
                         <div className="mt-8 bg-white dark:bg-gray-950 p-6 rounded-xl shadow-xl">
                             <p className="text-sm text-[#020123]">
