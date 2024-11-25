@@ -1,22 +1,21 @@
+// components/Recipes.js
 "use client";
 
-import React, { useState, useEffect } from "react";
-import Link from "next/link";
-import Image from "next/image";
+import Link from 'next/link';
+import Image from 'next/image';
+import { useState, useEffect } from 'react';
 import {
-  FaCalendarDay,
   FaClock,
   FaUtensils,
-  FaTags,
-  FaUtensilSpoon,
-  FaListUl,
   FaCaretDown,
+  FaShoppingBag,
 } from "react-icons/fa";
 import { PiCookingPotDuotone, PiHeart } from "react-icons/pi";
-import Head from "next/head";
 import Carousel from "./Carousel";
 import { SortControl } from "./SortControl";
 import { useSearchParams } from "next/navigation";
+import { useShoppingList } from "../context/shoppingListContext";
+import ShoppingList from "../components/shoppingList"
 
 const Recipes = ({ recipes: initialRecipes }) => {
   const [recipes, setRecipes] = useState(initialRecipes);
@@ -26,6 +25,7 @@ const Recipes = ({ recipes: initialRecipes }) => {
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const searchParams = useSearchParams();
+  const { dispatch: dispatchShoppingList } = useShoppingList();
 
   // Fetch favorites when component mounts
   useEffect(() => {
@@ -49,9 +49,7 @@ const Recipes = ({ recipes: initialRecipes }) => {
         }
 
         const data = await response.json();
-        // Store the complete favorite recipes data
         setFavoriteDetails(data.favorites);
-        // Create a Set of just the IDs for quick lookup
         const favoriteIds = new Set(data.favorites.map((recipe) => recipe._id));
         setFavoritedRecipes(favoriteIds);
       } catch (err) {
@@ -81,7 +79,6 @@ const Recipes = ({ recipes: initialRecipes }) => {
     const recipe = recipes.find((r) => r._id === recipeId);
 
     try {
-      // Optimistically update UI
       setFavoritedRecipes((prev) => {
         const updated = new Set(prev);
         if (isFavorited) {
@@ -92,7 +89,6 @@ const Recipes = ({ recipes: initialRecipes }) => {
         return updated;
       });
 
-      // Also update the favorite details
       setFavoriteDetails((prev) => {
         if (isFavorited) {
           return prev.filter((r) => r._id !== recipeId);
@@ -115,7 +111,6 @@ const Recipes = ({ recipes: initialRecipes }) => {
         throw new Error("Failed to update favorites");
       }
     } catch (err) {
-      // Revert optimistic updates on error
       setFavoritedRecipes((prev) => {
         const reverted = new Set(prev);
         if (isFavorited) {
@@ -140,6 +135,25 @@ const Recipes = ({ recipes: initialRecipes }) => {
   };
 
 
+  const addIngredientsToShoppingList = (ingredients) => {
+    // Convert ingredients object to an array of {name, quantity}
+    const ingredientsArray = Object.keys(ingredients).map((key) => ({
+      name: key,
+      quantity: ingredients[key], // Use the quantity as the value
+    }));
+  
+    // Dispatch each ingredient to the shopping list
+    ingredientsArray.forEach((ingredient) => {
+      dispatchShoppingList({
+        type: 'ADD_ITEM',
+        payload: { 
+          id: ingredient.name,  
+          name: `${ingredient.name} - ${ingredient.quantity}`,  
+          purchased: false 
+        },
+      });
+    });
+  };
 
   return (
     <>
@@ -194,7 +208,7 @@ const Recipes = ({ recipes: initialRecipes }) => {
             <Link
               href={`/Recipe/${recipe._id}`}
               key={recipe._id}
-              className="block p-4 bg-white dark:bg-black dark:border-gray-950 border border-gray-200 rounded-lg shadow-lg hover:shadow-2xl transition-transform transform hover:scale-105 duration-300 ease-in-out"
+              className="block p-4 bg-[#fcfde2] dark:bg-black dark:border-gray-950 border border-gray-200 rounded-lg shadow-lg hover:shadow-2xl transition-transform transform hover:scale-105 duration-300 ease-in-out"
             >
               <div className="relative w-full h-64">
                 {recipe.images?.length > 1 ? (
@@ -212,7 +226,7 @@ const Recipes = ({ recipes: initialRecipes }) => {
               </div>
 
               <div className="p-4 flex justify-between items-center">
-                <h2 className="text-[#1e455c] font-bold text-xl mb-3 font-montserrat group-hover:text-[#2b617f]">
+                <h2 className="text-[#fc9d4f] font-bold text-xl mb-3 font-montserrat group-hover:text-[#2b617f]">
                   {recipe.title}
                 </h2>
                 <button
@@ -232,38 +246,50 @@ const Recipes = ({ recipes: initialRecipes }) => {
 
               <div className="space-y-2">
                 <p className="text-sm text-gray-600 flex items-center">
-                  <FaClock className="text-[#1e455c] mr-2" />
+                  <FaClock className="text-[#020123] mr-2" />
                   {recipe.prep} mins
                 </p>
                 <p className="text-sm text-gray-600 flex items-center">
-                  <PiCookingPotDuotone className="text-[#1e455c] mr-2" />
+                  <PiCookingPotDuotone className="text-[#020123] mr-2" />
                   {recipe.cook} mins
                 </p>
                 <p className="text-sm text-gray-600 flex items-center">
-                  <FaUtensils className="text-[#1e455c] mr-2" />
+                  <FaUtensils className="text-[#020123] mr-2" />
                   Serves {recipe.servings}
                 </p>
               </div>
               <div className="flex flex-wrap gap-2 mt-3">
                 {recipe.category && (
-                  <span className="inline-block bg-gray-100 dark:bg-gray-950 dark:text-gray-400  text-gray-600 text-sm px-2 py-1 rounded">
+                  <span className="inline-block bg-[#f9efd2] dark:bg-[#1c1d02] dark:text-gray-400  text-[#020123] text-sm px-2 py-1 rounded">
                     {recipe.category}
                   </span>
                 )}
-                <span className="inline-block bg-gray-100 text-gray-600  dark:bg-gray-950 dark:text-gray-400 text-sm px-2 py-1 rounded">
+                <span className="inline-block bg-[#f9efd2] text-[#020123]  dark:bg-[#1c1d02] dark:text-gray-400 text-sm px-2 py-1 rounded">
                   {recipe.instructions.length} steps
                 </span>
-                <span className="inline-block bg-gray-100 text-gray-600  dark:bg-gray-950 dark:text-gray-400 text-sm px-2 py-1 rounded">
+                <span className="inline-block bg-[#f9efd2] text-[#020123]  dark:bg-[#1c1d02] dark:text-gray-400 text-sm px-2 py-1 rounded">
                   {new Date(recipe.published).toDateString()}
                 </span>
+                <button
+                  className="inline-block bg-[#f9efd2] text-white text-sm px-2 py-1 rounded mt-2"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    addIngredientsToShoppingList(recipe.ingredients);
+                  }}
+                >
+                  <FaShoppingBag className="text-[#020123] mr-2" />
+                </button>
               </div>
             </Link>
           ))}
         </div>
       </div>
+
+      <ShoppingList />
     </>
   );
 };
 
-
 export default Recipes;
+
+

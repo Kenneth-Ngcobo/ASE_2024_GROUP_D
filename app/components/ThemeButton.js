@@ -1,6 +1,6 @@
 import { FaMoon } from "react-icons/fa";
 import { FaSun } from "react-icons/fa";
-import useState from "react";
+
 
 import { useTheme } from 'next-themes'
 
@@ -9,7 +9,7 @@ const ThemeButton = () => {
  
 
   return (
-    <button className="flex justify-center items-center hover:text-teal-500" onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>
+    <button className="flex justify-center items-center hover:text-[#fc9d4f]" onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>
     {theme === 'dark' ? <FaSun /> : <FaMoon />}
   </button>
   )
