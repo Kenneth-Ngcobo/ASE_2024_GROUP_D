@@ -7,6 +7,8 @@ import CollapsibleSection from '../../components/CollapsibleSection';
 import Loading from './loading';
 import EditableRecipeDetails from '../../components/EditableRecipeDetails';
 import ReviewsSection from '../../components/ReviewsSection';
+import AllergensSection from '../../components/AllergensSection';
+import ShoppingList from '../../components/shoppinglist';
 
 // Generate metadata for the recipe page dynamically
 export async function generateMetadata({ params }) {
@@ -53,11 +55,11 @@ export default async function RecipePage({ params }) {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-b from-green-50 to-white dark:from-gray-900 dark:to-black py-8">
+        <div className="min-h-screen bg-[#fcfde2] py-8">
             <Suspense fallback={<Loading />}>
                 <div className="container mx-auto px-4 max-w-5xl">
                     {/* Back Button */}
-                    <div className="mb-8">
+                    <div className="absolute  left-4 mb-8">
                         <BackButton />
                     </div>
 
@@ -85,14 +87,14 @@ export default async function RecipePage({ params }) {
 
                         {/* Title and Tags Section */}
                         <div className="bg-white  dark:bg-gray-950 rounded-2xl shadow-xl p-8">
-                            <h1 className="text-4xl font-bold text-[#1e455c] mb-4">
+                            <h1 className="text-4xl font-bold text-[#fc9d4f] mb-4">
                                 {recipe.title || 'Untitled Recipe'}
                             </h1>
                             <div className="flex flex-wrap gap-3 mb-6">
-                                {recipe.tags?.map((tag, index) => (
-                                    <span key={index} className="px-4 py-2 bg-[#F5F3F3] dark:bg-gray-800 dark:text-gray-400 hover:bg-[#e5e3e3] text-[#415462] rounded-2xl text-sm font-medium uppercase tracking-wide transition-colors">
-                                        {tag}
-                                    </span>
+                             {recipe.tags?.map((tag, index) => (
+                            <span key={index} className="px-4 py-2 bg-[#f9efd2] dark:bg-gray-800 dark:text-gray-400 hover:bg-[#edd282] text-[#020123] rounded-2xl text-sm font-medium uppercase tracking-wide transition-colors">
+                             {tag}
+                            </span>
                                 ))}
                             </div>
                         </div>
@@ -104,6 +106,9 @@ export default async function RecipePage({ params }) {
                             lastEditedBy={recipe.lastEditedBy}
                             lastEditedAt={recipe.lastEditedAt}
                         />
+
+                        {/* Allergens Section */}
+                        <AllergensSection recipeId={id} />
 
                         {/** Collapsible Section */}
                         <CollapsibleSection
@@ -146,23 +151,22 @@ export default async function RecipePage({ params }) {
                             content={<ReviewsSection recipeId={id} />}
                             defaultOpen={true}
                         />
-
                         {/* Footer Information */}
                         <div className="mt-8 bg-white dark:bg-gray-950 p-6 rounded-xl shadow-xl">
-                            <p className="text-sm text-[#1e455c]">
+                            <p className="text-sm text-[#020123]">
                                 <strong>Published:</strong> {new Date(recipe.published).toDateString()}
                             </p>
                             <p className="text-sm">
-                                <strong className="text-[#1e455c]">Prep Time:</strong> {recipe.prep} minutes
+                                <strong className="text-[#020123]">Prep Time:</strong> {recipe.prep} minutes
                             </p>
                             <p className="text-sm">
-                                <strong className="text-[#1e455c]">Cook Time:</strong> {recipe.cook} minutes
+                                <strong className="text-[#020123]">Cook Time:</strong> {recipe.cook} minutes
                             </p>
                             <p className="text-sm">
-                                <strong className="text-[#1e455c]">Servings:</strong> {recipe.servings}
+                                <strong className="text-[#020123]">Servings:</strong> {recipe.servings}
                             </p>
                             <p className="text-sm">
-                                <strong className="text-[#1e455c]">Category:</strong> {recipe.category}
+                                <strong className="text-[#020123]">Category:</strong> {recipe.category}
                             </p>
                         </div>
                     </div>

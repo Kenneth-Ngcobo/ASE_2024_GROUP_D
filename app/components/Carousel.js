@@ -39,18 +39,18 @@ export default function Carousel({ images }) {
                         <>
                             <button
                                 onClick={goToPrevious}
-                                className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-white/30 text-black p-2 rounded-full hover:bg-white/50 transition-colors"
+                                className="absolute left-2 top-1/2 transform -translate-y-1/2  text-[#edd282] p-2 rounded-full hover:bg-[#ffebe5] transition-colors"
                                 aria-label="Previous image"
                             >
-                                <FaChevronLeft size={24} />
+                                <FaChevronLeft size={20} />
                             </button>
 
                             <button
                                 onClick={goToNext}
-                                className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-white/30 text-black p-2 rounded-full hover:bg-white/50 transition-colors"
+                                className="absolute right-2 top-1/2 transform -translate-y-1/2  text-[#edd282] p-2 rounded-full hover:bg-[#ffebe5] transition-colors"
                                 aria-label="Next image"
                             >
-                                <FaChevronRight size={24} />
+                                <FaChevronRight size={20} />
                             </button>
                         </>
                     )}
@@ -61,7 +61,7 @@ export default function Carousel({ images }) {
                             <button
                                 key={index}
                                 className={`w-3 h-3 rounded-full ${
-                                    currentIndex === index ? 'bg-[#1e455c]' : 'bg-gray-300'
+                                    currentIndex === index ? 'bg-[#fc9d4f]' : 'bg-gray-200'
                                 } focus:outline-none`}
                                 onClick={() => goToIndex(index)}
                             />
