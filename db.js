@@ -1,6 +1,5 @@
 const { MongoClient, ServerApiVersion } = require('mongodb');
 
-
 if (!process.env.MONGODB_URI) {
   throw new Error('Invalid/Missing environment variable: "MONGODB_URI"');
 }
@@ -14,37 +13,36 @@ const options = {
   maxPoolSize: 20, // Maximum pool size
 };
 
-const env = process.env.NODE_ENV;
-
+let client;
 let clientPromise;
 
-if (env === 'development') {
-  if (!global._mongoClientPromise) {
-    const client = new MongoClient(uri, options);
-    global._mongoClientPromise = client.connect();
-  }
-  clientPromise = global._mongoClientPromise;
+if (!global._mongoClientPromise) {
+  client = new MongoClient(uri, options);
+  global._mongoClientPromise = client.connect();
 } else {
-  const client = new MongoClient(uri, options);
-  clientPromise = client.connect();
+  clientPromise = global._mongoClientPromise;
 }
 
 let cachedDb = null; // Cache database instance for reuse
 
 async function connectToDatabase() {
-  const client = await clientPromise;
-  const db = client.db('devdb');
+  if (!clientPromise) {
+    client = new MongoClient(uri, options);
+    clientPromise = client.connect();
+  }
 
   if (cachedDb) {
     return cachedDb;
   }
-  cachedDb = db; // Caches the DB connection for future requests
-  
+
+  const dbConnection = await clientPromise;
+  cachedDb = dbConnection.db('devdb'); // Replace 'devdb' with your database name
+
   // Ensure indexes and reviews setup
-  await initializeIndexes(db);
-  await checkAndCreateReviews(db);
-  
-  return db;
+  await initializeIndexes(cachedDb);
+  await checkAndCreateReviews(cachedDb);
+
+  return cachedDb;
 }
 
 async function initializeIndexes(db) {

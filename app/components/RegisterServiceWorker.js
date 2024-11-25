@@ -6,7 +6,7 @@ export default function RegisterServiceWorker() {
   useEffect(() => {
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker
-        .register("/service-worker.js")
+        .register("/Service-Worker.js")
         .then((registration) => {
           console.log(
             "Service Worker registered with scope:",
