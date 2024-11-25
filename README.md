@@ -2,13 +2,13 @@
 
 Kwamaimai is a dynamic recipe web application for designed users to discover, share, and interact with recipes. The application combines robust search and filtering capabilities with social features, allowing users to rate, review, and save their favorite recipes.
 
-# Technology Stack
+### Technology Stack
 
-## Frontend:
+#### Frontend:
 
 - React:
 
-## Database:
+#### Database:
 
 - MongoDB:
 
@@ -16,7 +16,7 @@ Kwamaimai is a dynamic recipe web application for designed users to discover, sh
 - React:
 - API
 
-# Features:
+#### Features:
 
 - Search
 - Filter
@@ -28,7 +28,21 @@ Kwamaimai is a dynamic recipe web application for designed users to discover, sh
 
 # Demo
 
+Link: [https://kwamaimai.vercel.app/]
+
 # Installation Instructions
+
+1. Clone the repository:
+   git clone <repository_url>
+
+2. Navigate to the project folder:
+   ase_group-d
+
+3. Install Dependencies:
+   npm install
+
+4. Run the development server
+   npm run dev
 
 # Environmental Variables setup
 
@@ -38,88 +52,100 @@ Environment variables are crucial for configuring the app for local development.
 2. If no .env file exists, create one:
 3. In the .env.local file, write key-value with pairs. Each line represents one environment variable:
 
-# Server Configuration
+#### Server Configuration
 
-NEXTAUTH_URL=http://localhost:3000
-NEXTAUTH_SECRET=your_secret_key
+- NEXTAUTH_URL=http://localhost:3000
+- NEXTAUTH_SECRET=your_secret_key
 
-# Google OAuth
+#### Google OAuth
 
-TH_GOOGLE_ID=your_google_client_id
-AUTH_GOOGLE_SECRET=your_google_client_secret
+- AUTH_GOOGLE_ID=your_google_client_id
+- AUTH_GOOGLE_SECRET=your_google_client_secret
 
-# Database Configuration
+#### Database Configuration
 
-MONGODB_URI=
+- MONGODB_URI=
 
 # Project Structure
 
-|- .next/
-|- app/
-|- api/
-| |- auth/
-| |_ nextauth/route.js
-| |- checkuser/route.js
-| |- login/route.js
-|- components/
-| |- ui
-| |_ alert.js
-| |_ button.js
-|- BackButton.js
-|- Carousel.js
-|- CategoryList.js
-|- CollapsibleSection.js
-|- EditableRecipeDetails.js
-|- FavoriteButton.js
-|- FilterButton.js
-|- footer.js
-|- Header.js
-|- ImageGallery.js
-|- IngredientList.js
-|- loadingSpinner.js
-|- pagination.js
-|- RecipeCarousel.js
-|- recipeGrid.js
-|- recipes.js
-|- ReviewsSection.js
-|- searchBar.js
-|- SortControl.js
-|- sortUtils.js
-|- StepsDropDown.js
-|- TagList.js
-|- ThemeButton.js
-|- UserModal.js
-|- editdetails/
-| |_ page.js
-|- fonts/
-|- hook/
-|- images/
-|- Recipe/[id]/
-|- styles/
-|- api.js
-|- error.js
+root/
+├── .next/
+├── app/
+├── api/
+│ ├── auth/
+│ │ └── nextauth/route.js
+│ ├── checkuser/route.js
+│ └── login/route.js
+├── components/
+│ ├── ui/
+│ │ ├── alert.js
+│ │ └── button.js
+│ ├── BackButton.js
+│ ├── Carousel.js
+│ ├── CategoryList.js
+│ ├── CollapsibleSection.js
+│ ├── EditableRecipeDetails.js
+│ ├── FavoriteButton.js
+│ ├── FilterButton.js
+│ ├── Footer.js
+│ ├── Header.js
+│ ├── ImageGallery.js
+│ ├── IngredientList.js
+│ ├── LoadingSpinner.js
+│ ├── Pagination.js
+│ ├── RecipeCarousel.js
+│ ├── RecipeGrid.js
+│ ├── Recipes.js
+│ ├── ReviewsSection.js
+│ ├── SearchBar.js
+│ ├── SortControl.js
+│ ├── SortUtils.js
+│ ├── StepsDropdown.js
+│ ├── TagList.js
+│ ├── ThemeButton.js
+│ ├── UserModal.js
+│ └── editdetails/
+│ └── page.js
+├── fonts/
+├── hook/
+├── images/
+├── Recipe/[id]/
+├── styles/
+├── api.js
+└── error.js
 
 # API Documentation
 
 This section outlines the key API endpoints available in the application, their purpose, how to use them, and what responses to expect.
 
-## BASE URL
+#### BASE URL
 
 http://localhost:3000
 
-API Endpoints Documentation
+##### API Endpoints
+
 This section outlines the key API endpoints available in the application, their purpose, how to use them, and what responses to expect. Each endpoint is hosted on /api/ under the Next.js framework, utilizing serverless functions.
 
-# Base URL
-In development:
+1. Authentication Endpoints:
 
-http://localhost:3000
+- Route:
+- Description:
 
-1. Authentication Endpoints
 2. Recipe Endpoints
 3. Profile Endpoints
+4. Favorites
+5. Allergens
+6. Manifest
+7. Reviews
+8. Update
+9. Categories
+10. Ingredients
+11. Recommendations
+12. Tags
 
 # Contact Information
+
+Email: [groupd.ase@gmail.com]
 
 <!--
 ## Getting Started
