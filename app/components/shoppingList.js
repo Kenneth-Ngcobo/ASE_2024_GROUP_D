@@ -2,8 +2,7 @@
 
 import { useState } from 'react';
 import { useShoppingList } from '../context/shoppingListContext';
-import { FaWhatsapp } from "react-icons/fa";
-
+import { FaWhatsapp } from 'react-icons/fa';
 
 const ShoppingList = () => {
   const { state, dispatch } = useShoppingList();
