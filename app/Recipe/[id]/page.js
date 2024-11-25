@@ -8,6 +8,7 @@ import Loading from './loading';
 import EditableRecipeDetails from '../../components/EditableRecipeDetails';
 import ReviewsSection from '../../components/ReviewsSection';
 import AllergensSection from '../../components/AllergensSection';
+import VoiceAssistant from '../../components/VoiceAssistant';
 
 // Generate metadata for the recipe page dynamically
 export async function generateMetadata({ params }) {
@@ -140,7 +141,12 @@ export default async function RecipePage({ params }) {
 
                         <CollapsibleSection
                             title="Instructions"
-                            content={recipe.instructions || 'No instructions available.'}
+                            content={
+                                <div>
+                                    {recipe.instructions || 'No instructions available.'}
+                                    <VoiceAssistant instructions={recipe.instructions || []}/>
+                                </div>
+                                }
                             defaultOpen={true}
                         />
 
