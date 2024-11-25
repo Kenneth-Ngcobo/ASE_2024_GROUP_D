@@ -5,6 +5,8 @@ import Recipes from "./components/recipes";
 import Footer from "./components/footer";
 import Loading from "./loading";
 import RecipeCarousel from "./components/RecipeCarousel";
+import PushNotificationManager from "./components/PushNotificationManager";
+import InstallPrompt from "./components/InstallPrompt";
 import { Suspense } from 'react';
 
 export default async function Home({ searchParams }) {
@@ -50,7 +52,8 @@ export default async function Home({ searchParams }) {
                     totalPages={recipes.totalPages} // Total number of pages available
                     
                 />
-                
+                <PushNotificationManager /> 
+                <InstallPrompt />
                 <Footer />
             </Suspense>
 

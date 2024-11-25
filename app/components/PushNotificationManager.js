@@ -1,13 +1,15 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { subscribeUser, unsubscribeUser, sendNotification } from '../../actions/actions';
+import { useState, useEffect } from "react";
+import {
+  subscribeUser,
+  unsubscribeUser,
+  sendNotification,
+} from "../actions/Actions";
 
 function urlBase64ToUint8Array(base64String) {
-  const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
-  const base64 = (base64String + padding)
-    .replace(/-/g, '+')
-    .replace(/_/g, '/');
+  const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
+  const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
 
   const rawData = window.atob(base64);
   const outputArray = new Uint8Array(rawData.length);
@@ -18,25 +20,30 @@ function urlBase64ToUint8Array(base64String) {
   return outputArray;
 }
 
-const applicationServerKey = urlBase64ToUint8Array(process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY);
+const applicationServerKey = urlBase64ToUint8Array(
+  process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY
+);
 
 export default function PushNotificationManager() {
   const [isSupported, setIsSupported] = useState(false);
   const [subscription, setSubscription] = useState(null);
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState("");
 
   useEffect(() => {
-    if ('serviceWorker' in navigator && 'PushManager' in window) {
+    if ("serviceWorker" in navigator && "PushManager" in window) {
       setIsSupported(true);
       registerServiceWorker();
     }
   }, []);
 
   async function registerServiceWorker() {
-    const registration = await navigator.serviceWorker.register('/service-worker.js', {
-      scope: '/',
-      updateViaCache: 'none',
-    });
+    const registration = await navigator.serviceWorker.register(
+      "/Service-Worker.js",
+      {
+        scope: "/",
+        updateViaCache: "none",
+      }
+    );
     const sub = await registration.pushManager.getSubscription();
     setSubscription(sub);
   }
@@ -51,16 +58,19 @@ export default function PushNotificationManager() {
     await subscribeUser(sub);
   }
 
+  
   async function unsubscribeFromPush() {
-    await subscription.unsubscribe();
-    setSubscription(null);
-    await unsubscribeUser();
+    if (subscription) {
+      await subscription.unsubscribe();
+      setSubscription(null);
+      await unsubscribeUser();
+    }
   }
 
   async function sendTestNotification() {
     if (subscription) {
       await sendNotification(message);
-      setMessage('');
+      setMessage("");
     }
   }
 

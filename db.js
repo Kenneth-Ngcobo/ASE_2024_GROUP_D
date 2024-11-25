@@ -31,6 +31,8 @@ if (env === 'development') {
 
 let cachedDb = null; // Cache database instance for reuse
 
+
+
 async function connectToDatabase() {
   const client = await clientPromise;
   const db = client.db('devdb');
