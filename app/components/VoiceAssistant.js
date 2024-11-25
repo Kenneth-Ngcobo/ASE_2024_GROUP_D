@@ -118,26 +118,53 @@ export default function VoiceAssistant({ instructions }) {
 
     return (
         <div className="mt-5">
-            <h3 className='text-gray-600'>Voice Assistant</h3>
-            {error && <p className="error">{error}</p>}
+            <h3 className="text-gray-600 font-semibold text-lg">Voice Assistant</h3>
+            {error && <p className="text-red-500 mt-2">{error}</p>}
             {!isActive ? (
-                <button onClick={startVoiceAssistant} className="bg-blue-500 text-gray-600 p-1 rounded-md">
+                <button 
+                    onClick={startVoiceAssistant} 
+                    className="bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 transition-all">
                     Start Voice Assistance
                 </button>
             ) : (
                 <div>
-                    <p>Current Step: {currentStep + 1}</p>
-                    <p>{instructions[currentStep]}</p>
-                    <button onClick={readInstruction} disabled={isSpeaking}>
-                        Read Step
-                    </button>
-                    <button onClick={pauseSpeech}>Pause</button>
-                    <button onClick={resumeSpeech}>Resume</button>
-                    <button onClick={goToNextStep}>Next Step</button>
-                    <button onClick={goToPreviousStep}>Previous Step</button>
-                    <button onClick={stopVoiceAssistant}>Stop</button>
-                    <label>
-                        Speed:
+                    <p className="mt-2 text-gray-600">Current Step: {currentStep + 1}</p>
+                    <p className="text-gray-700 font-medium mb-3">{instructions[currentStep]}</p>
+                    <div className="flex gap-2 flex-wrap">
+                        <button 
+                            onClick={readInstruction} 
+                            disabled={isSpeaking}
+                            className="bg-green-500 text-white p-2 rounded-md hover:bg-green-600 disabled:opacity-50 transition-all">
+                            Read Step
+                        </button>
+                        <button 
+                            onClick={pauseSpeech} 
+                            className="bg-yellow-500 text-white p-2 rounded-md hover:bg-yellow-600 transition-all">
+                            Pause
+                        </button>
+                        <button 
+                            onClick={resumeSpeech} 
+                            className="bg-yellow-500 text-white p-2 rounded-md hover:bg-yellow-600 transition-all">
+                            Resume
+                        </button>
+                        <button 
+                            onClick={goToNextStep} 
+                            className="bg-purple-500 text-white p-2 rounded-md hover:bg-purple-600 transition-all">
+                            Next Step
+                        </button>
+                        <button 
+                            onClick={goToPreviousStep} 
+                            className="bg-indigo-500 text-white p-2 rounded-md hover:bg-indigo-600 transition-all">
+                            Previous Step
+                        </button>
+                        <button 
+                            onClick={stopVoiceAssistant} 
+                            className="bg-red-500 text-white p-2 rounded-md hover:bg-red-600 transition-all">
+                            Stop
+                        </button>
+                    </div>
+                    <label className="mt-3 block">
+                        <span className="text-gray-600 font-medium">Speed:</span>
                         <input
                             type="range"
                             min="0.5"
@@ -145,6 +172,7 @@ export default function VoiceAssistant({ instructions }) {
                             step="0.1"
                             value={speechSpeed}
                             onChange={(e) => setSpeechSpeed(parseFloat(e.target.value))}
+                            className="ml-2"
                         />
                     </label>
                 </div>
