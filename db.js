@@ -25,6 +25,8 @@ if (!global._mongoClientPromise) {
 
 let cachedDb = null; // Cache database instance for reuse
 
+
+
 async function connectToDatabase() {
   if (!clientPromise) {
     client = new MongoClient(uri, options);

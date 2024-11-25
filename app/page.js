@@ -1,3 +1,5 @@
+import PushNotificationManager from "./components/PushNotificationManager";
+import InstallPrompt from "./components/InstallPrompt";
 import { Suspense } from 'react';
 import dynamic from 'next/dynamic';
 import { fetchRecipes } from './api';
@@ -29,23 +31,30 @@ export default async function Home({ searchParams }) {
     }
 
     return (
-        <ShoppingListProvider>
-            <>
-                <RegisterServiceWorker /> {/* Register the Service Worker */}
-                <RecipeCarousel />
-                <Suspense fallback={<Loading />}>
-                    <Recipes
-                        recipes={recipes.recipes}
-                        initialSort={sort}
-                        initialOrder={order}
-                    />
-                    <Pagination
-                        currentPage={recipes.currentPage}
-                        totalPages={recipes.totalPages}
-                    />
-                    <Footer />
-                </Suspense>
-            </>
-        </ShoppingListProvider>
+        <>
+        <RegisterServiceWorker />
+        <RecipeCarousel />
+            <Suspense fallback={<Loading />}>
+                {/*<CategoryList totalRecipes={recipes.totalRecipes} />*/}
+                {/* Render the Recipes component, passing the fetched recipes as props */}
+                <Recipes 
+                    recipes={recipes.recipes}
+                    initialSort={sort}
+                    initialOrder={order}
+                />
+                
+    
+                {/* Render the Pagination component, passing the current page and total pages */}
+                <Pagination
+                    currentPage={recipes.currentPage} // Current page number
+                    totalPages={recipes.totalPages} // Total number of pages available
+                    
+                />
+                     <PushNotificationManager /> 
+                     <InstallPrompt />
+                <Footer />
+            </Suspense>
+
+        </>
     );
 }
