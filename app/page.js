@@ -1,11 +1,12 @@
-import { fetchRecipes } from "./api"; // API function to fetch recipes
-import Pagination from "./components/pagination"; // Pagination component
-import Recipes from "./components/recipes"; // Recipes listing component
-import Footer from "./components/footer"; // Footer component
-import Loading from "./loading"; // Loading fallback component
-import RecipeCarousel from "./components/RecipeCarousel"; // Carousel for featured recipes
-import { Suspense } from "react"; // React Suspense for lazy loading
-// import RecordVoice from "./components/RecordVoice"; // Voice command/recording component
+
+import { fetchRecipes } from "./api";
+import Pagination from "./components/pagination";
+import Recipes from "./components/recipes";
+import Footer from "./components/footer";
+import Loading from "./loading";
+import RecipeCarousel from "./components/RecipeCarousel";
+import { ShoppingListProvider } from "./context/shoppingListContext";
+import { Suspense } from 'react';
 
 export default async function Home({ searchParams }) {
     // Initialize recipes object to store fetched data
@@ -32,9 +33,26 @@ export default async function Home({ searchParams }) {
 
     // Return the rendered JSX for the Home component
     return (
-        <>
-            <RecipeCarousel /> {/* Recipe carousel */}
-            {/* <RecordVoice /> Voice recorder/command component */}
+        <ShoppingListProvider>
+            <>
+                {/* Welcome Section with background image */}
+                                <div className="relative w-full h-screen bg-cover bg-center" style={{ backgroundImage: `url('/home page1.jpg')` }}>
+                    <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center text-white">
+                        <div className="text-center px-4">
+                            <h1 className="text-4xl font-bold mb-4">Welcome to the Recipe App</h1>
+                            <p className="text-lg mb-6">Discover delicious recipes and enjoy cooking!</p>
+                          {/*  <button
+                                className="bg-yellow-500 text-black py-2 px-4 rounded-full hover:bg-yellow-600 transition"
+                                onClick={() => window.location.href='/recipes'}
+                            >
+                                Get Started
+                            </button>*/}
+                        </div>
+                    </div>
+                </div>
+
+        <RecipeCarousel />
+
             <Suspense fallback={<Loading />}>
                 {/* Render the Recipes component */}
                 <Recipes
@@ -52,5 +70,6 @@ export default async function Home({ searchParams }) {
                 <Footer /> {/* Footer section */}
             </Suspense>
         </>
+        </ShoppingListProvider>  
     );
 }
