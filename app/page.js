@@ -5,7 +5,7 @@ import Footer from "./components/footer"; // Footer component
 import Loading from "./loading"; // Loading fallback component
 import RecipeCarousel from "./components/RecipeCarousel"; // Carousel for featured recipes
 import { Suspense } from "react"; // React Suspense for lazy loading
-import RecordVoice from "./components/RecordVoice"; // Voice command/recording component
+// import RecordVoice from "./components/RecordVoice"; // Voice command/recording component
 
 export default async function Home({ searchParams }) {
     // Initialize recipes object to store fetched data
@@ -34,7 +34,7 @@ export default async function Home({ searchParams }) {
     return (
         <>
             <RecipeCarousel /> {/* Recipe carousel */}
-            <RecordVoice /> {/* Voice recorder/command component */}
+            {/* <RecordVoice /> Voice recorder/command component */}
             <Suspense fallback={<Loading />}>
                 {/* Render the Recipes component */}
                 <Recipes
