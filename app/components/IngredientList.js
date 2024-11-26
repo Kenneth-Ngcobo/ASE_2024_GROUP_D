@@ -3,23 +3,23 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 
-export default function IngDisplay({ selectedIngs = [], onIngsChange = () => {} }) { // Default empty array and function
+export default function IngDisplay({ selectedIngs = [], onIngsChange = () => {} }) {
   const [ings, setIngs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  
+
   const searchParams = useSearchParams();
 
   useEffect(() => {
     const urlIngs = searchParams.get('ingredients')?.split(',') || [];
     if (urlIngs.length && urlIngs !== ' ' && urlIngs !== '') {
       if (urlIngs.join(',') !== selectedIngs.join(',')) {
-        onIngsChange(urlIngs); // Populate selectedIngs from URL
+        onIngsChange(urlIngs);
       }
     }
-  }, [searchParams]); // Only dependent on searchParams
+  }, [searchParams, selectedIngs, onIngsChange]);
 
   useEffect(() => {
     const fetchIngs = async () => {

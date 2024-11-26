@@ -23,20 +23,6 @@ const Header = ({ isAuthenticated, onLogout }) => {
   const toggleFilterModal = () => setIsFilterOpen((prev) => !prev);
   const toggleModal = () => setShowModal((prev) => !prev);
 
-  useEffect(() => {
-    // Fetch total recipes from API or state management
-    const fetchTotalRecipes = async () => {
-      try {
-        const response = await fetch("/api/recipes/total");
-        if (!response.ok) throw new Error("Failed to fetch total recipes");
-        const data = await response.json();
-        setTotalRecipes(data.total);
-      } catch (error) {
-        console.error("Error fetching total recipes:", error);
-      }
-    };
-    fetchTotalRecipes();
-  }, []);
 
   return (
     <header className="bg-[#f9efd2] dark:bg-gray-950 top-0 z-50">
