@@ -2,19 +2,20 @@
 
 Kwamaimai is a dynamic recipe web application for designed users to discover, share, and interact with recipes. The application combines robust search and filtering capabilities with social features, allowing users to rate, review, and save their favorite recipes.
 
-### Technology Stack
+#### Technology Stack
 
 #### Frontend:
 
 - React:
+- Next.js
 
 #### Database:
 
 - MongoDB:
 
-- NextJs:
-- React:
-- API
+#### Backend & API:
+
+- Next.js API Routes
 
 #### Features:
 
@@ -22,7 +23,7 @@ Kwamaimai is a dynamic recipe web application for designed users to discover, sh
 - Filter
 - Sign-up/ Log-in
 - Favouriting
-- Rate/review
+- Rate & Review
 - Edit description
 - Image Carousel
 - Offline usage
@@ -49,8 +50,10 @@ Link: [https://kwamaimai.vercel.app/]
 
 Environment variables are crucial for configuring the app for local development. Here's a step-by-step guide to set up and manage them effectively:
 
+NB! Please contact
+
 1. In the root directory of your project, look for a file named .env or .env.local
-2. If no .env file exists, create one:
+2. If no .env file exists, create one.
 3. In the .env.local file, write key-value with pairs. Each line represents one environment variable:
 
 #### Server Configuration
@@ -100,7 +103,6 @@ root/
 │ ├── ReviewsSection.js
 │ ├── SearchBar.js
 │ ├── SortControl.js
-│ ├── SortUtils.js
 │ ├── StepsDropdown.js
 │ ├── TagList.js
 │ ├── ThemeButton.js
@@ -121,8 +123,8 @@ root/
 ├── providers.js
 ├── review.js
 ├── lib/
-│   ├── AuthMiddleware.js
-│   ├── utils.js
+│ ├── AuthMiddleware.js
+│ ├── utils.js
 ├── components/
 ├── public/
 ├── auth.js
@@ -134,11 +136,6 @@ root/
 ├── ReadMe.md
 ├── tailwind.config.js
 ├── testConnection.js
-
-
-
-
-
 
 # API Documentation
 
@@ -152,26 +149,148 @@ http://localhost:3000
 
 This section outlines the key API endpoints available in the application, their purpose, how to use them, and what responses to expect. Each endpoint is hosted on /api/ under the Next.js framework, utilizing serverless functions.
 
-1. Authentication Endpoints:
+#### 1. Authentication Endpoints
 
-- Route:
-- Description:
+- Route: /api/auth/login, /api/auth/register
+- Description: Handles user authentication processes, including login and registration.
 
-2. Recipe Endpoints
-3. Profile Endpoints
-4. Favorites
-5. Allergens
-6. Manifest
-7. Reviews
-8. Update
-9. Categories
+##### Methods:
 
-- Route:api/recipes/categories
-- Description:
+- POST /api/auth/login: Validates user credentials and returns an authentication token.
+- POST /api/auth/register: Creates a new user account.
+  - Request Body (example):
+    json
+    Copy code
+    {
+    "email": "user@example.com",
+    "password": "securePassword"
+    }
 
-10. Ingredients
-11. Recommendations
-12. Tags
+##### Responses:
+
+- 200 OK: Returns authentication token.
+- 401 Unauthorized: Invalid credentials.
+
+#### 2. Recipe Endpoints
+
+- Route: /api/recipes
+- Description: Handles CRUD operations for recipes.
+
+##### Methods:
+
+- GET /api/recipes: Retrieves a list of recipes.
+- POST /api/recipes: Adds a new recipe (requires authentication).
+  - Request Body (example for POST):
+    json
+    Copy code
+    {
+    "title": "Chocolate Cake",
+    "ingredients": ["flour", "sugar", "cocoa powder"],
+    "instructions": "Mix ingredients and bake."
+    }
+    Responses:
+    200 OK: List of recipes or confirmation of new recipe creation.
+    400 Bad Request: Missing or invalid data.
+
+#### 3. Profile Endpoints
+
+- Route: /api/profile
+- Description: Provides user profile data and allows updates.
+
+##### Methods:
+
+- GET /api/profile: Retrieves the current user’s profile.
+- PUT /api/profile: Updates user information.
+
+##### Responses:
+
+- 200 OK: User profile details or update confirmation.
+- 401 Unauthorized: No valid authentication token provided.
+
+#### 4. Favorites
+
+- Route: /api/favorites
+- Description: Manages users' favorite recipes.
+
+##### Methods:
+
+- GET /api/favorites: Retrieves the user’s favorite recipes.
+- POST /api/favorites: Adds a recipe to favorites.
+- DELETE /api/favorites: Removes a recipe from favorites.
+
+##### - Responses:
+
+- 200 OK: Success messages or list of favorite recipes.
+
+#### 5. Allergens
+
+- Route: /api/allergens
+- Description: Allows users to set and manage allergens to filter recipes.
+
+##### Methods:
+
+- GET /api/allergens: Retrieves the user’s allergen list.
+- POST /api/allergens: Updates the user’s allergen list.
+
+##### Responses:
+
+- 200 OK: Success messages or updated allergen list.
+
+#### 6. Manifest
+
+- Route: /api/manifest
+- Description: Provides application metadata or configuration.
+
+##### Responses:
+
+- 200 OK: JSON containing app version, settings, etc.
+
+#### 7. Reviews
+
+- Route: /api/reviews
+- Description: Handles user reviews for recipes.
+
+##### Methods:
+
+- GET /api/reviews?recipeId=<id>: Retrieves reviews for a specific recipe.
+- POST /api/reviews: Adds a new review to a recipe.
+
+##### Responses:
+
+200 OK: List of reviews or confirmation of new review.
+
+#### 8. Update
+
+- Route: /api/update
+- Description: Checks and applies updates to the application or data.
+
+#### 9. Categories
+
+- Route: /api/recipes/categories
+- Description: Retrieves available recipe categories.
+
+##### Methods:
+
+- GET /api/recipes/categories: Fetches a list of recipe categories.
+
+##### Responses:
+
+- 200 OK: List of categories.
+
+#### 10. Ingredients
+
+- Route: /api/ingredients
+- Description: Provides ingredient data, including substitutes and availability.
+
+#### 11. Recommendations
+
+- Route: /api/recommendations
+- Description: Suggests recipes based on user preferences, history, or trending recipes.
+
+#### 12. Tags
+
+- Route: /api/tags
+- Description: Manages recipe tags for better categorization and filtering.
 
 # Contact Information
 

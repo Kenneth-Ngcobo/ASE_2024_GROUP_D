@@ -7,48 +7,55 @@ import connectToDatabase from '../../../db.js';
  */
 export async function GET(req) {
   try {
-    // Connect to the database and get the recipes collection
     const db = await connectToDatabase();
     const recipesCollection = db.collection('recipes');
 
-    // Use req.nextUrl to parse query parameters
-    // Changing the req.nextUrl to use new URL(req.url) instead because of vercel errors
     const url = new URL(req.url);
     const searchParams = url.searchParams;
     const page = parseInt(searchParams.get("page")) || 1;
     const limit = Math.min(parseInt(searchParams.get("limit")) || 50, 50);
-    const sort = searchParams.get("sort") || ""; // Default to createdAt
+    const sort = searchParams.get("sort") || "";
     const order = searchParams.get("order")?.toLowerCase() === "desc" ? -1 : 1;
     const searchTerm = searchParams.get("search") || "";
+    const exactTitle = searchParams.get("exactTitle");
     const category = searchParams.get("category");
     const tags = searchParams.get("tags");
     const ingredients = searchParams.get("ingredients");
     const instructions = parseInt(searchParams.get("instructions"));
 
-    // let query = {};
     const pipeline = [];
     const matchStage = {};
 
-    // Validate sort parameter
-    // const validSortFields = {
-    //   'cookTime': 'cookingTime',
-    //   'prepTime': 'preparationTime',
-    //   'instructionsCount': 'instructionsCount',
-    //   'published': 'published'
-    // };
+    // Prioritize exact title search
+    if (exactTitle) {
+      const recipe = await recipesCollection.findOne({ title: exactTitle });
+      if (recipe) {
+        return new Response(
+          JSON.stringify({
+            totalRecipes: 1,
+            recipes: [recipe],
+          }),
+          {
+            status: 200,
+            headers: { "Content-Type": "application/json" },
+          }
+        );
+      } else {
+        // Return empty if no exact match is found
+        return new Response(
+          JSON.stringify({
+            totalRecipes: 0,
+            recipes: [],
+          }),
+          {
+            status: 200,
+            headers: { "Content-Type": "application/json" },
+          }
+        );
+      }
+    }
 
-    // if (!validSortFields[sort]) {
-    //   return new Response(
-    //     JSON.stringify({
-    //       error: `Invalid sort parameter '${sort}'. Valid options are: cookingTime, preparationTime, published, calories, title, instructionsCount`
-    //     }), {
-    //     status: 400,
-    //     headers: { 'Content-Type': 'application/json' }
-    //   }
-    //   );
-    // }
-
-    // Construct query for text search
+    // Fallback to text-based and other filters
     if (searchTerm) {
       matchStage.$text = { $search: searchTerm };
     }
@@ -66,80 +73,48 @@ export async function GET(req) {
       };
     }
 
-    // Filter by ingredients (object structure)
     if (ingredients) {
       const ingredientArray = ingredients.split(",").map((ingredient) => ingredient.trim().toLowerCase());
-
-      // Create a filter for each ingredient key, allowing case-insensitive matching
       matchStage.$and = ingredientArray.map((ingredient) => ({
         [`ingredients.${ingredient}`]: { $exists: true },
       }));
     }
 
-    // Filter by number of instructions
     if (!isNaN(instructions)) {
-      matchStage.instructions = { $size: instructions }; // Match recipes with exactly the specified number of instructions
+      matchStage.instructions = { $size: instructions };
     }
 
-    // const skip = (page - 1) * limit;
-
-    // Create sort object for MongoDB query
-    // const sortObj = {};
-    // sortObj[validSortFields[sort]] = order;
-
-    // Fetch sorted and paginated recipes
     if (Object.keys(matchStage).length > 0) {
-      pipeline.push({ $match: matchStage});
+      pipeline.push({ $match: matchStage });
     }
 
-    // if (sort) {
-    //   const sortStage = { $sort: { [sort]: order }};
-    //   pipeline.push(sortStage);
-    // }
     if (sort === "instructions") {
       pipeline.push({
-          $addFields: {
-              instructionsLength: { $size: "$instructions" },
-          },
+        $addFields: {
+          instructionsLength: { $size: "$instructions" },
+        },
       });
-  
-      // Use the computed `instructionsLength` for sorting
+
       pipeline.push({
-          $sort: { instructionsLength: order },
+        $sort: { instructionsLength: order },
       });
     } else if (sort) {
-        // Regular sorting for other fields
-        pipeline.push({
-            $sort: { [sort]: order },
-        });
+      pipeline.push({
+        $sort: { [sort]: order },
+      });
     }
-    
 
     pipeline.push({ $skip: (page - 1) * limit });
-    pipeline.push({ $limit: limit })
-    // const recipes = await recipesCollection
-    //   .find(query) // Use the constructed query
-    //   .sort(sortObj)
-    //   .skip(skip)
-    //   .limit(limit)
-    //   .toArray();
+    pipeline.push({ $limit: limit });
 
     const recipes = await recipesCollection.aggregate(pipeline).toArray();
-
-    // Count total number of matching documents for pagination
-    const totalRecipes = await recipesCollection.countDocuments(matchStage); // Count with query to match filters
+    const totalRecipes = await recipesCollection.countDocuments(matchStage);
 
     return new Response(
       JSON.stringify({
         totalRecipes,
         totalPages: Math.ceil(totalRecipes / limit),
         currentPage: page,
-        category: category || "all",
-        appliedTags: tags ? tags.split(',').map(tag => tag.trim()) : [],
-        appliedIngredients: ingredients ? ingredients.split(",").map((ingredient) => ingredient.trim()) : [],
-        appliedInstructions: instructions,
-        sortedBy: sort,
-        sortOrder: order === 1 ? "asc" : "desc",
         recipes,
       }),
       {
@@ -148,13 +123,16 @@ export async function GET(req) {
       }
     );
   } catch (error) {
-    console.error('Error fetching recipes:', error);
-    return new Response(JSON.stringify({
-      error: 'Failed to fetch recipes',
-      details: error.message
-    }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    console.error("Error fetching recipes:", error);
+    return new Response(
+      JSON.stringify({
+        error: "Failed to fetch recipes",
+        details: error.message,
+      }),
+      {
+        status: 500,
+        headers: { "Content-Type": "application/json" },
+      }
+    );
   }
 }
