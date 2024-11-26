@@ -7,6 +7,7 @@ import { ThemeProvider } from "next-themes";
 import Providers from "./providers";
 import { Montserrat } from "next/font/google";
 import DynamicManifest from "./components/DanamicLink";
+import RegisterServiceWorker from "./components/RegisterServiceWorker";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -30,7 +31,7 @@ export default function RootLayout({ children }) {
     <html lang="en" className={montserrat.className}>
       <head>
         <title>KwaMai Eatery</title>
-        <link rel="icon" href="/Kwa.png" />
+        <link rel="icon" href="/0.png" />
         <DynamicManifest />
         {/* Main Meta Tags */}
 
@@ -61,7 +62,7 @@ export default function RootLayout({ children }) {
           name="twitter:description"
           content="This is the official recipe website of KwaMai Eatery"
         />
-        <meta name="twitter:image" content="/kwaMai.jpg" />
+        <meta name="twitter:image" content="/0.png" />
       </head>
 
       <body
@@ -75,6 +76,7 @@ export default function RootLayout({ children }) {
             </Suspense>
           </ThemeProvider>
         </Providers>
+        <RegisterServiceWorker /> {/* Register the service worker */}
       </body>
     </html>
   );

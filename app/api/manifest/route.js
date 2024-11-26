@@ -1,6 +1,6 @@
 export async function GET(request) {
     const manifest = {
-      name: 'Next.js App',
+      name: 'Kwamai Eatery',
       short_name: 'Next.js App',
       description: 'Next.js App',
       start_url: '/',
