@@ -5,11 +5,11 @@ import { useState, useEffect, Suspense } from "react";
 import { FaUser } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import CategoryList from "./CategoryList";
-import {FilterButton} from "./FilterButton";
-import ThemeButton from "./ThemeButton";
+import { FilterButton } from "./ui/FilterButton";
+import ThemeButton from "./ui/ThemeButton";
 import RecipeSearchBar from "./searchBar";
 import UserModal from "./UserModal.js";
-import { FilterModal } from "./FilterButton";
+import { FilterModal } from "./ui/FilterButton";
 import Loading from "../loading.js";
 
 const Header = ({ isAuthenticated, onLogout }) => {
@@ -49,7 +49,7 @@ const Header = ({ isAuthenticated, onLogout }) => {
             </Link>
           </div>
 
-           <Link href="/" className="flex items-center">
+          <Link href="/" className="flex items-center">
             <Image
               src="/0.png"
               alt="Logo"
@@ -63,7 +63,7 @@ const Header = ({ isAuthenticated, onLogout }) => {
             <Suspense fallback={<Loading />}>
               <CategoryList
                 totalRecipes={totalRecipes}
-                onCategoryChange={() => {}}
+                onCategoryChange={() => { }}
               />
             </Suspense>
             <FilterButton onClick={toggleFilterModal} />
@@ -102,9 +102,8 @@ const Header = ({ isAuthenticated, onLogout }) => {
 
       {/* Mobile Menu */}
       <div
-        className={`md:hidden bg-white border-t transition-all duration-300 ${
-          isDropdownOpen ? 'max-h-screen py-4' : 'max-h-0 overflow-hidden'
-        }`}
+        className={`md:hidden bg-white border-t transition-all duration-300 ${isDropdownOpen ? 'max-h-screen py-4' : 'max-h-0 overflow-hidden'
+          }`}
       >
         <div className="container mx-auto px-4 space-y-4">
           <Link
@@ -129,10 +128,10 @@ const Header = ({ isAuthenticated, onLogout }) => {
             <Suspense fallback={<Loading />}>
               <CategoryList
                 totalRecipes={totalRecipes}
-                onCategoryChange={() => {}}
+                onCategoryChange={() => { }}
               />
             </Suspense>
-            
+
           </div>
           <div className="py-2">
             <FilterButton onClick={() => setIsFilterOpen(!isFilterOpen)} />

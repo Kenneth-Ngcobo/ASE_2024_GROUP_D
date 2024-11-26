@@ -1,4 +1,3 @@
-// app/components/FavoriteButton.js
 'use client';
 import { useState, useEffect } from 'react';
 import { FaHeart, FaRegHeart } from 'react-icons/fa';

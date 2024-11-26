@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
 import Image from 'next/image';
-import BackButton from '../../components/BackButton';
+import BackButton from "../../components/ui/BackButton";
 import { fetchRecipeById } from '../../api';
 import ImageGallery from '../../components/ImageGallery';
 import CollapsibleSection from '../../components/CollapsibleSection';

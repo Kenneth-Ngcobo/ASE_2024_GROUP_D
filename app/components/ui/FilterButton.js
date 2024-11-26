@@ -1,16 +1,16 @@
-"use client"; // Ensure this component is rendered on the client side
+"use client";
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import TagDisplay from "./TagList"; // Correctly imported TagDisplay
-import { fetchRecipes } from "../api"; // Import your fetchRecipes function
-import IngDisplay from "./IngredientList";
-import StepsDropdown from "./StepsDropdown"; // Import StepsDropdown
+import TagDisplay from "../TagList";
+import { fetchRecipes } from "../../api";
+import IngDisplay from "../IngredientList";
+import StepsDropdown from "../StepsDropdown";
 
 export const FilterModal = ({ onClose }) => {
     const [cookTime, setCookTime] = useState(0);
-    const [selectedTags, setSelectedTags] = useState([]); // State to store selected tags
-    const [selectedIngs, setSelectedIngs] = useState([]); // State to store selected ingredients
-    const [steps, setSteps] = useState(0); // State for steps
+    const [selectedTags, setSelectedTags] = useState([]);
+    const [selectedIngs, setSelectedIngs] = useState([]);
+    const [steps, setSteps] = useState(0);
     const searchParams = useSearchParams();
     const router = useRouter();
 
