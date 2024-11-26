@@ -5,7 +5,7 @@ import Recipes from "./components/recipes";
 import Footer from "./components/footer";
 import Loading from "./loading";
 import RecipeCarousel from "./components/RecipeCarousel";
-import { ShoppingListProvider } from "./context/shoppingListContext";
+import { ShoppingListProvider } from "./context/ShoppingListContext";
 import { Suspense } from 'react';
 
 export default async function Home({ searchParams }) {
