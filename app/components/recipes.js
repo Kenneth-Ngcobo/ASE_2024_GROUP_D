@@ -1,4 +1,3 @@
-// components/Recipes.js
 "use client";
 
 import Link from 'next/link';
@@ -15,7 +14,7 @@ import Carousel from "./Carousel";
 import { SortControl } from "./SortControl";
 import { useSearchParams } from "next/navigation";
 import { useShoppingList } from '../context/ShoppingListContext';
-import ShoppingList from "../components/ShoppingList"
+import ShoppingList from './shoppingList';
 
 const Recipes = ({ recipes: initialRecipes }) => {
   const [recipes, setRecipes] = useState(initialRecipes);
@@ -230,8 +229,8 @@ const Recipes = ({ recipes: initialRecipes }) => {
                 </h2>
                 <button
                   className={`ml-2 ${favoritedRecipes.has(recipe._id)
-                      ? "text-red-500"
-                      : "text-gray-400"
+                    ? "text-red-500"
+                    : "text-gray-400"
                     } hover:text-red-500 transition-colors duration-200`}
                   onClick={(e) => {
                     e.preventDefault();

@@ -1,4 +1,5 @@
 import connectToDatabase from '../../../../db';
+import { ObjectId } from 'mongodb';
 
 /**
  * Fetch a single recipe by ID from the MongoDB database.
@@ -17,6 +18,7 @@ import connectToDatabase from '../../../../db';
  * if found, or an error message if not found or a failure occurs.
  */
 export async function GET(req, { params }) {
+  const awaitedParams = await params;
   const { id } = params;
 
   try {
@@ -27,8 +29,10 @@ export async function GET(req, { params }) {
       throw new Error('Failed to get database connection');
     }
 
+    const objectId = new ObjectId(id);
+
     // Attempt to find a single recipe by its ID in the 'recipes' collection
-    const recipe = await db.collection('recipes').findOne({ _id: id });
+    const recipe = await db.collection('recipes').findOne({ _id: ObjectId });
 
 
     if (!recipe) {
