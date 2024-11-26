@@ -8,7 +8,7 @@ import Loading from './loading';
 import EditableRecipeDetails from '../../components/EditableRecipeDetails';
 import ReviewsSection from '../../components/ReviewsSection';
 import AllergensSection from '../../components/AllergensSection';
-import ShoppingList from '../../components/shoppinglist';
+import ShoppingList from '../../components/shoppingList';
 
 // Generate metadata for the recipe page dynamically
 export async function generateMetadata({ params }) {
@@ -91,10 +91,10 @@ export default async function RecipePage({ params }) {
                                 {recipe.title || 'Untitled Recipe'}
                             </h1>
                             <div className="flex flex-wrap gap-3 mb-6">
-                             {recipe.tags?.map((tag, index) => (
-                            <span key={index} className="px-4 py-2 bg-[#f9efd2] dark:bg-gray-800 dark:text-gray-400 hover:bg-[#edd282] text-[#020123] rounded-2xl text-sm font-medium uppercase tracking-wide transition-colors">
-                             {tag}
-                            </span>
+                                {recipe.tags?.map((tag, index) => (
+                                    <span key={index} className="px-4 py-2 bg-[#f9efd2] dark:bg-gray-800 dark:text-gray-400 hover:bg-[#edd282] text-[#020123] rounded-2xl text-sm font-medium uppercase tracking-wide transition-colors">
+                                        {tag}
+                                    </span>
                                 ))}
                             </div>
                         </div>
@@ -151,7 +151,7 @@ export default async function RecipePage({ params }) {
                             content={<ReviewsSection recipeId={id} />}
                             defaultOpen={true}
                         />
-                        <ShoppingList/>
+                        <ShoppingList />
                         {/* Footer Information */}
                         <div className="mt-8 bg-white dark:bg-gray-950 p-6 rounded-xl shadow-xl">
                             <p className="text-sm text-[#020123]">

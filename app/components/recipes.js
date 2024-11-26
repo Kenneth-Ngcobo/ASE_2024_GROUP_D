@@ -14,8 +14,8 @@ import { PiCookingPotDuotone, PiHeart } from "react-icons/pi";
 import Carousel from "./Carousel";
 import { SortControl } from "./SortControl";
 import { useSearchParams } from "next/navigation";
-import { useShoppingList } from "../context/shoppingListContext";
-import ShoppingList from "../components/shoppingList"
+import { useShoppingList } from '../context/ShoppingListContext';
+import ShoppingList from "../components/ShoppingList"
 
 const Recipes = ({ recipes: initialRecipes }) => {
   const [recipes, setRecipes] = useState(initialRecipes);
@@ -141,15 +141,15 @@ const Recipes = ({ recipes: initialRecipes }) => {
       name: key,
       quantity: ingredients[key], // Use the quantity as the value
     }));
-  
+
     // Dispatch each ingredient to the shopping list
     ingredientsArray.forEach((ingredient) => {
       dispatchShoppingList({
         type: 'ADD_ITEM',
-        payload: { 
-          id: ingredient.name,  
-          name: `${ingredient.name} - ${ingredient.quantity}`,  
-          purchased: false 
+        payload: {
+          id: ingredient.name,
+          name: `${ingredient.name} - ${ingredient.quantity}`,
+          purchased: false
         },
       });
     });
@@ -175,9 +175,8 @@ const Recipes = ({ recipes: initialRecipes }) => {
             <PiHeart className="mr-2" size={20} />
             <span>Favorites ({favoritedRecipes.size})</span>
             <FaCaretDown
-              className={`ml-2 ${
-                dropdownVisible ? "transform rotate-180" : ""
-              }`}
+              className={`ml-2 ${dropdownVisible ? "transform rotate-180" : ""
+                }`}
             />
           </button>
 
@@ -230,11 +229,10 @@ const Recipes = ({ recipes: initialRecipes }) => {
                   {recipe.title}
                 </h2>
                 <button
-                  className={`ml-2 ${
-                    favoritedRecipes.has(recipe._id)
+                  className={`ml-2 ${favoritedRecipes.has(recipe._id)
                       ? "text-red-500"
                       : "text-gray-400"
-                  } hover:text-red-500 transition-colors duration-200`}
+                    } hover:text-red-500 transition-colors duration-200`}
                   onClick={(e) => {
                     e.preventDefault();
                     toggleFavorite(recipe._id);

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useShoppingList } from '../context/shoppingListContext';
+import { useShoppingList } from '../context/ShoppingListContext';
 
 const ShoppingList = () => {
   const { state, dispatch } = useShoppingList();
@@ -40,9 +40,9 @@ const ShoppingList = () => {
     dispatch({
       type: 'ADD_ITEM',
       payload: {
-        id: newItemName.toLowerCase().replace(/\s+/g, '-'), 
+        id: newItemName.toLowerCase().replace(/\s+/g, '-'),
         name: newItemName,
-        quantity: newItemQuantity || 'N/A', 
+        quantity: newItemQuantity || 'N/A',
         purchased: false,
       },
     });
