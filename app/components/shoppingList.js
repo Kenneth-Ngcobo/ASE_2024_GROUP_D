@@ -1,12 +1,17 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useShoppingList } from '../context/ShoppingListContext';
 import { FaWhatsapp } from 'react-icons/fa';
 
 
 const ShoppingList = () => {
   const { state, dispatch } = useShoppingList();
+
+  useEffect(() => {
+    console.log('current shooping list items:',state.items)
+    
+  }, [state.items]);
 
   const [newItemName, setNewItemName] = useState('');
   const [newItemQuantity, setNewItemQuantity] = useState('');

@@ -1,4 +1,4 @@
-// components/Recipes.js
+
 "use client";
 
 import Link from 'next/link';
@@ -13,8 +13,9 @@ import {
 import { PiCookingPotDuotone, PiHeart } from "react-icons/pi";
 import Carousel from "./Carousel";
 import { SortControl } from "./SortControl";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useShoppingList } from '../context/ShoppingListContext';
+
 
 
 const Recipes = ({ recipes: initialRecipes }) => {
@@ -26,6 +27,7 @@ const Recipes = ({ recipes: initialRecipes }) => {
   const [isLoading, setIsLoading] = useState(true);
   const searchParams = useSearchParams();
   const { dispatch: dispatchShoppingList } = useShoppingList();
+  const router = useRouter();
 
   // Fetch favorites when component mounts
   useEffect(() => {
@@ -141,18 +143,22 @@ const Recipes = ({ recipes: initialRecipes }) => {
       name: key,
       quantity: ingredients[key], // Use the quantity as the value
     }));
-
+  
     // Dispatch each ingredient to the shopping list
     ingredientsArray.forEach((ingredient) => {
       dispatchShoppingList({
         type: 'ADD_ITEM',
         payload: {
-          id: ingredient.name,
-          name: `${ingredient.name} - ${ingredient.quantity}`,
+          id: ingredient.name.toLowerCase().replace(/\s+/g, '-'),
+          name: ingredient.name,
+          quantity: ingredient.quantity || '1',
           purchased: false
         },
       });
     });
+  
+    // Navigate to the shopping list page
+    router.push('/shopping-list');
   };
 
   return (
@@ -282,7 +288,7 @@ const Recipes = ({ recipes: initialRecipes }) => {
           ))}
         </div>
       </div>
-
+        
     
     </>
   );
