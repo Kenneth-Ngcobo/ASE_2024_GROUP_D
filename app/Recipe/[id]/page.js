@@ -8,7 +8,6 @@ import Loading from './loading';
 import EditableRecipeDetails from '../../components/EditableRecipeDetails';
 import ReviewsSection from '../../components/ReviewsSection';
 import AllergensSection from '../../components/AllergensSection';
-import DownloadButton from '../../components/DownLoadButton'; // Import the new component
 
 // Generate metadata for the recipe page dynamically
 export async function generateMetadata({ params }) {
@@ -151,12 +150,6 @@ export default async function RecipePage({ params }) {
                             content={<ReviewsSection recipeId={id} />}
                             defaultOpen={true}
                         />
-
-                        {/* Download Recipe Button */}
-                        <div className="mt-8">
-                            <DownloadButton recipe={recipe} /> {/* Use the DownloadButton component */}
-                        </div>
-
                         {/* Footer Information */}
                         <div className="mt-8 bg-white dark:bg-gray-950 p-6 rounded-xl shadow-xl">
                             <p className="text-sm text-[#020123]">
