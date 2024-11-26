@@ -8,7 +8,6 @@ import Loading from './loading';
 import EditableRecipeDetails from '../../components/EditableRecipeDetails';
 import ReviewsSection from '../../components/ReviewsSection';
 import AllergensSection from '../../components/AllergensSection';
-import ShoppingList from '../../components/shoppinglist';
 
 // Generate metadata for the recipe page dynamically
 export async function generateMetadata({ params }) {
@@ -91,10 +90,10 @@ export default async function RecipePage({ params }) {
                                 {recipe.title || 'Untitled Recipe'}
                             </h1>
                             <div className="flex flex-wrap gap-3 mb-6">
-                             {recipe.tags?.map((tag, index) => (
-                            <span key={index} className="px-4 py-2 bg-[#f9efd2] dark:bg-gray-800 dark:text-gray-400 hover:bg-[#edd282] text-[#020123] rounded-2xl text-sm font-medium uppercase tracking-wide transition-colors">
-                             {tag}
-                            </span>
+                                {recipe.tags?.map((tag, index) => (
+                                    <span key={index} className="px-4 py-2 bg-[#f9efd2] dark:bg-gray-800 dark:text-gray-400 hover:bg-[#edd282] text-[#020123] rounded-2xl text-sm font-medium uppercase tracking-wide transition-colors">
+                                        {tag}
+                                    </span>
                                 ))}
                             </div>
                         </div>
