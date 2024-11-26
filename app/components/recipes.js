@@ -9,13 +9,6 @@ import {
   FaCaretDown,
   FaShoppingBag,
 } from "react-icons/fa";
-import { PiCookingPotDuotone, PiHeart } from "react-icons/pi";
-import Carousel from "./Carousel";
-import { SortControl } from "./SortControl";
-import { useSearchParams } from "next/navigation";
-import { useShoppingList } from "../context/shoppingListContext";
-import ShoppingList from "../components/shoppingList"
-
 import { PiCookingPotDuotone, PiHeart } from 'react-icons/pi';
 import Head from 'next/head';
 import Carousel from './Carousel';
