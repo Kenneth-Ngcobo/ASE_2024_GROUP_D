@@ -145,8 +145,7 @@ const Recipes = ({ recipes: initialRecipes }) => {
         type: 'ADD_ITEM',
         payload: {
           id: ingredient.name.toLowerCase().replace(/\s+/g, '-'),
-          name: ingredient.name,
-          quantity: ingredient.quantity || '1',
+          name: `${ingredient.name} - ${ingredient.quantity}`,
           purchased: false
         },
       });
