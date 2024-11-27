@@ -10,6 +10,7 @@ import InstallPrompt from "./components/InstallPrompt"
 import { ShoppingListProvider } from "./context/ShoppingListContext";
 import { Suspense } from 'react';
 import dynamic from 'next/dynamic';
+import RegisterServiceWorker from './components/RegisterServiceWorker';
 
 export default async function Home({ searchParams }) {
     let recipes = {};
