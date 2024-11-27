@@ -10,7 +10,7 @@ import ThemeButton from "./ThemeButton";
 import RecipeSearchBar from "./searchBar";
 import UserModal from "./UserModal.js";
 import { FilterModal } from "./FilterButton";
-import { ShoppingListProvider } from "../context/ShoppingListContext.js";
+import { ShoppingListProvider } from "../context/shoppingListContext.js";
 import ShoppingBagHeader from "./ShoppingBagHeader.js";
 import Loading from "../loading.js";
 
@@ -80,6 +80,9 @@ const Header = ({ isAuthenticated, onLogout }) => {
 
             {/* Authentication Modal */}
             <UserModal show={showModal} onClose={toggleModal} />
+            <ShoppingListProvider>
+            <ShoppingBagHeader />
+          </ShoppingListProvider>
             <ThemeButton />
           </div>
           <button
@@ -147,9 +150,7 @@ const Header = ({ isAuthenticated, onLogout }) => {
       {isFilterOpen && <FilterModal onClose={() => setIsFilterOpen(false)} />}
       <RecipeSearchBar />
       <UserModal show={showModal} onClose={() => setShowModal(false)} />
-      <ShoppingListProvider>
-            <ShoppingBagHeader />
-          </ShoppingListProvider>
+     
     </header>
   );
 };
