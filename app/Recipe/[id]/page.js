@@ -11,6 +11,8 @@ import AllergensSection from '../../components/AllergensSection';
 import RecipeIngredientsSelector from '../../components/RecipeIngredientsSelector';
 import { ShoppingListProvider } from '../../context/ShoppingListContext';
 
+import VoiceAssistant from '../../components/VoiceAssistant';
+
 
 // Generate metadata for the recipe page dynamically
 export async function generateMetadata({ params }) {
@@ -30,7 +32,7 @@ export async function generateMetadata({ params }) {
         openGraph: {
             title: recipe.title || 'Untitled Recipe',
             description: recipe.description || 'No description available.',
-            images: recipe.images?.[0] || '/kwaMai.jpg',
+            images: recipe.images?.[0] || '/0.png',
             type: 'article'
         }
     };
@@ -141,7 +143,12 @@ export default async function RecipePage({ params }) {
 
                         <CollapsibleSection
                             title="Instructions"
-                            content={recipe.instructions || 'No instructions available.'}
+                            content={
+                                <div>
+                                    {recipe.instructions || 'No instructions available.'}
+                                    <VoiceAssistant instructions={recipe.instructions || []}/>
+                                </div>
+                                }
                             defaultOpen={true}
                         />
 
@@ -151,10 +158,7 @@ export default async function RecipePage({ params }) {
                             content={<ReviewsSection recipeId={id} />}
                             defaultOpen={true}
                         />
-
-                
-                 
-
+                       
                         {/* Footer Information */}
                         <div className="mt-8 bg-white dark:bg-gray-950 p-6 rounded-xl shadow-xl">
                             <p className="text-sm text-[#020123]">
