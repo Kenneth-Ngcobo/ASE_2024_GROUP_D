@@ -1,4 +1,4 @@
-const CACHE_NAME = 'staticCache-v1';
+const CACHE_NAME = 'staticCache-v2';
 const urlsToCache = [
     '/',
      '/Recipe/[id]'
