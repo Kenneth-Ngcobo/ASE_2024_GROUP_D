@@ -1,10 +1,17 @@
 'use client';
 
-import { useState } from 'react';
-import { useShoppingList } from '../context/shoppingListContext';
+import { useEffect, useState } from 'react';
+import { useShoppingList } from '../context/ShoppingListContext';
+import { FaWhatsapp } from 'react-icons/fa';
+
 
 const ShoppingList = () => {
   const { state, dispatch } = useShoppingList();
+
+  useEffect(() => {
+    console.log('current shooping list items:',state.items)
+    
+  }, [state.items]);
 
   const [newItemName, setNewItemName] = useState('');
   const [newItemQuantity, setNewItemQuantity] = useState('');
@@ -40,9 +47,9 @@ const ShoppingList = () => {
     dispatch({
       type: 'ADD_ITEM',
       payload: {
-        id: newItemName.toLowerCase().replace(/\s+/g, '-'), 
+        id: newItemName.toLowerCase().replace(/\s+/g, '-'),
         name: newItemName,
-        quantity: newItemQuantity || 'N/A', 
+        quantity: newItemQuantity || 'N/A',
         purchased: false,
       },
     });
@@ -96,10 +103,9 @@ const ShoppingList = () => {
           type="text"
           value={newItemQuantity}
           onChange={(e) => setNewItemQuantity(e.target.value)}
-          placeholder="Quantity (optional)"
           className="border p-2 rounded w-1/4"
         />
-        <button type="submit" className="bg-blue-500 text-white p-2 rounded">
+        <button type="submit" className="bg-[#fc9d4f] hover:bg-[#edd282] text-white p-2 rounded">
           Add Item
         </button>
       </form>
@@ -139,11 +145,12 @@ const ShoppingList = () => {
       </ul>
 
       {/* Clear List Button */}
-      <button onClick={clearList} className="mt-4 bg-blue-500 text-white p-2 rounded">
+      <button onClick={clearList} className="mt-4 bg-[#fc9d4f] hover:bg-[#edd282] text-white p-2 rounded">
         Clear List
       </button>
-      <button onClick={shareOnWhatsApp} className="mt-4 bg-green-500 text-white p-2 rounded">
-        Share on WhatsApp</button>
+      <button onClick={shareOnWhatsApp} className="mt-4  text-green-800 hover:text-green-500 p-2 rounded">
+        <FaWhatsapp size={28}/>
+      </button>
     </div>
   );
 };

@@ -10,6 +10,8 @@ import ThemeButton from "./ThemeButton";
 import RecipeSearchBar from "./searchBar";
 import UserModal from "./UserModal.js";
 import { FilterModal } from "./FilterButton";
+import { ShoppingListProvider } from "../context/ShoppingListContext.js";
+import ShoppingBagHeader from "./ShoppingBagHeader.js";
 import Loading from "../loading.js";
 
 const Header = ({ isAuthenticated, onLogout }) => {
@@ -23,20 +25,6 @@ const Header = ({ isAuthenticated, onLogout }) => {
   const toggleFilterModal = () => setIsFilterOpen((prev) => !prev);
   const toggleModal = () => setShowModal((prev) => !prev);
 
-  useEffect(() => {
-    // Fetch total recipes from API or state management
-    const fetchTotalRecipes = async () => {
-      try {
-        const response = await fetch("/api/recipes/total");
-        if (!response.ok) throw new Error("Failed to fetch total recipes");
-        const data = await response.json();
-        setTotalRecipes(data.total);
-      } catch (error) {
-        console.error("Error fetching total recipes:", error);
-      }
-    };
-    fetchTotalRecipes();
-  }, []);
 
   return (
     <header className="bg-[#f9efd2] dark:bg-gray-950 top-0 z-50">
@@ -44,19 +32,19 @@ const Header = ({ isAuthenticated, onLogout }) => {
         <nav className="flex items-center justify-between h-16">
           <div className="hidden md:flex space-x-8">
             <Link
-              href="/recipes"
+              href="/"
               className="block text-[ #020123] hover:text-[#fc9d4f] font-medium py-2 uppercase "
             >
               Recipes
             </Link>
             <Link
-              href="/Recomended"
+              href=""
               className="block text-[ #020123] hover:text-[#fc9d4f] font-medium py-2 uppercase"
             >
               Recommended
             </Link>
             <Link
-              href="/Favourite"
+              href=""
               className="block text-[ #020123] hover:text-[#fc9d4f] font-medium py-2 uppercase "
             >
               Favourite
@@ -159,6 +147,9 @@ const Header = ({ isAuthenticated, onLogout }) => {
       {isFilterOpen && <FilterModal onClose={() => setIsFilterOpen(false)} />}
       <RecipeSearchBar />
       <UserModal show={showModal} onClose={() => setShowModal(false)} />
+      <ShoppingListProvider>
+            <ShoppingBagHeader />
+          </ShoppingListProvider>
     </header>
   );
 };
