@@ -92,4 +92,10 @@ export const ShoppingListProvider = ({ children }) => {
   );
 };
 
-export const useShoppingList = () => useContext(ShoppingListContext);
+export const useShoppingList = () => {
+  const context = useContext(ShoppingListContext);
+  if (context === undefined) {
+    throw new Error('useShoppingList must be used within a ShoppingListProvider');
+  }
+  return context;
+}
