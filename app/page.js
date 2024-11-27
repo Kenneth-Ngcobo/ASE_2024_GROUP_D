@@ -1,7 +1,7 @@
 import PushNotificationManager from "./components/PushNotificationManager";
 import InstallPrompt from "./components/InstallPrompt";
 import { Suspense } from 'react';
-import dynamic from 'next/dynamic';
+
 import { fetchRecipes } from './api';
 import Pagination from './components/pagination';
 import Recipes from './components/recipes';
@@ -64,6 +64,7 @@ export default async function Home({ searchParams }) {
                 />
                      <PushNotificationManager /> 
                      <InstallPrompt />
+                     <ShoppingListProvider/>
                 <Footer />
             </Suspense>
 
