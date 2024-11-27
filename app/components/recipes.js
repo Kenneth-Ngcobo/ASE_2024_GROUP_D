@@ -14,7 +14,7 @@ import { PiCookingPotDuotone, PiHeart } from "react-icons/pi";
 import Carousel from "./Carousel";
 import { SortControl } from "./SortControl";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useShoppingList } from '../context/ShoppingListContext';
+import { useShoppingList } from '../context/shoppingListContext';
 
 
 

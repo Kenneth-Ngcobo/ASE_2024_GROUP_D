@@ -6,8 +6,9 @@ import Loading from "./loading";
 import { ThemeProvider } from "next-themes";
 import Providers from "./providers";
 import { Montserrat } from "next/font/google";
-import DynamicManifest from "./components/DanamicLink";
-import { ShoppingListProvider } from "./context/ShoppingListContext";
+import DynamicManifest from "./components/DynamicLink";
+import RegisterServiceWorker from "./components/RegisterServiceWorker";
+import { ShoppingListProvider } from "./context/shoppingListContext";
 import RegisterServiceWorker from "./components/RegisterServiceWorker";
 
 
