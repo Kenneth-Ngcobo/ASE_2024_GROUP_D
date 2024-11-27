@@ -46,9 +46,8 @@ export default async function Home({ searchParams }) {
             <RecipeCarousel />
 
             <Suspense fallback={<Loading />}>
-                {/*<CategoryList totalRecipes={recipes.totalRecipes} />*/}
-                {/* Render the Recipes component, passing the fetched recipes as props */}
-                <Recipes 
+                {/* Render the Recipes component */}
+                <Recipes
                     recipes={recipes.recipes}
                     initialSort={sort}
                     initialOrder={order}

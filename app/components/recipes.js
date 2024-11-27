@@ -155,6 +155,9 @@ const Recipes = ({ recipes: initialRecipes }) => {
     // Navigate to the shopping list page
     router.push('/shopping-list');
   };
+  
+
+ 
 
   return (
     <>
