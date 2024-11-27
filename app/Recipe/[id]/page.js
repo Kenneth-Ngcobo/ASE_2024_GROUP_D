@@ -32,7 +32,7 @@ export async function generateMetadata({ params }) {
         openGraph: {
             title: recipe.title || 'Untitled Recipe',
             description: recipe.description || 'No description available.',
-            images: recipe.images?.[0] || '/kwaMai.jpg',
+            images: recipe.images?.[0] || '/0.png',
             type: 'article'
         }
     };
