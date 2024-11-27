@@ -1,4 +1,5 @@
-'use client';
+
+"use client";
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
@@ -12,17 +13,10 @@ import {
 import { PiCookingPotDuotone, PiHeart } from "react-icons/pi";
 import Carousel from "./Carousel";
 import { SortControl } from "./SortControl";
-import { useSearchParams } from "next/navigation";
-import { useShoppingList } from "../context/shoppingListContext";
-import ShoppingList from "../components/shoppingList"
+import { useRouter, useSearchParams } from "next/navigation";
+import { useShoppingList } from '../context/ShoppingListContext';
 
-import { PiCookingPotDuotone, PiHeart } from 'react-icons/pi';
-import Head from 'next/head';
-import Carousel from './Carousel';
-import { SortControl } from './SortControl';
-import { useSearchParams } from 'next/navigation';
-import { useShoppingList } from '../context/shoppingListContext';
-import ShoppingList from '../components/shoppingList';
+
 
 const Recipes = ({ recipes: initialRecipes }) => {
   const [recipes, setRecipes] = useState(initialRecipes);
@@ -33,6 +27,7 @@ const Recipes = ({ recipes: initialRecipes }) => {
   const [isLoading, setIsLoading] = useState(true);
   const searchParams = useSearchParams();
   const { dispatch: dispatchShoppingList } = useShoppingList();
+  const router = useRouter();
 
   // Fetch favorites when component mounts
   useEffect(() => {
@@ -149,12 +144,16 @@ const Recipes = ({ recipes: initialRecipes }) => {
       dispatchShoppingList({
         type: 'ADD_ITEM',
         payload: {
-          id: ingredient.name,
-          name: `${ingredient.name} - ${ingredient.quantity}`,
-          purchased: false,
+          id: ingredient.name.toLowerCase().replace(/\s+/g, '-'),
+          name: ingredient.name,
+          quantity: ingredient.quantity || '1',
+          purchased: false
         },
       });
     });
+  
+    // Navigate to the shopping list page
+    router.push('/shopping-list');
   };
 
   return (
@@ -176,7 +175,10 @@ const Recipes = ({ recipes: initialRecipes }) => {
           >
             <PiHeart className="mr-2" size={20} />
             <span>Favorites ({favoritedRecipes.size})</span>
-            <FaCaretDown className={`ml-2 ${dropdownVisible ? 'transform rotate-180' : ''}`} />
+            <FaCaretDown
+              className={`ml-2 ${dropdownVisible ? "transform rotate-180" : ""
+                }`}
+            />
           </button>
 
           {dropdownVisible && (
@@ -220,9 +222,10 @@ const Recipes = ({ recipes: initialRecipes }) => {
                   {recipe.title}
                 </h2>
                 <button
-                  className={`ml-2 ${
-                    favoritedRecipes.has(recipe._id) ? 'text-red-500' : 'text-gray-400'
-                  } hover:text-red-500 transition-colors duration-200`}
+                  className={`ml-2 ${favoritedRecipes.has(recipe._id)
+                      ? "text-red-500"
+                      : "text-gray-400"
+                    } hover:text-red-500 transition-colors duration-200`}
                   onClick={(e) => {
                     e.preventDefault();
                     toggleFavorite(recipe._id);
@@ -272,8 +275,8 @@ const Recipes = ({ recipes: initialRecipes }) => {
           ))}
         </div>
       </div>
-
-      <ShoppingList />
+        
+    
     </>
   );
 };

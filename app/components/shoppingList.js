@@ -1,11 +1,17 @@
 'use client';
 
-import { useState } from 'react';
-import { useShoppingList } from '../context/shoppingListContext';
+import { useEffect, useState } from 'react';
+import { useShoppingList } from '../context/ShoppingListContext';
 import { FaWhatsapp } from 'react-icons/fa';
+
 
 const ShoppingList = () => {
   const { state, dispatch } = useShoppingList();
+
+  useEffect(() => {
+    console.log('current shooping list items:',state.items)
+    
+  }, [state.items]);
 
   const [newItemName, setNewItemName] = useState('');
   const [newItemQuantity, setNewItemQuantity] = useState('');
@@ -41,9 +47,9 @@ const ShoppingList = () => {
     dispatch({
       type: 'ADD_ITEM',
       payload: {
-        id: newItemName.toLowerCase().replace(/\s+/g, '-'), 
+        id: newItemName.toLowerCase().replace(/\s+/g, '-'),
         name: newItemName,
-        quantity: newItemQuantity || 'N/A', 
+        quantity: newItemQuantity || 'N/A',
         purchased: false,
       },
     });
@@ -97,7 +103,6 @@ const ShoppingList = () => {
           type="text"
           value={newItemQuantity}
           onChange={(e) => setNewItemQuantity(e.target.value)}
-          placeholder="Quantity (optional)"
           className="border p-2 rounded w-1/4"
         />
         <button type="submit" className="bg-[#fc9d4f] hover:bg-[#edd282] text-white p-2 rounded">
