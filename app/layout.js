@@ -52,7 +52,7 @@ export default function RootLayout({ children }) {
           property="og:description"
           content="This is the official recipe website of KwaMai Eatery"
         />
-        <meta property="og:image" content="/kwaMai.jpg" />
+        <meta property="og:image" content="/0.png" />
         <meta property="og:url" content="To be added when app is launched" />
 
         {/* Twitter Meta Tags */}
