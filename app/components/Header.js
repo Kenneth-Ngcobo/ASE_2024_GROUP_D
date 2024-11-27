@@ -79,10 +79,11 @@ const Header = ({ isAuthenticated, onLogout }) => {
             </button>
 
             {/* Authentication Modal */}
-            <UserModal show={showModal} onClose={toggleModal} />
             <ShoppingListProvider>
             <ShoppingBagHeader />
           </ShoppingListProvider>
+            <UserModal show={showModal} onClose={toggleModal} />
+         
             <ThemeButton />
           </div>
           <button
