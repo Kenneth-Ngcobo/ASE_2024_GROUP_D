@@ -8,7 +8,7 @@ import Recipes from './components/recipes';
 import Footer from './components/footer';
 import Loading from './loading';
 import RecipeCarousel from './components/RecipeCarousel';
-import { ShoppingListProvider } from './context/shoppingListContext';
+import { ShoppingListProvider } from './context/ShoppingListContext';
 import RegisterServiceWorker from './components/RegisterServiceWorker';
 
 export default async function Home({ searchParams }) {
@@ -39,12 +39,7 @@ export default async function Home({ searchParams }) {
                         <div className="text-center px-4">
                             <h1 className="text-4xl font-bold mb-4">Welcome to the Recipe App</h1>
                             <p className="text-lg mb-6">Discover delicious recipes and enjoy cooking!</p>
-                          {/*  <button
-                                className="bg-yellow-500 text-black py-2 px-4 rounded-full hover:bg-yellow-600 transition"
-                                onClick={() => window.location.href='/recipes'}
-                            >
-                                Get Started
-                            </button>*/}
+
                         </div>
                     </div>
                 </div>
