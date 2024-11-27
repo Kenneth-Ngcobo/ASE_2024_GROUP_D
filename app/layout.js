@@ -6,7 +6,7 @@ import Loading from "./loading";
 import { ThemeProvider } from "next-themes";
 import Providers from "./providers";
 import { Montserrat } from "next/font/google";
-import DynamicManifest from "./components/DanamicLink";
+import DynamicManifest from "./components/DynamicLink";
 import RegisterServiceWorker from "./components/RegisterServiceWorker";
 
 const geistSans = localFont({

@@ -10,7 +10,7 @@ import ReviewsSection from '../../components/ReviewsSection';
 import AllergensSection from '../../components/AllergensSection';
 import RecipeIngredientsSelector from '../../components/RecipeIngredientsSelector';
 import { ShoppingListProvider } from '../../context/ShoppingListContext';
-import DownloadButton from '../../components/DownLoadButton'; // Import the new component
+
 
 // Generate metadata for the recipe page dynamically
 export async function generateMetadata({ params }) {
@@ -169,6 +169,77 @@ export default async function RecipePage({ params }) {
                                     <strong className="text-[#020123]">Category:</strong> {recipe.category}
                                 </p>
                             </div>
+                        </div>
+
+                        {/* Editable Recipe Details */}
+                        <EditableRecipeDetails
+                            id={id}
+                            initialDescription={recipe.description}
+                            lastEditedBy={recipe.lastEditedBy}
+                            lastEditedAt={recipe.lastEditedAt}
+                        />
+
+                        {/* Allergens Section */}
+                        <AllergensSection recipeId={id} />
+
+                        {/** Collapsible Section */}
+                        <CollapsibleSection
+                            title="Ingredients"
+                            content={
+                                <div className="pt-4">
+                                    <RecipeIngredientsSelector ingredients={recipe.ingredients || {}} />
+                                </div>
+                            }
+                            defaultOpen={true}
+                        />
+
+                        <CollapsibleSection
+                            title="Nutrition"
+                            content={
+                                <ul className="list-disc list-inside">
+                                    {Object.entries(recipe.nutrition || {}).map(([key, value], index) => (
+                                        <li key={index}>
+                                            {key}: {value}
+                                        </li>
+                                    ))}
+                                </ul>
+                            }
+                            defaultOpen={true}
+                        />
+
+                        <CollapsibleSection
+                            title="Instructions"
+                            content={recipe.instructions || 'No instructions available.'}
+                            defaultOpen={true}
+                        />
+
+                        {/* New Reviews Section */}
+                        <CollapsibleSection
+                            title="Reviews"
+                            content={<ReviewsSection recipeId={id} />}
+                            defaultOpen={true}
+                        />
+
+
+
+
+                        {/* Footer Information */}
+                        <div className="mt-8 bg-white dark:bg-gray-950 p-6 rounded-xl shadow-xl">
+                            <p className="text-sm text-[#020123]">
+                                <strong>Published:</strong> {new Date(recipe.published).toDateString()}
+                            </p>
+                            <p className="text-sm">
+                                <strong className="text-[#020123]">Prep Time:</strong> {recipe.prep} minutes
+                            </p>
+                            <p className="text-sm">
+                                <strong className="text-[#020123]">Cook Time:</strong> {recipe.cook} minutes
+                            </p>
+                            <p className="text-sm">
+                                <strong className="text-[#020123]">Servings:</strong> {recipe.servings}
+                            </p>
+                            <p className="text-sm">
+                                <strong className="text-[#020123]">Category:</strong> {recipe.category}
+                            </p>
                         </div>
                     </div>
                 </Suspense>

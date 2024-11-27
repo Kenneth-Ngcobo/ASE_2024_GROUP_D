@@ -1,14 +1,13 @@
-const CACHE_NAME = 'staticCache';
+const CACHE_NAME = 'staticCache-v2';
 const urlsToCache = [
     '/',
-    '/Recipe/[id]', 
-    '/db.js',
-    '/app/globals.js'
+     '/Recipe/[id]'
 
     // Add more static assets to cache here
 ];
 
 self.addEventListener('install', event => {
+    self.skipWaiting();  // Activate the service worker immediately after install
     event.waitUntil(
         caches.open(CACHE_NAME)
             .then(cache => {
@@ -25,7 +24,7 @@ self.addEventListener('install', event => {
 });
 
 self.addEventListener('fetch', event => {
-  console.log('Fetching:', event);
+    console.log('Fetching:', event.request.url);
     event.respondWith(
         caches.match(event.request)
             .then(response => {
@@ -58,6 +57,6 @@ self.addEventListener('activate', event => {
                     }
                 })
             );
-        })
+        }).then(() => self.clients.claim())  // Take control of all clients immediately
     );
 });
