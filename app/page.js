@@ -2,7 +2,7 @@
 import { fetchRecipes } from "./api";
 import Pagination from "./components/pagination";
 import Recipes from "./components/recipes";
-import Footer from "./components/footer";
+import Footer from "./components/ui/footer";
 import Loading from "./loading";
 import RecipeCarousel from "./components/RecipeCarousel";
 import PushNotificationManager from "./components/PushNotificationManager";

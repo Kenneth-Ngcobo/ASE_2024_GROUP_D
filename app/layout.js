@@ -1,6 +1,6 @@
 import localFont from "next/font/local";
 import "./globals.css";
-import Header from "./components/Header";
+import Header from "./components/ui/Header";
 import { Suspense } from "react";
 import Loading from "./loading";
 import { ThemeProvider } from "next-themes";

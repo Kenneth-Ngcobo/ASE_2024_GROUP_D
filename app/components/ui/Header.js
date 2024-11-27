@@ -4,15 +4,15 @@ import Image from "next/image";
 import { useState, useEffect, Suspense } from "react";
 import { FaUser } from "react-icons/fa";
 import { useRouter } from "next/navigation";
-import CategoryList from "./ui/CategoryList.js";
-import { FilterButton } from "./ui/FilterButton";
-import ThemeButton from "./ui/ThemeButton";
-import RecipeSearchBar from "./ui/searchBar.js";
-import UserModal from "./UserModal.js";
-import { FilterModal } from "./ui/FilterButton";
-import { ShoppingListProvider } from "../context/ShoppingListContext.js";
-import ShoppingBagHeader from "./ShoppingBagHeader.js";
-import Loading from "../loading.js";
+import CategoryList from "./CategoryList.js";
+import { FilterButton } from "./FilterButton.js";
+import ThemeButton from "./ThemeButton.js";
+import RecipeSearchBar from "./searchBar.js";
+import UserModal from "../UserModal.js";
+import { FilterModal } from "./FilterButton.js";
+import { ShoppingListProvider } from "../../context/ShoppingListContext.js";
+import ShoppingBagHeader from "../ShoppingBagHeader.js";
+import Loading from "../../loading.js";
 
 const Header = ({ isAuthenticated, onLogout }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
