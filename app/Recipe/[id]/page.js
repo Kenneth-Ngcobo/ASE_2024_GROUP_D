@@ -9,7 +9,7 @@ import EditableRecipeDetails from '../../components/EditableRecipeDetails';
 import ReviewsSection from '../../components/ReviewsSection';
 import AllergensSection from '../../components/AllergensSection';
 import RecipeIngredientsSelector from '../../components/RecipeIngredientsSelector';
-import { ShoppingListProvider } from '../../context/ShoppingListContext';
+import { ShoppingListProvider } from '../../context/shoppingListContext';
 
 import VoiceAssistant from '../../components/VoiceAssistant';
 
