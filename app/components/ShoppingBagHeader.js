@@ -1,6 +1,6 @@
 'use client';
 
-import { useShoppingList } from '../context/ShoppingListContext';
+import { useShoppingList } from '../context/shoppingListContext';
 import { useRouter } from 'next/navigation';
 import { ShoppingBag } from 'lucide-react';
 
