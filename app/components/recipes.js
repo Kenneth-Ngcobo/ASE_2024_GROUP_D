@@ -1,9 +1,9 @@
 
 "use client";
 
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useState, useEffect } from 'react';
 import {
   FaClock,
   FaUtensils,
@@ -32,22 +32,19 @@ const Recipes = ({ recipes: initialRecipes }) => {
   // Fetch favorites when component mounts
   useEffect(() => {
     const fetchFavorites = async () => {
-      const loggedInEmail = localStorage.getItem("loggedInUserEmail");
+      const loggedInEmail = localStorage.getItem('loggedInUserEmail');
       if (!loggedInEmail) {
         setIsLoading(false);
         return;
       }
 
       try {
-        const response = await fetch(
-          `/api/favorites?email=${encodeURIComponent(loggedInEmail)}`,
-          {
-            credentials: "include",
-          }
-        );
+        const response = await fetch(`/api/favorites?email=${encodeURIComponent(loggedInEmail)}`, {
+          credentials: 'include',
+        });
 
         if (!response.ok) {
-          throw new Error("Failed to fetch favorites");
+          throw new Error('Failed to fetch favorites');
         }
 
         const data = await response.json();
@@ -55,8 +52,8 @@ const Recipes = ({ recipes: initialRecipes }) => {
         const favoriteIds = new Set(data.favorites.map((recipe) => recipe._id));
         setFavoritedRecipes(favoriteIds);
       } catch (err) {
-        setError("Failed to load favorites. Please try again later.");
-        console.error("Error fetching favorites:", err);
+        setError('Failed to load favorites. Please try again later.');
+        console.error('Error fetching favorites:', err);
       } finally {
         setIsLoading(false);
       }
@@ -66,14 +63,13 @@ const Recipes = ({ recipes: initialRecipes }) => {
   }, []);
 
   useEffect(() => {
-    setRecipes(initialRecipes)
-  }, [searchParams]);
-
+    setRecipes(initialRecipes);
+  }, [initialRecipes, searchParams]);
 
   const toggleFavorite = async (recipeId) => {
-    const loggedInEmail = localStorage.getItem("loggedInUserEmail");
+    const loggedInEmail = localStorage.getItem('loggedInUserEmail');
     if (!loggedInEmail) {
-      setError("Please log in to manage favorites");
+      setError('Please log in to manage favorites');
       return;
     }
 
@@ -100,17 +96,17 @@ const Recipes = ({ recipes: initialRecipes }) => {
         return prev;
       });
 
-      const response = await fetch("/api/favorites", {
-        method: isFavorited ? "DELETE" : "POST",
+      const response = await fetch('/api/favorites', {
+        method: isFavorited ? 'DELETE' : 'POST',
         body: JSON.stringify({ recipeId, email: loggedInEmail }),
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
-        credentials: "include",
+        credentials: 'include',
       });
 
       if (!response.ok) {
-        throw new Error("Failed to update favorites");
+        throw new Error('Failed to update favorites');
       }
     } catch (err) {
       setFavoritedRecipes((prev) => {
@@ -131,11 +127,10 @@ const Recipes = ({ recipes: initialRecipes }) => {
         }
       });
 
-      setError("Failed to update favorites. Please try again.");
-      console.error("Error updating favorites:", err);
+      setError('Failed to update favorites. Please try again.');
+      console.error('Error updating favorites:', err);
     }
   };
-
 
   const addIngredientsToShoppingList = (ingredients) => {
     // Convert ingredients object to an array of {name, quantity}
@@ -143,7 +138,7 @@ const Recipes = ({ recipes: initialRecipes }) => {
       name: key,
       quantity: ingredients[key], // Use the quantity as the value
     }));
-  
+
     // Dispatch each ingredient to the shopping list
     ingredientsArray.forEach((ingredient) => {
       dispatchShoppingList({
@@ -194,10 +189,7 @@ const Recipes = ({ recipes: initialRecipes }) => {
                 <ul className="max-h-60 overflow-y-auto p-2">
                   {favoriteDetails.map((recipe) => (
                     <li key={recipe._id} className="p-2 hover:bg-gray-100">
-                      <Link
-                        href={`/Recipe/${recipe._id}`}
-                        className="block text-sm text-gray-800"
-                      >
+                      <Link href={`/Recipe/${recipe._id}`} className="block text-sm text-gray-800">
                         {recipe.title}
                       </Link>
                     </li>
@@ -220,12 +212,7 @@ const Recipes = ({ recipes: initialRecipes }) => {
                   <Carousel images={recipe.images} />
                 ) : (
                   <div className="relative w-full h-full">
-                    <Image
-                      src={recipe.images[0]}
-                      alt={recipe.title}
-                      fill
-                      className="object-cover"
-                    />
+                    <Image src={recipe.images[0]} alt={recipe.title} fill className="object-cover" />
                   </div>
                 )}
               </div>

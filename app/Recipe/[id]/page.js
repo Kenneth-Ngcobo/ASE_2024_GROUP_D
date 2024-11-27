@@ -10,6 +10,7 @@ import ReviewsSection from '../../components/ReviewsSection';
 import AllergensSection from '../../components/AllergensSection';
 import RecipeIngredientsSelector from '../../components/RecipeIngredientsSelector';
 import { ShoppingListProvider } from '../../context/ShoppingListContext';
+import DownloadButton from '../../components/DownLoadButton'; // Import the new component
 
 // Generate metadata for the recipe page dynamically
 export async function generateMetadata({ params }) {
@@ -68,7 +69,7 @@ export default async function RecipePage({ params }) {
                     <div className="space-y-8">
                         {/* Image Section */}
                         <div className="bg-white dark:bg-gray-950 rounded-2xl shadow-xl p-6 overflow-hidden">
-                            <Suspense fallback={<Loading />}> {/* Use the Loading component here */}
+                            <Suspense fallback={<Loading />}>
                                 {recipe.images && recipe.images.length > 0 ? (
                                     <ImageGallery images={recipe.images} />
                                 ) : recipe.images?.[0] ? (
@@ -89,7 +90,7 @@ export default async function RecipePage({ params }) {
                         </div>
 
                         {/* Title and Tags Section */}
-                        <div className="bg-white  dark:bg-gray-950 rounded-2xl shadow-xl p-8">
+                        <div className="bg-white dark:bg-gray-950 rounded-2xl shadow-xl p-8">
                             <h1 className="text-4xl font-bold text-[#fc9d4f] mb-4">
                                 {recipe.title || 'Untitled Recipe'}
                             </h1>
@@ -150,6 +151,12 @@ export default async function RecipePage({ params }) {
                             content={<ReviewsSection recipeId={id} />}
                             defaultOpen={true}
                         />
+
+                        {/* Download Recipe Button */}
+                        <div className="mt-8">
+                            <DownloadButton recipe={recipe} /> {/* Use the DownloadButton component */}
+                        </div>
+
                         {/* Footer Information */}
                         <div className="mt-8 bg-white dark:bg-gray-950 p-6 rounded-xl shadow-xl">
                             <p className="text-sm text-[#020123]">
