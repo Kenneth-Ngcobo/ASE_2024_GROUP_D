@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useShoppingList } from '../context/ShoppingListContext';
+import { useShoppingList } from '../context/shoppingListContext';
 import { FaWhatsapp } from 'react-icons/fa';
 
 
