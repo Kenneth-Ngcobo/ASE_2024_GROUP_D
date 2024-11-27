@@ -10,7 +10,7 @@ import ReviewsSection from '../../components/ReviewsSection';
 import AllergensSection from '../../components/AllergensSection';
 import RecipeIngredientsSelector from '../../components/RecipeIngredientsSelector';
 import { ShoppingListProvider } from '../../context/ShoppingListContext';
-import DownloadButton from '../../components/DownLoadButton'; // Import the new component
+
 
 // Generate metadata for the recipe page dynamically
 export async function generateMetadata({ params }) {
@@ -152,10 +152,8 @@ export default async function RecipePage({ params }) {
                             defaultOpen={true}
                         />
 
-                        {/* Download Recipe Button */}
-                        <div className="mt-8">
-                            <DownloadButton recipe={recipe} /> {/* Use the DownloadButton component */}
-                        </div>
+                
+                 
 
                         {/* Footer Information */}
                         <div className="mt-8 bg-white dark:bg-gray-950 p-6 rounded-xl shadow-xl">
