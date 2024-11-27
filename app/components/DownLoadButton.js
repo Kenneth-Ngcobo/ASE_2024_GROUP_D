@@ -1,17 +1,17 @@
-// DownloadButton.js
-import { useDownload } from './DownloadContext';
+'use client';
+import { useDownload } from '../context/DownloadContext';
 
 const DownloadButton = ({ recipe }) => {
     const { downloadRecipe } = useDownload();
 
     const handleDownload = () => {
-        downloadRecipe(recipe.id, recipe);
-        alert('Recipe downloaded for offline use!');
+        // Append the recipe to the existing array in local storage
+        downloadRecipe(recipe);
     };
 
     return (
-        <button onClick={handleDownload} className="bg-blue-500 text-white px-4 py-2 rounded">
-            Download for Offline Use
+        <button onClick={handleDownload} className="mt-4 bg-[#fc9d4f] hover:bg-[#edd282] text-white p-2 rounded">
+            Save Recipe
         </button>
     );
 };
