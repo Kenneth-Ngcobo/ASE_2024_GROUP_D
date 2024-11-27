@@ -10,6 +10,9 @@ import ReviewsSection from '../../components/ReviewsSection';
 import AllergensSection from '../../components/AllergensSection';
 import RecipeIngredientsSelector from '../../components/RecipeIngredientsSelector';
 import { ShoppingListProvider } from '../../context/ShoppingListContext';
+
+import VoiceAssistant from '../../components/VoiceAssistant';
+
 import { DownloadProvider } from '../../context/DownloadContext';
 import DownloadButton from '../../components/DownLoadButton';
 
@@ -30,7 +33,7 @@ export async function generateMetadata({ params }) {
         openGraph: {
             title: recipe.title || 'Untitled Recipe',
             description: recipe.description || 'No description available.',
-            images: recipe.images?.[0] || '/kwaMai.jpg',
+            images: recipe.images?.[0] || '/0.png',
             type: 'article'
         }
     };
@@ -142,11 +145,16 @@ export default async function RecipePage({ params }) {
                                     defaultOpen={true}
                                 />
 
-                                <CollapsibleSection
-                                    title="Instructions"
-                                    content={recipe.instructions || 'No instructions available.'}
-                                    defaultOpen={true}
-                                />
+                        <CollapsibleSection
+                            title="Instructions"
+                            content={
+                                <div>
+                                    {recipe.instructions || 'No instructions available.'}
+                                    <VoiceAssistant instructions={recipe.instructions || []}/>
+                                </div>
+                                }
+                            defaultOpen={true}
+                        />
 
                                 <CollapsibleSection
                                     title="Reviews"
