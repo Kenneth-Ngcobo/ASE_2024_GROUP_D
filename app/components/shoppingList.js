@@ -103,7 +103,6 @@ const ShoppingList = () => {
           type="text"
           value={newItemQuantity}
           onChange={(e) => setNewItemQuantity(e.target.value)}
-          placeholder="Quantity (optional)"
           className="border p-2 rounded w-1/4"
         />
         <button type="submit" className="bg-[#fc9d4f] hover:bg-[#edd282] text-white p-2 rounded">
