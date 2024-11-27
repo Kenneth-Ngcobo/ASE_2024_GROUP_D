@@ -4,16 +4,16 @@ Kwamaimai is a dynamic recipe web application for designed users to discover, sh
 
 #### Technology Stack
 
-#### Frontend:
+##### Frontend:
 
 - React:
 - Next.js
 
-#### Database:
+##### Database:
 
 - MongoDB:
 
-#### Backend & API:
+##### Backend & API:
 
 - Next.js API Routes
 
@@ -21,12 +21,17 @@ Kwamaimai is a dynamic recipe web application for designed users to discover, sh
 
 - Search
 - Filter
+- Sort
 - Sign-up/ Log-in
 - Favouriting
 - Rate & Review
 - Edit description
+- Edit user profile
+- Add to shopping list
 - Image Carousel
 - Offline usage
+- Pagination
+- Navigation to recipe details
 
 # Demo
 
@@ -50,7 +55,7 @@ Link: [https://kwamaimai.vercel.app/]
 
 Environment variables are crucial for configuring the app for local development. Here's a step-by-step guide to set up and manage them effectively:
 
-NB! Please contact
+NB! Please use the contact given to get the pairs for the environment variables
 
 1. In the root directory of your project, look for a file named .env or .env.local
 2. If no .env file exists, create one.
@@ -68,7 +73,7 @@ NB! Please contact
 
 #### Database Configuration
 
-- MONGODB_URI=
+- MONGODB_URI=your_connection_string
 
 # Project Structure
 
