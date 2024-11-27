@@ -8,6 +8,8 @@ import Loading from './loading';
 import EditableRecipeDetails from '../../components/EditableRecipeDetails';
 import ReviewsSection from '../../components/ReviewsSection';
 import AllergensSection from '../../components/AllergensSection';
+import RecipeIngredientsSelector from '../../components/RecipeIngredientsSelector';
+import { ShoppingListProvider } from '../../context/ShoppingListContext';
 import DownloadButton from '../../components/DownLoadButton'; // Import the new component
 
 // Generate metadata for the recipe page dynamically
@@ -56,6 +58,7 @@ export default async function RecipePage({ params }) {
 
     return (
         <div className="min-h-screen bg-[#fcfde2] py-8">
+           < ShoppingListProvider>
             <Suspense fallback={<Loading />}>
                 <div className="container mx-auto px-4 max-w-5xl">
                     {/* Back Button */}
@@ -82,7 +85,8 @@ export default async function RecipePage({ params }) {
                                         <p className="text-gray-500">No image available</p>
                                     </div>
                                 )}
-                            </Suspense>
+                                </Suspense>
+                                
                         </div>
 
                         {/* Title and Tags Section */}
@@ -91,10 +95,10 @@ export default async function RecipePage({ params }) {
                                 {recipe.title || 'Untitled Recipe'}
                             </h1>
                             <div className="flex flex-wrap gap-3 mb-6">
-                             {recipe.tags?.map((tag, index) => (
-                            <span key={index} className="px-4 py-2 bg-[#f9efd2] dark:bg-gray-800 dark:text-gray-400 hover:bg-[#edd282] text-[#020123] rounded-2xl text-sm font-medium uppercase tracking-wide transition-colors">
-                             {tag}
-                            </span>
+                                {recipe.tags?.map((tag, index) => (
+                                    <span key={index} className="px-4 py-2 bg-[#f9efd2] dark:bg-gray-800 dark:text-gray-400 hover:bg-[#edd282] text-[#020123] rounded-2xl text-sm font-medium uppercase tracking-wide transition-colors">
+                                        {tag}
+                                    </span>
                                 ))}
                             </div>
                         </div>
@@ -112,18 +116,14 @@ export default async function RecipePage({ params }) {
 
                         {/** Collapsible Section */}
                         <CollapsibleSection
-                            title="Ingredients"
-                            content={
-                                <ul className="list-disc list-inside">
-                                    {Object.entries(recipe.ingredients || {}).map(([key, value], index) => (
-                                        <li key={index}>
-                                            {key}: {value}
-                                        </li>
-                                    ))}
-                                </ul>
-                            }
-                            defaultOpen={true}
-                        />
+  title="Ingredients"
+  content={
+    <div className="pt-4">
+      <RecipeIngredientsSelector ingredients={recipe.ingredients || {}} />
+    </div>
+  }
+  defaultOpen={true}
+/>
 
                         <CollapsibleSection
                             title="Nutrition"
@@ -177,7 +177,8 @@ export default async function RecipePage({ params }) {
                         </div>
                     </div>
                 </div>
-            </Suspense>
+                </Suspense>
+                </ShoppingListProvider>
         </div>
     );
 }
