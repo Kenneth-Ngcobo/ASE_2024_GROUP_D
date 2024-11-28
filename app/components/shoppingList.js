@@ -3,22 +3,38 @@
 import { useEffect, useState } from 'react';
 import { useShoppingList } from '../context/shoppingListContext';
 import { FaWhatsapp } from 'react-icons/fa';
-import { useRouter } from 'next/navigation';
 import BackButton from './BackButton';
+import {useAuth} from '../hook/useAuth'
 
 
 const ShoppingList = () => {
-  const { state, dispatch } = useShoppingList();
- // const router = useRouter
+  const { state, dispatch ,
+    syncLoadList, 
+    syncAddItem, 
+    syncRemoveItem, 
+    syncUpdateQuantity, 
+    syncTogglePurchased,
+    syncClearList
+  } = useShoppingList();
+
 
   useEffect(() => {
     console.log('current shopping list items:',state.items)
     
   }, [state.items]);
 
+  const { user } = useAuth();
+
   const [newItemName, setNewItemName] = useState('');
   const [newItemQuantity, setNewItemQuantity] = useState('');
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    if (user?.id) {
+      syncLoadList(user.id);
+    }
+  }, [user]);
+
 
   const removeItem = (id) => {
     dispatch({
@@ -57,6 +73,10 @@ const ShoppingList = () => {
       },
     });
 
+    if (user?.id) {
+      syncAddItem(user.id , newItem)
+    }
+
     // Clear the input fields after adding
     setNewItemName('');
     setNewItemQuantity('');
@@ -80,10 +100,13 @@ const ShoppingList = () => {
     window.open(url, '_blank');
   };
 
- {/** const handleBackToRecipe = () => {
-    router.push('/');
-  };  */} 
+  if (state.isLoading) {
+    return <div>Loading shopping list...</div>;
+  }
 
+  if (state.error) {
+    return <div>Error loading shopping list: {state.error}</div>;
+  }
 
   return (
     
