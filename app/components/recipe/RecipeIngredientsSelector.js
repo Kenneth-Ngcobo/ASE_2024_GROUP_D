@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useShoppingList } from '../context/ShoppingListContext';
+import { useShoppingList } from '../../context/ShoppingListContext';
 import { useRouter } from 'next/navigation';
 
 const RecipeIngredientsSection = ({ ingredients }) => {
@@ -64,18 +64,17 @@ const RecipeIngredientsSection = ({ ingredients }) => {
   return (
     <div className="space-y-6">
       <div className="flex justify-end gap-4 mb-4">
-        <button 
+        <button
           onClick={addSelectedToList}
           disabled={selectedIngredients.size === 0}
-          className={`px-4 py-2 rounded-lg text-sm ${
-            selectedIngredients.size === 0 
-              ? 'bg-gray-300 text-gray-500 cursor-not-allowed' 
+          className={`px-4 py-2 rounded-lg text-sm ${selectedIngredients.size === 0
+              ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
               : 'bg-[#fc9d4f] hover:bg-[#edd282] text-white'
-          }`}
+            }`}
         >
           Add Selected ({selectedIngredients.size})
         </button>
-        <button 
+        <button
           onClick={addAllToList}
           className="bg-[#fc9d4f] hover:bg-[#edd282] text-white px-4 py-2 rounded-lg text-sm"
         >

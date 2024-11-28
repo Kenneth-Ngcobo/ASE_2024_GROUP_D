@@ -3,12 +3,12 @@ import Image from 'next/image';
 import BackButton from "../../components/ui/BackButton";
 import { fetchRecipeById } from '../../api';
 import ImageGallery from '../../components/ImageGallery';
-import CollapsibleSection from '../../components/CollapsibleSection';
+import CollapsibleSection from '../../components/recipe-detail/CollapsibleSection';
 import Loading from './loading';
-import EditableRecipeDetails from '../../components/EditableRecipeDetails';
-import ReviewsSection from '../../components/ReviewsSection';
-import AllergensSection from '../../components/AllergensSection';
-import RecipeIngredientsSelector from '../../components/RecipeIngredientsSelector';
+import EditableRecipeDetails from '../../components/recipe-detail/EditableRecipeDetails';
+import ReviewsSection from "../../components/recipe-detail/ReviewsSection"
+import AllergensSection from '../../components/recipe-detail/AllergensSection';
+import RecipeIngredientsSelector from '../../components/recipe/RecipeIngredientsSelector';
 import { ShoppingListProvider } from '../../context/ShoppingListContext';
 
 

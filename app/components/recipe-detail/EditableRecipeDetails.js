@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from 'react';
-import { Button } from './ui/button';
+import { Button } from '../ui/button';
 import { Pencil, X, Check, Loader2 } from 'lucide-react';
 
 export default function EditableRecipeDetails({ id, initialDescription, lastEditedBy, lastEditedAt }) {
