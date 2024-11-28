@@ -9,7 +9,7 @@ import { Montserrat } from "next/font/google";
 import DynamicManifest from "./components/DynamicLink";
 import RegisterServiceWorker from "./components/RegisterServiceWorker";
 import { ShoppingListProvider } from "./context/shoppingListContext";
-import RegisterServiceWorker from "./components/RegisterServiceWorker";
+
 
 
 const geistSans = localFont({

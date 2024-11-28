@@ -3,13 +3,16 @@
 import { useEffect, useState } from 'react';
 import { useShoppingList } from '../context/shoppingListContext';
 import { FaWhatsapp } from 'react-icons/fa';
+import { useRouter } from 'next/navigation';
+import BackButton from './BackButton';
 
 
 const ShoppingList = () => {
   const { state, dispatch } = useShoppingList();
+ // const router = useRouter
 
   useEffect(() => {
-    console.log('current shooping list items:',state.items)
+    console.log('current shopping list items:',state.items)
     
   }, [state.items]);
 
@@ -77,8 +80,13 @@ const ShoppingList = () => {
     window.open(url, '_blank');
   };
 
+ {/** const handleBackToRecipe = () => {
+    router.push('/');
+  };  */} 
+
 
   return (
+    
     <div className="shopping-list p-4 bg-white rounded shadow-lg">
       <h2 className="text-2xl font-bold mb-4">Shopping List</h2>
 
@@ -144,7 +152,12 @@ const ShoppingList = () => {
         ))}
       </ul>
 
-      {/* Clear List Button */}
+      {/* Action Buttons */}
+     
+       <div className="absolute  left-2 mb-4">
+            <BackButton />
+         </div>
+      
       <div className='flex mt-4 space-x-2'>
       <button onClick={clearList} className="mt-4 bg-[#fc9d4f]  text-[#020123] hover:bg-[#edd282] p-2 rounded">
         Clear List
