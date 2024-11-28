@@ -142,6 +142,13 @@ const Recipes = ({ recipes: initialRecipes }) => {
 
     // Dispatch each ingredient to the shopping list
     ingredientsArray.forEach((ingredient) => {
+
+      const existingItem = shoppingListState.items.find(
+        item => item.id === ingredient.name.toLowerCase().replace(/\s+/g, '-')
+      );
+
+
+      if (!existingItem){
       dispatchShoppingList({
         type: 'ADD_ITEM',
         payload: {
@@ -150,6 +157,7 @@ const Recipes = ({ recipes: initialRecipes }) => {
           purchased: false
         },
       });
+    }
     });
   };
   
