@@ -78,69 +78,69 @@ NB! Please use the contact given to get the pairs for the environment variables
 # Project Structure
 
 root/
-├── .next/
-├── app/
-├── api/
-│ ├── auth/
-│ │ └── nextauth/route.js
-│ ├── checkuser/route.js
-│ └── login/route.js
-├── components/
-│ ├── ui/
-│ │ ├── alert.js
-│ │ └── button.js
-│ ├── BackButton.js
-│ ├── Carousel.js
-│ ├── CategoryList.js
-│ ├── CollapsibleSection.js
-│ ├── EditableRecipeDetails.js
-│ ├── FavoriteButton.js
-│ ├── FilterButton.js
-│ ├── Footer.js
-│ ├── Header.js
-│ ├── ImageGallery.js
-│ ├── IngredientList.js
-│ ├── LoadingSpinner.js
-│ ├── Pagination.js
-│ ├── RecipeCarousel.js
-│ ├── RecipeGrid.js
-│ ├── Recipes.js
-│ ├── ReviewsSection.js
-│ ├── SearchBar.js
-│ ├── SortControl.js
-│ ├── StepsDropdown.js
-│ ├── TagList.js
-│ ├── ThemeButton.js
-│ ├── UserModal.js
-│ └── editdetails/
-│ └── page.js
-├── fonts/
-├── hook/
-├── images/
-├── Recipe/[id]/
-├── styles/global.css
-├── api.js
-├── error.js
-├── layout.js
-├── loading.js
-├── not-found.js
-├── page.js
-├── providers.js
-├── review.js
-├── lib/
-│ ├── AuthMiddleware.js
-│ ├── utils.js
-├── components/
-├── public/
-├── auth.js
-├── db.js
-├── next.config.mjs
-├── packgae-lock.json
-├── package.json
-├── postcss.config.mjs
-├── ReadMe.md
-├── tailwind.config.js
-├── testConnection.js
+- ├── .next/
+- ├── app/
+- ├── api/
+- │ ├── auth/
+- │ │ └── nextauth/route.js
+- │ ├── checkuser/route.js
+- │ └── login/route.js
+- ├── components/
+- │ ├── ui/
+- │ │ ├── alert.js
+- │ │ └── button.js
+- │ ├── BackButton.js
+- │ ├── Carousel.js
+- │ ├── CategoryList.js
+- │ ├── CollapsibleSection.js
+- │ ├── EditableRecipeDetails.js
+- │ ├── FavoriteButton.js
+- │ ├── FilterButton.js
+- │ ├── Footer.js
+- │ ├── Header.js
+- │ ├── ImageGallery.js
+- │ ├── IngredientList.js
+- │ ├── LoadingSpinner.js
+- │ ├── Pagination.js
+- │ ├── RecipeCarousel.js
+- │ ├── RecipeGrid.js
+- │ ├── Recipes.js
+- │ ├── ReviewsSection.js
+- │ ├── SearchBar.js
+- │ ├── SortControl.js
+- │ ├── StepsDropdown.js
+- │ ├── TagList.js
+- │ ├── ThemeButton.js
+- │ ├── UserModal.js
+- │ └── editdetails/
+- │ └── page.js
+- ├── fonts/
+- ├── hook/
+- ├── images/
+- ├── Recipe/[id]/
+- ├── styles/global.css
+- ├── api.js
+- ├── error.js
+- ├── layout.js
+- ├── loading.js
+- ├── not-found.js
+- ├── page.js
+- ├── providers.js
+- ├── review.js
+- ├── lib/
+- │ ├── AuthMiddleware.js
+- │ ├── utils.js
+- ├── components/
+- ├── public/
+- ├── auth.js
+- ├── db.js
+- ├── next.config.mjs
+- ├── packgae-lock.json
+- ├── package.json
+- ├── postcss.config.mjs
+- ├── ReadMe.md
+- ├── tailwind.config.js
+- ├── testConnection.js
 
 # API Documentation
 
@@ -148,7 +148,7 @@ This section outlines the key API endpoints available in the application, their 
 
 #### BASE URL
 
-http://localhost:3000
+http://localhost:3000 
 
 ##### API Endpoints
 
@@ -156,146 +156,258 @@ This section outlines the key API endpoints available in the application, their 
 
 #### 1. Authentication Endpoints
 
-- Route: /api/auth/login, /api/auth/register
-- Description: Handles user authentication processes, including login and registration.
+##### Routes:
 
-##### Methods:
+- /api/auth/login
+- /api/auth/signup
+- /api/auth/logout
+- /api/auth/checkuser
+- /api/auth/user/[email]/profile
 
-- POST /api/auth/login: Validates user credentials and returns an authentication token.
-- POST /api/auth/register: Creates a new user account.
+##### Description
+
+Handles user authentication processes, including login, signup, logout, and profile verification.
+
+##### Methods
+
+- POST: /api/auth/login
+- Validates user credentials and returns an authentication token.
+
+- Request Body (example):
+  {
+  "email": "user@example.com",
+  "password": "securePassword"
+  }
+- Responses:
+
+  - 200 OK: Returns authentication token.
+  - 400 Unauthorized: User not found or Invalid password.
+
+- POST /api/auth/register
+- Creates a new user account.
+- Request Body (example):
+  {
+  "full name: "user",
+  "phone number: "1234567890",
+  "email": "user@example.com",
+  "password": "securePassword"
+  }
+- Responses:
+- 201 Created: User created successfully.
+- 400 Bad Request: User already exists.
+
+2. Recipe Endpoints
+
+##### Route
+
+- /api/recipes
+[http://localhost:3000.api/recipes]
+##### Description
+
+Handles CRUD operations for recipes.
+
+##### Methods
+
+- GET /api/recipes
+  - Retrieves a list of recipes.
+  - Responses:
+  - 200 OK: List of recipes.
+- POST /api/recipes
+  - Adds a new recipe (requires authentication).
   - Request Body (example):
-    json
-    Copy code
-    {
-    "email": "user@example.com",
-    "password": "securePassword"
-    }
-
-##### Responses:
-
-- 200 OK: Returns authentication token.
-- 401 Unauthorized: Invalid credentials.
-
-#### 2. Recipe Endpoints
-
-- Route: /api/recipes
-- Description: Handles CRUD operations for recipes.
-
-##### Methods:
-
-- GET /api/recipes: Retrieves a list of recipes.
-- POST /api/recipes: Adds a new recipe (requires authentication).
-  - Request Body (example for POST):
-    json
-    Copy code
     {
     "title": "Chocolate Cake",
     "ingredients": ["flour", "sugar", "cocoa powder"],
     "instructions": "Mix ingredients and bake."
     }
-    Responses:
-    200 OK: List of recipes or confirmation of new recipe creation.
-    400 Bad Request: Missing or invalid data.
+- Responses:
+  - 201 Created: Recipe created successfully.
+  - 400 Bad Request: Missing or invalid data.
 
-#### 3. Profile Endpoints
+3. Profile Endpoints
 
-- Route: /api/profile
-- Description: Provides user profile data and allows updates.
+##### Route
 
-##### Methods:
+- /api/profile
 
-- GET /api/profile: Retrieves the current user’s profile.
-- PUT /api/profile: Updates user information.
+##### Description
 
-##### Responses:
+Provides user profile data and allows updates.
 
-- 200 OK: User profile details or update confirmation.
-- 401 Unauthorized: No valid authentication token provided.
+##### Methods
 
-#### 4. Favorites
+- GET /api/profile
 
-- Route: /api/favorites
-- Description: Manages users' favorite recipes.
+  - Retrieves the current user’s profile.
+  - Responses:
+    - 200 OK: User profile details.
+    - 401 Unauthorized: No valid authentication token provided.
 
-##### Methods:
+- PUT /api/profile
+  - Updates user information.
+  - Request Body (example):
+    {
+    "name": "Updated Name",
+    "email": "updated_email@example.com"
+    }
+- Responses:
+  - 200 OK: Update confirmation.
+  - 400 Bad Request: Invalid update data.
 
-- GET /api/favorites: Retrieves the user’s favorite recipes.
-- POST /api/favorites: Adds a recipe to favorites.
-- DELETE /api/favorites: Removes a recipe from favorites.
+4.  Favorites Endpoints
 
-##### - Responses:
+##### Route
 
-- 200 OK: Success messages or list of favorite recipes.
+- /api/favorites
 
-#### 5. Allergens
+##### Description
 
-- Route: /api/allergens
-- Description: Allows users to set and manage allergens to filter recipes.
+Manages users' favorite recipes.
 
-##### Methods:
+##### Methods
 
-- GET /api/allergens: Retrieves the user’s allergen list.
-- POST /api/allergens: Updates the user’s allergen list.
+- GET /api/favorites
 
-##### Responses:
+  - Retrieves the user’s favorite recipes.
+  - Responses:
+    - 200 OK: List of favorite recipes.
 
-- 200 OK: Success messages or updated allergen list.
+- POST /api/favorites
+  - Adds a recipe to favorites.
+  - Responses:
+    - 201 Created: Recipe added to favorites.
+- DELETE /api/favorites
+  - Removes a recipe from favorites.
+  - Responses:
+    - 200 OK: Recipe removed from favorites.
 
-#### 6. Manifest
+5. Reviews Endpoints
 
-- Route: /api/manifest
-- Description: Provides application metadata or configuration.
+##### Route
 
-##### Responses:
+- /api/reviews
 
-- 200 OK: JSON containing app version, settings, etc.
+##### Description
 
-#### 7. Reviews
+Handles user reviews for recipes.
 
-- Route: /api/reviews
-- Description: Handles user reviews for recipes.
+##### Methods
 
-##### Methods:
+- GET /api/reviews?recipeId=<id>
 
-- GET /api/reviews?recipeId=<id>: Retrieves reviews for a specific recipe.
-- POST /api/reviews: Adds a new review to a recipe.
+  - Retrieves reviews for a specific recipe.
+  - Responses:
+    - 200 OK: List of reviews.
 
-##### Responses:
+- POST /api/reviews
+  - Adds a new review to a recipe.
+  - Request Body (example):
+    {
+    "recipeId": "123",
+    "review": "Delicious recipe!"
+    }
+- Responses:
+  - 201 Created: Review added successfully.
 
-200 OK: List of reviews or confirmation of new review.
+6.  Categories Endpoints
 
-#### 8. Update
+##### Route
 
-- Route: /api/update
-- Description: Checks and applies updates to the application or data.
+- /api/recipes/categories
+[http://localhost:3000/api/recipes/categories]
 
-#### 9. Categories
+##### Description
 
-- Route: /api/recipes/categories
-- Description: Retrieves available recipe categories.
+Retrieves available recipe categories.
 
-##### Methods:
+##### Methods
 
-- GET /api/recipes/categories: Fetches a list of recipe categories.
+- GET /api/recipes/categories
+  - Fetches a list of recipe categories.
+  - Responses:
+    - 200 OK: List of categories.
 
-##### Responses:
+7.  Ingredients Endpoints
+    ##### Route
+    - /api/ingredients
+    ##### Description
+    Provides ingredient data, including substitutes and availability.
 
-- 200 OK: List of categories.
+##### Methods
 
-#### 10. Ingredients
+- GET /api/ingredients
+  - Fetches ingredient details.
+  - Responses:
+    - 200 OK: List of ingredients.
 
-- Route: /api/ingredients
-- Description: Provides ingredient data, including substitutes and availability.
+8.  Recommendations Endpoints
+    ##### Route
+    - /api/recommendations
+    ##### Description
+    Suggests recipes based on user preferences, history, or trending recipes.
 
-#### 11. Recommendations
+##### Methods
 
-- Route: /api/recommendations
-- Description: Suggests recipes based on user preferences, history, or trending recipes.
+- GET /api/recommendations
+  - Retrieves personalized recipe recommendations.
+  - Responses:
+    - 200 OK: List of recommended recipes.
 
-#### 12. Tags
+9. Tags Endpoints
+   ##### Route
+   - /api/tags
+   ##### Description
+   Manages recipe tags for better categorization and filtering.
 
-- Route: /api/tags
-- Description: Manages recipe tags for better categorization and filtering.
+##### Methods
+
+- GET /api/tags
+  - Retrieves available tags.
+  - Responses:
+    - 200 OK: List of tags.
+
+10. Shopping List Endpoints
+    ##### Route
+    - /api/shopping-list
+    ##### Description
+    Handles users' shopping lists for recipes.
+
+##### Methods
+
+- GET /api/shopping-list
+  - Retrieves the shopping list.
+  - Responses:
+    - 200 OK: List of items.
+- POST /api/shopping-list
+  - Adds an item to the shopping list.
+  - Responses:
+    - 201 Created: Item added successfully.
+
+11. Instructions Endpoints
+    ##### Route
+    - /api/instructions
+    ##### Description
+    Provides step-by-step instructions for recipes.
+
+##### Methods
+
+- GET /api/instructions?recipeId=<id>
+  - Retrieves instructions for a specific recipe.
+  - Responses:
+    - 200 OK: Recipe instructions.
+
+12. Manifest
+    ##### Route
+    - /api/manifest
+    ##### Description
+    Fetches the application manifest for metadata and integration.
+
+##### Methods
+
+- GET /api/manifest
+  - Retrieves the manifest.
+  - Responses:
+    - 200 OK: Manifest data.
 
 # Contact Information
 
