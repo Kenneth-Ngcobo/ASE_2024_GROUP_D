@@ -5,7 +5,12 @@ import { Suspense } from "react";
 import Loading from "./loading";
 import { ThemeProvider } from "next-themes";
 import Providers from "./providers";
-import { Montserrat } from 'next/font/google';
+import { Montserrat } from "next/font/google";
+import DynamicManifest from "./components/DynamicLink";
+import RegisterServiceWorker from "./components/RegisterServiceWorker";
+import { ShoppingListProvider } from "./context/shoppingListContext";
+
+
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -19,19 +24,18 @@ const geistMono = localFont({
 });
 
 const montserrat = Montserrat({
-  subsets: ['latin'],
-  weight: ['400', '500', '600', '700'],
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
 });
 
-
-
 export default function RootLayout({ children }) {
+
   return (
     <html lang="en" className={montserrat.className}>
       <head>
         <title>KwaMai Eatery</title>
-        <link rel="icon" href="/Kwa.png" />
-
+        <link rel="icon" href="/0.png" />
+        <DynamicManifest />
         {/* Main Meta Tags */}
 
         <meta
@@ -51,7 +55,7 @@ export default function RootLayout({ children }) {
           property="og:description"
           content="This is the official recipe website of KwaMai Eatery"
         />
-        <meta property="og:image" content="/kwaMai.jpg" />
+        <meta property="og:image" content="/0.png" />
         <meta property="og:url" content="To be added when app is launched" />
 
         {/* Twitter Meta Tags */}
@@ -61,7 +65,7 @@ export default function RootLayout({ children }) {
           name="twitter:description"
           content="This is the official recipe website of KwaMai Eatery"
         />
-        <meta name="twitter:image" content="/kwaMai.jpg" />
+        <meta name="twitter:image" content="/0.png" />
       </head>
 
       <body
@@ -71,10 +75,13 @@ export default function RootLayout({ children }) {
           <ThemeProvider attribute="class">
             <Header /> {/* Rendering the Header component */}
             <Suspense fallback={<Loading />}>
-              {children} {/* Rendering the child components or pages */}
+              <ShoppingListProvider>
+                {children} {/* Rendering the child components or pages */}
+                </ShoppingListProvider>
             </Suspense>
           </ThemeProvider>
         </Providers>
+        <RegisterServiceWorker /> {/* Register the service worker */}
       </body>
     </html>
   );

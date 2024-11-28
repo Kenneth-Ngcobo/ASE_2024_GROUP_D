@@ -290,7 +290,7 @@ const ReviewsSection = ({ recipeId }) => {
         <button
           onClick={handleReviewSubmit}
           disabled={isLoading}
-          className="px-4 py-2 bg-blue-500 text-white rounded-md disabled:opacity-50 flex items-center justify-center"
+          className="bg-[#fc9d4f] hover:bg-[#f9efd2] text-[#020123] font-semibold px-4 py-2 rounded-md"
         >
           {isLoading ? <LoadingSpinner /> : editMode ? "Update Review" : "Add Review"}
         </button>

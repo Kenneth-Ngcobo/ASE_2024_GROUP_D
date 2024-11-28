@@ -1,65 +1,60 @@
+
 "use client";
 
-import React, { useState, useEffect } from "react";
-import Link from "next/link";
-import Image from "next/image";
+import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
 import {
-  FaCalendarDay,
   FaClock,
   FaUtensils,
-  FaTags,
-  FaUtensilSpoon,
-  FaListUl,
   FaCaretDown,
+  FaShoppingBag,
 } from "react-icons/fa";
 import { PiCookingPotDuotone, PiHeart } from "react-icons/pi";
-import Head from "next/head";
 import Carousel from "./Carousel";
 import { SortControl } from "./SortControl";
-import { sortRecipes } from "./sortUtils";
-import { useSearchParams } from "next/navigation";
+import {  useSearchParams } from "next/navigation";
+import { useShoppingList } from '../context/shoppingListContext';
+
+
 
 const Recipes = ({ recipes: initialRecipes }) => {
-  const [sortBy, setSortBy] = useState("default");
-  const [sortOrder, setSortOrder] = useState("ascending");
-  const [recipes, setRecipes] = useState(initialRecipes || []);
+  const [recipes, setRecipes] = useState(initialRecipes);
   const [favoritedRecipes, setFavoritedRecipes] = useState(new Set());
   const [favoriteDetails, setFavoriteDetails] = useState([]);
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const searchParams = useSearchParams();
+  const { dispatch: dispatchShoppingList } = useShoppingList();
+  const [addedToList, setAddedToList] = useState(new Set());
+ 
 
   // Fetch favorites when component mounts
   useEffect(() => {
     const fetchFavorites = async () => {
-      const loggedInEmail = localStorage.getItem("loggedInUserEmail");
+      const loggedInEmail = localStorage.getItem('loggedInUserEmail');
       if (!loggedInEmail) {
         setIsLoading(false);
         return;
       }
 
       try {
-        const response = await fetch(
-          `/api/favorites?email=${encodeURIComponent(loggedInEmail)}`,
-          {
-            credentials: "include",
-          }
-        );
+        const response = await fetch(`/api/favorites?email=${encodeURIComponent(loggedInEmail)}`, {
+          credentials: 'include',
+        });
 
         if (!response.ok) {
-          throw new Error("Failed to fetch favorites");
+          throw new Error('Failed to fetch favorites');
         }
 
         const data = await response.json();
-        // Store the complete favorite recipes data
         setFavoriteDetails(data.favorites);
-        // Create a Set of just the IDs for quick lookup
         const favoriteIds = new Set(data.favorites.map((recipe) => recipe._id));
         setFavoritedRecipes(favoriteIds);
       } catch (err) {
-        setError("Failed to load favorites. Please try again later.");
-        console.error("Error fetching favorites:", err);
+        setError('Failed to load favorites. Please try again later.');
+        console.error('Error fetching favorites:', err);
       } finally {
         setIsLoading(false);
       }
@@ -69,28 +64,13 @@ const Recipes = ({ recipes: initialRecipes }) => {
   }, []);
 
   useEffect(() => {
-    const newSort = searchParams.get("sortBy") || "default";
-    const newOrder = searchParams.get("order") || "ascending";
-    setSortBy(newSort);
-    setSortOrder(newOrder);
-  }, [searchParams]);
-
-  const handleSort = (newSortBy, newSortOrder) => {
-    setSortBy(newSortBy);
-    setSortOrder(newSortOrder);
-    const sortedRecipes = sortRecipes(initialRecipes, newSortBy, newSortOrder);
-    setRecipes(sortedRecipes);
-  };
-
-  useEffect(() => {
-    const sortedRecipes = sortRecipes(initialRecipes, sortBy, sortOrder);
-    setRecipes(sortedRecipes);
-  }, [initialRecipes, sortBy, sortOrder]);
+    setRecipes(initialRecipes);
+  }, [initialRecipes, searchParams]);
 
   const toggleFavorite = async (recipeId) => {
-    const loggedInEmail = localStorage.getItem("loggedInUserEmail");
+    const loggedInEmail = localStorage.getItem('loggedInUserEmail');
     if (!loggedInEmail) {
-      setError("Please log in to manage favorites");
+      setError('Please log in to manage favorites');
       return;
     }
 
@@ -98,7 +78,6 @@ const Recipes = ({ recipes: initialRecipes }) => {
     const recipe = recipes.find((r) => r._id === recipeId);
 
     try {
-      // Optimistically update UI
       setFavoritedRecipes((prev) => {
         const updated = new Set(prev);
         if (isFavorited) {
@@ -109,7 +88,6 @@ const Recipes = ({ recipes: initialRecipes }) => {
         return updated;
       });
 
-      // Also update the favorite details
       setFavoriteDetails((prev) => {
         if (isFavorited) {
           return prev.filter((r) => r._id !== recipeId);
@@ -119,20 +97,19 @@ const Recipes = ({ recipes: initialRecipes }) => {
         return prev;
       });
 
-      const response = await fetch("/api/favorites", {
-        method: isFavorited ? "DELETE" : "POST",
+      const response = await fetch('/api/favorites', {
+        method: isFavorited ? 'DELETE' : 'POST',
         body: JSON.stringify({ recipeId, email: loggedInEmail }),
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
-        credentials: "include",
+        credentials: 'include',
       });
 
       if (!response.ok) {
-        throw new Error("Failed to update favorites");
+        throw new Error('Failed to update favorites');
       }
     } catch (err) {
-      // Revert optimistic updates on error
       setFavoritedRecipes((prev) => {
         const reverted = new Set(prev);
         if (isFavorited) {
@@ -151,16 +128,33 @@ const Recipes = ({ recipes: initialRecipes }) => {
         }
       });
 
-      setError("Failed to update favorites. Please try again.");
-      console.error("Error updating favorites:", err);
+      setError('Failed to update favorites. Please try again.');
+      console.error('Error updating favorites:', err);
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center h-64">Loading...</div>
-    );
-  }
+  const addIngredientsToShoppingList = (ingredients) => {
+    // Convert ingredients object to an array of {name, quantity}
+    const ingredientsArray = Object.keys(ingredients).map((key) => ({
+      name: key,
+      quantity: ingredients[key], // Use the quantity as the value
+    }));
+
+    // Dispatch each ingredient to the shopping list
+    ingredientsArray.forEach((ingredient) => {
+      dispatchShoppingList({
+        type: 'ADD_ITEM',
+        payload: {
+          id: ingredient.name.toLowerCase().replace(/\s+/g, '-'),
+          name: `${ingredient.name} - ${ingredient.quantity}`,
+          purchased: false
+        },
+      });
+    });
+  };
+  
+
+ 
 
   return (
     <>
@@ -172,11 +166,7 @@ const Recipes = ({ recipes: initialRecipes }) => {
           </div>
         )}
 
-        <SortControl
-          onSortChange={handleSort}
-          sortBy={sortBy}
-          sortOrder={sortOrder}
-        />
+        <SortControl />
 
         <div className="mb-4 relative">
           <button
@@ -186,9 +176,8 @@ const Recipes = ({ recipes: initialRecipes }) => {
             <PiHeart className="mr-2" size={20} />
             <span>Favorites ({favoritedRecipes.size})</span>
             <FaCaretDown
-              className={`ml-2 ${
-                dropdownVisible ? "transform rotate-180" : ""
-              }`}
+              className={`ml-2 ${dropdownVisible ? "transform rotate-180" : ""
+                }`}
             />
           </button>
 
@@ -200,10 +189,7 @@ const Recipes = ({ recipes: initialRecipes }) => {
                 <ul className="max-h-60 overflow-y-auto p-2">
                   {favoriteDetails.map((recipe) => (
                     <li key={recipe._id} className="p-2 hover:bg-gray-100">
-                      <Link
-                        href={`/Recipe/${recipe._id}`}
-                        className="block text-sm text-gray-800"
-                      >
+                      <Link href={`/Recipe/${recipe._id}`} className="block text-sm text-gray-800">
                         {recipe.title}
                       </Link>
                     </li>
@@ -219,33 +205,27 @@ const Recipes = ({ recipes: initialRecipes }) => {
             <Link
               href={`/Recipe/${recipe._id}`}
               key={recipe._id}
-              className="block p-4 bg-white dark:bg-black dark:border-gray-950 border border-gray-200 rounded-lg shadow-lg hover:shadow-2xl transition-transform transform hover:scale-105 duration-300 ease-in-out"
+              className="block p-4 bg-[#fcfde2] dark:bg-black dark:border-gray-950 border border-gray-200 rounded-lg shadow-lg hover:shadow-2xl transition-transform transform hover:scale-105 duration-300 ease-in-out"
             >
               <div className="relative w-full h-64">
-                {recipe.images.length > 1 ? (
+                {recipe.images?.length > 1 ? (
                   <Carousel images={recipe.images} />
                 ) : (
                   <div className="relative w-full h-full">
-                    <Image
-                      src={recipe.images[0]}
-                      alt={recipe.title}
-                      fill
-                      className="object-cover"
-                    />
+                    <Image src={recipe.images[0]} alt={recipe.title} fill className="object-cover" />
                   </div>
                 )}
               </div>
 
               <div className="p-4 flex justify-between items-center">
-                <h2 className="text-[#1e455c] font-bold text-xl mb-3 font-montserrat group-hover:text-[#2b617f]">
+                <h2 className="text-[#fc9d4f] font-bold text-xl mb-3 font-montserrat group-hover:text-[#2b617f]">
                   {recipe.title}
                 </h2>
                 <button
-                  className={`ml-2 ${
-                    favoritedRecipes.has(recipe._id)
+                  className={`ml-2 ${favoritedRecipes.has(recipe._id)
                       ? "text-red-500"
                       : "text-gray-400"
-                  } hover:text-red-500 transition-colors duration-200`}
+                    } hover:text-red-500 transition-colors duration-200`}
                   onClick={(e) => {
                     e.preventDefault();
                     toggleFavorite(recipe._id);
@@ -257,38 +237,57 @@ const Recipes = ({ recipes: initialRecipes }) => {
 
               <div className="space-y-2">
                 <p className="text-sm text-gray-600 flex items-center">
-                  <FaClock className="text-[#1e455c] mr-2" />
-                  {recipe.prep + recipe.cook} mins
+                  <FaClock className="text-[#020123] mr-2" />
+                  {recipe.prep} mins
                 </p>
                 <p className="text-sm text-gray-600 flex items-center">
-                  <PiCookingPotDuotone className="text-[#1e455c] mr-2" />
+                  <PiCookingPotDuotone className="text-[#020123] mr-2" />
                   {recipe.cook} mins
                 </p>
                 <p className="text-sm text-gray-600 flex items-center">
-                  <FaUtensils className="text-[#1e455c] mr-2" />
+                  <FaUtensils className="text-[#020123] mr-2" />
                   Serves {recipe.servings}
                 </p>
               </div>
               <div className="flex flex-wrap gap-2 mt-3">
                 {recipe.category && (
-                  <span className="inline-block bg-gray-100 dark:bg-gray-950 dark:text-gray-400  text-gray-600 text-sm px-2 py-1 rounded">
+                  <span className="inline-block bg-[#f9efd2] dark:bg-[#1c1d02] dark:text-gray-400  text-[#020123] text-sm px-2 py-1 rounded">
                     {recipe.category}
                   </span>
                 )}
-                <span className="inline-block bg-gray-100 text-gray-600  dark:bg-gray-950 dark:text-gray-400 text-sm px-2 py-1 rounded">
+                <span className="inline-block bg-[#f9efd2] text-[#020123]  dark:bg-[#1c1d02] dark:text-gray-400 text-sm px-2 py-1 rounded">
                   {recipe.instructions.length} steps
                 </span>
-                <span className="inline-block bg-gray-100 text-gray-600  dark:bg-gray-950 dark:text-gray-400 text-sm px-2 py-1 rounded">
+                <span className="inline-block bg-[#f9efd2] text-[#020123]  dark:bg-[#1c1d02] dark:text-gray-400 text-sm px-2 py-1 rounded">
                   {new Date(recipe.published).toDateString()}
                 </span>
+                <button
+  className={`inline-block bg-[#f9efd2] text-sm px-2 py-1 rounded mt-2 transition-colors duration-300 ${
+    addedToList.has(recipe._id) ? 'bg-[#fc9d4f]' : 'bg-[#f9efd2]'
+  }`}
+  onClick={(e) => {
+    e.preventDefault();
+    addIngredientsToShoppingList(recipe.ingredients);
+    setAddedToList(prev => new Set([...prev, recipe._id]));
+  }}
+>
+  <FaShoppingBag 
+    className={`${
+      addedToList.has(recipe._id) ? 'text-white' : 'text-[#020123]'
+    } mr-2`} 
+  />
+</button>
               </div>
             </Link>
           ))}
         </div>
       </div>
+        
+    
     </>
   );
 };
 
-
 export default Recipes;
+
+
