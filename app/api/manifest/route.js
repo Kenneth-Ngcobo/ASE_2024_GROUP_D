@@ -26,12 +26,7 @@ export async function GET(request) {
       },
     ],
   };
-  return new Response(JSON.stringify(manifest), {
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    ],
-  };
+
   return new Response(JSON.stringify(manifest), {
     headers: {
       'Content-Type': 'application/json',
