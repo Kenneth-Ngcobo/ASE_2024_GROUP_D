@@ -10,6 +10,8 @@ import ThemeButton from "./ThemeButton";
 import RecipeSearchBar from "./searchBar";
 import UserModal from "./UserModal.js";
 import { FilterModal } from "./FilterButton";
+import { ShoppingListProvider } from "../context/shoppingListContext.js";
+import ShoppingBagHeader from "./ShoppingBagHeader.js";
 import Loading from "../loading.js";
 
 const Header = ({ isAuthenticated, onLogout }) => {
@@ -68,48 +70,37 @@ const Header = ({ isAuthenticated, onLogout }) => {
   };
 
   return (
-    <header className="bg-gray-100 dark:bg-gray-950 top-0 z-50">
+    <header className="bg-[#f9efd2] dark:bg-gray-950 top-0 z-50">
       <div className="container mx-auto px-4">
         <nav className="flex items-center justify-between h-16">
           <div className="flex space-x-8">
             <Link
-              href="/recipes"
-              className="text-gray-600 dark:text-white hover:text-teal-500 font-medium uppercase text-sm"
+              href="/"
+              className="block text-[ #020123] hover:text-[#fc9d4f] font-medium py-2 uppercase "
             >
               Recipes
             </Link>
             <Link
-              href="/Recomended"
-              className="text-gray-600 dark:text-white hover:text-teal-500 font-medium uppercase text-sm"
+              href=""
+              className="block text-[ #020123] hover:text-[#fc9d4f] font-medium py-2 uppercase"
             >
               Recommended
             </Link>
-            <button
-              onClick={handleFavoriteClick}
-              className="flex items-center text-gray-600 dark:text-white hover:text-teal-500 font-medium uppercase text-sm"
+            <Link
+              href=""
+              className="block text-[ #020123] hover:text-[#fc9d4f] font-medium py-2 uppercase "
             >
-              {isLoading ? (
-                <div className="w-5 h-5 animate-pulse bg-gray-200 dark:bg-gray-700 rounded-full" />
-              ) : (
-                <>
-                  {isFavorited ? (
-                    <FaHeart className="w-5 h-5 text-red-500 mr-2" />
-                  ) : (
-                    <FaRegHeart className="w-5 h-5 mr-2" />
-                  )}
-                  Favorites
-                </>
-              )}
-            </button>
+              Favourite
+            </Link>
           </div>
 
-          <Link href="/" className="flex items-center">
+           <Link href="/" className="flex items-center">
             <Image
-              src="/Kwa.png"
+              src="/0.png"
               alt="Logo"
               width={150}
-              height={60}
-              className="h-10 w-auto"
+              height={100}
+              className="h-20 w- "
             />
           </Link>
 
@@ -124,20 +115,67 @@ const Header = ({ isAuthenticated, onLogout }) => {
 
             <button
               onClick={toggleModal}
-              className="text-gray-600 dark:text-white hover:text-teal-500"
+              className="text-[#020123] dark:text-white hover:text-[#fc9d4f]"
             >
               <FaUser className="w-5 h-5" />
             </button>
 
+            {/* Authentication Modal */}
+            <UserModal show={showModal} onClose={toggleModal} />
+            <ShoppingListProvider>
+            <ShoppingBagHeader />
+          </ShoppingListProvider>
             <ThemeButton />
           </div>
         </nav>
       </div>
 
+      {/* Mobile Menu */}
+      <div
+        className={`md:hidden bg-white border-t transition-all duration-300 ${
+          isDropdownOpen ? 'max-h-screen py-4' : 'max-h-0 overflow-hidden'
+        }`}
+      >
+        <div className="container mx-auto px-4 space-y-4">
+          <Link
+            href="/recipes"
+            className="block text-[ #020123] hover:text-[#fc9d4f] font-medium py-2"
+          >
+            Recipes
+          </Link>
+          <Link
+            href="/Recomended"
+            className="block text-[#020123] hover:text-[#fc9d4f] font-medium py-2"
+          >
+            Recommended
+          </Link>
+          <Link
+            href="/Favourite"
+            className="block text-[#020123] hover:text-[#fc9d4f] font-medium py-2"
+          >
+            Favourites
+          </Link>
+          <div className="py-2">
+            <Suspense fallback={<Loading />}>
+              <CategoryList
+                totalRecipes={totalRecipes}
+                onCategoryChange={() => {}}
+              />
+            </Suspense>
+            
+          </div>
+          <div className="py-2">
+            <FilterButton onClick={() => setIsFilterOpen(!isFilterOpen)} />
+          </div>
+        </div>
+      </div>
+
+
       {/* Modals */}
       {isFilterOpen && <FilterModal onClose={() => setIsFilterOpen(false)} />}
       <RecipeSearchBar />
-      <UserModal show={showModal} onClose={toggleModal} />
+      <UserModal show={showModal} onClose={() => setShowModal(false)} />
+     
     </header>
   );
 };
