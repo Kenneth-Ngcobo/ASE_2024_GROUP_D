@@ -32,8 +32,10 @@ export default async function Home({ searchParams }) {
     }
 
     return (
+        
         <ShoppingListProvider>
             <RegisterServiceWorker />
+        <HomePage/>
           <RecipeCarousel />
 
             <Suspense fallback={<Loading />}>
