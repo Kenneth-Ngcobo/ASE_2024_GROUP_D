@@ -79,9 +79,12 @@ const Header = ({ isAuthenticated, onLogout }) => {
             </button>
 
             {/* Authentication Modal */}
-            <ShoppingListProvider>
-            <ShoppingBagHeader />
-          </ShoppingListProvider>
+            <Suspense fallback={<Loading />}>
+              <ShoppingListProvider>
+                <ShoppingBagHeader />
+              </ShoppingListProvider>
+            </Suspense>
+            
             <UserModal show={showModal} onClose={toggleModal} />
          
             <ThemeButton />
