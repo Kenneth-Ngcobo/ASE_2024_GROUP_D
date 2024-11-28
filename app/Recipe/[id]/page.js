@@ -2,7 +2,7 @@ import { Suspense } from 'react';
 import Image from 'next/image';
 import BackButton from "../../components/ui/BackButton";
 import { fetchRecipeById } from '../../api';
-import ImageGallery from '../../components/ImageGallery';
+import ImageGallery from '../../components/recipe-detail/ImageGallery';
 import CollapsibleSection from '../../components/recipe-detail/CollapsibleSection';
 import Loading from './loading';
 import EditableRecipeDetails from '../../components/recipe-detail/EditableRecipeDetails';

@@ -12,7 +12,7 @@ import {
 } from "react-icons/fa";
 import { PiCookingPotDuotone, PiHeart } from "react-icons/pi";
 import Carousel from "./ui/Carousel";
-import { SortControl } from "./SortControl";
+import { SortControl } from "./filter-sort/SortControl";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useShoppingList } from '../context/ShoppingListContext';
 
