@@ -1,18 +1,9 @@
-// components/Recipes.js
 "use client";
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import {
-  FaCalendarDay,
-  FaClock,
-  FaUtensils,
-  FaTags,
-  FaUtensilSpoon,
-  FaListUl,
-  FaCaretDown,
-} from "react-icons/fa";
+import {FaCalendarDay,FaClock,FaUtensils,FaTags,FaUtensilSpoon,FaListUl,FaCaretDown,FaStar,FaStarHalf,FaRegStar} from "react-icons/fa";
 import { PiCookingPotDuotone, PiHeart } from "react-icons/pi";
 import Head from "next/head";
 import Carousel from "./Carousel";
@@ -20,6 +11,24 @@ import { SortControl } from "./SortControl";
 import { useSearchParams } from "next/navigation";
 import { useShoppingList } from "../context/shoppingListContext";
 import ShoppingList from "./shoppinglist";
+
+const StarRating = ({ rating }) => {
+  const stars = [];
+  const fullStars = Math.floor(rating);
+  const hasHalfStar = rating % 1 >= 0.5;
+
+  for (let i = 0; i < 5; i++) {
+    if (i < fullStars) {
+      stars.push(<FaStar key={i} className="text-yellow-400" />);
+    } else if (i === fullStars && hasHalfStar) {
+      stars.push(<FaStarHalf key={i} className="text-yellow-400" />);
+    } else {
+      stars.push(<FaRegStar key={i} className="text-yellow-400" />);
+    }
+  }
+
+  return <div className="flex">{stars}</div>;
+};
 
 const Recipes = ({ recipes: initialRecipes }) => {
   const [recipes, setRecipes] = useState(initialRecipes);
@@ -70,7 +79,6 @@ const Recipes = ({ recipes: initialRecipes }) => {
   useEffect(() => {
     setRecipes(initialRecipes)
   }, [searchParams]);
-
 
   const toggleFavorite = async (recipeId) => {
     const loggedInEmail = localStorage.getItem("loggedInUserEmail");
@@ -138,15 +146,12 @@ const Recipes = ({ recipes: initialRecipes }) => {
     }
   };
 
-
   const addIngredientsToShoppingList = (ingredients) => {
-    // Convert ingredients object to an array of {name, quantity}
     const ingredientsArray = Object.keys(ingredients).map((key) => ({
       name: key,
-      quantity: ingredients[key], // Use the quantity as the value
+      quantity: ingredients[key],
     }));
   
-    // Dispatch each ingredient to the shopping list
     ingredientsArray.forEach((ingredient) => {
       dispatchShoppingList({
         type: 'ADD_ITEM',
@@ -229,60 +234,70 @@ const Recipes = ({ recipes: initialRecipes }) => {
                 )}
               </div>
 
-              <div className="p-4 flex justify-between items-center">
-                <h2 className="text-[#1e455c] font-bold text-xl mb-3 font-montserrat group-hover:text-[#2b617f]">
-                  {recipe.title}
-                </h2>
-                <button
-                  className={`ml-2 ${
-                    favoritedRecipes.has(recipe._id)
-                      ? "text-red-500"
-                      : "text-gray-400"
-                  } hover:text-red-500 transition-colors duration-200`}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    toggleFavorite(recipe._id);
-                  }}
-                >
-                  <PiHeart size={24} />
-                </button>
-              </div>
+              <div className="p-4">
+                <div className="flex justify-between items-center mb-2">
+                  <h2 className="text-[#1e455c] font-bold text-xl font-montserrat group-hover:text-[#2b617f]">
+                    {recipe.title}
+                  </h2>
+                  <button
+                    className={`ml-2 ${
+                      favoritedRecipes.has(recipe._id)
+                        ? "text-red-500"
+                        : "text-gray-400"
+                    } hover:text-red-500 transition-colors duration-200`}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      toggleFavorite(recipe._id);
+                    }}
+                  >
+                    <PiHeart size={24} />
+                  </button>
+                </div>
 
-              <div className="space-y-2">
-                <p className="text-sm text-gray-600 flex items-center">
-                  <FaClock className="text-[#1e455c] mr-2" />
-                  {recipe.prep} mins
-                </p>
-                <p className="text-sm text-gray-600 flex items-center">
-                  <PiCookingPotDuotone className="text-[#1e455c] mr-2" />
-                  {recipe.cook} mins
-                </p>
-                <p className="text-sm text-gray-600 flex items-center">
-                  <FaUtensils className="text-[#1e455c] mr-2" />
-                  Serves {recipe.servings}
-                </p>
-              </div>
-              <div className="flex flex-wrap gap-2 mt-3">
-                {recipe.category && (
-                  <span className="inline-block bg-gray-100 dark:bg-gray-950 dark:text-gray-400  text-gray-600 text-sm px-2 py-1 rounded">
-                    {recipe.category}
+                <div className="flex items-center gap-2 mb-3">
+                  <StarRating rating={recipe.rating || 0} />
+                  <span className="text-sm text-gray-600">
+                    ({recipe.reviewCount || 0})
                   </span>
-                )}
-                <span className="inline-block bg-gray-100 text-gray-600  dark:bg-gray-950 dark:text-gray-400 text-sm px-2 py-1 rounded">
-                  {recipe.instructions.length} steps
-                </span>
-                <span className="inline-block bg-gray-100 text-gray-600  dark:bg-gray-950 dark:text-gray-400 text-sm px-2 py-1 rounded">
-                  {new Date(recipe.published).toDateString()}
-                </span>
-                <button
-                  className="inline-block bg-blue-500 text-white text-sm px-2 py-1 rounded mt-2"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    addIngredientsToShoppingList(recipe.ingredients);
-                  }}
-                >
-                  Add Ingredients to Shopping List
-                </button>
+                </div>
+
+                <div className="space-y-2">
+                  <p className="text-sm text-gray-600 flex items-center">
+                    <FaClock className="text-[#1e455c] mr-2" />
+                    {recipe.prep} mins
+                  </p>
+                  <p className="text-sm text-gray-600 flex items-center">
+                    <PiCookingPotDuotone className="text-[#1e455c] mr-2" />
+                    {recipe.cook} mins
+                  </p>
+                  <p className="text-sm text-gray-600 flex items-center">
+                    <FaUtensils className="text-[#1e455c] mr-2" />
+                    Serves {recipe.servings}
+                  </p>
+                </div>
+
+                <div className="flex flex-wrap gap-2 mt-3">
+                  {recipe.category && (
+                    <span className="inline-block bg-gray-100 dark:bg-gray-950 dark:text-gray-400 text-gray-600 text-sm px-2 py-1 rounded">
+                      {recipe.category}
+                    </span>
+                  )}
+                  <span className="inline-block bg-gray-100 text-gray-600 dark:bg-gray-950 dark:text-gray-400 text-sm px-2 py-1 rounded">
+                    {recipe.instructions.length} steps
+                  </span>
+                  <span className="inline-block bg-gray-100 text-gray-600 dark:bg-gray-950 dark:text-gray-400 text-sm px-2 py-1 rounded">
+                    {new Date(recipe.published).toDateString()}
+                  </span>
+                  <button
+                    className="inline-block bg-blue-500 text-white text-sm px-2 py-1 rounded mt-2"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      addIngredientsToShoppingList(recipe.ingredients);
+                    }}
+                  >
+                    Add Ingredients to Shopping List
+                  </button>
+                </div>
               </div>
             </Link>
           ))}
@@ -295,5 +310,3 @@ const Recipes = ({ recipes: initialRecipes }) => {
 };
 
 export default Recipes;
-
-
