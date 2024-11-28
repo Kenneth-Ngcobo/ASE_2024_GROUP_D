@@ -262,21 +262,21 @@ const Recipes = ({ recipes: initialRecipes }) => {
                   {new Date(recipe.published).toDateString()}
                 </span>
                 <button
-          className={`inline-block bg-[#f9efd2] text-sm px-2 py-1 rounded mt-2 transition-colors duration-300 ${
-            addedToList.has(recipe._id) ? 'bg-[#fc9d4f]' : 'bg-[#f9efd2]'
-          }`}
-          onClick={(e) => {
-            e.preventDefault();
-            addIngredientsToShoppingList(recipe.ingredients);
-            setAddedToList(prev => new Set([...prev, recipe._id]));
-          }}
-        >
-          <FaShoppingBag 
-            className={`${
-              addedToList.has(recipe._id) ? 'text-white' : 'text-[#020123]'
-            } mr-2`} 
-          />
-        </button>
+  className={`inline-block bg-[#f9efd2] text-sm px-2 py-1 rounded mt-2 transition-colors duration-300 ${
+    addedToList.has(recipe._id) ? 'bg-[#fc9d4f]' : 'bg-[#f9efd2]'
+  }`}
+  onClick={(e) => {
+    e.preventDefault();
+    addIngredientsToShoppingList(recipe.ingredients);
+    setAddedToList(prev => new Set([...prev, recipe._id]));
+  }}
+>
+  <FaShoppingBag 
+    className={`${
+      addedToList.has(recipe._id) ? 'text-white' : 'text-[#020123]'
+    } mr-2`} 
+  />
+</button>
               </div>
             </Link>
           ))}
