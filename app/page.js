@@ -34,7 +34,7 @@ export default async function Home({ searchParams }) {
     return (
         <ShoppingListProvider>
             <RegisterServiceWorker />
-            {/* Welcome Section with background image */}
+            {/* Welcome Section with background image
             <div className="relative w-full h-screen bg-cover bg-center" style={{ backgroundImage: `url('/home page1.jpg')` }}>
                 <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center text-white">
                     <div className="text-center px-4">
@@ -42,13 +42,12 @@ export default async function Home({ searchParams }) {
                         <p className="text-lg mb-6">Discover delicious recipes and enjoy cooking!</p>
                     </div>
                 </div>
-            </div>
+            </div> */}
 
             <RecipeCarousel />
 
             <Suspense fallback={<Loading />}>
-                {/*<CategoryList totalRecipes={recipes.totalRecipes} />*/}
-                {/* Render the Recipes component, passing the fetched recipes as props */}
+                {/* Render the Recipes component */}
                 <Recipes
                     recipes={recipes.recipes}
                     initialSort={sort}

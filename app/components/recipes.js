@@ -14,7 +14,7 @@ import { PiCookingPotDuotone, PiHeart } from "react-icons/pi";
 import Carousel from "./ui/Carousel";
 import { SortControl } from "./filter-sort/SortControl";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useShoppingList } from '../context/ShoppingListContext';
+import { useShoppingList } from '../context/shoppingListContext';
 
 
 
@@ -155,6 +155,9 @@ const Recipes = ({ recipes: initialRecipes }) => {
     // Navigate to the shopping list page
     router.push('/shopping-list');
   };
+  
+
+ 
 
   return (
     <>

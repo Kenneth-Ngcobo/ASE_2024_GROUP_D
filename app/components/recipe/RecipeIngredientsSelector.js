@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useShoppingList } from '../../context/ShoppingListContext';
+import { useShoppingList } from '../context/shoppingListContext';
 import { useRouter } from 'next/navigation';
 
 const RecipeIngredientsSection = ({ ingredients }) => {
@@ -68,8 +68,8 @@ const RecipeIngredientsSection = ({ ingredients }) => {
           onClick={addSelectedToList}
           disabled={selectedIngredients.size === 0}
           className={`px-4 py-2 rounded-lg text-sm ${selectedIngredients.size === 0
-              ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-              : 'bg-[#fc9d4f] hover:bg-[#edd282] text-white'
+            ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+            : 'bg-[#fc9d4f] hover:bg-[#edd282] text-white'
             }`}
         >
           Add Selected ({selectedIngredients.size})

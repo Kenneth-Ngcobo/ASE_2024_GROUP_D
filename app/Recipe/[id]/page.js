@@ -5,11 +5,12 @@ import { fetchRecipeById } from '../../api';
 import ImageGallery from '../../components/recipe-detail/ImageGallery';
 import CollapsibleSection from '../../components/recipe-detail/CollapsibleSection';
 import Loading from './loading';
-import EditableRecipeDetails from '../../components/recipe-detail/EditableRecipeDetails';
-import ReviewsSection from "../../components/recipe-detail/ReviewsSection"
-import AllergensSection from '../../components/recipe-detail/AllergensSection';
-import RecipeIngredientsSelector from '../../components/recipe/RecipeIngredientsSelector';
+import EditableRecipeDetails from '../../components/EditableRecipeDetails';
+import ReviewsSection from '../../components/ReviewsSection';
+import AllergensSection from '../../components/AllergensSection';
+import RecipeIngredientsSelector from '../../components/RecipeIngredientsSelector';
 import { ShoppingListProvider } from '../../context/ShoppingListContext';
+import VoiceAssistant from '../../components/VoiceAssistant';
 
 
 // Generate metadata for the recipe page dynamically
@@ -30,7 +31,7 @@ export async function generateMetadata({ params }) {
         openGraph: {
             title: recipe.title || 'Untitled Recipe',
             description: recipe.description || 'No description available.',
-            images: recipe.images?.[0] || '/kwaMai.jpg',
+            images: recipe.images?.[0] || '/0.png',
             type: 'article'
         }
     };
@@ -209,7 +210,12 @@ export default async function RecipePage({ params }) {
 
                         <CollapsibleSection
                             title="Instructions"
-                            content={recipe.instructions || 'No instructions available.'}
+                            content={
+                                <div>
+                                    {recipe.instructions || 'No instructions available.'}
+                                    <VoiceAssistant instructions={recipe.instructions || []} />
+                                </div>
+                            }
                             defaultOpen={true}
                         />
 
@@ -219,9 +225,6 @@ export default async function RecipePage({ params }) {
                             content={<ReviewsSection recipeId={id} />}
                             defaultOpen={true}
                         />
-
-
-
 
                         {/* Footer Information */}
                         <div className="mt-8 bg-white dark:bg-gray-950 p-6 rounded-xl shadow-xl">

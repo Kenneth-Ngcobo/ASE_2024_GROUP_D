@@ -8,8 +8,8 @@ const ShoppingList = () => {
   const { state, dispatch } = useShoppingList();
 
   useEffect(() => {
-    console.log('current shooping list items:',state.items)
-    
+    console.log('current shooping list items:', state.items)
+
   }, [state.items]);
 
   const [newItemName, setNewItemName] = useState('');
@@ -104,7 +104,7 @@ const ShoppingList = () => {
           onChange={(e) => setNewItemQuantity(e.target.value)}
           className="border p-2 rounded w-1/4"
         />
-        <button type="submit" className="bg-[#fc9d4f] hover:bg-[#edd282] text-white p-2 rounded">
+        <button type="submit" className="bg-[#fc9d4f] text-[#020123] hover:bg-[#edd282] p-2 rounded">
           Add Item
         </button>
       </form>
@@ -144,12 +144,14 @@ const ShoppingList = () => {
       </ul>
 
       {/* Clear List Button */}
-      <button onClick={clearList} className="mt-4 bg-[#fc9d4f] hover:bg-[#edd282] text-white p-2 rounded">
-        Clear List
-      </button>
-      <button onClick={shareOnWhatsApp} className="mt-4  text-green-800 hover:text-green-500 p-2 rounded">
-        <FaWhatsapp size={28} />
-      </button>
+      <div className='flex mt-4 space-x-2'>
+        <button onClick={clearList} className="mt-4 bg-[#fc9d4f]  text-[#020123] hover:bg-[#edd282] p-2 rounded">
+          Clear List
+        </button>
+        <button onClick={shareOnWhatsApp} className="mt-4 text-green-800 hover:text-green-500 p-2 rounded flex items-center">
+          <FaWhatsapp size={30} />
+        </button>
+      </div>
     </div>
   );
 };
