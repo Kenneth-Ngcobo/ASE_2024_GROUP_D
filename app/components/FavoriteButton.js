@@ -33,36 +33,22 @@ const FavoritesPage = () => {
   }, []);
 
   if (isLoading) {
-    return (
-      <div className="text-center">
-        <p>Loading your favorite recipes...</p>
-        <div className="loader">Loading...</div> {/* Add a spinner or progress bar */}
-      </div>
-    );
+    return <div className="text-center">Loading your favorites...</div>;
   }
 
   if (error) {
-    return (
-      <div className="text-center text-red-500">
-        <p>{error}</p>
-      </div>
-    );
+    return <div className="text-center text-red-500">{error}</div>;
   }
 
   return (
-    <div className="container mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-4">My Favorite Recipes</h1>
+    <div className="container mx-auto p-4">
+      <h1 className="text-2xl font-bold mb-4">My Favorites</h1>
       {favorites.length === 0 ? (
-        <p className="text-center text-gray-600">
-          No favorites added yet. Start adding your favorite recipes!
-        </p>
+        <p>No favorites added yet. Start adding your favorite recipes!</p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {favorites.map((favorite) => (
-            <div
-              key={favorite._id}
-              className="border rounded-lg p-4 shadow-md bg-white dark:bg-gray-950"
-            >
+            <div key={favorite._id} className="border rounded p-4 shadow-lg bg-white">
               <div className="relative w-full h-48 mb-4">
                 <Image
                   src={favorite.recipe.image}
