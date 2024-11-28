@@ -27,7 +27,7 @@ export async function GET(request) {
     screenshots: [
       {
         src: '/screenshot-wide.png',
-        sizes: '1024x487',
+        sizes: '1024x576',
         type: 'image/png',
         form_factor: 'wide',
       },
