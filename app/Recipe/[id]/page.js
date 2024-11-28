@@ -10,7 +10,6 @@ import ReviewsSection from '../../components/ReviewsSection';
 import AllergensSection from '../../components/AllergensSection';
 import RecipeIngredientsSelector from '../../components/RecipeIngredientsSelector';
 import { ShoppingListProvider } from '../../context/shoppingListContext';
-
 import VoiceAssistant from '../../components/VoiceAssistant';
 
 import { DownloadProvider } from '../../context/DownloadContext';
