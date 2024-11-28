@@ -9,6 +9,8 @@ import connectToDatabase from "../../../../db";
  * @returns {Promise<Response>} A promise that resolves to a Response object:
  *                              - 200 if the user exists.
  *                              - 404 if the user is not found.
+ *                              - 500 if an internal server error occurs.
+ * @throws {Error} Throws an error if database connection or query fails.
  */
 export async function POST(req) {
   try {
