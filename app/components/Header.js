@@ -20,10 +20,12 @@ const Header = ({ isAuthenticated, onLogout }) => {
   const [showModal, setShowModal] = useState(false);
   const [isFavorited, setIsFavorited] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false); // Add state for dropdown
   const router = useRouter();
 
   const toggleFilterModal = () => setIsFilterOpen((prev) => !prev);
   const toggleModal = () => setShowModal((prev) => !prev);
+  const toggleDropdown = () => setIsDropdownOpen((prev) => !prev); // Add toggle function for dropdown
 
   useEffect(() => {
     // Fetch total recipes
@@ -81,13 +83,13 @@ const Header = ({ isAuthenticated, onLogout }) => {
               Recipes
             </Link>
             <Link
-              href=""
+              href="recommended"
               className="block text-[ #020123] hover:text-[#fc9d4f] font-medium py-2 uppercase"
             >
               Recommended
             </Link>
             <Link
-              href=""
+              href="favourite"
               className="block text-[ #020123] hover:text-[#fc9d4f] font-medium py-2 uppercase "
             >
               Favourite
@@ -128,6 +130,14 @@ const Header = ({ isAuthenticated, onLogout }) => {
             <ThemeButton />
           </div>
         </nav>
+
+        {/* Toggle Button for Mobile Menu */}
+        <button
+          onClick={toggleDropdown}
+          className="md:hidden block text-[#020123] dark:text-white hover:text-[#fc9d4f]"
+        >
+          Menu
+        </button>
       </div>
 
       {/* Mobile Menu */}
@@ -144,13 +154,13 @@ const Header = ({ isAuthenticated, onLogout }) => {
             Recipes
           </Link>
           <Link
-            href="/Recomended"
+            href="/recommended"
             className="block text-[#020123] hover:text-[#fc9d4f] font-medium py-2"
           >
             Recommended
           </Link>
           <Link
-            href="/Favourite"
+            href="/favourite"
             className="block text-[#020123] hover:text-[#fc9d4f] font-medium py-2"
           >
             Favourites
@@ -162,20 +172,17 @@ const Header = ({ isAuthenticated, onLogout }) => {
                 onCategoryChange={() => {}}
               />
             </Suspense>
-            
           </div>
           <div className="py-2">
-            <FilterButton onClick={() => setIsFilterOpen(!isFilterOpen)} />
+            <FilterButton onClick={toggleFilterModal} />
           </div>
         </div>
       </div>
 
-
       {/* Modals */}
       {isFilterOpen && <FilterModal onClose={() => setIsFilterOpen(false)} />}
       <RecipeSearchBar />
-      <UserModal show={showModal} onClose={() => setShowModal(false)} />
-     
+      <UserModal show={showModal} onClose={toggleModal} />
     </header>
   );
 };

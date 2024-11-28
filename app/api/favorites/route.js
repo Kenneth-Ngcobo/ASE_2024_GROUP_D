@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import connectToDatabase from '../../../db';
+import { ObjectId } from 'mongodb';
 
 export async function POST(req) {
   try {
@@ -21,11 +22,18 @@ export async function POST(req) {
       });
     }
 
-    // Update the user's favorites array
+    // Update the user's favorites array with timestamp
     const updateResult = await usersCollection.updateOne(
       { email: email },
-      { $addToSet: { favorites: recipeId } },
-      { upsert: true } // Changed to true to create user if doesn't exist
+      { 
+        $addToSet: { 
+          favorites: {
+            recipeId: recipeId, 
+            addedAt: new Date() 
+          } 
+        } 
+      },
+      { upsert: true }
     );
 
     if (updateResult.modifiedCount === 0 && updateResult.upsertedCount === 0) {
@@ -53,7 +61,7 @@ export async function DELETE(req) {
 
     const updateResult = await usersCollection.updateOne(
       { email: email },
-      { $pull: { favorites: recipeId } }
+      { $pull: { favorites: { recipeId: recipeId } } }
     );
 
     if (updateResult.modifiedCount === 0) {
@@ -101,16 +109,27 @@ export async function GET(req) {
       return NextResponse.json({ favorites: [], favoritesCount: 0 }, { status: 200 });
     }
 
-    // Ensure favorites exists
-    const favorites = user.favorites || [];
+    // Ensure favorites exists and extract recipeIds
+    const favoriteRecipeIds = (user.favorites || []).map(fav => fav.recipeId);
 
     // Fetch the details of all favorited recipes from the 'recipes' collection
     const recipesCollection = db.collection('recipes');
-    const favoritedRecipes = await recipesCollection.find({ _id: { $in: favorites } }).toArray();
+    const favoritedRecipes = await recipesCollection.find({ 
+      _id: { $in: favoriteRecipeIds.map(id => new ObjectId(id)) } 
+    }).toArray();
+
+    // Combine recipe details with favorites metadata
+    const enrichedFavorites = favoritedRecipes.map(recipe => {
+      const favMetadata = user.favorites.find(fav => fav.recipeId === recipe._id.toString());
+      return {
+        ...recipe,
+        favoritedAt: favMetadata ? favMetadata.addedAt : null
+      };
+    });
 
     return NextResponse.json({
-      favorites: favoritedRecipes,
-      favoritesCount: favoritedRecipes.length
+      favorites: enrichedFavorites,
+      favoritesCount: enrichedFavorites.length
     }, { status: 200 });
 
   } catch (error) {
