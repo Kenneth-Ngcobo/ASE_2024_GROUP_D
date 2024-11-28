@@ -145,8 +145,6 @@ const Header = ({ isAuthenticated, onLogout }) => {
           </div>
         </div>
       </div>
-
-
       {/* Modals */}
       {isFilterOpen && <FilterModal onClose={() => setIsFilterOpen(false)} />}
       <RecipeSearchBar />

@@ -8,6 +8,7 @@ import Recipes from './components/recipes';
 import Footer from './components/footer';
 import Loading from './loading';
 import RecipeCarousel from './components/RecipeCarousel';
+import HomePage from "./components/ui/homepage";
 import { ShoppingListProvider } from './context/shoppingListContext';
 import RegisterServiceWorker from './components/RegisterServiceWorker';
 
@@ -33,7 +34,8 @@ export default async function Home({ searchParams }) {
     return (
         <ShoppingListProvider>
             <RegisterServiceWorker />
-            {/* Welcome Section with background image */}
+            <HomePage/>
+            {/* Welcome Section with background image 
             <div className="relative w-full h-screen bg-cover bg-center" style={{ backgroundImage: `url('/home page1.jpg')` }}>
                 <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center text-white">
                     <div className="text-center px-4">
@@ -41,7 +43,7 @@ export default async function Home({ searchParams }) {
                         <p className="text-lg mb-6">Discover delicious recipes and enjoy cooking!</p>
                     </div>
                 </div>
-            </div>
+            </div>*/}
 
             <RecipeCarousel />
 
