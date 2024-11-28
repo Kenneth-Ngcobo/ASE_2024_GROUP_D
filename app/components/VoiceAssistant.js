@@ -304,13 +304,16 @@ export default function VoiceAssistant({ instructions }) {
         console.log("Voice Command Received:", transcript);
 
         if (transcript.includes("next step")) {
-            stopPlayingInstructions(); // Stop sequential playback if a manual command is given
+            setIsPlaying(false);
+            // stopPlayingInstructions(); // Stop sequential playback if a manual command is given
             goToNextStep();
         } else if (transcript.includes("previous step")) {
-            stopPlayingInstructions();
+            setIsPlaying(false);
+            // stopPlayingInstructions();
             goToPreviousStep();
         } else if (transcript.includes("repeat step")) {
-            stopPlayingInstructions();
+            setIsPlaying(false);
+            // stopPlayingInstructions();
             readInstruction();
         } else if (transcript.includes("pause")) {
             pauseSpeech();
