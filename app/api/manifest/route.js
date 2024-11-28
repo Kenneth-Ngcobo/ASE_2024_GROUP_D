@@ -20,10 +20,16 @@ export async function GET(request) {
     theme_color: '#fff',
     icons: [
       {
-        src: '/Kwa.png',
+        src: '/0.png',
         sizes: '192x192',
         type: 'image/png',
       },
+    ],
+  };
+  return new Response(JSON.stringify(manifest), {
+    headers: {
+      'Content-Type': 'application/json',
+    },
     ],
   };
   return new Response(JSON.stringify(manifest), {

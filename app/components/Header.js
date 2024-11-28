@@ -27,7 +27,7 @@ const Header = ({ isAuthenticated, onLogout }) => {
 
 
   return (
-    <header className="bg-[#f9efd2] dark:bg-gray-950 top-0 z-50">
+    <header className=" sticky top-0 bg-[#f9efd2] dark:bg-gray-950 top-0 z-50 shadow-md">
       <div className="container mx-auto px-4">
         <nav className="flex items-center justify-between h-16">
           <div className="hidden md:flex space-x-8">
@@ -79,10 +79,11 @@ const Header = ({ isAuthenticated, onLogout }) => {
             </button>
 
             {/* Authentication Modal */}
-            <UserModal show={showModal} onClose={toggleModal} />
             <ShoppingListProvider>
               <ShoppingBagHeader />
             </ShoppingListProvider>
+            <UserModal show={showModal} onClose={toggleModal} />
+
             <ThemeButton />
           </div>
           <button
@@ -143,8 +144,6 @@ const Header = ({ isAuthenticated, onLogout }) => {
           </div>
         </div>
       </div>
-
-
       {/* Modals */}
       {isFilterOpen && <FilterModal onClose={() => setIsFilterOpen(false)} />}
       <RecipeSearchBar />

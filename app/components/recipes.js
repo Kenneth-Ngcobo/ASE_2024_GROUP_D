@@ -11,10 +11,10 @@ import {
   FaShoppingBag,
 } from "react-icons/fa";
 import { PiCookingPotDuotone, PiHeart } from "react-icons/pi";
-import Carousel from "./ui/Carousel";
-import { SortControl } from "./filter-sort/SortControl";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useShoppingList } from '../context/shoppingListContext';
+import Carousel from "./Carousel";
+import { SortControl } from "./SortControl";
+import { useSearchParams } from "next/navigation";
+import { useShoppingList } from '../context/ShoppingListContext';
 
 
 
@@ -27,7 +27,8 @@ const Recipes = ({ recipes: initialRecipes }) => {
   const [isLoading, setIsLoading] = useState(true);
   const searchParams = useSearchParams();
   const { dispatch: dispatchShoppingList } = useShoppingList();
-  const router = useRouter();
+  const [addedToList, setAddedToList] = useState(new Set());
+
 
   // Fetch favorites when component mounts
   useEffect(() => {
@@ -145,19 +146,15 @@ const Recipes = ({ recipes: initialRecipes }) => {
         type: 'ADD_ITEM',
         payload: {
           id: ingredient.name.toLowerCase().replace(/\s+/g, '-'),
-          name: ingredient.name,
-          quantity: ingredient.quantity || '1',
+          name: `${ingredient.name} - ${ingredient.quantity}`,
           purchased: false
         },
       });
     });
-
-    // Navigate to the shopping list page
-    router.push('/shopping-list');
   };
-  
 
- 
+
+
 
   return (
     <>
@@ -265,13 +262,18 @@ const Recipes = ({ recipes: initialRecipes }) => {
                   {new Date(recipe.published).toDateString()}
                 </span>
                 <button
-                  className="inline-block bg-[#f9efd2] text-white text-sm px-2 py-1 rounded mt-2"
+                  className={`inline-block bg-[#f9efd2] text-sm px-2 py-1 rounded mt-2 transition-colors duration-300 ${addedToList.has(recipe._id) ? 'bg-[#fc9d4f]' : 'bg-[#f9efd2]'
+                    }`}
                   onClick={(e) => {
                     e.preventDefault();
                     addIngredientsToShoppingList(recipe.ingredients);
+                    setAddedToList(prev => new Set([...prev, recipe._id]));
                   }}
                 >
-                  <FaShoppingBag className="text-[#020123] mr-2" />
+                  <FaShoppingBag
+                    className={`${addedToList.has(recipe._id) ? 'text-white' : 'text-[#020123]'
+                      } mr-2`}
+                  />
                 </button>
               </div>
             </Link>
