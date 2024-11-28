@@ -1,4 +1,3 @@
-// StepsDropdown.js
 import { useState } from "react";
 
 const StepsDropdown = ({ selectedSteps, onStepsChange }) => {

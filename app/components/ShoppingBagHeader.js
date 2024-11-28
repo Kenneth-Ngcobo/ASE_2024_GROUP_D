@@ -1,6 +1,6 @@
 'use client';
 
-import { useShoppingList } from '../context/shoppingListContext';
+import { useShoppingList } from '../context/ShoppingListContext';
 import { useRouter } from 'next/navigation';
 import { ShoppingBag } from 'lucide-react';
 
@@ -11,7 +11,7 @@ const ShoppingBagHeader = () => {
   const itemCount = state.items.length;
 
   return (
-    <button 
+    <button
       onClick={() => router.push('/shopping-list')}
       className="relative p-2  rounded-full transition-colors"
       aria-label="Shopping List"
