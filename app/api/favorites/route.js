@@ -83,7 +83,6 @@ export async function DELETE(req) {
 
 export async function GET(req) {
   try {
-    // Get email from searchParams
     const { searchParams } = new URL(req.url);
     const email = searchParams.get('email');
 
@@ -94,44 +93,30 @@ export async function GET(req) {
     const db = await connectToDatabase();
     const usersCollection = db.collection('users');
 
-    // Fetch the user document
-    const user = await usersCollection.findOne(
-      { email: email },
-      { projection: { favorites: 1, _id: 0 } }
-    );
-
-    if (!user) {
-      // Create new user with empty favorites if doesn't exist
-      await usersCollection.insertOne({
-        email: email,
-        favorites: []
-      });
+    const user = await usersCollection.findOne({ email }, { projection: { favorites: 1, _id: 0 } });
+    if (!user || !user.favorites || user.favorites.length === 0) {
       return NextResponse.json({ favorites: [], favoritesCount: 0 }, { status: 200 });
     }
 
-    // Ensure favorites exists and extract recipeIds
-    const favoriteRecipeIds = (user.favorites || []).map(fav => fav.recipeId);
+    const favoriteRecipeIds = user.favorites.map((fav) => fav.recipeId);
 
-    // Fetch the details of all favorited recipes from the 'recipes' collection
     const recipesCollection = db.collection('recipes');
-    const favoritedRecipes = await recipesCollection.find({ 
-      _id: { $in: favoriteRecipeIds.map(id => new ObjectId(id)) } 
-    }).toArray();
+    const favoritedRecipes = await recipesCollection
+      .find({ _id: { $in: favoriteRecipeIds.map((id) => new ObjectId(id)) } })
+      .toArray();
 
-    // Combine recipe details with favorites metadata
-    const enrichedFavorites = favoritedRecipes.map(recipe => {
-      const favMetadata = user.favorites.find(fav => fav.recipeId === recipe._id.toString());
+    const enrichedFavorites = favoritedRecipes.map((recipe) => {
+      const favMetadata = user.favorites.find((fav) => fav.recipeId === recipe._id.toString());
       return {
         ...recipe,
-        favoritedAt: favMetadata ? favMetadata.addedAt : null
+        favoritedAt: favMetadata ? favMetadata.addedAt : null,
       };
     });
 
     return NextResponse.json({
       favorites: enrichedFavorites,
-      favoritesCount: enrichedFavorites.length
-    }, { status: 200 });
-
+      favoritesCount: enrichedFavorites.length,
+    });
   } catch (error) {
     console.error('Error retrieving favorites:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
