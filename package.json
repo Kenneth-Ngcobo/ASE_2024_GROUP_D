@@ -16,6 +16,7 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "cookie": "^1.0.1",
+    "dexie": "^4.0.10",
     "express": "^4.21.1",
     "google-auth-library": "^9.15.0",
     "idb": "^8.0.0",
