@@ -2,10 +2,10 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useState, useEffect, Suspense } from "react";
-import { FaUser, FaHeart, FaRegHeart } from "react-icons/fa";
+import { FaUser } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import CategoryList from "./CategoryList";
-import { FilterButton } from "./FilterButton";
+import {FilterButton} from "./FilterButton";
 import ThemeButton from "./ThemeButton";
 import RecipeSearchBar from "./searchBar";
 import UserModal from "./UserModal.js";
@@ -15,67 +15,22 @@ import ShoppingBagHeader from "./ShoppingBagHeader.js";
 import Loading from "../loading.js";
 
 const Header = ({ isAuthenticated, onLogout }) => {
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [totalRecipes, setTotalRecipes] = useState(0);
+  const [totalRecipes, setTotalRecipes] = useState(0); // State to hold total recipes
   const [showModal, setShowModal] = useState(false);
-  const [isFavorited, setIsFavorited] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false); // Add state for dropdown
   const router = useRouter();
 
+  const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
   const toggleFilterModal = () => setIsFilterOpen((prev) => !prev);
   const toggleModal = () => setShowModal((prev) => !prev);
-  const toggleDropdown = () => setIsDropdownOpen((prev) => !prev); // Add toggle function for dropdown
 
-  useEffect(() => {
-    // Fetch total recipes
-    const fetchTotalRecipes = async () => {
-      try {
-        const response = await fetch("/api/recipes/total");
-        if (!response.ok) throw new Error("Failed to fetch total recipes");
-        const data = await response.json();
-        setTotalRecipes(data.total);
-      } catch (error) {
-        console.error("Error fetching total recipes:", error);
-      }
-    };
-
-    // Check favorite status
-    const checkFavoriteStatus = async () => {
-      try {
-        const response = await fetch("/api/favorites/status");
-        if (response.ok) {
-          const data = await response.json();
-          setIsFavorited(data.hasFavorites);
-        }
-      } catch (error) {
-        console.error("Error checking favorite status:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchTotalRecipes();
-    checkFavoriteStatus();
-  }, []);
-
-  const handleFavoriteClick = async (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    if (!isAuthenticated) {
-      router.push('/login');
-      return;
-    }
-
-    router.push('/favorites');
-  };
 
   return (
     <header className=" sticky top-0 bg-[#f9efd2] dark:bg-gray-950 top-0 z-50 shadow-md">
       <div className="container mx-auto px-4">
         <nav className="flex items-center justify-between h-16">
-          <div className="flex space-x-8">
+          <div className="hidden md:flex space-x-8">
             <Link
               href="/"
               className="block text-[ #020123] hover:text-[#fc9d4f] font-medium py-2 uppercase "
@@ -83,13 +38,13 @@ const Header = ({ isAuthenticated, onLogout }) => {
               Recipes
             </Link>
             <Link
-              href="recommended"
+              href=""
               className="block text-[ #020123] hover:text-[#fc9d4f] font-medium py-2 uppercase"
             >
               Recommended
             </Link>
             <Link
-              href="favourite"
+              href=""
               className="block text-[ #020123] hover:text-[#fc9d4f] font-medium py-2 uppercase "
             >
               Favourite
@@ -105,8 +60,8 @@ const Header = ({ isAuthenticated, onLogout }) => {
               className="h-20 w- "
             />
           </Link>
-
-          <div className="flex items-center space-x-8">
+          <div className="hidden md:flex items-center space-x-8">
+            {/* Wrapping CategoryList in Suspense */}
             <Suspense fallback={<Loading />}>
               <CategoryList
                 totalRecipes={totalRecipes}
@@ -115,6 +70,7 @@ const Header = ({ isAuthenticated, onLogout }) => {
             </Suspense>
             <FilterButton onClick={toggleFilterModal} />
 
+            {/* User Icon Toggle */}
             <button
               onClick={toggleModal}
               className="text-[#020123] dark:text-white hover:text-[#fc9d4f]"
@@ -130,15 +86,24 @@ const Header = ({ isAuthenticated, onLogout }) => {
          
             <ThemeButton />
           </div>
+          <button
+            className="md:hidden text-gray-600 dark:text-white"
+            onClick={toggleDropdown}
+            aria-label="Menu"
+          >
+            <svg
+              className="w-6 h-6"
+              fill="none"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path d="M4 6h16M4 12h16M4 18h16"></path>
+            </svg>
+          </button>
         </nav>
-
-        {/* Toggle Button for Mobile Menu */}
-        <button
-          onClick={toggleDropdown}
-          className="md:hidden block text-[#020123] dark:text-white hover:text-[#fc9d4f]"
-        >
-          Menu
-        </button>
       </div>
 
       {/* Mobile Menu */}
@@ -155,13 +120,13 @@ const Header = ({ isAuthenticated, onLogout }) => {
             Recipes
           </Link>
           <Link
-            href="/recommended"
+            href="/Recomended"
             className="block text-[#020123] hover:text-[#fc9d4f] font-medium py-2"
           >
             Recommended
           </Link>
           <Link
-            href="/favourites"
+            href="/Favourite"
             className="block text-[#020123] hover:text-[#fc9d4f] font-medium py-2"
           >
             Favourites
@@ -173,16 +138,18 @@ const Header = ({ isAuthenticated, onLogout }) => {
                 onCategoryChange={() => {}}
               />
             </Suspense>
+            
           </div>
           <div className="py-2">
-            <FilterButton onClick={toggleFilterModal} />
+            <FilterButton onClick={() => setIsFilterOpen(!isFilterOpen)} />
           </div>
         </div>
       </div>
       {/* Modals */}
       {isFilterOpen && <FilterModal onClose={() => setIsFilterOpen(false)} />}
       <RecipeSearchBar />
-      <UserModal show={showModal} onClose={toggleModal} />
+      <UserModal show={showModal} onClose={() => setShowModal(false)} />
+     
     </header>
   );
 };
