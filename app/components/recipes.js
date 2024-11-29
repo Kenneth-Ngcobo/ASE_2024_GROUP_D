@@ -134,21 +134,12 @@ const Recipes = ({ recipes: initialRecipes }) => {
   };
 
   const addIngredientsToShoppingList = (ingredients) => {
-    // Convert ingredients object to an array of {name, quantity}
     const ingredientsArray = Object.keys(ingredients).map((key) => ({
       name: key,
-      quantity: ingredients[key], // Use the quantity as the value
+      quantity: ingredients[key], 
     }));
-
-    // Dispatch each ingredient to the shopping list
+    
     ingredientsArray.forEach((ingredient) => {
-
-      const existingItem = shoppingListState.items.find(
-        item => item.id === ingredient.name.toLowerCase().replace(/\s+/g, '-')
-      );
-
-
-      if (!existingItem){
       dispatchShoppingList({
         type: 'ADD_ITEM',
         payload: {
@@ -157,10 +148,8 @@ const Recipes = ({ recipes: initialRecipes }) => {
           purchased: false
         },
       });
-    }
     });
   };
-  
 
  
 
@@ -270,21 +259,21 @@ const Recipes = ({ recipes: initialRecipes }) => {
                   {new Date(recipe.published).toDateString()}
                 </span>
                 <button
-  className={`inline-block bg-[#f9efd2] text-sm px-2 py-1 rounded mt-2 transition-colors duration-300 ${
-    addedToList.has(recipe._id) ? 'bg-[#fc9d4f]' : 'bg-[#f9efd2]'
-  }`}
-  onClick={(e) => {
-    e.preventDefault();
-    addIngredientsToShoppingList(recipe.ingredients);
-    setAddedToList(prev => new Set([...prev, recipe._id]));
-  }}
->
-  <FaShoppingBag 
-    className={`${
-      addedToList.has(recipe._id) ? 'text-white' : 'text-[#020123]'
-    } mr-2`} 
-  />
-</button>
+              className={`inline-block bg-[#f9efd2] text-sm px-2 py-1 rounded mt-2 transition-colors duration-300 ${
+                addedToList.has(recipe._id) ? 'bg-[#fc9d4f]' : 'bg-[#f9efd2]'
+              }`}
+              onClick={(e) => {
+                e.preventDefault();
+                addIngredientsToShoppingList(recipe.ingredients);
+                setAddedToList(prev => new Set([...prev, recipe._id]));
+              }}
+            >
+              <FaShoppingBag 
+                className={`${
+                  addedToList.has(recipe._id) ? 'text-white' : 'text-[#020123]'
+                } mr-2`} 
+              />
+            </button>
               </div>
             </Link>
           ))}
