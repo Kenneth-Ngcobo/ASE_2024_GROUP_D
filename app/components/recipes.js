@@ -1,18 +1,19 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
+import React, { useState, useEffect } from "react";
+import Link from "next/link";
+import Image from "next/image";
 import {
   FaClock,
   FaUtensils,
   FaShoppingBag,
 } from "react-icons/fa";
 import { PiCookingPotDuotone, PiHeart } from "react-icons/pi";
+import { FaStar, FaStarHalfAlt, FaRegStar } from "react-icons/fa"; // Import star icons
 import Carousel from "./Carousel";
 import { SortControl } from "./SortControl";
 import { useSearchParams } from "next/navigation";
-import { useShoppingList } from '../context/shoppingListContext';
+import { useShoppingList } from "../context/shoppingListContext";
 
 const Recipes = ({ recipes: initialRecipes }) => {
   const [recipes, setRecipes] = useState(initialRecipes);
@@ -26,27 +27,30 @@ const Recipes = ({ recipes: initialRecipes }) => {
   // Fetch favorites when component mounts
   useEffect(() => {
     const fetchFavorites = async () => {
-      const loggedInEmail = localStorage.getItem('loggedInUserEmail');
+      const loggedInEmail = localStorage.getItem("loggedInUserEmail");
       if (!loggedInEmail) {
         setIsLoading(false);
         return;
       }
 
       try {
-        const response = await fetch(`/api/favorites?email=${encodeURIComponent(loggedInEmail)}`, {
-          credentials: 'include',
-        });
+        const response = await fetch(
+          `/api/favorites?email=${encodeURIComponent(loggedInEmail)}`,
+          {
+            credentials: "include",
+          }
+        );
 
         if (!response.ok) {
-          throw new Error('Failed to fetch favorites');
+          throw new Error("Failed to fetch favorites");
         }
 
         const data = await response.json();
         const favoriteIds = new Set(data.favorites.map((recipe) => recipe._id));
         setFavoritedRecipes(favoriteIds);
       } catch (err) {
-        setError('Failed to load favorites. Please try again later.');
-        console.error('Error fetching favorites:', err);
+        setError("Failed to load favorites. Please try again later.");
+        console.error("Error fetching favorites:", err);
       } finally {
         setIsLoading(false);
       }
@@ -60,14 +64,13 @@ const Recipes = ({ recipes: initialRecipes }) => {
   }, [initialRecipes, searchParams]);
 
   const toggleFavorite = async (recipeId) => {
-    const loggedInEmail = localStorage.getItem('loggedInUserEmail');
+    const loggedInEmail = localStorage.getItem("loggedInUserEmail");
     if (!loggedInEmail) {
-      setError('Please log in to manage favorites');
+      setError("Please log in to manage favorites");
       return;
     }
 
     const isFavorited = favoritedRecipes.has(recipeId);
-    const recipe = recipes.find((r) => r._id === recipeId);
 
     try {
       setFavoritedRecipes((prev) => {
@@ -80,17 +83,17 @@ const Recipes = ({ recipes: initialRecipes }) => {
         return updated;
       });
 
-      const response = await fetch('/api/favorites', {
-        method: isFavorited ? 'DELETE' : 'POST',
+      const response = await fetch("/api/favorites", {
+        method: isFavorited ? "DELETE" : "POST",
         body: JSON.stringify({ recipeId, email: loggedInEmail }),
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-        credentials: 'include',
+        credentials: "include",
       });
 
       if (!response.ok) {
-        throw new Error('Failed to update favorites');
+        throw new Error("Failed to update favorites");
       }
     } catch (err) {
       setFavoritedRecipes((prev) => {
@@ -103,29 +106,41 @@ const Recipes = ({ recipes: initialRecipes }) => {
         return reverted;
       });
 
-      setError('Failed to update favorites. Please try again.');
-      console.error('Error updating favorites:', err);
+      setError("Failed to update favorites. Please try again.");
+      console.error("Error updating favorites:", err);
     }
   };
 
   const addIngredientsToShoppingList = (ingredients) => {
-    // Convert ingredients object to an array of {name, quantity}
     const ingredientsArray = Object.keys(ingredients).map((key) => ({
       name: key,
-      quantity: ingredients[key], // Use the quantity as the value
+      quantity: ingredients[key],
     }));
 
-    // Dispatch each ingredient to the shopping list
     ingredientsArray.forEach((ingredient) => {
       dispatchShoppingList({
-        type: 'ADD_ITEM',
+        type: "ADD_ITEM",
         payload: {
-          id: ingredient.name.toLowerCase().replace(/\s+/g, '-'),
+          id: ingredient.name.toLowerCase().replace(/\s+/g, "-"),
           name: `${ingredient.name} - ${ingredient.quantity}`,
-          purchased: false
+          purchased: false,
         },
       });
     });
+  };
+
+  const renderStars = (averageRating) => {
+    const stars = [];
+    for (let i = 1; i <= 5; i++) {
+      if (i <= averageRating) {
+        stars.push(<FaStar key={i} className="text-yellow-500" />);
+      } else if (i - 0.5 <= averageRating) {
+        stars.push(<FaStarHalfAlt key={i} className="text-yellow-500" />);
+      } else {
+        stars.push(<FaRegStar key={i} className="text-yellow-500" />);
+      }
+    }
+    return stars;
   };
 
   return (
@@ -152,10 +167,11 @@ const Recipes = ({ recipes: initialRecipes }) => {
                   <Carousel images={recipe.images} />
                 ) : (
                   <div className="relative w-full h-full">
-                    <Image src={recipe.images[0]} 
-                      alt={recipe.title} 
-                      fill 
-                      className="object-cover" 
+                    <Image
+                      src={recipe.images[0]}
+                      alt={recipe.title}
+                      fill
+                      className="object-cover"
                     />
                   </div>
                 )}
@@ -166,9 +182,10 @@ const Recipes = ({ recipes: initialRecipes }) => {
                   {recipe.title}
                 </h2>
                 <button
-                  className={`ml-2 ${favoritedRecipes.has(recipe._id)
-                    ? "text-red-500"
-                    : "text-gray-400"
+                  className={`ml-2 ${
+                    favoritedRecipes.has(recipe._id)
+                      ? "text-red-500"
+                      : "text-gray-400"
                   } hover:text-red-500 transition-colors duration-200`}
                   onClick={(e) => {
                     e.preventDefault();
@@ -179,7 +196,12 @@ const Recipes = ({ recipes: initialRecipes }) => {
                 </button>
               </div>
 
-              <div className="space-y-2">
+              <div className="text-sm text-gray-600 flex items-center">
+                {renderStars(recipe.averageRating)}
+                <span className="ml-2">({recipe.reviewCount})</span>
+              </div>
+
+              <div className="space-y-2 mt-2">
                 <p className="text-sm text-gray-600 flex items-center">
                   <FaClock className="text-[#020123] mr-2" />
                   {recipe.prep} mins
@@ -207,20 +229,21 @@ const Recipes = ({ recipes: initialRecipes }) => {
                 </span>
                 <button
                   className={`inline-block bg-[#f9efd2] text-sm px-2 py-1 rounded mt-2 transition-colors duration-300 ${
-                    addedToList.has(recipe._id) ? 'bg-[#fc9d4f]' : 'bg-[#f9efd2]'
+                    addedToList.has(recipe._id) ? "bg-[#fc9d4f]" : "bg-[#f9efd2]"
                   }`}
                   onClick={(e) => {
                     e.preventDefault();
                     addIngredientsToShoppingList(recipe.ingredients);
-                    setAddedToList(prev => new Set([...prev, recipe._id]));
+                    setAddedToList((prev) => new Set([...prev, recipe._id]));
                   }}
                 >
-                  <FaShoppingBag 
+                  <FaShoppingBag
                     className={`${
-                      addedToList.has(recipe._id) ? 'text-white' : 'text-[#020123]'
-                    } mr-2`} 
+                      addedToList.has(recipe._id)
+                        ? "text-white"
+                        : "text-[#020123]"
+                    }`}
                   />
-                  Add to Shopping List
                 </button>
               </div>
             </Link>
