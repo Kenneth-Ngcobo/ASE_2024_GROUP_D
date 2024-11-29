@@ -2,10 +2,11 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useState, useEffect, Suspense } from "react";
-import { FaUser } from "react-icons/fa";
+import { FaUser, FaCaretDown } from "react-icons/fa";
+import { PiHeart } from "react-icons/pi";
 import { useRouter } from "next/navigation";
 import CategoryList from "./CategoryList";
-import {FilterButton} from "./FilterButton";
+import { FilterButton } from "./FilterButton";
 import ThemeButton from "./ThemeButton";
 import RecipeSearchBar from "./searchBar";
 import UserModal from "./UserModal.js";
@@ -17,49 +18,110 @@ import Loading from "../loading.js";
 const Header = ({ isAuthenticated, onLogout }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [totalRecipes, setTotalRecipes] = useState(0); // State to hold total recipes
+  const [totalRecipes, setTotalRecipes] = useState(0);
   const [showModal, setShowModal] = useState(false);
+  const [favoriteDetails, setFavoriteDetails] = useState([]);
+  const [favoritesDropdownVisible, setFavoritesDropdownVisible] = useState(false);
+  const [error, setError] = useState(null);
+
   const router = useRouter();
 
   const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
   const toggleFilterModal = () => setIsFilterOpen((prev) => !prev);
   const toggleModal = () => setShowModal((prev) => !prev);
 
+  // Fetch favorites when component mounts
+  useEffect(() => {
+    const fetchFavorites = async () => {
+      const loggedInEmail = localStorage.getItem('loggedInUserEmail');
+      if (!loggedInEmail) {
+        return;
+      }
+
+      try {
+        const response = await fetch(`/api/favorites?email=${encodeURIComponent(loggedInEmail)}`, {
+          credentials: 'include',
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch favorites');
+        }
+
+        const data = await response.json();
+        setFavoriteDetails(data.favorites);
+      } catch (err) {
+        setError('Failed to load favorites. Please try again later.');
+        console.error('Error fetching favorites:', err);
+      }
+    };
+
+    fetchFavorites();
+  }, []);
 
   return (
-    <header className=" sticky top-0 bg-[#f9efd2] dark:bg-gray-950 top-0 z-50 shadow-md">
+    <header className="sticky top-0 bg-[#f9efd2] dark:bg-gray-950 top-0 z-50 shadow-md">
       <div className="container mx-auto px-4">
         <nav className="flex items-center justify-between h-16">
           <div className="hidden md:flex space-x-8">
             <Link
               href="/"
-              className="block text-[ #020123] hover:text-[#fc9d4f] font-medium py-2 uppercase "
+              className="block text-[#020123] hover:text-[#fc9d4f] font-medium py-2 uppercase"
             >
               Recipes
             </Link>
             <Link
               href=""
-              className="block text-[ #020123] hover:text-[#fc9d4f] font-medium py-2 uppercase"
+              className="block text-[#020123] hover:text-[#fc9d4f] font-medium py-2 uppercase"
             >
               Recommended
             </Link>
-            <Link
-              href=""
-              className="block text-[ #020123] hover:text-[#fc9d4f] font-medium py-2 uppercase "
-            >
-              Favourite
-            </Link>
+            
+            {/* Favorites Dropdown in Header */}
+            <div className="relative">
+              <button
+                onClick={() => setFavoritesDropdownVisible(!favoritesDropdownVisible)}
+                className="flex items-center text-[#020123] hover:text-[#fc9d4f] font-medium py-2 uppercase"
+              >
+                <PiHeart className="mr-2" size={20} />
+                <span>Favorites ({favoriteDetails.length})</span>
+                <FaCaretDown
+                  className={`ml-2 ${favoritesDropdownVisible ? "transform rotate-180" : ""}`}
+                />
+              </button>
+
+              {favoritesDropdownVisible && (
+                <div className="absolute mt-2 bg-white border border-gray-200 rounded-lg shadow-lg w-60 z-10">
+                  {favoriteDetails.length === 0 ? (
+                    <p className="p-4 text-gray-500">No favorites yet</p>
+                  ) : (
+                    <ul className="max-h-60 overflow-y-auto p-2">
+                      {favoriteDetails.map((recipe) => (
+                        <li key={recipe._id} className="p-2 hover:bg-gray-100">
+                          <Link 
+                            href={`/Recipe/${recipe._id}`} 
+                            className="block text-sm text-gray-800"
+                          >
+                            {recipe.title}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
 
-           <Link href="/" className="flex items-center">
+          <Link href="/" className="flex items-center">
             <Image
               src="/0.png"
               alt="Logo"
               width={150}
               height={100}
-              className="h-20 w- "
+              className="h-20 w-"
             />
           </Link>
+
           <div className="hidden md:flex items-center space-x-8">
             {/* Wrapping CategoryList in Suspense */}
             <Suspense fallback={<Loading />}>
@@ -80,8 +142,8 @@ const Header = ({ isAuthenticated, onLogout }) => {
 
             {/* Authentication Modal */}
             <ShoppingListProvider>
-            <ShoppingBagHeader />
-          </ShoppingListProvider>
+              <ShoppingBagHeader />
+            </ShoppingListProvider>
             <UserModal show={showModal} onClose={toggleModal} />
          
             <ThemeButton />
@@ -115,7 +177,7 @@ const Header = ({ isAuthenticated, onLogout }) => {
         <div className="container mx-auto px-4 space-y-4">
           <Link
             href="/recipes"
-            className="block text-[ #020123] hover:text-[#fc9d4f] font-medium py-2"
+            className="block text-[#020123] hover:text-[#fc9d4f] font-medium py-2"
           >
             Recipes
           </Link>
@@ -125,12 +187,42 @@ const Header = ({ isAuthenticated, onLogout }) => {
           >
             Recommended
           </Link>
-          <Link
-            href="/Favourite"
-            className="block text-[#020123] hover:text-[#fc9d4f] font-medium py-2"
-          >
-            Favourites
-          </Link>
+          
+          {/* Mobile Favorites Dropdown */}
+          <div className="relative">
+            <button
+              onClick={() => setFavoritesDropdownVisible(!favoritesDropdownVisible)}
+              className="flex items-center text-[#020123] hover:text-[#fc9d4f] font-medium py-2"
+            >
+              <PiHeart className="mr-2" size={20} />
+              <span>Favorites ({favoriteDetails.length})</span>
+              <FaCaretDown
+                className={`ml-2 ${favoritesDropdownVisible ? "transform rotate-180" : ""}`}
+              />
+            </button>
+
+            {favoritesDropdownVisible && (
+              <div className="mt-2 bg-white border border-gray-200 rounded-lg shadow-lg w-full">
+                {favoriteDetails.length === 0 ? (
+                  <p className="p-4 text-gray-500">No favorites yet</p>
+                ) : (
+                  <ul className="max-h-60 overflow-y-auto p-2">
+                    {favoriteDetails.map((recipe) => (
+                      <li key={recipe._id} className="p-2 hover:bg-gray-100">
+                        <Link 
+                          href={`/Recipe/${recipe._id}`} 
+                          className="block text-sm text-gray-800"
+                        >
+                          {recipe.title}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            )}
+          </div>
+
           <div className="py-2">
             <Suspense fallback={<Loading />}>
               <CategoryList
@@ -138,7 +230,6 @@ const Header = ({ isAuthenticated, onLogout }) => {
                 onCategoryChange={() => {}}
               />
             </Suspense>
-            
           </div>
           <div className="py-2">
             <FilterButton onClick={() => setIsFilterOpen(!isFilterOpen)} />
@@ -149,7 +240,6 @@ const Header = ({ isAuthenticated, onLogout }) => {
       {isFilterOpen && <FilterModal onClose={() => setIsFilterOpen(false)} />}
       <RecipeSearchBar />
       <UserModal show={showModal} onClose={() => setShowModal(false)} />
-     
     </header>
   );
 };
