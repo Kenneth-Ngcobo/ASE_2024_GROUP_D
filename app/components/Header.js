@@ -75,41 +75,14 @@ const Header = ({ isAuthenticated, onLogout }) => {
             >
               Recommended
             </Link>
-            
-            {/* Favorites Dropdown in Header */}
-            <div className="relative">
-              <button
-                onClick={() => setFavoritesDropdownVisible(!favoritesDropdownVisible)}
-                className="flex items-center text-[#020123] hover:text-[#fc9d4f] font-medium py-2 uppercase"
-              >
-                <PiHeart className="mr-2" size={20} />
-                <span>Favorites ({favoriteDetails.length})</span>
-                <FaCaretDown
-                  className={`ml-2 ${favoritesDropdownVisible ? "transform rotate-180" : ""}`}
-                />
-              </button>
 
-              {favoritesDropdownVisible && (
-                <div className="absolute mt-2 bg-white border border-gray-200 rounded-lg shadow-lg w-60 z-10">
-                  {favoriteDetails.length === 0 ? (
-                    <p className="p-4 text-gray-500">No favorites yet</p>
-                  ) : (
-                    <ul className="max-h-60 overflow-y-auto p-2">
-                      {favoriteDetails.map((recipe) => (
-                        <li key={recipe._id} className="p-2 hover:bg-gray-100">
-                          <Link 
-                            href={`/Recipe/${recipe._id}`} 
-                            className="block text-sm text-gray-800"
-                          >
-                            {recipe.title}
-                          </Link>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
-              )}
-            </div>
+            {/* Favorites Section */}
+            <Link href="/favorites" className="flex items-center text-[#020123] hover:text-[#fc9d4f] font-medium py-2 uppercase">
+              <PiHeart className="mr-2" size={20} />
+              <span>Favorites ({favoriteDetails.length})</span>
+            </Link>
+
+            {/* ... other header content ... */}
           </div>
 
           <Link href="/" className="flex items-center">
@@ -145,7 +118,7 @@ const Header = ({ isAuthenticated, onLogout }) => {
               <ShoppingBagHeader />
             </ShoppingListProvider>
             <UserModal show={showModal} onClose={toggleModal} />
-         
+
             <ThemeButton />
           </div>
           <button
@@ -187,41 +160,12 @@ const Header = ({ isAuthenticated, onLogout }) => {
           >
             Recommended
           </Link>
-          
-          {/* Mobile Favorites Dropdown */}
-          <div className="relative">
-            <button
-              onClick={() => setFavoritesDropdownVisible(!favoritesDropdownVisible)}
-              className="flex items-center text-[#020123] hover:text-[#fc9d4f] font-medium py-2"
-            >
-              <PiHeart className="mr-2" size={20} />
-              <span>Favorites ({favoriteDetails.length})</span>
-              <FaCaretDown
-                className={`ml-2 ${favoritesDropdownVisible ? "transform rotate-180" : ""}`}
-              />
-            </button>
 
-            {favoritesDropdownVisible && (
-              <div className="mt-2 bg-white border border-gray-200 rounded-lg shadow-lg w-full">
-                {favoriteDetails.length === 0 ? (
-                  <p className="p-4 text-gray-500">No favorites yet</p>
-                ) : (
-                  <ul className="max-h-60 overflow-y-auto p-2">
-                    {favoriteDetails.map((recipe) => (
-                      <li key={recipe._id} className="p-2 hover:bg-gray-100">
-                        <Link 
-                          href={`/Recipe/${recipe._id}`} 
-                          className="block text-sm text-gray-800"
-                        >
-                          {recipe.title}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-            )}
-          </div>
+          {/* Favorites Section */}
+          <Link href="/favorites" className="flex items-center text-[#020123] hover:text-[#fc9d4f] font-medium py-2">
+            <PiHeart className="mr-2" size={20} />
+            <span>Favorites ({favoriteDetails.length})</span>
+          </Link>
 
           <div className="py-2">
             <Suspense fallback={<Loading />}>
