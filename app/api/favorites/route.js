@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
 import connectToDatabase from '../../../db';
-import { ObjectId } from 'mongodb';
 
 export async function POST(req) {
   try {
@@ -22,18 +21,11 @@ export async function POST(req) {
       });
     }
 
-    // Update the user's favorites array with timestamp
+    // Update the user's favorites array
     const updateResult = await usersCollection.updateOne(
       { email: email },
-      { 
-        $addToSet: { 
-          favorites: {
-            recipeId: recipeId, 
-            addedAt: new Date() 
-          } 
-        } 
-      },
-      { upsert: true }
+      { $addToSet: { favorites: recipeId } },
+      { upsert: true } // Changed to true to create user if doesn't exist
     );
 
     if (updateResult.modifiedCount === 0 && updateResult.upsertedCount === 0) {
@@ -61,7 +53,7 @@ export async function DELETE(req) {
 
     const updateResult = await usersCollection.updateOne(
       { email: email },
-      { $pull: { favorites: { recipeId: recipeId } } }
+      { $pull: { favorites: recipeId } }
     );
 
     if (updateResult.modifiedCount === 0) {
@@ -83,6 +75,7 @@ export async function DELETE(req) {
 
 export async function GET(req) {
   try {
+    // Get email from searchParams
     const { searchParams } = new URL(req.url);
     const email = searchParams.get('email');
 
@@ -93,30 +86,33 @@ export async function GET(req) {
     const db = await connectToDatabase();
     const usersCollection = db.collection('users');
 
-    const user = await usersCollection.findOne({ email }, { projection: { favorites: 1, _id: 0 } });
-    if (!user || !user.favorites || user.favorites.length === 0) {
+    // Fetch the user document
+    const user = await usersCollection.findOne(
+      { email: email },
+      { projection: { favorites: 1, _id: 0 } }
+    );
+
+    if (!user) {
+      // Create new user with empty favorites if doesn't exist
+      await usersCollection.insertOne({
+        email: email,
+        favorites: []
+      });
       return NextResponse.json({ favorites: [], favoritesCount: 0 }, { status: 200 });
     }
 
-    const favoriteRecipeIds = user.favorites.map((fav) => fav.recipeId);
+    // Ensure favorites exists
+    const favorites = user.favorites || [];
 
+    // Fetch the details of all favorited recipes from the 'recipes' collection
     const recipesCollection = db.collection('recipes');
-    const favoritedRecipes = await recipesCollection
-      .find({ _id: { $in: favoriteRecipeIds.map((id) => new ObjectId(id)) } })
-      .toArray();
-
-    const enrichedFavorites = favoritedRecipes.map((recipe) => {
-      const favMetadata = user.favorites.find((fav) => fav.recipeId === recipe._id.toString());
-      return {
-        ...recipe,
-        favoritedAt: favMetadata ? favMetadata.addedAt : null,
-      };
-    });
+    const favoritedRecipes = await recipesCollection.find({ _id: { $in: favorites } }).toArray();
 
     return NextResponse.json({
-      favorites: enrichedFavorites,
-      favoritesCount: enrichedFavorites.length,
-    });
+      favorites: favoritedRecipes,
+      favoritesCount: favoritedRecipes.length
+    }, { status: 200 });
+
   } catch (error) {
     console.error('Error retrieving favorites:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
