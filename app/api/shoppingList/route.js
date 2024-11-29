@@ -1,116 +1,158 @@
-import { connectToDatabase } from '../../../db';
+import { NextResponse } from 'next/server';
 import { ObjectId } from 'mongodb';
+import connectToDatabase from '../../../db.js';
 
-export default async function handler(req, res) {
-  const { method } = req;
-
+// Get a user's shopping list
+export async function GET(request) {
   try {
+    const url = new URL(request.url);
+    const userId = url.searchParams.get('userId');
+    if (!userId) {
+      return NextResponse.json({ success: false, message: 'userId query parameter is required' }, { status: 400 });
+    }
     const db = await connectToDatabase();
-    const collection = db.collection('shoppingLists'); // Ensure each user has a unique shopping list
+    const collection = db.collection('shopping_lists');
+    const shoppingList = await collection.findOne({ userId });
+    if (!shoppingList) {
+      return NextResponse.json({ success: false, message: 'Shopping list not found' }, { status: 404 });
+    }
+    return NextResponse.json({ success: true, data: shoppingList });
+  } catch (error) {
+    console.error("Error fetching shopping list:", error); // Log the error details
+    return NextResponse.json({ success: false, error: error.message || 'Internal server error' }, { status: 500 });
+  }
+}
 
-    switch (method) {
-      // Get a user's shopping list
-      case 'GET':
-        const { userId } = req.query;  // Assuming userId is passed in the query params
-        const shoppingList = await collection.findOne({ userId });
-        if (!shoppingList) {
-          return res.status(404).json({ success: false, message: 'Shopping list not found' });
-        }
-        res.status(200).json({ success: true, data: shoppingList });
-        break;
+// Save or update a user's shopping list
+export async function POST(request) {
+  try {
+    const url = new URL(request.url);
+    const userId = url.searchParams.get('userId');
+    const itemsParam = url.searchParams.get('items');
 
-      // Save a user's shopping list
-      case 'POST':
-        const { items } = req.body;  // Assuming userId and items are passed in the body
-        const existingList = await collection.findOne({ userId });
-        if (existingList) {
-          return res.status(400).json({ success: false, message: 'Shopping list already exists' });
-        }
-        const newList = await collection.insertOne({ userId, items });
-        res.status(201).json({ success: true, data: newList.ops[0] });
-        break;
+    console.log("URL Parameters:", { userId, itemsParam }); // Log URL parameters
 
-      // Add new items to an existing shopping list
-      case 'PUT': 
-        const { userId: userIdForAdd, newItem } = req.body;  // userId and newItem are passed in the body
-        const updatedList = await collection.updateOne(
-          { userId: userIdForAdd },
-          { $push: { items: newItem } }
-        );
-        if (!updatedList.matchedCount) {
-          return res.status(404).json({ success: false, message: 'Shopping list not found' });
-        }
-        res.status(200).json({ success: true, data: updatedList });
-        break;
+    if (!userId || !itemsParam) {
+      return NextResponse.json({ success: false, message: 'userId and items are required' }, { status: 400 });
+    }
 
-      // Update an item in the shopping list
-      case 'PATCH':
-        const { userId: userIdForUpdate, itemId, updatedItem } = req.body;  // userId, itemId, and updatedItem are passed
-        const updatedShoppingList = await collection.updateOne(
-          { userId: userIdForUpdate, 'items._id': ObjectId(itemId) },
-          { $set: { 'items.$': updatedItem } }
-        );
-        if (!updatedShoppingList.matchedCount) {
-          return res.status(404).json({ success: false, message: 'Item not found in shopping list' });
-        }
-        res.status(200).json({ success: true, data: updatedShoppingList });
-        break;
+    let newItems;
+    try {
+      newItems = JSON.parse(itemsParam);
+      console.log("Parsed new items:", newItems); // Log parsed new items
+    } catch (error) {
+      console.error("Error parsing items JSON:", error); // Log JSON parsing errors
+      throw new Error("Invalid items JSON");
+    }
 
-      // Delete a shopping list
-      case 'DELETE':
-        const { userId: userIdToDelete } = req.body;  // userId to identify the list to delete
-        const deletedList = await collection.deleteOne({ userId: userIdToDelete });
-        if (!deletedList.deletedCount) {
-          return res.status(404).json({ success: false, message: 'Shopping list not found' });
-        }
-        res.status(200).json({ success: true });
-        break;
+    const db = await connectToDatabase();
+    const collection = db.collection('shopping_lists');
+    const existingList = await collection.findOne({ userId });
 
-      // Remove a specific item from the shopping list
-      case 'DELETE_ITEM':
-        const { userId: userIdForItemRemoval, itemId: itemToRemove } = req.body;  // userId and itemId passed
-        const itemRemoved = await collection.updateOne(
-          { userId: userIdForItemRemoval },
-          { $pull: { items: { _id: ObjectId(itemToRemove) } } }
-        );
-        if (!itemRemoved.matchedCount) {
-          return res.status(404).json({ success: false, message: 'Item not found in shopping list' });
-        }
-        res.status(200).json({ success: true });
-        break;
+    if (existingList) {
+      // Append new items to the existing list
+      const updatedList = await collection.updateOne(
+        { userId },
+        { $push: { items: { $each: newItems } } }
+      );
+      if (!updatedList.matchedCount) {
+        return NextResponse.json({ success: false, message: 'Failed to update the shopping list' }, { status: 500 });
+      }
+      return NextResponse.json({ success: true, data: updatedList });
+    } else {
+      // Create a new shopping list
+      const result = await collection.insertOne({ userId, items: newItems });
 
-      // Mark an item as purchased
-      case 'MARK_PURCHASED':
-        const { userId: userIdForMark, itemId: itemToMark } = req.body;  // userId and itemId passed
-        const markPurchased = await collection.updateOne(
-          { userId: userIdForMark, 'items._id': ObjectId(itemToMark) },
-          { $set: { 'items.$.purchased': true } }
-        );
-        if (!markPurchased.matchedCount) {
-          return res.status(404).json({ success: false, message: 'Item not found in shopping list' });
-        }
-        res.status(200).json({ success: true });
-        break;
-      
-        // Update item quantity
-        case 'UPDATE_QUANTITY':
-         const { userId: userIdForQuantityUpdate, itemId: itemIdToUpdate, newQuantity } = req.body;
-         const quantityUpdated = await collection.updateOne(
-          { userId: userIdForQuantityUpdate, 'items._id': ObjectId(itemIdToUpdate) },
-         { $set: { 'items.$.quantity': newQuantity } }
-          );
-          if (!quantityUpdated.matchedCount) {
-         return res.status(404).json({ success: false, message: 'Item not found in shopping list' });
-         }
-         res.status(200).json({ success: true });
-          break;
-      
-
-      default:
-        res.setHeader('Allow', ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'DELETE_ITEM', 'MARK_PURCHASED']);
-        res.status(405).end(`Method ${method} Not Allowed`);
+      // Safely access the inserted document with improved error handling
+      if (result && result.insertedId) {
+        const newList = await collection.findOne({ _id: result.insertedId });
+        return NextResponse.json({ success: true, data: newList }, { status: 201 });
+      } else {
+        throw new Error("Failed to retrieve the new shopping list");
+      }
     }
   } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
+    console.error("Error saving shopping list:", error); // Log the error details
+    return NextResponse.json({ success: false, error: error.message || 'Internal server error' }, { status: 500 });
+  }
+}
+
+// Update an item in the shopping list
+export async function PATCH(request) {
+  try {
+    const url = new URL(request.url);
+    const userId = url.searchParams.get('userId');
+    const itemId = url.searchParams.get('itemId');
+    const updatedItemParam = url.searchParams.get('updatedItem');
+
+    console.log("URL Parameters:", { userId, itemId, updatedItemParam }); // Log URL parameters
+
+    if (!userId || !itemId || !updatedItemParam) {
+      return NextResponse.json({ success: false, message: 'userId, itemId, and updatedItem are required' }, { status: 400 });
+    }
+
+    let updatedItem;
+    try {
+      updatedItem = JSON.parse(updatedItemParam);
+      updatedItem.id = itemId; // Ensure the id field is retained
+      console.log("Parsed updatedItem:", updatedItem); // Log parsed updatedItem
+    } catch (error) {
+      console.error("Error parsing updatedItem JSON:", error); // Log JSON parsing errors
+      throw new Error("Invalid updatedItem JSON");
+    }
+
+    const db = await connectToDatabase();
+    const collection = db.collection('shopping_lists');
+    const updatedShoppingList = await collection.updateOne(
+      { userId, 'items.id': itemId },
+      { $set: { 'items.$': updatedItem } }
+    );
+    if (!updatedShoppingList.matchedCount) {
+      return NextResponse.json({ success: false, message: 'Item not found in shopping list' }, { status: 404 });
+    }
+    return NextResponse.json({ success: true, data: updatedShoppingList });
+  } catch (error) {
+    console.error("Error updating item:", error); // Log the error details
+    return NextResponse.json({ success: false, error: error.message || 'Internal server error' }, { status: 500 });
+  }
+}
+
+// Delete a shopping list or a specific item
+export async function DELETE(request) {
+  try {
+    const url = new URL(request.url);
+    const userId = url.searchParams.get('userId');
+    const itemId = url.searchParams.get('itemId');
+
+    console.log("URL Parameters:", { userId, itemId }); // Log URL parameters
+
+    if (!userId) {
+      return NextResponse.json({ success: false, message: 'userId is required' }, { status: 400 });
+    }
+
+    const db = await connectToDatabase();
+    const collection = db.collection('shopping_lists');
+
+    if (itemId) {
+      // Delete specific item
+      const itemRemoved = await collection.updateOne(
+        { userId },
+        { $pull: { items: { id: itemId } } }
+      );
+      if (!itemRemoved.matchedCount) {
+        return NextResponse.json({ success: false, message: 'Item not found in shopping list' }, { status: 404 });
+      }
+      return NextResponse.json({ success: true });
+    } else {
+      // Delete the entire shopping list
+      const deletedList = await collection.deleteOne({ userId });
+      if (!deletedList.deletedCount) {
+        return NextResponse.json({ success: false, message: 'Shopping list not found' }, { status: 404 });
+      }
+      return NextResponse.json({ success: true });
+    }
+  } catch (error) {
+    console.error("Error deleting shopping list or item:", error); // Log the error details
+    return NextResponse.json({ success: false, error: error.message || 'Internal server error' }, { status: 500 });
   }
 }
