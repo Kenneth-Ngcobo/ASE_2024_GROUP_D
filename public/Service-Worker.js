@@ -1,8 +1,5 @@
 const CACHE_NAME = 'staticCache-v2';
 const urlsToCache = [
-    '/',
-     '/Recipe/[id]'
-
     // Add more static assets to cache here
 ];
 

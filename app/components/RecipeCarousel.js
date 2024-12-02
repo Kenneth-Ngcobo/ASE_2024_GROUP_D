@@ -57,11 +57,11 @@ const RecipeCarousel = () => {
   };
 
   return (
-    <div className="w-full max-w-6xl mx-auto p-8 bg-[#fcfde2] dark:bg-[#1c1d02]">
-      <div className="flex justify-between items-center mb-8">
-        <h2 className="text-3xl font-bold text-[#ff4f1a] tracking-tight">
+    <div className="container mx-auto p-4 pt-8 md:p-8 lg:p-16 bg-[#fcfde2] dark:bg-[#1b1c02] relative">
+      <div className="relative mb-8">
+        <h2 className="text-3xl font-bold text-[#ff4f1a] dark:text-[#e63600] tracking-tight">
           Top Rated Recipes
-          <div className="h-1 w-20 bg-[#fc9d4f] mt-2 rounded-full" />
+          <div className="h-1 w-20 bg-[#fc9d4f] dark:bg-[#b05103] mt-2 rounded-full" />
         </h2>
       </div>
 
@@ -69,12 +69,23 @@ const RecipeCarousel = () => {
         <button
           onClick={prevSlide}
           disabled={currentIndex === 0}
-          className="absolute left-[-16px] top-1/2 transform -translate-y-1/2 p-2 rounded-full border border-gray-200 hover:border-gray-300 hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed z-10"
+          className="absolute left-0 top-1/2 transform -translate-y-1/2 p-2 rounded-full border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           aria-label="Previous recipes"
         >
-          <ChevronLeft className="w-5 h-5 text-gray-600" />
+          <ChevronLeft className="w-5 h-5 text-gray-600 dark:text-gray-400" />
         </button>
+        {/* Right Button */}
+        <button
+          onClick={nextSlide}
+          disabled={currentIndex === maxIndex}
+          className="absolute right-0 top-1/2 transform -translate-y-1/2 p-2 rounded-full border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          aria-label="Next recipes"
+        >
+          <ChevronRight className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+        </button>
+      </div>
 
+      <div className="relative">
         <div className="overflow-hidden rounded-xl">
           <div
             className="flex gap-6 transition-transform duration-500 ease-out"
@@ -88,14 +99,8 @@ const RecipeCarousel = () => {
                 className="flex-none w-1/3 group cursor-pointer"
               >
                 <Link href={`/Recipe/${recipe._id}`}>
-                  <div
-                    className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
-                    style={{ height: "360px" }} // Fixed height
-                  >
-                    <div
-                      className="relative pt-[70%]"
-                      style={{ height: "60%" }} // Fixed height for the image container
-                    >
+                  <div className="bg-[#fcfde2] dark:bg-[#1c1d02] rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                    <div className="relative pt-[70%]">
                       <Image
                         src={
                           recipe.images && recipe.images.length > 0
@@ -108,14 +113,11 @@ const RecipeCarousel = () => {
                         className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       />
                     </div>
-                    <div
-                      className="p-6 flex flex-col justify-between"
-                      style={{ height: "40%" }} // Fixed height for the text content
-                    >
-                      <h3 className="font-semibold text-xl text-[#fc9d4f] mb-3 line-clamp-2">
+                    <div className="p-6">
+                      <h3 className="font-semibold text-xl text-[#fc9d4f] dark:text-[#b05103] mb-3 line-clamp-2">
                         {recipe.title}
                       </h3>
-                      <div className="flex items-center gap-4 text-[#020123]">
+                      <div className="flex items-center gap-4 text-[#020123] dark:text-[#dddcfe]">
                         <StarRating rating={recipe.averageRating || 0} />
                         <div className="flex items-center gap-1.5">
                           <FaClock className="w-4 h-4" />
@@ -152,3 +154,4 @@ const RecipeCarousel = () => {
 };
 
 export default RecipeCarousel;
+

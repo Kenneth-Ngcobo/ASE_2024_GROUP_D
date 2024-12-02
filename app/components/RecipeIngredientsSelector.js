@@ -77,7 +77,7 @@ const RecipeIngredientsSection = ({ ingredients }) => {
         </button>
         <button 
           onClick={addAllToList}
-          className="bg-[#fc9d4f] hover:bg-[#edd282] text-white px-4 py-2 rounded-lg text-sm"
+          className="bg-[#fc9d4f] hover:bg-[#edd282] text-[#020123] px-4 py-2 rounded-lg text-sm"
         >
           Add All
         </button>
