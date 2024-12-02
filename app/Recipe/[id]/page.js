@@ -58,7 +58,7 @@ export default async function RecipePage({ params }) {
     }
 
     return (
-        <div className="min-h-screen bg-[#fcfde2] py-8">
+        <div className="min-h-screen bg-[#fcfde2] dark:bg-[#1c1d02] py-8">
            < ShoppingListProvider>
             <Suspense fallback={<Loading />}>
                 <div className="container mx-auto px-4 max-w-5xl">
@@ -83,7 +83,7 @@ export default async function RecipePage({ params }) {
                                     />
                                 ) : (
                                     <div className="w-full h-[400px] bg-gray-100 dark:bg-gray-950 rounded-xl flex items-center justify-center">
-                                        <p className="text-gray-500">No image available</p>
+                                        <p className="text-[#020123] dark:text-[#dddcfe">No image available</p>
                                     </div>
                                 )}
                                 </Suspense>
@@ -92,12 +92,12 @@ export default async function RecipePage({ params }) {
 
                         {/* Title and Tags Section */}
                         <div className="bg-white dark:bg-gray-950 rounded-2xl shadow-xl p-8">
-                            <h1 className="text-4xl font-bold text-[#fc9d4f] mb-4">
+                            <h1 className="text-4xl font-bold text-[#fc9d4f] dark: text-[#b05103] mb-4">
                                 {recipe.title || 'Untitled Recipe'}
                             </h1>
                             <div className="flex flex-wrap gap-3 mb-6">
                                 {recipe.tags?.map((tag, index) => (
-                                    <span key={index} className="px-4 py-2 bg-[#f9efd2] dark:bg-gray-800 dark:text-gray-400 hover:bg-[#edd282] text-[#020123] rounded-2xl text-sm font-medium uppercase tracking-wide transition-colors">
+                                    <span key={index} className="px-4 py-2 bg-[#f9efd2] dark:bg-[#1c1d02] dark:text-[#dddcfe] hover:bg-[#edd282] text-[#020123] rounded-2xl text-sm font-medium uppercase tracking-wide transition-colors">
                                         {tag}
                                     </span>
                                 ))}
@@ -159,21 +159,21 @@ export default async function RecipePage({ params }) {
                         />
                        
                         {/* Footer Information */}
-                        <div className="mt-8 bg-white dark:bg-gray-950 p-6 rounded-xl shadow-xl">
-                            <p className="text-sm text-[#020123]">
+                        <div className="mt-8 bg-white dark:bg-[#1c1d02] p-6 rounded-xl shadow-xl">
+                            <p className="text-sm text-[#020123] dark:text-[#dddcfe">
                                 <strong>Published:</strong> {new Date(recipe.published).toDateString()}
                             </p>
                             <p className="text-sm">
-                                <strong className="text-[#020123]">Prep Time:</strong> {recipe.prep} minutes
+                                <strong className="text-[#020123] dark:text-[#dddcfe">Prep Time:</strong> {recipe.prep} minutes
                             </p>
                             <p className="text-sm">
-                                <strong className="text-[#020123]">Cook Time:</strong> {recipe.cook} minutes
+                                <strong className="text-[#020123] dark:text-[#dddcfe">Cook Time:</strong> {recipe.cook} minutes
                             </p>
                             <p className="text-sm">
-                                <strong className="text-[#020123]">Servings:</strong> {recipe.servings}
+                                <strong className="text-[#020123] dark:text-[#dddcfe">Servings:</strong> {recipe.servings}
                             </p>
                             <p className="text-sm">
-                                <strong className="text-[#020123]">Category:</strong> {recipe.category}
+                                <strong className="text-[#020123] dark:text-[#dddcfe">Category:</strong> {recipe.category}
                             </p>
                         </div>
                     </div>
