@@ -1,4 +1,4 @@
-const CACHE_NAME = 'staticCache-v2';
+/*const CACHE_NAME = 'staticCache-v2';
 const urlsToCache = [
     // Add more static assets to cache here
 ];
@@ -57,3 +57,4 @@ self.addEventListener('activate', event => {
         }).then(() => self.clients.claim())  // Take control of all clients immediately
     );
 });
+*/

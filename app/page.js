@@ -9,7 +9,7 @@ import Footer from './components/footer';
 import Loading from './loading';
 import RecipeCarousel from './components/RecipeCarousel';
 import { ShoppingListProvider } from './context/shoppingListContext';
-import RegisterServiceWorker from './components/RegisterServiceWorker';
+//import RegisterServiceWorker from './components/RegisterServiceWorker';
 
 export default async function Home({ searchParams }) {
     let recipes = {};
@@ -33,7 +33,7 @@ export default async function Home({ searchParams }) {
     return (
         
         <ShoppingListProvider>
-            <RegisterServiceWorker />
+           {/** <RegisterServiceWorker />*/} 
             
     <div className="relative w-full h-screen bg-cover bg-center" style={{ backgroundImage: `url('/home page1.jpg')` }}>
       <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center text-white">
