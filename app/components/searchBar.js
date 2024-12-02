@@ -72,18 +72,31 @@ const RecipeSearchBar = ({
                 setSuggestions([]);
                 return;
             }
-
+        
             try {
                 setLoading(true);
+        
+                // Check for an exact match
+                const exactMatchResponse = await fetch(`/api/recipes?exactTitle=${encodeURIComponent(search)}`);
+                if (!exactMatchResponse.ok) throw new Error('Failed to check for exact match');
+                const exactMatchData = await exactMatchResponse.json();
+        
+                if (exactMatchData.recipes && exactMatchData.recipes.length > 0) {
+                    setSelectedRecipe(exactMatchData.recipes[0]);
+                    setShowSuggestions(false);
+                    return;
+                }
+        
+                // Fallback to general suggestions
                 const params = new URLSearchParams({
                     search,
                     limit: '10',
-                    page: '1'
+                    page: '1',
                 });
-
+        
                 const response = await fetch(`/api/recipes?${params}`);
                 if (!response.ok) throw new Error('Failed to fetch suggestions');
-
+        
                 const data = await response.json();
                 setSuggestions(data.recipes);
             } catch (error) {
@@ -93,11 +106,13 @@ const RecipeSearchBar = ({
                 setLoading(false);
             }
         };
-
+        
+    
         const timeoutId = setTimeout(fetchSuggestions, 500);
         return () => clearTimeout(timeoutId);
     }, [search, minCharacters]);
-
+    
+    
     const fetchRecipeDetails = async (recipeId) => {
         try {
             const response = await fetch(`/api/recipes/${recipeId}`);
