@@ -133,7 +133,7 @@ const Recipes = ({ recipes: initialRecipes }) => {
     }
   };
 
-  const addIngredientsToShoppingList = (ingredients) => {
+ {/**  const addIngredientsToShoppingList = (ingredients) => {
     // Convert ingredients object to an array of {name, quantity}
     const ingredientsArray = Object.keys(ingredients).map((key) => ({
       name: key,
@@ -151,7 +151,7 @@ const Recipes = ({ recipes: initialRecipes }) => {
         },
       });
     });
-  };
+  };*/}
   
 
  
@@ -261,7 +261,7 @@ const Recipes = ({ recipes: initialRecipes }) => {
                 <span className="inline-block bg-[#f9efd2] text-[#020123]  dark:bg-[#1c1d02] dark:text-gray-400 text-sm px-2 py-1 rounded">
                   {new Date(recipe.published).toDateString()}
                 </span>
-                <button
+              {/*<button
   className={`inline-block bg-[#f9efd2] text-sm px-2 py-1 rounded mt-2 transition-colors duration-300 ${
     addedToList.has(recipe._id) ? 'bg-[#fc9d4f]' : 'bg-[#f9efd2]'
   }`}
@@ -276,7 +276,7 @@ const Recipes = ({ recipes: initialRecipes }) => {
       addedToList.has(recipe._id) ? 'text-white' : 'text-[#020123]'
     } mr-2`} 
   />
-</button>
+</button>*/}
               </div>
             </Link>
           ))}
