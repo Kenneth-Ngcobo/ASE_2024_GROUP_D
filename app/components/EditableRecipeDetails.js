@@ -137,7 +137,7 @@ export default function EditableRecipeDetails({ id, initialDescription, lastEdit
     return (
         <div className="bg-white dark:bg-gray-950 rounded-2xl shadow-xl p-8">
             <div className="flex justify-between items-center mb-4">
-                <h2 className="text-2xl font-semibold text-[#fc9d4f] dark:text-blue-400">
+                <h2 className="text-2xl font-semibold text-[#020123]dark:text-[#dddcfe]">
                     Description
                 </h2>
                 {!isEditing && (

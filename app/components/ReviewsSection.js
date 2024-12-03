@@ -166,7 +166,7 @@ const ReviewsSection = ({ recipeId }) => {
         <h2 className="text-2xl font-bold">Reviews</h2>
         <div className="flex items-center space-x-2">
           <StarRating averageRating={averageRating} />
-          <span className="text-gray-600">({reviews.length} reviews)</span>
+          <span className="text-[#020123]dark:text-[#dddcfe]">({reviews.length} reviews)</span>
         </div>
       </div>
 
@@ -202,11 +202,11 @@ const ReviewsSection = ({ recipeId }) => {
                 <span className="font-bold">{review.username || "Anonymous"}</span>
                 <StarRating averageRating={review.rating} />
               </div>
-              <div className="text-sm text-gray-500">
+              <div className="text-sm text-[#020123]dark:text-[#dddcfe]">
                 {new Date(review.updatedAt || review.createdAt).toLocaleString()}
               </div>
             </div>
-            <p className="text-gray-800 mb-2">{review.comment}</p>
+            <p className="text-[#020123]dark:text-[#dddcfe] mb-2">{review.comment}</p>
             <div className="flex space-x-4">
               <button
                 onClick={() => handleEdit(review)}

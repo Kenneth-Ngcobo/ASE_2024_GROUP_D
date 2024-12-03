@@ -13,18 +13,18 @@ function CollapsibleSection({ title, content, defaultOpen = true }) {
                 onClick={() => setIsOpen(!isOpen)}
                 className={`w-full text-xl font-semibold font-serif flex items-center justify-between 
                             transition-all duration-300 
-                            ${isOpen ? ' text-[#fc9d4f] dark:from-bg-black dark:to-bg-black dark:text-gray-600' : 'bg-transparent dark:bg-black dark:text-gray-400 text-[#fc9d4f]'}
+                            ${isOpen ? ' text-[#020123] dark:from-bg-black dark:to-bg-black dark:text-[#dddfce]' : 'bg-transparent dark:bg-black dark:text-[#dddfce] text-[#020123]'}
 `}
             >
                 {title}
                 <FontAwesomeIcon
                     icon={isOpen ? faChevronUp : faChevronDown}
-                    className={`ml-2 text-[#fc9d4f] transition-transform duration-300 transform ${isOpen ? 'rotate-180 scale-110' : 'scale-100'}`}
+                    className={`ml-2 text-[#020123] transition-transform duration-300 transform ${isOpen ? 'rotate-180 scale-110' : 'scale-100'}`}
                     size="sm"
                 />
             </button>
             {isOpen && (
-                <div className="mt-4 text-[#020123] dark:text-gray-500">
+                <div className="mt-4 text-[#020123] dark:text-[#dddfce]">
                     {content}
                 </div>
             )}

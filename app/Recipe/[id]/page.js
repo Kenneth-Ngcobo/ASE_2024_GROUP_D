@@ -68,41 +68,48 @@ export default async function RecipePage({ params }) {
                     </div>
 
                     <div className="space-y-8">
-                        {/* Image Section */}
-                        <div className="bg-white dark:bg-gray-950 rounded-2xl shadow-xl p-6 overflow-hidden">
-                            <Suspense fallback={<Loading />}>
-                                {recipe.images && recipe.images.length > 0 ? (
-                                    <ImageGallery images={recipe.images} />
-                                ) : recipe.images?.[0] ? (
-                                    <Image
-                                        src={recipe.images[0]}
-                                        alt={recipe.title || 'Recipe Image'}
-                                        width={300}
-                                        height={200}
-                                        className="w-full h-[400px] object-cover rounded-xl"
-                                    />
-                                ) : (
-                                    <div className="w-full h-[400px] bg-gray-100 dark:bg-gray-950 rounded-xl flex items-center justify-center">
-                                        <p className="text-[#020123] dark:text-[#dddcfe">No image available</p>
+                            {/* Image and Tags Section */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-white dark:bg-gray-950 rounded-2xl shadow-xl p-6 overflow-hidden">
+                                {/* Image Gallery */}
+                                <Suspense fallback={<Loading />}>
+                                    <div className="w-full">
+                                        <div className="grid grid-cols-2 gap-4 mb-4">
+                                            {recipe.images && recipe.images.length > 0 ? (
+                                                <ImageGallery images={recipe.images} />
+                                            ) : recipe.images?.[0] ? (
+                                                <Image
+                                                    src={recipe.images[0]}
+                                                    alt={recipe.title || 'Recipe Image'}
+                                                    width={300}
+                                                    height={200}
+                                                    className="w-full h-[400px] object-cover rounded-2xl"
+                                                />
+                                            ) : (
+                                                <div className="w-full h-[400px] bg-gray-100 dark:bg-gray-950 rounded-xl flex items-center justify-center">
+                                                    <p className="text-[#020123] dark:text-[#dddcfe]">No image available</p>
+                                                </div>
+                                            )}
+                                        </div>
                                     </div>
-                                )}
                                 </Suspense>
-                                
-                        </div>
 
-                        {/* Title and Tags Section */}
-                        <div className="bg-white dark:bg-gray-950 rounded-2xl shadow-xl p-8">
-                            <h1 className="text-4xl font-bold text-[#fc9d4f] dark: text-[#b05103] mb-4">
-                                {recipe.title || 'Untitled Recipe'}
-                            </h1>
-                            <div className="flex flex-wrap gap-3 mb-6">
-                                {recipe.tags?.map((tag, index) => (
-                                    <span key={index} className="px-4 py-2 bg-[#f9efd2] dark:bg-[#1c1d02] dark:text-[#dddcfe] hover:bg-[#edd282] text-[#020123] rounded-2xl text-sm font-medium uppercase tracking-wide transition-colors">
-                                        {tag}
-                                    </span>
-                                ))}
+                                {/* Tags Section */}
+                                <div className="flex flex-col justify-center">
+                                    <h1 className="text-2xl font-bold text-[#fc9d4f] dark:text-[#b05103] mb-4">
+                                        {recipe.title || 'Untitled Recipe'}
+                                    </h1>
+                                    <div className="flex flex-wrap gap-2 mb-4">
+                                        {recipe.tags?.map((tag, index) => (
+                                            <span
+                                                key={index}
+                                                className="px-2 py-2 bg-[#f9efd2] dark:bg-[#1c1d02] dark:text-[#dddcfe] hover:bg-[#edd282] text-[#020123] rounded-xl text-sm font-medium uppercase tracking-wide transition-colors"
+                                            >
+                                                {tag}
+                                            </span>
+                                        ))}
+                                    </div>
+                                </div>
                             </div>
-                        </div>
 
                         {/* Editable Recipe Details */}
                         <EditableRecipeDetails
@@ -131,7 +138,7 @@ export default async function RecipePage({ params }) {
                             content={
                                 <ul className="list-disc list-inside">
                                     {Object.entries(recipe.nutrition || {}).map(([key, value], index) => (
-                                        <li key={index}>
+                                        <li key={index} className='text-[#020123] dark:text-[#dddcfe]'>
                                             {key}: {value}
                                         </li>
                                     ))}
@@ -143,10 +150,14 @@ export default async function RecipePage({ params }) {
                         <CollapsibleSection
                             title="Instructions"
                             content={
-                                <div>
-                                    {recipe.instructions || 'No instructions available.'}
+                                <ol className='space-y-2'>
+                                      {Object.entries(recipe.instructions || {}).map(([key, value], index) => (
+                                        <li key={index} className='text-[#020123] dark:text-[#dddcfe]'>
+                                            {key}: {value}
+                                        </li>
+                                    ))}
                                     <VoiceAssistant instructions={recipe.instructions || []}/>
-                                </div>
+                                </ol>
                                 }
                             defaultOpen={true}
                         />
