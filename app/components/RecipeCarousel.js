@@ -128,7 +128,7 @@ const RecipeCarousel = () => {
         <button
           onClick={prevSlide}
           disabled={currentIndex === 0}
-          className="absolute left-4 top-1/2 transform -translate-y-1/2 z-10 p-2 rounded-full border border-gray-200 hover:border-gray-300 hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="absolute left-4 top-1/2 transform -translate-y-1/2 z-10 p-2 rounded-full border  bg-[#fc9d4f]  border-gray-200 hover:border-gray-300 hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           aria-label="Previous recipes"
         >
           <ChevronLeft className="w-5 h-5 text-gray-600 dark:text-gray-400" />
@@ -138,7 +138,7 @@ const RecipeCarousel = () => {
         <button
           onClick={nextSlide}
           disabled={currentIndex === maxIndex}
-          className="absolute right-4 top-1/2 transform -translate-y-1/2 z-10 p-2 rounded-full border border-gray-200 hover:border-gray-300 hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="absolute right-4 top-1/2 transform -translate-y-1/2 z-10 p-2 rounded-full border bg-[#fc9d4f] border-gray-200 hover:border-gray-300 hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           aria-label="Next recipes"
         >
           <ChevronRight className="w-5 h-5 text-gray-600 dark:text-gray-400" />
