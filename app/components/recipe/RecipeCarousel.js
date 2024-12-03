@@ -6,12 +6,23 @@ import Image from "next/image";
 import Link from "next/link";
 import { FaClock, FaUtensils } from "react-icons/fa";
 
+/**
+ * Carousel component displaying top-rated recipes.
+ * Fetches and displays recommended recipes sorted by rating.
+ * 
+ * @component
+ * @returns {JSX.Element} Rendered recipe carousel with navigation
+ */
 const RecipeCarousel = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [topRecipes, setTopRecipes] = useState([]);
 
   useEffect(() => {
-    // Fetch recommended recipes from API
+    /**
+     * Fetches top recipes from the API and sorts them by rating.
+     * Updates the topRecipes state with sorted recipes.
+     * Logs any errors during fetching.
+     */
     const fetchTopRecipes = async () => {
       try {
         const response = await fetch("/api/recipes/recommendations?limit=10");
@@ -32,10 +43,26 @@ const RecipeCarousel = () => {
   const visibleRecipes = 3;
   const maxIndex = Math.max(0, topRecipes.length - visibleRecipes);
 
+  /**
+     * Moves to the next slide in the carousel.
+     * Ensures the index doesn't exceed the maximum possible index.
+     */
   const nextSlide = () => setCurrentIndex((prev) => Math.min(prev + 1, maxIndex));
+
+  /**
+   * Moves to the previous slide in the carousel.
+   * Ensures the index doesn't go below zero.
+   */
   const prevSlide = () => setCurrentIndex((prev) => Math.max(prev - 1, 0));
 
-  // Render star rating
+  /**
+  * Renders a star rating display for a given rating.
+  * 
+  * @component
+  * @param {Object} props - Component props
+  * @param {number} props.rating - Numerical rating to display
+  * @returns {JSX.Element} Rendered star rating with number of stars
+  */
   const StarRating = ({ rating }) => {
     const fullStars = Math.floor(rating);
     const hasHalfStar = rating % 1 >= 0.5;
@@ -45,13 +72,12 @@ const RecipeCarousel = () => {
         {[...Array(5)].map((_, index) => (
           <Star
             key={index}
-            className={`w-4 h-4 ${
-              index < fullStars
-                ? "fill-yellow-400 text-yellow-400"
-                : index === fullStars && hasHalfStar
+            className={`w-4 h-4 ${index < fullStars
+              ? "fill-yellow-400 text-yellow-400"
+              : index === fullStars && hasHalfStar
                 ? "fill-yellow-400 text-yellow-400"
                 : "fill-gray-200 text-gray-200"
-            }`}
+              }`}
           />
         ))}
         <span className="text-sm text-gray-600 ml-1">({rating.toFixed(1)})</span>
