@@ -10,7 +10,7 @@ import Loading from './loading';
 import RecipeCarousel from './components/RecipeCarousel';
 import HomePage from "./components/ui/homepage";
 import { ShoppingListProvider } from './context/shoppingListContext';
-import RegisterServiceWorker from './components/RegisterServiceWorker';
+// import RegisterServiceWorker from './components/RegisterServiceWorker';
 
 export default async function Home({ searchParams }) {
     let recipes = {};
@@ -33,7 +33,7 @@ export default async function Home({ searchParams }) {
 
     return (
         <ShoppingListProvider>
-            <RegisterServiceWorker />
+            {/* <RegisterServiceWorker /> */}
           <RecipeCarousel />
 
             <Suspense fallback={<Loading />}>

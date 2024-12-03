@@ -13,14 +13,13 @@ export default function UserModal({ show, onClose }) {
     fullName: "",
     phoneNumber: "",
   });
+  const [authMode, setAuthMode] = useState('signup'); // 'signup' or 'login'
   const [authState, setAuthState] = useState({
-    isCheckingUser: false,
-    isLogin: null,
+    isLoading: false,
     loggedInUser: null,
-    isLoggingIn: false,
-    isConfirmingLogout: false,
     isVerifyingGoogle: false,
     isLoggingOut: false,
+    isConfirmingLogout: false,
   });
 
   // Handle form input changes
@@ -58,11 +57,28 @@ export default function UserModal({ show, onClose }) {
       if (result?.ok) {
         const session = await getSession();
         if (session?.user?.email) {
+          // Create or update user in backend
+          const response = await fetch("/api/auth/google-signup", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              email: session.user.email,
+              fullName: session.user.name,
+              image: session.user.image,
+            }),
+          });
+
+          if (!response.ok) {
+            throw new Error("Failed to process Google sign-in");
+          }
+
           localStorage.setItem("loggedInUserEmail", session.user.email);
           setAuthState((prev) => ({
             ...prev,
             loggedInUser: session.user.email,
+            isVerifyingGoogle: false,
           }));
+          alert("Signed in successfully!");
           onClose();
         } else {
           alert("Error: Unable to retrieve email.");
@@ -76,38 +92,11 @@ export default function UserModal({ show, onClose }) {
     }
   }, [onClose]);
 
-  // Email check
-  const handleEmailCheck = useCallback(async () => {
-    if (!formState.email) {
-      alert("Please enter an email.");
-      return;
-    }
-
-    setAuthState((prev) => ({ ...prev, isCheckingUser: true }));
-    try {
-      const response = await fetch("/api/auth/checkuser", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: formState.email }),
-      });
-
-      setAuthState((prev) => ({
-        ...prev,
-        isCheckingUser: false,
-        isLogin: response.status === 200,
-      }));
-    } catch (error) {
-      console.error("Error checking user:", error);
-      alert("Error checking user. Please try again.");
-      setAuthState((prev) => ({ ...prev, isCheckingUser: false }));
-    }
-  }, [formState.email]);
-
   // Form submission
   const handleSubmit = useCallback(async () => {
-    setAuthState((prev) => ({ ...prev, isLoggingIn: true }));
+    setAuthState((prev) => ({ ...prev, isLoading: true }));
     try {
-      if (authState.isLogin) {
+      if (authMode === 'login') {
         const result = await signIn("credentials", {
           email: formState.email,
           password: formState.password,
@@ -118,6 +107,7 @@ export default function UserModal({ show, onClose }) {
           alert("Login failed. Please check your credentials.");
           return;
         }
+        alert("Logged in successfully!");
       } else {
         const response = await fetch("/api/auth/signup", {
           method: "POST",
@@ -135,6 +125,7 @@ export default function UserModal({ show, onClose }) {
           alert(result.message || "Sign-up failed. Please try again.");
           return;
         }
+        alert("Signed up successfully!");
       }
 
       localStorage.setItem("loggedInUserEmail", formState.email);
@@ -142,19 +133,35 @@ export default function UserModal({ show, onClose }) {
       router.push("/");
       onClose();
     } finally {
-      setAuthState((prev) => ({ ...prev, isLoggingIn: false }));
+      setAuthState((prev) => ({ ...prev, isLoading: false }));
     }
-  }, [authState.isLogin, formState, router, onClose]);
+  }, [authMode, formState, router, onClose]);
 
-  // Logout handling
   const handleLogout = () =>
     setAuthState((prev) => ({ ...prev, isConfirmingLogout: true }));
+  
   const confirmLogout = useCallback(async () => {
     setAuthState((prev) => ({ ...prev, isLoggingOut: true }));
     try {
+      // Clear local storage first
       localStorage.removeItem("loggedInUserEmail");
-      setAuthState((prev) => ({ ...prev, loggedInUser: null }));
-      await signOut();
+      
+      // Sign out and wait for it to complete
+      await signOut({ 
+        redirect: false,  // Prevent automatic redirection
+        callbackUrl: '/'  // Optional: specify a callback URL
+      });
+  
+      // Reset auth state
+      setAuthState({
+        isLoading: false,
+        loggedInUser: null,
+        isVerifyingGoogle: false,
+        isLoggingOut: false,
+        isConfirmingLogout: false,
+      });
+  
+      // Show alert and navigate
       alert("Logged out successfully!");
       router.push("/");
     } catch (error) {
@@ -168,14 +175,17 @@ export default function UserModal({ show, onClose }) {
   const cancelLogout = () =>
     setAuthState((prev) => ({ ...prev, isConfirmingLogout: false }));
 
-  const handleBack = useCallback(() => {
-    setAuthState((prev) => ({ ...prev, isLogin: null }));
-    setFormState((prev) => ({
-      ...prev,
+  // Toggle between login and signup
+  const toggleAuthMode = () => {
+    setAuthMode(authMode === 'login' ? 'signup' : 'login');
+    // Reset form state when switching modes
+    setFormState({
+      email: "",
+      password: "",
       fullName: "",
       phoneNumber: "",
-    }));
-  }, []);
+    });
+  };
 
   if (!show) return null;
 
@@ -188,27 +198,6 @@ export default function UserModal({ show, onClose }) {
         >
           &times;
         </button>
-
-        {authState.isLogin !== null && (
-          <button
-            onClick={handleBack}
-            className="absolute top-3 left-3 text-gray-500 text-2xl"
-          >
-            &#8592;
-          </button>
-        )}
-
-        <h2 className="text-2xl font-bold text-center mb-4">
-          {authState.isCheckingUser
-            ? "Verifying..."
-            : authState.isLoggingIn
-              ? "Logging in..."
-              : authState.isLogin === null
-                ? "Sign Up or Login"
-                : authState.isLogin
-                  ? "Login"
-                  : "Sign Up"}
-        </h2>
 
         {authState.loggedInUser ? (
           <div className="text-center">
@@ -232,18 +221,43 @@ export default function UserModal({ show, onClose }) {
           </div>
         ) : (
           <>
-            {authState.isLogin === null && (
-              <input
-                type="email"
-                name="email"
-                placeholder="Email"
-                value={formState.email}
-                onChange={handleInputChange}
-                className="w-full border rounded-md p-3 text-gray-700 mb-4"
-              />
-            )}
+            <button
+              onClick={handleGoogleSignIn}
+              className="w-full border rounded-md py-3 flex items-center justify-center mb-4"
+              disabled={authState.isVerifyingGoogle}
+            >
+              {authState.isVerifyingGoogle ? (
+                "Verifying..."
+              ) : (
+                <>
+                  <Image
+                    src="/google.svg"
+                    alt="Google icon"
+                    width={20}
+                    height={20}
+                    className="w-5 mr-2"
+                  />
+                  Continue with Google
+                </>
+              )}
+            </button>
 
-            {authState.isLogin === false && (
+            <div className="text-center text-gray-500 mb-4">OR</div>
+
+            <h2 className="text-2xl font-bold text-center mb-4">
+              {authMode === 'login' ? 'Login' : 'Sign Up'}
+            </h2>
+
+            <input
+              type="email"
+              name="email"
+              placeholder="Email"
+              value={formState.email}
+              onChange={handleInputChange}
+              className="w-full border rounded-md p-3 text-gray-700 mb-4"
+            />
+
+            {authMode === 'signup' && (
               <>
                 <input
                   type="text"
@@ -264,57 +278,41 @@ export default function UserModal({ show, onClose }) {
               </>
             )}
 
-            {authState.isLogin !== null && (
-              <input
-                type="password"
-                name="password"
-                placeholder="Password"
-                value={formState.password}
-                onChange={handleInputChange}
-                className="w-full border rounded-md p-3 text-gray-700 mb-4"
-              />
-            )}
+            <input
+              type="password"
+              name="password"
+              placeholder="Password"
+              value={formState.password}
+              onChange={handleInputChange}
+              className="w-full border rounded-md p-3 text-gray-700 mb-4"
+            />
 
-            {authState.isLogin === null ? (
-              <button
-                onClick={handleEmailCheck}
-                className="w-full bg-teal-700 text-white py-3 rounded-md mb-4"
+            <button
+              onClick={handleSubmit}
+              className="w-full bg-teal-700 text-white py-3 rounded-md mb-4"
+              disabled={authState.isLoading}
+            >
+              {authState.isLoading 
+                ? (authMode === 'login' ? 'Logging in...' : 'Signing up...') 
+                : (authMode === 'login' ? 'Login' : 'Sign Up')
+              }
+            </button>
+
+            <div className="text-center mb-4">
+              <span className="text-gray-600">
+                {authMode === 'login' 
+                  ? "Don't have an account? " 
+                  : "Already have an account? "}
+              </span>
+              <button 
+                onClick={toggleAuthMode}
+                className="text-teal-700 hover:underline ml-1"
               >
-                Continue with Email
+                {authMode === 'login' ? 'Sign Up' : 'Login'}
               </button>
-            ) : (
-              <button
-                onClick={handleSubmit}
-                className="w-full bg-teal-700 text-white py-3 rounded-md"
-              >
-                {authState.isLogin ? "Login" : "Sign Up"}
-              </button>
-            )}
+            </div>
           </>
         )}
-
-        <div className="text-center text-gray-500 mb-4">OR</div>
-
-        <button
-          onClick={handleGoogleSignIn}
-          className="w-full border rounded-md py-3 flex items-center justify-center mb-2"
-          disabled={authState.isVerifyingGoogle}
-        >
-          {authState.isVerifyingGoogle ? (
-            "Verifying..."
-          ) : (
-            <>
-              <Image
-                src="/google.svg"
-                alt="Google icon"
-                width={20}
-                height={20}
-                className="w-5 mr-2"
-              />
-              Continue with Google
-            </>
-          )}
-        </button>
 
         {authState.isConfirmingLogout && (
           <div className="text-center mt-4">
