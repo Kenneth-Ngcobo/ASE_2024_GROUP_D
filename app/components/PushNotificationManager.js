@@ -1,24 +1,13 @@
+// components/PushNotificationManager.js
 'use client';
-
 import { useState, useEffect } from 'react';
 import { subscribeUser, unsubscribeUser, sendNotification } from '../actions/Actions';
 
 function urlBase64ToUint8Array(base64String) {
-  if (!base64String) {
-    throw new Error('The base64String is not defined.');
-  }
-
-  // Ensure this runs only in the browser
-  if (typeof window === 'undefined') {
-    return null;
-  }
-
   const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
   const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
-
   const rawData = window.atob(base64);
   const outputArray = new Uint8Array(rawData.length);
-
   for (let i = 0; i < rawData.length; ++i) {
     outputArray[i] = rawData.charCodeAt(i);
   }
@@ -27,7 +16,7 @@ function urlBase64ToUint8Array(base64String) {
 
 const applicationServerKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY ? urlBase64ToUint8Array(process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY) : null;
 
-export default function PushNotificationManager() {
+export default function PushNotificationManager({ userId }) {
   const [isSupported, setIsSupported] = useState(false);
   const [subscription, setSubscription] = useState(null);
   const [message, setMessage] = useState('');
@@ -40,10 +29,7 @@ export default function PushNotificationManager() {
   }, []);
 
   async function registerServiceWorker() {
-    const registration = await navigator.serviceWorker.register('/Service-Worker.js', {
-      scope: '/',
-      updateViaCache: 'none',
-    });
+    const registration = await navigator.serviceWorker.register('/Service-Worker.js');
     const sub = await registration.pushManager.getSubscription();
     setSubscription(sub);
   }
@@ -54,21 +40,31 @@ export default function PushNotificationManager() {
       userVisibleOnly: true,
       applicationServerKey,
     });
+    console.log('Subscription object:', sub);
     setSubscription(sub);
-    await subscribeUser(sub);
+
+    const subscriptionObject = {
+      endpoint: sub.endpoint,
+      keys: sub.keys ? {
+        p256dh: sub.keys.p256dh || 'defaultKey',
+      auth: sub.keys.auth || 'defaultAuth'
+      } : { p256dh: 'defaultKey', auth: 'defaultAuth' }
+    };
+   console.log('Subscription object (processed):', subscriptionObject);
+    await subscribeUser(subscriptionObject, userId);
   }
 
   async function unsubscribeFromPush() {
     if (subscription) {
       await subscription.unsubscribe();
       setSubscription(null);
-      await unsubscribeUser();
+      await unsubscribeUser(userId);
     }
   }
 
   async function sendTestNotification() {
     if (subscription) {
-      await sendNotification(message);
+      await sendNotification(userId, message);
       setMessage('');
     }
   }

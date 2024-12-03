@@ -1,41 +1,46 @@
-'use server';
-
-import webpush from 'web-push';
+// actions/Actions.js
+'use server'
+import connectToDatabase from '../../db';
+const webpush = require('web-push');
 
 webpush.setVapidDetails(
-  'mailto:your-email@example.com', // Remove angle brackets
+  'mailto:herbetnosenga5@gmail.com',
   process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY,
   process.env.VAPID_PRIVATE_KEY
 );
 
-let subscription = null;
-
-export async function subscribeUser(sub) {
-  subscription = sub;
-  // In a production environment, you would want to store the subscription in a database
-  // Example: await db.subscriptions.create({ data: sub })
-  return { success: true };
+export async function subscribeUser(subscriptionObject, userId) {
+  const db = await connectToDatabase();
+  const result = await db.collection('subscriptions').updateOne(
+    { userId },
+    { $set: { subscription: subscriptionObject } },
+    { upsert: true }
+  );
+  return { success: true, result };
 }
 
-export async function unsubscribeUser() {
-  subscription = null;
-  // In a production environment, you would want to remove the subscription from the database
-  // Example: await db.subscriptions.delete({ where: { ... } })
-  return { success: true };
+export async function unsubscribeUser(userId) {
+  const db = await connectToDatabase();
+  const result = await db.collection('subscriptions').deleteOne({ userId });
+  return { success: true, result };
 }
 
-export async function sendNotification(message) {
+export async function sendNotification(userId, message) {
+  const db = await connectToDatabase();
+  const subscription = await db.collection('subscriptions').findOne({ userId });
+
   if (!subscription) {
     throw new Error('No subscription available');
   }
 
   try {
     await webpush.sendNotification(
-      subscription,
+      subscription.subscription,
       JSON.stringify({
-        title: 'Test Notification',
-        body: message,
-        icon: '/icon.png',
+        title: 'Recipe Popularity Alert!',
+        body: message.text,
+        icon: '/0.png',
+        url: `/recipes/${message.recipeId}`
       })
     );
     return { success: true };
