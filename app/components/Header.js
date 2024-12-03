@@ -81,7 +81,7 @@ const Header = ({ isAuthenticated, onLogout }) => {
               <span>Favorites ({favoriteDetails.length})</span>
             </Link>
 
-            {/* ... other header content ... */}
+            
           </div>
 
           <Link href="/" className="flex items-center">
