@@ -16,8 +16,14 @@ import { SortControl } from "./filter-sort/SortControl";
 import { useSearchParams } from "next/navigation";
 import { useShoppingList } from '../context/ShoppingListContext';
 
-
-
+/**
+ * Recipes component displays a list of recipes, allows the user to favorite recipes,
+ * and adds ingredients to the shopping list.
+ * 
+ * @param {Object} props The component's props.
+ * @param {Array} props.recipes The initial list of recipes.
+ * @returns {JSX.Element} The component JSX element.
+ */
 const Recipes = ({ recipes: initialRecipes }) => {
   const [recipes, setRecipes] = useState(initialRecipes);
   const [favoritedRecipes, setFavoritedRecipes] = useState(new Set());
@@ -30,7 +36,9 @@ const Recipes = ({ recipes: initialRecipes }) => {
   const [addedToList, setAddedToList] = useState(new Set());
 
 
-  // Fetch favorites when component mounts
+  /**
+   * Fetches the user's favorite recipes when the component mounts.
+   */
   useEffect(() => {
     const fetchFavorites = async () => {
       const loggedInEmail = localStorage.getItem('loggedInUserEmail');
@@ -67,6 +75,11 @@ const Recipes = ({ recipes: initialRecipes }) => {
     setRecipes(initialRecipes);
   }, [initialRecipes, searchParams]);
 
+  /**
+   * Toggles a recipe's favorite status and updates the favorites list.
+   * 
+   * @param {string} recipeId The ID of the recipe to toggle favorite status for.
+   */
   const toggleFavorite = async (recipeId) => {
     const loggedInEmail = localStorage.getItem('loggedInUserEmail');
     if (!loggedInEmail) {
@@ -133,6 +146,11 @@ const Recipes = ({ recipes: initialRecipes }) => {
     }
   };
 
+  /**
+   * Adds recipe ingredients to the shopping list.
+   * 
+   * @param {Object} ingredients The ingredients object to add to the shopping list.
+   */
   const addIngredientsToShoppingList = (ingredients) => {
     const ingredientsArray = Object.keys(ingredients).map((key) => ({
       name: key,
@@ -286,5 +304,3 @@ const Recipes = ({ recipes: initialRecipes }) => {
 };
 
 export default Recipes;
-
-

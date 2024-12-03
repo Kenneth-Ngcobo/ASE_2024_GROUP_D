@@ -5,6 +5,15 @@ import { useRouter } from "next/navigation";
 import { signIn, getSession, signOut } from "next-auth/react";
 import Link from "next/link";
 
+/**
+ * UserModal component displays a modal for user login, sign-up, and profile actions.
+ * 
+ * @param {Object} props - Component props
+ * @param {boolean} props.show - Determines whether the modal is visible.
+ * @param {Function} props.onClose - Callback function to close the modal.
+ * 
+ * @returns {JSX.Element} - The rendered modal component.
+ */
 export default function UserModal({ show, onClose }) {
   const router = useRouter();
   const [formState, setFormState] = useState({
@@ -23,7 +32,11 @@ export default function UserModal({ show, onClose }) {
     isLoggingOut: false,
   });
 
-  // Handle form input changes
+  /**
+   * Handles form input changes and updates the form state.
+   * 
+   * @param {Object} e - Event object
+   */
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormState((prev) => ({
@@ -32,7 +45,9 @@ export default function UserModal({ show, onClose }) {
     }));
   };
 
-  // Fetch session on mount
+  /**
+   * Fetches the user session on mount and updates the auth state.
+   */
   useEffect(() => {
     const initializeAuth = async () => {
       const storedEmail = localStorage.getItem("loggedInUserEmail");
@@ -50,7 +65,9 @@ export default function UserModal({ show, onClose }) {
     initializeAuth();
   }, []);
 
-  // Google Sign In
+  /**
+   * Handles Google sign-in using the next-auth signIn method.
+   */
   const handleGoogleSignIn = useCallback(async () => {
     setAuthState((prev) => ({ ...prev, isVerifyingGoogle: true }));
     try {
@@ -76,7 +93,9 @@ export default function UserModal({ show, onClose }) {
     }
   }, [onClose]);
 
-  // Email check
+  /**
+   * Checks if the email already exists and updates the login state.
+   */
   const handleEmailCheck = useCallback(async () => {
     if (!formState.email) {
       alert("Please enter an email.");
@@ -103,7 +122,9 @@ export default function UserModal({ show, onClose }) {
     }
   }, [formState.email]);
 
-  // Form submission
+  /**
+   * Submits the login or sign-up form based on the current state.
+   */
   const handleSubmit = useCallback(async () => {
     setAuthState((prev) => ({ ...prev, isLoggingIn: true }));
     try {
@@ -146,7 +167,9 @@ export default function UserModal({ show, onClose }) {
     }
   }, [authState.isLogin, formState, router, onClose]);
 
-  // Logout handling
+  /**
+   * Logs out the user and clears session data.
+   */
   const handleLogout = () =>
     setAuthState((prev) => ({ ...prev, isConfirmingLogout: true }));
   const confirmLogout = useCallback(async () => {

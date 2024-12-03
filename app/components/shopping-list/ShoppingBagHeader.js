@@ -1,9 +1,15 @@
 'use client';
 
-import { useShoppingList } from '../context/ShoppingListContext';
+import { useShoppingList } from '../../context/ShoppingListContext';
 import { useRouter } from 'next/navigation';
 import { ShoppingBag } from 'lucide-react';
 
+/**
+ * ShoppingBagHeader component - Displays a button that redirects to the shopping list page
+ * and shows the number of items in the shopping list.
+ * 
+ * @returns {JSX.Element} The ShoppingBagHeader component.
+ */
 const ShoppingBagHeader = () => {
   const { state } = useShoppingList();
   const router = useRouter();

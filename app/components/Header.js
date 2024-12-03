@@ -14,6 +14,22 @@ import { ShoppingListProvider } from "../context/ShoppingListContext.js";
 import ShoppingBagHeader from "./ShoppingBagHeader.js";
 import Loading from "../loading.js";
 
+/**
+ * Header component renders the navigation bar, including the logo, links, 
+ * category list, user modal, shopping bag, and theme button.
+ * It also handles user authentication and dropdown menu visibility.
+ * 
+ * @param {Object} props - Component props
+ * @param {boolean} props.isAuthenticated - Flag to indicate if the user is authenticated
+ * @param {function} props.onLogout - Callback to handle user logout
+ * 
+ * @returns {JSX.Element} The header component
+ * 
+ * @component
+ * @example
+ * // Usage:
+ * <Header isAuthenticated={true} onLogout={handleLogout} />
+ */
 const Header = ({ isAuthenticated, onLogout }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isFilterOpen, setIsFilterOpen] = useState(false);

@@ -1,11 +1,17 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useShoppingList } from '../context/ShoppingListContext';
+import { useShoppingList } from '../../context/ShoppingListContext';
 import { FaWhatsapp } from 'react-icons/fa';
-import BackButton from './ui/BackButton';
-import { useAuth } from '../hook/useAuth'
+import BackButton from '../ui/BackButton';
+import { useAuth } from '../../hook/useAuth'
 
+/**
+ * ShoppingList component - Manages the display and actions for the shopping list.
+ * Includes features like adding, removing, and updating items, as well as sharing the list via WhatsApp.
+ *
+ * @returns {JSX.Element} The ShoppingList component.
+ */
 const ShoppingList = () => {
   const { state, dispatch,
     syncLoadList,
