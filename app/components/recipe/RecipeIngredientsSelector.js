@@ -4,11 +4,26 @@ import { useState } from 'react';
 import { useShoppingList } from '../../context/ShoppingListContext';
 import { useRouter } from 'next/navigation';
 
+/**
+ * Renders a list of recipe ingredients with selection and shopping list functionality.
+ * 
+ * @component
+ * @param {Object} props - Component props
+ * @param {Object} props.ingredients - Object containing ingredients and their amounts
+ * @returns {JSX.Element} Ingredient list with add to shopping list options
+ */
 const RecipeIngredientsSection = ({ ingredients }) => {
   const { dispatch } = useShoppingList();
   const [selectedIngredients, setSelectedIngredients] = useState(new Set());
   const router = useRouter();
 
+  /**
+   * Toggles an ingredient's selection state.
+   * Adds or removes the ingredient from the selectedIngredients set.
+   * 
+   * @param {string} ingredient - The name of the ingredient
+   * @param {string} amount - The quantity of the ingredient
+   */
   const toggleIngredient = (ingredient, amount) => {
     const newSelected = new Set(selectedIngredients);
     const ingredientId = `${ingredient.toLowerCase().replace(/\s+/g, '-')}`;
@@ -21,6 +36,11 @@ const RecipeIngredientsSection = ({ ingredients }) => {
     setSelectedIngredients(newSelected);
   };
 
+  /**
+   * Adds selected ingredients to the shopping list.
+   * Dispatches an 'ADD_ITEM' action for each selected ingredient.
+   * Navigates to the shopping list page after adding.
+   */
   const addSelectedToList = () => {
     Object.entries(ingredients).forEach(([ingredient, amount]) => {
       const ingredientId = `${ingredient.toLowerCase().replace(/\s+/g, '-')}`;
@@ -42,6 +62,11 @@ const RecipeIngredientsSection = ({ ingredients }) => {
     router.push('/shopping-list');
   };
 
+  /**
+   * Adds all ingredients to the shopping list.
+   * Dispatches an 'ADD_ITEM' action for every ingredient.
+   * Navigates to the shopping list page after adding.
+   */
   const addAllToList = () => {
     Object.entries(ingredients).forEach(([ingredient, amount]) => {
       const ingredientId = `${ingredient.toLowerCase().replace(/\s+/g, '-')}`;
