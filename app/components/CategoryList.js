@@ -1,31 +1,36 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
-const CategoryList = ({ onCategoryChange }) => {
+const CategoryList = ({ onCategoryChange, totalRecipes }) => {
   const [categories, setCategories] = useState([]);
   const [error, setError] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredCategories, setFilteredCategories] = useState([]);
-
+  const [totalRecipesState, setTotalRecipes] = useState(0);
+  
   const router = useRouter();
   const searchParams = useSearchParams();
+  
+  // Ref to hold a reference to the modal element for away click detection
+  const modalRef = useRef(null); // Added reference for modal
 
-  // Fetch categories from API
+  useEffect(() => {
+    console.log('Total recipes:', totalRecipes);
+    setTotalRecipes(totalRecipes);
+  }, [totalRecipes]);
+
   useEffect(() => {
     const fetchCategories = async () => {
       try {
         const response = await fetch('/api/recipes/categories');
-        if (!response.ok) {
-          throw new Error('Failed to fetch categories');
-        }
+        if (!response.ok) throw new Error('Failed to fetch categories');
         const data = await response.json();
         setCategories(data);
-        setFilteredCategories(data); 
-        console.log('Fetched categories:', data);
+        setFilteredCategories(data);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -35,114 +40,117 @@ const CategoryList = ({ onCategoryChange }) => {
     fetchCategories();
   }, []);
 
-  // Handle search submit or input change
-  const handleSearch = (event) => {
-    event.preventDefault();
+  // Handle clicks outside of the modal to close it
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      // Check if the click is outside the modal
+      if (modalRef.current && !modalRef.current.contains(event.target)) {
+        setIsOpen(false); // Close modal on outside click
+      }
+    };
 
-    if (!searchTerm) {
-      setFilteredCategories(categories); // Reset to all categories if search is empty
-      return;
+    // Attach event listener when modal is open
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
     }
 
-    // Filter categories based on search term
+    // Cleanup event listener on close or component unmount
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen]); // Dependencies include isOpen to trigger on open/close
+
+  const handleSearch = (event) => {
+    event.preventDefault();
+    if (!searchTerm) {
+      setFilteredCategories(categories);
+      return;
+    }
     const matches = categories.filter(category =>
       category.toLowerCase().includes(searchTerm.toLowerCase())
     );
-
     setFilteredCategories(matches);
-    setIsOpen(true); 
   };
 
-  // Handle category select
   const handleCategorySelect = async (category) => {
     setIsOpen(false);
-
-    // Get current query parameters
     const currentQuery = Object.fromEntries(searchParams.entries());
-
-    // Update the query with the selected category
     const newQuery = {
       ...currentQuery,
       page: 1,
       category: category,
     };
-
-    // Construct the new query string
     const queryString = new URLSearchParams(newQuery).toString();
-
-    // Push the new URL with updated query
     router.push(`?${queryString}`);
   };
 
-  if (loading) {
-    return <div>Loading categories...</div>;
-  }
+  const clearCategory = () => {
+    const currentQuery = Object.fromEntries(searchParams.entries());
+    const { category, ...updatedQuery } = currentQuery;
+    const queryString = new URLSearchParams(updatedQuery).toString();
+    router.push(`?${queryString}`);
+  };
 
-  if (error) {
-    return <div>Error: {error}</div>;
-  }
+  if (loading) return <div className="text-gray-500"></div>;
+  if (error) return <div className="text-red-500">Error: {error}</div>;
 
   return (
-    <div className="relative" >
-      <h2 className="text-xl font-semibold mb-4">Categories</h2>
-
-      {/* Search form */}
-     
-      <form onSubmit={handleSearch} className="">
-        <input
-          type="text"
-          placeholder="Search categories"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="border px-4 py-2 mb-4 w-30 mx-2"
-        />
-        <button
-          type="submit"
-          className="bg-blue-500 text-white px-4 py-2 mx-2 rounded hover:bg-blue-400 transition duration-200"
-        >
-          Search
-        </button>
-
-            {/* Toggle button */}
+    <div className="relative">
       <button
         onClick={() => setIsOpen((prev) => !prev)}
-        className="bg-green-600 text-white px-4 py-2 mx-2 rounded hover:bg-green-500 transition duration-200"
+        className="block text-[#020123] hover:text-[#fc9d4f] font-medium uppercase py-2"
       >
-        {isOpen ? 'Close' : 'Select Category'}
+        {isOpen ? 'Close' : 'Categories'}
       </button>
-      </form>
-    
-      
 
-  
-
-      {/* Dropdown with filtered categories */}
-      {isOpen && filteredCategories.length > 0 && (
-        <ul
-          style={{
-            position: 'relative',
-            top: '100%',
-            left: 0,
-            width: '100%',
-            background: 'white',
-            border: '1px solid #ccc',
-            listStyleType: 'none',
-            padding: 0,
-            margin: 0,
-            maxHeight: '200px',
-            overflowY: 'auto',
-          }}
+      {isOpen && (
+        <div
+          ref={modalRef} // Attach the modal ref to the dropdown div
+          className="absolute left-0 w-64 mt-2 dark:bg-gray-950 bg-white shadow-lg rounded-lg overflow-hidden z-50"
         >
-          {filteredCategories.map((category, index) => (
-            <li
-              key={index}
-              onClick={() => handleCategorySelect(category)}
-              className="p-2 bg-gray-200 border-b hover:bg-gray-300 transition duration-200 cursor-pointer"
-            >
-              {category}
-            </li>
-          ))}
-        </ul>
+          <div className="p-4 border-b border-gray-100 dark:border-gray-850">
+            <form onSubmit={handleSearch} className="space-y-2">
+              <input
+                type="text"
+                placeholder="Search categories"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-200 rounded-md text-sm focus:outline-none focus:border-[#fcf7e9]"
+              />
+              <div className="flex gap-2">
+                <button
+                  type="submit"
+                  className="flex-1 bg-[#ff4f1a] text-white px-4 py-2 rounded-md text-sm hover:bg-[#fc9d4f] transition duration-200"
+                >
+                  Search
+                </button>
+                <button
+                  onClick={clearCategory}
+                  type="button"
+                  className="flex-1 bg-gray-100 text-gray-700 px-4 py-2 rounded-md text-sm hover:bg-[#fcf7e9] transition duration-200"
+                >
+                  Clear
+                </button>
+              </div>
+            </form>
+          </div>
+
+          {filteredCategories.length > 0 ? (
+            <ul className="max-h-96 overflow-y-auto">
+              {filteredCategories.map((category, index) => (
+                <li
+                  key={index}
+                  onClick={() => handleCategorySelect(category)}
+                  className="px-4 py-3 hover:bg-gray-50 cursor-pointer flex items-center text-gray-700 text-sm border-b border-gray-100 last:border-0"
+                >
+                  {category}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="p-4 text-gray-500 text-sm">No categories found</p>
+          )}
+        </div>
       )}
     </div>
   );

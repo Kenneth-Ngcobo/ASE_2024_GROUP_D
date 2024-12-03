@@ -1,14 +1,16 @@
-// Other imports remain unchanged
 import { Suspense } from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
 import BackButton from '../../components/BackButton';
 import { fetchRecipeById } from '../../api';
 import ImageGallery from '../../components/ImageGallery';
 import CollapsibleSection from '../../components/CollapsibleSection';
-import dynamic from 'next/dynamic';
-import LoadingSpinner from '../../components/loadingSpinner'; // Importing the Loading component
 import Loading from './loading';
+import EditableRecipeDetails from '../../components/EditableRecipeDetails';
+import ReviewsSection from '../../components/ReviewsSection';
+import AllergensSection from '../../components/AllergensSection';
+import RecipeIngredientsSelector from '../../components/RecipeIngredientsSelector';
+import { ShoppingListProvider } from '../../context/shoppingListContext';
+import VoiceAssistant from '../../components/VoiceAssistant';
 
 
 // Generate metadata for the recipe page dynamically
@@ -16,7 +18,7 @@ export async function generateMetadata({ params }) {
     const { id } = params;
     const recipe = await fetchRecipeById(id);
 
-    if ( !recipe) {
+    if (!recipe) {
         return {
             title: 'Recipe not found',
             description: 'Error occurred while fetching the recipe.'
@@ -29,7 +31,7 @@ export async function generateMetadata({ params }) {
         openGraph: {
             title: recipe.title || 'Untitled Recipe',
             description: recipe.description || 'No description available.',
-            images: recipe.images?.[0] || '/kwaMai.jpg',
+            images: recipe.images?.[0] || '/0.png',
             type: 'article'
         }
     };
@@ -51,29 +53,24 @@ export default async function RecipePage({ params }) {
         load = false;
     }
 
-    // if(load){
-    //     <div className="w-full h-[400px] bg-gray-100 rounded-xl flex items-center justify-center">
-    //         <Loading /> {/* Use your Loading component here */}
-    //     </div>
-    // }
-
     if (error) {
         throw error;
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-b from-green-50 to-white py-8">
+        <div className="min-h-screen bg-[#fcfde2] dark:bg-[#1c1d02] py-8">
+           < ShoppingListProvider>
             <Suspense fallback={<Loading />}>
                 <div className="container mx-auto px-4 max-w-5xl">
                     {/* Back Button */}
-                    <div className="mb-8">
+                    <div className="absolute  left-4 mb-8">
                         <BackButton />
                     </div>
 
                     <div className="space-y-8">
                         {/* Image Section */}
-                        <div className="bg-white rounded-2xl shadow-xl p-6 overflow-hidden">
-                            <Suspense fallback={<Loading />}> {/* Use the Loading component here */}
+                        <div className="bg-white dark:bg-gray-950 rounded-2xl shadow-xl p-6 overflow-hidden">
+                            <Suspense fallback={<Loading />}>
                                 {recipe.images && recipe.images.length > 0 ? (
                                     <ImageGallery images={recipe.images} />
                                 ) : recipe.images?.[0] ? (
@@ -85,47 +82,49 @@ export default async function RecipePage({ params }) {
                                         className="w-full h-[400px] object-cover rounded-xl"
                                     />
                                 ) : (
-                                    <div className="w-full h-[400px] bg-gray-100 rounded-xl flex items-center justify-center">
-                                        <p className="text-gray-500">No image available</p>
+                                    <div className="w-full h-[400px] bg-gray-100 dark:bg-gray-950 rounded-xl flex items-center justify-center">
+                                        <p className="text-[#020123] dark:text-[#dddcfe">No image available</p>
                                     </div>
                                 )}
-                            </Suspense>
+                                </Suspense>
+                                
                         </div>
 
                         {/* Title and Tags Section */}
-                        <div className="bg-white rounded-2xl shadow-xl p-8">
-                            <h1 className="text-4xl font-bold text-green-800 mb-4">
+                        <div className="bg-white dark:bg-gray-950 rounded-2xl shadow-xl p-8">
+                            <h1 className="text-4xl font-bold text-[#fc9d4f] dark: text-[#b05103] mb-4">
                                 {recipe.title || 'Untitled Recipe'}
                             </h1>
-                            <div className="flex flex-wrap gap-2 mb-4">
+                            <div className="flex flex-wrap gap-3 mb-6">
                                 {recipe.tags?.map((tag, index) => (
-                                    <span key={index} className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm">
+                                    <span key={index} className="px-4 py-2 bg-[#f9efd2] dark:bg-[#1c1d02] dark:text-[#dddcfe] hover:bg-[#edd282] text-[#020123] rounded-2xl text-sm font-medium uppercase tracking-wide transition-colors">
                                         {tag}
                                     </span>
                                 ))}
                             </div>
                         </div>
 
-                        {/* Collapsible Sections */}
-                        <CollapsibleSection
-                            title="Description"
-                            content={recipe.description || 'No description available.'}
-                            defaultOpen={true}
+                        {/* Editable Recipe Details */}
+                        <EditableRecipeDetails
+                            id={id}
+                            initialDescription={recipe.description}
+                            lastEditedBy={recipe.lastEditedBy}
+                            lastEditedAt={recipe.lastEditedAt}
                         />
 
+                        {/* Allergens Section */}
+                        <AllergensSection recipeId={id} />
+
+                        {/** Collapsible Section */}
                         <CollapsibleSection
-                            title="Ingredients"
-                            content={
-                                <ul className="list-disc list-inside">
-                                    {Object.entries(recipe.ingredients || {}).map(([key, value], index) => (
-                                        <li key={index}>
-                                            {key}: {value}
-                                        </li>
-                                    ))}
-                                </ul>
-                            }
-                            defaultOpen={true}
-                        />
+  title="Ingredients"
+  content={
+    <div className="pt-4">
+      <RecipeIngredientsSelector ingredients={recipe.ingredients || {}} />
+    </div>
+  }
+  defaultOpen={true}
+/>
 
                         <CollapsibleSection
                             title="Nutrition"
@@ -143,31 +142,44 @@ export default async function RecipePage({ params }) {
 
                         <CollapsibleSection
                             title="Instructions"
-                            content={recipe.instructions || 'No instructions available.'}
+                            content={
+                                <div>
+                                    {recipe.instructions || 'No instructions available.'}
+                                    <VoiceAssistant instructions={recipe.instructions || []}/>
+                                </div>
+                                }
                             defaultOpen={true}
                         />
 
+                        {/* New Reviews Section */}
+                        <CollapsibleSection
+                            title="Reviews"
+                            content={<ReviewsSection recipeId={id} />}
+                            defaultOpen={true}
+                        />
+                       
                         {/* Footer Information */}
-                        <div className="mt-8 bg-white p-6 rounded-xl shadow-xl">
-                            <p className="text-sm text-green-600">
+                        <div className="mt-8 bg-white dark:bg-[#1c1d02] p-6 rounded-xl shadow-xl">
+                            <p className="text-sm text-[#020123] dark:text-[#dddcfe">
                                 <strong>Published:</strong> {new Date(recipe.published).toDateString()}
                             </p>
                             <p className="text-sm">
-                                <strong className="text-green-600">Prep Time:</strong> {recipe.prep} minutes
+                                <strong className="text-[#020123] dark:text-[#dddcfe">Prep Time:</strong> {recipe.prep} minutes
                             </p>
                             <p className="text-sm">
-                                <strong className="text-green-600">Cook Time:</strong> {recipe.cook} minutes
+                                <strong className="text-[#020123] dark:text-[#dddcfe">Cook Time:</strong> {recipe.cook} minutes
                             </p>
                             <p className="text-sm">
-                                <strong className="text-green-600">Servings:</strong> {recipe.servings}
+                                <strong className="text-[#020123] dark:text-[#dddcfe">Servings:</strong> {recipe.servings}
                             </p>
                             <p className="text-sm">
-                                <strong className="text-green-600">Category:</strong> {recipe.category}
+                                <strong className="text-[#020123] dark:text-[#dddcfe">Category:</strong> {recipe.category}
                             </p>
                         </div>
                     </div>
                 </div>
-            </Suspense>
+                </Suspense>
+                </ShoppingListProvider>
         </div>
     );
 }
