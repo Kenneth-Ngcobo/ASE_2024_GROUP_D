@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useShoppingList } from '../context/ShoppingListContext';
 import { FaWhatsapp } from 'react-icons/fa';
-import BackButton from './BackButton';
+import BackButton from './ui/BackButton';
 import { useAuth } from '../hook/useAuth'
 
 const ShoppingList = () => {

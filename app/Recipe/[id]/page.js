@@ -177,6 +177,7 @@ export default async function RecipePage({ params }) {
                                 </p>
                             </div>
                         </div>
+                    </div>
                 </Suspense>
             </ShoppingListProvider>
         </div>

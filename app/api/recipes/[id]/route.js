@@ -2,20 +2,26 @@ import connectToDatabase from '../../../../db';
 import { ObjectId } from 'mongodb';
 
 /**
- * Fetch a single recipe by ID from the MongoDB database.
- *
- * This function handles GET requests to retrieve a recipe document based on the
- * provided `id` parameter. It connects to the MongoDB database, queries the `recipes` 
- * collection, and returns the found recipe. If no recipe is found, or if there's a 
- * database connection issue, appropriate error responses are returned.
- *
- * @param {Request} req - The HTTP request object.
- * @param {Object} param1 - An object containing the `params` object.
- * @param {Object} param1.params - Parameters from the request URL.
- * @param {string} param1.params.id - The ID of the recipe to fetch.
- *
- * @returns {Promise<Response>} A Response object containing the recipe data in JSON format
- * if found, or an error message if not found or a failure occurs.
+ * Retrieves a single recipe by its ID from the database.
+ * 
+ * @async
+ * @function GET
+ * @param {Request} req - The incoming HTTP request object
+ * @param {Object} context - Route context containing recipe ID
+ * @param {Object} context.params - Route parameters
+ * @param {string} context.params.id - The ID of the recipe to fetch
+ * @returns {Response} JSON response containing the recipe data
+ * - Success (200): Full recipe object
+ * - Error (404): { message: 'Recipe not found' }
+ * - Error (500): { 
+ *     error: 'Failed to fetch recipe', 
+ *     details: string 
+ * }
+ * 
+ * @description
+ * - Connects to the database
+ * - Retrieves a single recipe using its ObjectId
+ * - Returns the complete recipe details
  */
 export async function GET(req, { params }) {
   const awaitedParams = await params;
