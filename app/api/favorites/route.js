@@ -21,12 +21,19 @@ export async function POST(req) {
       });
     }
 
-    // Update the user's favorites array
-    const updateResult = await usersCollection.updateOne(
-      { email: email },
-      { $addToSet: { favorites: recipeId } },
-      { upsert: true } // Changed to true to create user if doesn't exist
-    );
+// Update the user's favorites array with a timestamp
+const updateResult = await usersCollection.updateOne(
+  { email: email },
+  { 
+    $addToSet: { 
+      favorites: {
+        recipeId: recipeId,
+        addedAt: new Date()
+      } 
+    } 
+  },
+  { upsert: true }
+);
 
     if (updateResult.modifiedCount === 0 && updateResult.upsertedCount === 0) {
       // If recipe is already in favorites
@@ -78,6 +85,10 @@ export async function GET(req) {
     // Get email from searchParams
     const { searchParams } = new URL(req.url);
     const email = searchParams.get('email');
+    const page = parseInt(searchParams.get('page') || '1');
+    const limit = parseInt(searchParams.get('limit') || '8');
+    const sort = searchParams.get('sort') || 'newest';
+    const category = searchParams.get('category');
 
     if (!email) {
       return NextResponse.json({ error: 'Email is required' }, { status: 400 });
@@ -85,6 +96,7 @@ export async function GET(req) {
 
     const db = await connectToDatabase();
     const usersCollection = db.collection('users');
+    
 
     // Fetch the user document
     const user = await usersCollection.findOne(
@@ -92,29 +104,65 @@ export async function GET(req) {
       { projection: { favorites: 1, _id: 0 } }
     );
 
-    if (!user) {
-      // Create new user with empty favorites if doesn't exist
-      await usersCollection.insertOne({
-        email: email,
-        favorites: []
-      });
-      return NextResponse.json({ favorites: [], favoritesCount: 0 }, { status: 200 });
+    if (!user || !user.favorites) {
+      return NextResponse.json({ 
+        favorites: [], 
+        favoritesCount: 0, 
+        totalPages: 0 
+      }, { status: 200 });
     }
 
+      // Prepare filter and sort
+      let query = { _id: { $in: user.favorites.map(f => f.recipeId) } };
+      if (category) {
+        query.category = category;
+      }
+
+
+          // Prepare sort
+    let sortOption = { published: -1 }; // Default to newest
+    if (sort === 'oldest') {
+      sortOption = { published: 1 };
+    } else if (sort === 'alphabetical') {
+      sortOption = { title: 1 };
+    }
+        // Pagination and fetch
+        const totalCount = await recipesCollection.countDocuments(query);
+        const totalPages = Math.ceil(totalCount / limit);
+    
+
+          
     // Ensure favorites exists
     const favorites = user.favorites || [];
 
     // Fetch the details of all favorited recipes from the 'recipes' collection
     const recipesCollection = db.collection('recipes');
-    const favoritedRecipes = await recipesCollection.find({ _id: { $in: favorites } }).toArray();
+    const favoritedRecipes = await recipesCollection.find({ _id: { $in: favorites } })
+    .find(query)
+    .sort(sortOption)
+    .skip((page - 1) * limit)
+    .limit(limit)
+    .toArray();
 
-    return NextResponse.json({
-      favorites: favoritedRecipes,
-      favoritesCount: favoritedRecipes.length
-    }, { status: 200 });
+ // Map back to include added date
+ const recipesWithAddedDate = favoritedRecipes.map(recipe => {
+  const favoriteData = user.favorites.find(f => f.recipeId.toString() === recipe._id.toString());
+  return {
+    ...recipe,
+    addedAt: favoriteData ? favoriteData.addedAt : new Date()
+  };
+});
 
-  } catch (error) {
-    console.error('Error retrieving favorites:', error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
-  }
+
+
+return NextResponse.json({
+  favorites: recipesWithAddedDate,
+  favoritesCount: totalCount,
+  totalPages: totalPages,
+  currentPage: page
+}, { status: 200 });
+} catch (error) {
+console.error('Error retrieving favorites:', error);
+return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+}
 }
