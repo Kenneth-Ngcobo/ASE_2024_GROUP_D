@@ -13,7 +13,7 @@ export default function UserModal({ show, onClose }) {
     fullName: "",
     phoneNumber: "",
   });
-  const [authMode, setAuthMode] = useState('signup'); // 'signup' or 'login'
+  const [authMode, setAuthMode] = useState("signup");
   const [authState, setAuthState] = useState({
     isLoading: false,
     loggedInUser: null,
@@ -22,7 +22,6 @@ export default function UserModal({ show, onClose }) {
     isConfirmingLogout: false,
   });
 
-  // Handle form input changes
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormState((prev) => ({
@@ -31,7 +30,6 @@ export default function UserModal({ show, onClose }) {
     }));
   };
 
-  // Fetch session on mount
   useEffect(() => {
     const initializeAuth = async () => {
       const storedEmail = localStorage.getItem("loggedInUserEmail");
@@ -49,7 +47,6 @@ export default function UserModal({ show, onClose }) {
     initializeAuth();
   }, []);
 
-  // Google Sign In
   const handleGoogleSignIn = useCallback(async () => {
     setAuthState((prev) => ({ ...prev, isVerifyingGoogle: true }));
     try {
@@ -57,7 +54,6 @@ export default function UserModal({ show, onClose }) {
       if (result?.ok) {
         const session = await getSession();
         if (session?.user?.email) {
-          // Create or update user in backend
           const response = await fetch("/api/auth/google-signup", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -92,11 +88,24 @@ export default function UserModal({ show, onClose }) {
     }
   }, [onClose]);
 
-  // Form submission
   const handleSubmit = useCallback(async () => {
+    const fieldsToCheck =
+      authMode === "signup"
+        ? ["fullName", "email", "phoneNumber", "password"]
+        : ["email", "password"];
+
+    const emptyFields = fieldsToCheck.filter(
+      (field) => !formState[field] || formState[field].trim() === ""
+    );
+
+    if (emptyFields.length > 0) {
+      alert("All fields are required");
+      return;
+    }
+
     setAuthState((prev) => ({ ...prev, isLoading: true }));
     try {
-      if (authMode === 'login') {
+      if (authMode === "login") {
         const result = await signIn("credentials", {
           email: formState.email,
           password: formState.password,
@@ -132,27 +141,26 @@ export default function UserModal({ show, onClose }) {
       setAuthState((prev) => ({ ...prev, loggedInUser: formState.email }));
       router.push("/");
       onClose();
+    } catch (error) {
+      console.error("Submission error:", error);
+      alert("An error occurred. Please try again.");
     } finally {
       setAuthState((prev) => ({ ...prev, isLoading: false }));
     }
   }, [authMode, formState, router, onClose]);
-
   const handleLogout = () =>
     setAuthState((prev) => ({ ...prev, isConfirmingLogout: true }));
-  
+
   const confirmLogout = useCallback(async () => {
     setAuthState((prev) => ({ ...prev, isLoggingOut: true }));
     try {
-      // Clear local storage first
       localStorage.removeItem("loggedInUserEmail");
-      
-      // Sign out and wait for it to complete
-      await signOut({ 
-        redirect: false,  // Prevent automatic redirection
-        callbackUrl: '/'  // Optional: specify a callback URL
+
+      await signOut({
+        redirect: false,
+        callbackUrl: "/",
       });
-  
-      // Reset auth state
+
       setAuthState({
         isLoading: false,
         loggedInUser: null,
@@ -160,8 +168,7 @@ export default function UserModal({ show, onClose }) {
         isLoggingOut: false,
         isConfirmingLogout: false,
       });
-  
-      // Show alert and navigate
+
       alert("Logged out successfully!");
       router.push("/");
     } catch (error) {
@@ -175,10 +182,9 @@ export default function UserModal({ show, onClose }) {
   const cancelLogout = () =>
     setAuthState((prev) => ({ ...prev, isConfirmingLogout: false }));
 
-  // Toggle between login and signup
   const toggleAuthMode = () => {
-    setAuthMode(authMode === 'login' ? 'signup' : 'login');
-    // Reset form state when switching modes
+    setAuthMode(authMode === "login" ? "signup" : "login");
+
     setFormState({
       email: "",
       password: "",
@@ -207,14 +213,14 @@ export default function UserModal({ show, onClose }) {
             <Link href="/editdetails">
               <button
                 onClick={onClose}
-                className="w-full bg-teal-700 text-white py-3 rounded-md mb-4"
+                className="w-full bg-[#fc9d4f] text-white py-3 rounded-md mb-4"
               >
-                Edit Profile
+                Go to Profile
               </button>
             </Link>
             <button
               onClick={handleLogout}
-              className="w-full bg-red-500 text-white py-3 rounded-md mb-4"
+              className="w-full bg-[#FF4F1A] text-white py-3 rounded-md mb-4"
             >
               Log Out
             </button>
@@ -244,8 +250,8 @@ export default function UserModal({ show, onClose }) {
 
             <div className="text-center text-gray-500 mb-4">OR</div>
 
-            <h2 className="text-2xl font-bold text-center mb-4">
-              {authMode === 'login' ? 'Login' : 'Sign Up'}
+            <h2 className="text-2xl text-[#fc9d4f] font-bold text-center mb-4">
+              {authMode === "login" ? "Login" : "Sign Up"}
             </h2>
 
             <input
@@ -257,7 +263,7 @@ export default function UserModal({ show, onClose }) {
               className="w-full border rounded-md p-3 text-gray-700 mb-4"
             />
 
-            {authMode === 'signup' && (
+            {authMode === "signup" && (
               <>
                 <input
                   type="text"
@@ -289,26 +295,29 @@ export default function UserModal({ show, onClose }) {
 
             <button
               onClick={handleSubmit}
-              className="w-full bg-teal-700 text-white py-3 rounded-md mb-4"
+              className="w-full bg-[#fc9d4f] hover:bg-[#f9efd2] text-white py-3 rounded-md mb-4"
               disabled={authState.isLoading}
             >
-              {authState.isLoading 
-                ? (authMode === 'login' ? 'Logging in...' : 'Signing up...') 
-                : (authMode === 'login' ? 'Login' : 'Sign Up')
-              }
+              {authState.isLoading
+                ? authMode === "login"
+                  ? "Logging in..."
+                  : "Signing up..."
+                : authMode === "login"
+                  ? "Login"
+                  : "Sign Up"}
             </button>
 
             <div className="text-center mb-4">
               <span className="text-gray-600">
-                {authMode === 'login' 
-                  ? "Don't have an account? " 
+                {authMode === "login"
+                  ? "Don't have an account? "
                   : "Already have an account? "}
               </span>
-              <button 
+              <button
                 onClick={toggleAuthMode}
-                className="text-teal-700 hover:underline ml-1"
+                className="text-[#fc9d4f] hover:underline ml-1"
               >
-                {authMode === 'login' ? 'Sign Up' : 'Login'}
+                {authMode === "login" ? "Sign Up" : "Login"}
               </button>
             </div>
           </>
