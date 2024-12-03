@@ -37,16 +37,16 @@ const Header = ({ isAuthenticated, onLogout }) => {
       if (!loggedInEmail) {
         return;
       }
-
+  
       try {
         const response = await fetch(`/api/favorites?email=${encodeURIComponent(loggedInEmail)}`, {
           credentials: 'include',
         });
-
+  
         if (!response.ok) {
           throw new Error('Failed to fetch favorites');
         }
-
+  
         const data = await response.json();
         setFavoriteDetails(data.favorites);
       } catch (err) {
@@ -54,10 +54,9 @@ const Header = ({ isAuthenticated, onLogout }) => {
         console.error('Error fetching favorites:', err);
       }
     };
-
+  
     fetchFavorites();
   }, []);
-
   return (
     <header className=" sticky top-0 bg-[#f9efd2] dark:bg-gray-950 z-50 shadow-md">
       <div className="container mx-auto px-4">

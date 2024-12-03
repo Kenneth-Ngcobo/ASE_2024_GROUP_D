@@ -1,22 +1,27 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import Image from "next/image";
-import { FaHeart, FaTrash } from "react-icons/fa";
-import Link from "next/link";
+import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
+import { 
+  FaClock, 
+  FaUtensils, 
+  FaTrash 
+} from "react-icons/fa";
+import { PiCookingPotDuotone, PiHeart } from "react-icons/pi";
 
 const FavoritesPage = () => {
-  const [favorites, setFavorites] = useState([]);
+  const [favoriteRecipes, setFavoriteRecipes] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const router = useRouter();
 
   useEffect(() => {
     const fetchFavorites = async () => {
       const loggedInEmail = localStorage.getItem('loggedInUserEmail');
+      
       if (!loggedInEmail) {
-        router.push('/'); // Redirect to home if not logged in
+        setError('Please log in to view favorites');
+        setIsLoading(false);
         return;
       }
 
@@ -26,109 +31,155 @@ const FavoritesPage = () => {
         });
 
         if (!response.ok) {
-          throw new Error("Failed to fetch favorites");
+          throw new Error('Failed to fetch favorites');
         }
+
         const data = await response.json();
-        setFavorites(data.favorites);
-      } catch (error) {
-        console.error("Error fetching favorites:", error);
-        setError("Failed to load favorites. Please try again.");
-      } finally {
+        setFavoriteRecipes(data.favorites);
+        setIsLoading(false);
+      } catch (err) {
+        setError('Failed to load favorites. Please try again later.');
+        console.error('Error fetching favorites:', err);
         setIsLoading(false);
       }
     };
 
     fetchFavorites();
-  }, [router]);
+  }, []);
 
-  const handleRemoveFavorite = async (recipeId) => {
+  const removeFavorite = async (recipeId) => {
     const loggedInEmail = localStorage.getItem('loggedInUserEmail');
+    
     try {
-      const response = await fetch(`/api/favorites/${recipeId}?email=${encodeURIComponent(loggedInEmail)}`, {
-        method: "DELETE",
+      const response = await fetch('/api/favorites', {
+        method: 'DELETE',
+        body: JSON.stringify({ recipeId, email: loggedInEmail }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
         credentials: 'include',
       });
 
-      if (response.ok) {
-        setFavorites((prev) => prev.filter((favorite) => favorite._id !== recipeId));
-      } else {
-        console.error("Failed to remove from favorites");
+      if (!response.ok) {
+        throw new Error('Failed to remove favorite');
       }
-    } catch (error) {
-      console.error("Error removing favorite:", error);
+
+      // Remove the recipe from the favorites list
+      setFavoriteRecipes(prev => 
+        prev.filter(recipe => recipe._id !== recipeId)
+      );
+    } catch (err) {
+      setError('Failed to remove favorite. Please try again.');
+      console.error('Error removing favorite:', err);
     }
   };
 
   if (isLoading) {
     return (
-      <div className="container mx-auto p-4 text-center">
-        <p className="text-xl">Loading your favorites...</p>
+      <div className="container mx-auto p-6 text-center">
+        <p className="text-xl text-gray-600">Loading favorites...</p>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="container mx-auto p-4 text-center text-red-500">
-        <p>{error}</p>
+      <div className="container mx-auto p-6">
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">
+          <strong className="font-bold">Error: </strong>
+          <span className="block sm:inline">{error}</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (favoriteRecipes.length === 0) {
+    return (
+      <div className="container mx-auto p-6 text-center">
+        <div className="bg-[#f9efd2] p-8 rounded-lg shadow-md">
+          <PiHeart className="mx-auto mb-4 text-gray-400" size={64} />
+          <h2 className="text-2xl font-bold mb-4 text-[#020123]">
+            No Favorites Yet
+          </h2>
+          <p className="text-gray-600 mb-6">
+            Start exploring recipes and add some to your favorites!
+          </p>
+          <Link 
+            href="/" 
+            className="bg-[#fc9d4f] text-white px-6 py-3 rounded-lg hover:bg-[#2b617f] transition duration-300"
+          >
+            Browse Recipes
+          </Link>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-6 text-center">My Favorite Recipes</h1>
-      {favorites.length === 0 ? (
-        <div className="text-center text-gray-500">
-          <p className="text-xl">No favorites added yet.</p>
-          <p className="mt-2">Start exploring recipes and add your favorites!</p>
-          <Link 
-            href="/" 
-            className="mt-4 inline-block px-4 py-2 bg-[#fc9d4f] text-white rounded hover:bg-orange-600 transition"
+    <div className="container mx-auto p-4 pt-6 md:p-6 lg:p-12">
+      <h1 className="text-3xl font-bold mb-8 text-[#020123] dark:text-white">
+        My Favorite Recipes
+      </h1>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        {favoriteRecipes.map((recipe) => (
+          <div 
+            key={recipe._id} 
+            className="bg-[#fcfde2] dark:bg-gray-900 border border-gray-200 rounded-lg shadow-lg overflow-hidden"
           >
-            Browse Recipes
-          </Link>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {favorites.map((favorite) => (
-            <div 
-              key={favorite._id} 
-              className="border rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow"
-            >
-              <div className="relative w-full h-48">
-                <Image
-                  src={favorite.recipe.image || '/placeholder-recipe.jpg'}
-                  alt={favorite.recipe.title}
-                  layout="fill"
-                  objectFit="cover"
-                />
+            <div className="relative w-full h-64">
+              <Image 
+                src={recipe.images[0]} 
+                alt={recipe.title} 
+                fill 
+                className="object-cover"
+              />
+            </div>
+
+            <div className="p-4">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-[#fc9d4f] font-bold text-xl font-montserrat">
+                  {recipe.title}
+                </h2>
+                <button
+                  onClick={() => removeFavorite(recipe._id)}
+                  className="text-red-500 hover:text-red-700 transition-colors"
+                  title="Remove from Favorites"
+                >
+                  <FaTrash size={20} />
+                </button>
               </div>
-              <div className="p-4">
-                <h3 className="font-bold text-xl mb-2">{favorite.recipe.title}</h3>
-                <p className="text-gray-600 mb-4 line-clamp-2">
-                  {favorite.recipe.description}
+
+              <div className="space-y-2 mb-4">
+                <p className="text-sm text-gray-600 flex items-center">
+                  <FaClock className="text-[#020123] mr-2" />
+                  Prep: {recipe.prep} mins
                 </p>
-                <div className="flex justify-between items-center">
-                  <Link 
-                    href={`/Recipe/${favorite.recipe._id}`} 
-                    className="text-[#fc9d4f] hover:underline"
-                  >
-                    View Recipe
-                  </Link>
-                  <button
-                    onClick={() => handleRemoveFavorite(favorite._id)}
-                    className="text-red-500 hover:text-red-700 transition"
-                    aria-label="Remove from favorites"
-                  >
-                    <FaTrash />
-                  </button>
-                </div>
+                <p className="text-sm text-gray-600 flex items-center">
+                  <PiCookingPotDuotone className="text-[#020123] mr-2" />
+                  Cook: {recipe.cook} mins
+                </p>
+                <p className="text-sm text-gray-600 flex items-center">
+                  <FaUtensils className="text-[#020123] mr-2" />
+                  Serves {recipe.servings}
+                </p>
+              </div>
+
+              <div className="flex justify-between items-center">
+                <Link 
+                  href={`/Recipe/${recipe._id}`} 
+                  className="bg-[#fc9d4f] text-white px-4 py-2 rounded-lg hover:bg-[#2b617f] transition duration-300"
+                >
+                  View Recipe
+                </Link>
+                <span className="text-sm text-gray-500">
+                  Added: {new Date(recipe.published).toLocaleDateString()}
+                </span>
               </div>
             </div>
-          ))}
-        </div>
-      )}
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
