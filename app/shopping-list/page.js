@@ -1,7 +1,7 @@
 
 
 import ShoppingList from '../components/shoppingList';
-import { ShoppingListProvider } from '../context/shoppingListContext'; 
+import { ShoppingListProvider } from '../context/ShoppingListContext';  
 
 export default function ShoppingListPage() {
   return (
