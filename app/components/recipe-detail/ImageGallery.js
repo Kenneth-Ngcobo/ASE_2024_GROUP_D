@@ -4,6 +4,13 @@ import { useState } from 'react';
 import Image from 'next/image';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 
+/**
+ * ImageGallery component for displaying a gallery of recipe images with navigation controls.
+ *
+ * @param {Object} props - The component props.
+ * @param {string[]} props.images - An array of image URLs to display in the gallery.
+ * @returns {JSX.Element} The ImageGallery component.
+ */
 export default function ImageGallery({ images }) {
     const [currentIndex, setCurrentIndex] = useState(0);
 

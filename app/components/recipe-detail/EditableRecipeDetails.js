@@ -4,6 +4,16 @@ import { useState, useEffect } from 'react';
 import { Button } from '../ui/button';
 import { Pencil, X, Check, Loader2 } from 'lucide-react';
 
+/**
+ * EditableRecipeDetails component for displaying and editing the description of a recipe.
+ *
+ * @param {Object} props - The component props.
+ * @param {string} props.id - The unique ID of the recipe.
+ * @param {string} props.initialDescription - The initial description of the recipe.
+ * @param {string} props.lastEditedBy - The name of the last person who edited the recipe.
+ * @param {string} props.lastEditedAt - The date and time when the recipe was last edited.
+ * @returns {JSX.Element} The EditableRecipeDetails component.
+ */
 export default function EditableRecipeDetails({ id, initialDescription, lastEditedBy, lastEditedAt }) {
     const [isEditing, setIsEditing] = useState(false);
     const [description, setDescription] = useState(initialDescription);

@@ -2,12 +2,25 @@
 
 import { useState, useEffect } from 'react';
 
+
+/**
+ * Component to display potential allergens for a recipe.
+ * Fetches allergen information from an API and displays loading, error, or allergen data.
+ *
+ * @component
+ * @param {Object} props - Component props.
+ * @param {string} props.recipeId - The ID of the recipe to fetch allergens for.
+ * @returns {JSX.Element} A React component displaying allergens or a status message.
+ */
 export default function AllergensSection({ recipeId }) {
     const [allergens, setAllergens] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
 
     useEffect(() => {
+        /**
+         * Fetch allergens from the API.
+         */
         async function fetchAllergens() {
             try {
                 setIsLoading(true);
