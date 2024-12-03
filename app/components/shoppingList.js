@@ -1,10 +1,10 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useShoppingList } from '../../context/ShoppingListContext';
+import { useShoppingList } from '../context/ShoppingListContext';
 import { FaWhatsapp } from 'react-icons/fa';
-import BackButton from '../ui/BackButton';
-import { useAuth } from '../../hook/useAuth'
+import BackButton from './ui/BackButton';
+import { useAuth } from '../hook/useAuth'
 
 /**
  * ShoppingList component - Manages the display and actions for the shopping list.

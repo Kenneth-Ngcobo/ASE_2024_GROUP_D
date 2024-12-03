@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useShoppingList } from '../../context/ShoppingListContext';
+import { useShoppingList } from '../context/ShoppingListContext';
 import { useRouter } from 'next/navigation';
 
 /**

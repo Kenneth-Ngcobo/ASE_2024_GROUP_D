@@ -5,7 +5,7 @@ import Pagination from './components/pagination';
 import Recipes from './components/recipes';
 import Footer from './components/ui/footer';
 import Loading from './loading';
-import RecipeCarousel from './components/recipe/RecipeCarousel';
+import RecipeCarousel from './components/RecipeCarousel';
 import { ShoppingListProvider } from './context/ShoppingListContext';
 import RegisterServiceWorker from './components/RegisterServiceWorker';
 
@@ -31,8 +31,8 @@ export default async function Home({ searchParams }) {
     return (
 
         <ShoppingListProvider>
-           {/** <RegisterServiceWorker />*/} 
-          <RecipeCarousel />
+            {/** <RegisterServiceWorker />*/}
+            <RecipeCarousel />
 
             <Suspense fallback={<Loading />}>
                 {/* Render the Recipes component */}

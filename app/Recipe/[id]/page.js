@@ -2,15 +2,15 @@ import { Suspense } from 'react';
 import Image from 'next/image';
 import BackButton from "../../components/ui/BackButton";
 import { fetchRecipeById } from '../../api';
-import ImageGallery from '../../components/recipe-detail/ImageGallery';
-import CollapsibleSection from '../../components/recipe-detail/CollapsibleSection';
+import ImageGallery from '../../components/ImageGallery';
+import CollapsibleSection from '../../components/CollapsibleSection';
 import Loading from './loading';
 import EditableRecipeDetails from '../../components/recipe-detail/EditableRecipeDetails';
-import ReviewsSection from '../../components/recipe-detail/ReviewsSection';
-import AllergensSection from '../../components/recipe-detail/AllergensSection';
+import ReviewsSection from '../../components/ReviewsSection';
+import AllergensSection from '../../components/AllergensSection';
 import RecipeIngredientsSelector from '../../components/recipe/RecipeIngredientsSelector';
 import { ShoppingListProvider } from '../../context/ShoppingListContext';
-import VoiceAssistant from '../../components/voice-ai/VoiceAssistant';
+import VoiceAssistant from '../../components/VoiceAssistant';
 
 // Generate metadata for the recipe page dynamically
 export async function generateMetadata({ params }) {
@@ -107,12 +107,12 @@ export default async function RecipePage({ params }) {
                                     {/* Allergens Section */}
                                     <AllergensSection recipeId={id} />
                                     {/* Editable Recipe Details */}
-                                <EditableRecipeDetails
-                                id={id}
-                                initialDescription={recipe.description}
-                                lastEditedBy={recipe.lastEditedBy}
-                                lastEditedAt={recipe.lastEditedAt}
-                                 />
+                                    <EditableRecipeDetails
+                                        id={id}
+                                        initialDescription={recipe.description}
+                                        lastEditedBy={recipe.lastEditedBy}
+                                        lastEditedAt={recipe.lastEditedAt}
+                                    />
 
                                     {/**Nutrition info */}
                                     <div className="space-y-4">
@@ -147,9 +147,9 @@ export default async function RecipePage({ params }) {
                                 </div>
                             </div>
 
-                         
 
-                            
+
+
 
                             {/* Reviews Section */}
                             <div className="space-y-4">
