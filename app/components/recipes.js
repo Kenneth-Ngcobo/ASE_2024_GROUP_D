@@ -11,13 +11,19 @@ import {
   FaShoppingBag,
 } from "react-icons/fa";
 import { PiCookingPotDuotone, PiHeart } from "react-icons/pi";
-import Carousel from "./Carousel";
-import { SortControl } from "./SortControl";
-import {  useSearchParams } from "next/navigation";
-import { useShoppingList } from '../context/shoppingListContext';
+import Carousel from "./ui/Carousel";
+import { SortControl } from "./filter-sort/SortControl";
+import { useSearchParams } from "next/navigation";
+import { useShoppingList } from '../context/ShoppingListContext';
 
-
-
+/**
+ * Recipes component displays a list of recipes, allows the user to favorite recipes,
+ * and adds ingredients to the shopping list.
+ * 
+ * @param {Object} props The component's props.
+ * @param {Array} props.recipes The initial list of recipes.
+ * @returns {JSX.Element} The component JSX element.
+ */
 const Recipes = ({ recipes: initialRecipes }) => {
   const [recipes, setRecipes] = useState(initialRecipes);
   const [favoritedRecipes, setFavoritedRecipes] = useState(new Set());
@@ -28,9 +34,11 @@ const Recipes = ({ recipes: initialRecipes }) => {
   const searchParams = useSearchParams();
   const { dispatch: dispatchShoppingList } = useShoppingList();
   const [addedToList, setAddedToList] = useState(new Set());
- 
 
-  // Fetch favorites when component mounts
+
+  /**
+   * Fetches the user's favorite recipes when the component mounts.
+   */
   useEffect(() => {
     const fetchFavorites = async () => {
       const loggedInEmail = localStorage.getItem('loggedInUserEmail');
@@ -67,6 +75,11 @@ const Recipes = ({ recipes: initialRecipes }) => {
     setRecipes(initialRecipes);
   }, [initialRecipes, searchParams]);
 
+  /**
+   * Toggles a recipe's favorite status and updates the favorites list.
+   * 
+   * @param {string} recipeId The ID of the recipe to toggle favorite status for.
+   */
   const toggleFavorite = async (recipeId) => {
     const loggedInEmail = localStorage.getItem('loggedInUserEmail');
     if (!loggedInEmail) {
@@ -137,9 +150,9 @@ const Recipes = ({ recipes: initialRecipes }) => {
     // Convert ingredients object to an array of {name, quantity}
     const ingredientsArray = Object.keys(ingredients).map((key) => ({
       name: key,
-      quantity: ingredients[key], 
+      quantity: ingredients[key],
     }));
-    
+
     ingredientsArray.forEach((ingredient) => {
       dispatchShoppingList({
         type: 'ADD_ITEM',
@@ -153,7 +166,8 @@ const Recipes = ({ recipes: initialRecipes }) => {
   };*/}
   
 
- 
+
+
 
   return (
     <>
@@ -222,8 +236,8 @@ const Recipes = ({ recipes: initialRecipes }) => {
                 </h2>
                 <button
                   className={`ml-2 ${favoritedRecipes.has(recipe._id)
-                      ? "text-red-500"
-                      : "text-gray-400"
+                    ? "text-red-500"
+                    : "text-gray-400"
                     } hover:text-red-500 transition-colors duration-200`}
                   onClick={(e) => {
                     e.preventDefault();
@@ -281,12 +295,10 @@ const Recipes = ({ recipes: initialRecipes }) => {
           ))}
         </div>
       </div>
-        
-    
+
+
     </>
   );
 };
 
 export default Recipes;
-
-

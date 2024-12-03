@@ -4,6 +4,17 @@ import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 
+/**
+ * A pagination component for navigating between pages.
+ * It supports dynamic page numbers, next and previous navigation, and URL parameter updates.
+ * 
+ * @component
+ * @param {Object} props - Component properties.
+ * @param {number} props.currentPage - The current page number.
+ * @param {number} props.totalPages - The total number of pages.
+ * @example
+ * return <Pagination currentPage={1} totalPages={10} />;
+ */
 export default function Pagination({ currentPage, totalPages }) {
     // Initialize 'page' state with the current page value passed as a prop
     const [page, setPage] = useState(currentPage);
@@ -18,8 +29,11 @@ export default function Pagination({ currentPage, totalPages }) {
         setPage(currentPage)
     }, [currentPage]);
 
-
-    // Function to handle page changes
+    /**
+         * Handles page changes and updates the URL with the new page number.
+         * 
+         * @param {number} newPage - The new page number to navigate to.
+         */
     const onPageChange = (newPage) => {
         // Ensure the new page number is within the valid range
         if (newPage >= 1 && newPage <= totalPages) {
@@ -42,7 +56,11 @@ export default function Pagination({ currentPage, totalPages }) {
         }
     };
 
-    // Function to render the page numbers with navigation controls
+    /**
+     * Renders the page numbers and page navigation controls.
+     * 
+     * @returns {JSX.Element[]} Array of JSX elements for page navigation.
+     */
     const renderPageNumbers = () => {
         const pageNumbers = []; // Array to store rendered page buttons
         const maxPagesToShow = 5; // Maximum number of pages to show in the pagination component
@@ -59,7 +77,7 @@ export default function Pagination({ currentPage, totalPages }) {
                         : "bg-white text-[#020123] border-[#fc9d4f] hover:bg-[#edd282]" // Default button styling
                         }`}
                 >
-                    
+
                 </button>
             );
         }

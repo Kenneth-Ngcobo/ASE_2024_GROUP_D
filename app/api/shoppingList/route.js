@@ -2,7 +2,18 @@ import { NextResponse } from 'next/server';
 import { ObjectId } from 'mongodb';
 import connectToDatabase from '../../../db.js';
 
-// Get a user's shopping list
+/**
+ * Retrieves a user's shopping list from the database.
+ * 
+ * @async
+ * @function GET
+ * @param {Request} request - The incoming HTTP request object
+ * @returns {NextResponse} JSON response containing the user's shopping list
+ * - Success (200): { success: true, data: shoppingList }
+ * - Error (400): { success: false, message: 'userId query parameter is required' }
+ * - Error (404): { success: false, message: 'Shopping list not found' }
+ * - Error (500): { success: false, error: 'Internal server error' }
+ */
 export async function GET(request) {
   try {
     const url = new URL(request.url);
@@ -23,7 +34,18 @@ export async function GET(request) {
   }
 }
 
-// Save or update a user's shopping list
+/**
+ * Saves or updates a user's shopping list in the database.
+ * 
+ * @async
+ * @function POST
+ * @param {Request} request - The incoming HTTP request object
+ * @returns {NextResponse} JSON response indicating the result of saving/updating the list
+ * - Success (201): { success: true, data: newList }
+ * - Success (200): { success: true, data: updatedList }
+ * - Error (400): { success: false, message: 'userId and items are required' }
+ * - Error (500): { success: false, error: 'Internal server error' }
+ */
 export async function POST(request) {
   try {
     const url = new URL(request.url);
@@ -77,7 +99,18 @@ export async function POST(request) {
   }
 }
 
-// Update an item in the shopping list
+/**
+ * Updates a specific item in a user's shopping list.
+ * 
+ * @async
+ * @function PATCH
+ * @param {Request} request - The incoming HTTP request object
+ * @returns {NextResponse} JSON response indicating the result of updating the item
+ * - Success (200): { success: true, data: updatedShoppingList }
+ * - Error (400): { success: false, message: 'userId, itemId, and updatedItem are required' }
+ * - Error (404): { success: false, message: 'Item not found in shopping list' }
+ * - Error (500): { success: false, error: 'Internal server error' }
+ */
 export async function PATCH(request) {
   try {
     const url = new URL(request.url);
@@ -117,7 +150,18 @@ export async function PATCH(request) {
   }
 }
 
-// Delete a shopping list or a specific item
+/**
+ * Deletes a shopping list or a specific item from a shopping list.
+ * 
+ * @async
+ * @function DELETE
+ * @param {Request} request - The incoming HTTP request object
+ * @returns {NextResponse} JSON response indicating the result of deletion
+ * - Success (200): { success: true }
+ * - Error (400): { success: false, message: 'userId is required' }
+ * - Error (404): { success: false, message: 'Shopping list or item not found' }
+ * - Error (500): { success: false, error: 'Internal server error' }
+ */
 export async function DELETE(request) {
   try {
     const url = new URL(request.url);

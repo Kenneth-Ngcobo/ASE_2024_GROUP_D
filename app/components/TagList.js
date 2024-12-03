@@ -3,6 +3,15 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 
+/**
+ * TagDisplay component allows the user to select and filter tags.
+ * 
+ * @param {Object} props - Component props
+ * @param {Array} props.selectedTags - List of selected tags.
+ * @param {Function} props.onTagsChange - Callback function to update selected tags.
+ * 
+ * @returns {JSX.Element} - The rendered component.
+ */
 export default function TagDisplay({ selectedTags, onTagsChange }) {
   const [tags, setTags] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -89,9 +98,8 @@ export default function TagDisplay({ selectedTags, onTagsChange }) {
               {filteredTags.map((tag, index) => (
                 <button
                   key={index}
-                  className={`p-2 border border-gray-300 rounded-md transition duration-200 ${
-                    selectedTags.includes(tag) ? 'bg-blue-300' : 'bg-gray-200 hover:bg-gray-300'
-                  }`}
+                  className={`p-2 border border-gray-300 rounded-md transition duration-200 ${selectedTags.includes(tag) ? 'bg-blue-300' : 'bg-gray-200 hover:bg-gray-300'
+                    }`}
                   onClick={() => handleTagSelect(tag)}
                 >
                   {tag}
