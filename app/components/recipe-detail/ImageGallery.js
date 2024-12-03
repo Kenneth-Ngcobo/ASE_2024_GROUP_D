@@ -51,20 +51,20 @@ export default function ImageGallery({ images }) {
 
             <div className="flex justify-center mt-4 space-x-4">
                 {images.map((image, index) => (
-                    <div 
-                    key={index} 
-                    className={`relative w-32 h-28 cursor-pointer rounded-lg ${currentIndex === index ? 'shadow-lg shadow-[#ffebe5]' : ''}`}
-                    onClick={() => setCurrentIndex(index)}
-                >
-                    <Image
-                        src={image}
-                        alt={`Recipe image ${index + 1}`}
-                        className={`rounded-lg `}
-                        fill
-                        sizes="100%"
-                        style={{ objectFit: 'fill' }}
-                    />
-                </div>
+                    <div
+                        key={index}
+                        className={`relative w-32 h-28 cursor-pointer rounded-lg ${currentIndex === index ? 'shadow-lg shadow-[#ffebe5]' : ''}`}
+                        onClick={() => setCurrentIndex(index)}
+                    >
+                        <Image
+                            src={image}
+                            alt={`Recipe image ${index + 1}`}
+                            className={`rounded-lg `}
+                            fill
+                            sizes="100%"
+                            style={{ objectFit: 'fill' }}
+                        />
+                    </div>
                 ))}
             </div>
         </div>
