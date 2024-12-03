@@ -145,14 +145,14 @@ export default function EditableRecipeDetails({ id, initialDescription, lastEdit
     }
 
     return (
-        <div className="bg-white dark:bg-gray-950 rounded-2xl shadow-xl p-8">
+        <div className="bg-white dark:bg-gray-950  p-8">
             <div className="flex justify-between items-center mb-4">
-                <h2 className="text-2xl font-semibold text-[#fc9d4f] dark:text-blue-400">
+                <h2 className="text-2xl font-semibold text-red dark:text-[#dddcfe]">
                     Description
                 </h2>
                 {!isEditing && (
                     <Button
-                        variant="ghost"
+                        variant="default"
                         size="sm"
                         onClick={() => setIsEditing(true)}
                         className="flex items-center gap-2"
@@ -198,12 +198,12 @@ export default function EditableRecipeDetails({ id, initialDescription, lastEdit
                             {isSaving ? 'Saving...' : 'Save Changes'}
                         </Button>
                         <Button
-                            variant="outline"
+                            variant="default"
                             onClick={handleCancel}
                             className="flex items-center gap-2"
                             disabled={isSaving}
                         >
-                            <X className="h-4 w-4" />
+                            <X className="h-4 w-4 " />
                             Cancel
                         </Button>
                     </div>
