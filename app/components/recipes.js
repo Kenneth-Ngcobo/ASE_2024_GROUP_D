@@ -134,13 +134,11 @@ const Recipes = ({ recipes: initialRecipes }) => {
   };
 
   const addIngredientsToShoppingList = (ingredients) => {
-    // Convert ingredients object to an array of {name, quantity}
     const ingredientsArray = Object.keys(ingredients).map((key) => ({
       name: key,
-      quantity: ingredients[key], // Use the quantity as the value
+      quantity: ingredients[key],
     }));
 
-    // Dispatch each ingredient to the shopping list
     ingredientsArray.forEach((ingredient) => {
       dispatchShoppingList({
         type: 'ADD_ITEM',
@@ -241,26 +239,27 @@ const Recipes = ({ recipes: initialRecipes }) => {
                   {recipe.prep} mins
                 </p>
                 <p className="text-sm text-gray-600 flex items-center">
-                  <PiCookingPotDuotone className="text-[#020123] mr-2" />
+                  <PiCookingPotDuotone className="text-[#020123] dark:text-[#dddcfe] mr-2" />
                   {recipe.cook} mins
                 </p>
                 <p className="text-sm text-gray-600 flex items-center">
-                  <FaUtensils className="text-[#020123] mr-2" />
+                  <FaUtensils className="text-[#020123] dark:text-[#dddcfe mr-2" />
                   Serves {recipe.servings}
                 </p>
               </div>
               <div className="flex flex-wrap gap-2 mt-3">
                 {recipe.category && (
-                  <span className="inline-block bg-[#f9efd2] dark:bg-[#1c1d02] dark:text-gray-400  text-[#020123] text-sm px-2 py-1 rounded">
+                  <span className="inline-block bg-[#f9efd2] dark:bg-[#1c1d02] dark:text-[#dddcfe] text-[#020123] text-sm px-2 py-1 rounded">
                     {recipe.category}
                   </span>
                 )}
-                <span className="inline-block bg-[#f9efd2] text-[#020123]  dark:bg-[#1c1d02] dark:text-gray-400 text-sm px-2 py-1 rounded">
+                <span className="inline-block bg-[#f9efd2] text-[#020123]  dark:bg-[#1c1d02] dark:text-[#dddcfe] text-sm px-2 py-1 rounded">
                   {recipe.instructions.length} steps
                 </span>
-                <span className="inline-block bg-[#f9efd2] text-[#020123]  dark:bg-[#1c1d02] dark:text-gray-400 text-sm px-2 py-1 rounded">
+                <span className="inline-block bg-[#f9efd2] text-[#020123]  dark:bg-[#1c1d02] dark:text-[#dddcfe] text-sm px-2 py-1 rounded">
                   {new Date(recipe.published).toDateString()}
                 </span>
+
                 <button
                   className={`inline-block bg-[#f9efd2] text-sm px-2 py-1 rounded mt-2 transition-colors duration-300 ${addedToList.has(recipe._id) ? 'bg-[#fc9d4f]' : 'bg-[#f9efd2]'
                     }`}
