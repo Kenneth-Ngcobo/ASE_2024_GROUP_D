@@ -1,16 +1,13 @@
-import PushNotificationManager from "./components/PushNotificationManager";
-import InstallPrompt from "./components/InstallPrompt";
-import { Suspense } from 'react';
 
 import { fetchRecipes } from './api';
+import { Suspense } from 'react';
 import Pagination from './components/pagination';
 import Recipes from './components/recipes';
-import Footer from './components/footer';
+import Footer from './components/ui/footer';
 import Loading from './loading';
-import RecipeCarousel from './components/RecipeCarousel';
-import HomePage from "./components/ui/homepage";
-import { ShoppingListProvider } from './context/shoppingListContext';
-// import RegisterServiceWorker from './components/RegisterServiceWorker';
+import RecipeCarousel from './components/recipe/RecipeCarousel';
+import { ShoppingListProvider } from './context/ShoppingListContext';
+import RegisterServiceWorker from './components/RegisterServiceWorker';
 
 export default async function Home({ searchParams }) {
     let recipes = {};
@@ -32,8 +29,9 @@ export default async function Home({ searchParams }) {
     }
 
     return (
+
         <ShoppingListProvider>
-            {/* <RegisterServiceWorker /> */}
+           {/** <RegisterServiceWorker />*/} 
           <RecipeCarousel />
 
             <Suspense fallback={<Loading />}>
@@ -43,14 +41,12 @@ export default async function Home({ searchParams }) {
                     initialSort={sort}
                     initialOrder={order}
                 />
-                
+
                 {/* Render the Pagination component, passing the current page and total pages */}
                 <Pagination
                     currentPage={recipes.currentPage} // Current page number
                     totalPages={recipes.totalPages} // Total number of pages available
                 />
-                <PushNotificationManager /> 
-                <InstallPrompt />
                 <Footer />
             </Suspense>
         </ShoppingListProvider>

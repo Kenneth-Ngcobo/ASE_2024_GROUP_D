@@ -4,16 +4,32 @@ import Image from "next/image";
 import { useState, useEffect, Suspense } from "react";
 import { FaUser } from "react-icons/fa";
 import { useRouter } from "next/navigation";
-import CategoryList from "./CategoryList";
-import {FilterButton} from "./FilterButton";
-import ThemeButton from "./ThemeButton";
-import RecipeSearchBar from "./searchBar";
+import CategoryList from "./ui/CategoryList.js";
+import { FilterButton } from "./filter-sort/FilterButton.js";
+import ThemeButton from "./ui/ThemeButton";
+import RecipeSearchBar from "./ui/searchBar.js";
 import UserModal from "./UserModal.js";
-import { FilterModal } from "./FilterButton";
-import { ShoppingListProvider } from "../context/shoppingListContext.js";
-import ShoppingBagHeader from "./ShoppingBagHeader.js";
+import { FilterModal } from "./filter-sort/FilterButton.js";
+import { ShoppingListProvider } from "../context/ShoppingListContext.js";
+import ShoppingBagHeader from "../components/shopping-list/ShoppingBagHeader.js"
 import Loading from "../loading.js";
 
+/**
+ * Header component renders the navigation bar, including the logo, links, 
+ * category list, user modal, shopping bag, and theme button.
+ * It also handles user authentication and dropdown menu visibility.
+ * 
+ * @param {Object} props - Component props
+ * @param {boolean} props.isAuthenticated - Flag to indicate if the user is authenticated
+ * @param {function} props.onLogout - Callback to handle user logout
+ * 
+ * @returns {JSX.Element} The header component
+ * 
+ * @component
+ * @example
+ * // Usage:
+ * <Header isAuthenticated={true} onLogout={handleLogout} />
+ */
 const Header = ({ isAuthenticated, onLogout }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -27,7 +43,7 @@ const Header = ({ isAuthenticated, onLogout }) => {
 
 
   return (
-    <header className=" sticky top-0 bg-[#f9efd2] dark:bg-gray-950 top-0 z-50 shadow-md">
+    <header className=" sticky top-0 bg-[#f9efd2] dark:bg-gray-950 z-50 shadow-md">
       <div className="container mx-auto px-4">
         <nav className="flex items-center justify-between h-16">
           <div className="hidden md:flex space-x-8">
@@ -51,7 +67,7 @@ const Header = ({ isAuthenticated, onLogout }) => {
             </Link>
           </div>
 
-           <Link href="/" className="flex items-center">
+          <Link href="/" className="flex items-center">
             <Image
               src="/0.png"
               alt="Logo"
@@ -65,7 +81,7 @@ const Header = ({ isAuthenticated, onLogout }) => {
             <Suspense fallback={<Loading />}>
               <CategoryList
                 totalRecipes={totalRecipes}
-                onCategoryChange={() => {}}
+                onCategoryChange={() => { }}
               />
             </Suspense>
             <FilterButton onClick={toggleFilterModal} />
@@ -79,11 +95,14 @@ const Header = ({ isAuthenticated, onLogout }) => {
             </button>
 
             {/* Authentication Modal */}
-            <ShoppingListProvider>
-            <ShoppingBagHeader />
-          </ShoppingListProvider>
+            <Suspense fallback={<Loading />}>
+              <ShoppingListProvider>
+                <ShoppingBagHeader />
+              </ShoppingListProvider>
+            </Suspense>
+
             <UserModal show={showModal} onClose={toggleModal} />
-         
+
             <ThemeButton />
           </div>
           <button
@@ -108,9 +127,8 @@ const Header = ({ isAuthenticated, onLogout }) => {
 
       {/* Mobile Menu */}
       <div
-        className={`md:hidden bg-white border-t transition-all duration-300 ${
-          isDropdownOpen ? 'max-h-screen py-4' : 'max-h-0 overflow-hidden'
-        }`}
+        className={`md:hidden bg-white border-t transition-all duration-300 ${isDropdownOpen ? 'max-h-screen py-4' : 'max-h-0 overflow-hidden'
+          }`}
       >
         <div className="container mx-auto px-4 space-y-4">
           <Link
@@ -135,10 +153,10 @@ const Header = ({ isAuthenticated, onLogout }) => {
             <Suspense fallback={<Loading />}>
               <CategoryList
                 totalRecipes={totalRecipes}
-                onCategoryChange={() => {}}
+                onCategoryChange={() => { }}
               />
             </Suspense>
-            
+
           </div>
           <div className="py-2">
             <FilterButton onClick={() => setIsFilterOpen(!isFilterOpen)} />
@@ -149,7 +167,10 @@ const Header = ({ isAuthenticated, onLogout }) => {
       {isFilterOpen && <FilterModal onClose={() => setIsFilterOpen(false)} />}
       <RecipeSearchBar />
       <UserModal show={showModal} onClose={() => setShowModal(false)} />
-     
+      <ShoppingListProvider>
+        <ShoppingBagHeader />
+      </ShoppingListProvider>
+
     </header>
   );
 };

@@ -2,17 +2,20 @@ import bcrypt from "bcryptjs";
 import connectToDatabase from "../../../../db";
 
 /**
- * Handles the POST request to create a new user.
- * This function checks if a user with the provided email already exists.
- * If not, it hashes the provided password and inserts the new user into the database.
+ * Handles user registration process.
+ * 
+ * This function performs the following steps:
+ * 1. Checks if a user with the provided email already exists
+ * 2. Hashes the user's password using bcrypt
+ * 3. Inserts a new user document into the database
  *
  * @async
  * @function POST
  * @param {Request} request - The incoming HTTP request containing user data.
- * @returns {Promise<Response>} A promise that resolves to a Response object.
- *                             The response indicates the success or failure of the user creation process.
- *                             - If the user already exists, a 400 status with an error message is returned.
- *                             - If the user is created successfully, a 201 status with a success message is returned.
+* @returns {Promise<Response>} A promise that resolves to a Response object:
+ *                             - 201 status with success message if user is created successfully
+ *                             - 400 status if user already exists
+ * @throws {Error} Throws an error if database connection or user creation fails
  */
 export async function POST(request) {
     const { fullName, email, phoneNumber, password } = await request.json();
@@ -28,10 +31,3 @@ export async function POST(request) {
 
     return new Response(JSON.stringify({ message: "User created successfully" }), { status: 201 });
 }
-
-
-
-
-
-
-
