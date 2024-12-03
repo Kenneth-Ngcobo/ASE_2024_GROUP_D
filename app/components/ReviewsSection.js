@@ -196,7 +196,7 @@ const ReviewsSection = ({ recipeId }) => {
 
       <div className="space-y-4">
         {reviews.map((review) => (
-          <div key={review._id} className="bg-white p-4 rounded-lg shadow-md">
+          <div key={review._id} className=" p-4 rounded-lg shadow-md">
             <div className="flex justify-between items-center mb-2">
               <div className="flex items-center space-x-2">
                 <span className="font-bold">{review.username || "Anonymous"}</span>
