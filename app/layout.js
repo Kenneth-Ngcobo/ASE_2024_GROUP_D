@@ -77,7 +77,7 @@ export default function RootLayout({ children }) {
             <Suspense fallback={<Loading />}>
               <ShoppingListProvider>
                 {children} {/* Rendering the child components or pages */}
-                </ShoppingListProvider>
+              </ShoppingListProvider>
             </Suspense>
           </ThemeProvider>
         </Providers>
