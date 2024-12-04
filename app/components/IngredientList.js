@@ -3,7 +3,23 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 
-export default function IngDisplay({ selectedIngs = [], onIngsChange = () => {} }) {
+/**
+ * IngDisplay component allows users to select ingredients from a list, 
+ * and handles search functionality for filtering ingredients.
+ * It also synchronizes selected ingredients with the URL query parameters.
+ * 
+ * @param {Object} props - Component props
+ * @param {string[]} [props.selectedIngs=[]] - List of selected ingredients
+ * @param {function} [props.onIngsChange] - Callback to handle the changes in selected ingredients
+ * 
+ * @returns {JSX.Element} The ingredient display component
+ * 
+ * @component
+ * @example
+ * // Usage:
+ * <IngDisplay selectedIngs={['ingredient1', 'ingredient2']} onIngsChange={handleIngsChange} />
+ */
+export default function IngDisplay({ selectedIngs = [], onIngsChange = () => { } }) {
   const [ings, setIngs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -89,9 +105,8 @@ export default function IngDisplay({ selectedIngs = [], onIngsChange = () => {} 
               {filteredIngs.map((ing, index) => (
                 <button
                   key={index}
-                  className={`p-2 border border-gray-300 rounded-md transition duration-200 ${
-                    selectedIngs.includes(ing) ? 'bg-blue-300' : 'bg-gray-200 hover:bg-gray-300'
-                  }`}
+                  className={`p-2 border border-gray-300 rounded-md transition duration-200 ${selectedIngs.includes(ing) ? 'bg-blue-300' : 'bg-gray-200 hover:bg-gray-300'
+                    }`}
                   onClick={() => handleIngSelect(ing)}
                 >
                   {ing}

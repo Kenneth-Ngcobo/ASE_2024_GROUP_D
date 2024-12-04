@@ -3,6 +3,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { FaClock } from "react-icons/fa";
 
+/**
+ * Renders a grid of recipe cards with various details.
+ * 
+ * @component
+ * @param {Object} props - Component props
+ * @param {Array} props.recipes - Array of recipe objects to display
+ * @returns {JSX.Element} Grid of recipe cards
+ */
 const Recipes = ({ recipes }) => {
   return (
     <div className="container mx-auto px-4 py-8">
