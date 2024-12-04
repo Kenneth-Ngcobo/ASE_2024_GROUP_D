@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useShoppingList } from '../context/ShoppingListContext';
+import { useShoppingList } from '../../context/shoppingListContext';
 import { useRouter } from 'next/navigation';
 
 /**
@@ -15,8 +15,6 @@ import { useRouter } from 'next/navigation';
 const RecipeIngredientsSection = ({ ingredients }) => {
   const { dispatch } = useShoppingList();
   const [selectedIngredients, setSelectedIngredients] = useState(new Set());
-  const [error, setError] = useState(null);
-  const [successMessage, setSuccessMessage] = useState('');
   const router = useRouter();
 
   /**
@@ -44,33 +42,9 @@ const RecipeIngredientsSection = ({ ingredients }) => {
    * Navigates to the shopping list page after adding.
    */
   const addSelectedToList = () => {
-    try {
-      Object.entries(ingredients).forEach(([ingredient, amount]) => {
-        const ingredientId = `${ingredient.toLowerCase().replace(/\s+/g, '-')}`;
-        if (selectedIngredients.has(ingredientId)) {
-          dispatch({
-            type: 'ADD_ITEM',
-            payload: {
-              id: ingredientId,
-              name: ingredient,
-              quantity: amount,
-              purchased: false
-            }
-          });
-        }
-      });
-      setSuccessMessage('Selected ingredients added to the shopping list.');
-      setSelectedIngredients(new Set());
-      router.push('/shopping-list');
-    } catch (err) {
-      setError('Failed to add selected ingredients to the shopping list.');
-    }
-  };
-
-  const addAllToList = () => {
-    try {
-      Object.entries(ingredients).forEach(([ingredient, amount]) => {
-        const ingredientId = `${ingredient.toLowerCase().replace(/\s+/g, '-')}`;
+    Object.entries(ingredients).forEach(([ingredient, amount]) => {
+      const ingredientId = `${ingredient.toLowerCase().replace(/\s+/g, '-')}`;
+      if (selectedIngredients.has(ingredientId)) {
         dispatch({
           type: 'ADD_ITEM',
           payload: {
@@ -80,19 +54,40 @@ const RecipeIngredientsSection = ({ ingredients }) => {
             purchased: false
           }
         });
+      }
+    });
+    // Clear selections after adding
+    setSelectedIngredients(new Set());
+    // Navigate to shopping list page
+    router.push('/shopping-list');
+  };
+
+  /**
+   * Adds all ingredients to the shopping list.
+   * Dispatches an 'ADD_ITEM' action for every ingredient.
+   * Navigates to the shopping list page after adding.
+   */
+  const addAllToList = () => {
+    Object.entries(ingredients).forEach(([ingredient, amount]) => {
+      const ingredientId = `${ingredient.toLowerCase().replace(/\s+/g, '-')}`;
+      dispatch({
+        type: 'ADD_ITEM',
+        payload: {
+          id: ingredientId,
+          name: ingredient,
+          quantity: amount,
+          purchased: false
+        }
       });
-      setSuccessMessage('All ingredients added to the shopping list.');
-      setSelectedIngredients(new Set());
-      router.push('/shopping-list');
-    } catch (err) {
-      setError('Failed to add all ingredients to the shopping list.');
-    }
+    });
+    // Clear selections after adding
+    setSelectedIngredients(new Set());
+    // Navigate to shopping list page
+    router.push('/shopping-list');
   };
 
   return (
     <div className="space-y-6">
-      {error && <div className="text-red-500">{error}</div>}
-      {successMessage && <div className="text-green-500">{successMessage}</div>}
       <div className="flex justify-end gap-4 mb-4">
         <button
           onClick={addSelectedToList}

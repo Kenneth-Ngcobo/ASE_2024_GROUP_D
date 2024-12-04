@@ -39,7 +39,7 @@ export async function fetchRecipes(limit = 20, page, search, tags, category, ing
         return data; // Return the fetched recipe data
 
     } catch (error) {
-        return error; // Return the error if the request fails
+        throw error; // Throw the error if the request fails
     }
 }
 
@@ -67,6 +67,7 @@ export async function fetchRecipeById(id) {
         throw error; // Throw the error if the request fails
     }
 }
+
 /**
  * Fetches all reviews for a specific recipe.
  *
