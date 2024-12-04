@@ -44,7 +44,7 @@ const Header = ({ isAuthenticated, onLogout }) => {
               Recommended
             </Link>
             <Link
-              href="/app/favorites"
+              href="/favorites"
               className="block text-[ #020123] hover:text-[#fc9d4f] font-medium py-2 uppercase "
             >
               Favourite
