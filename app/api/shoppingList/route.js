@@ -15,7 +15,6 @@ import connectToDatabase from '../../../db.js';
  * - Error (500): { success: false, error: 'Internal server error' }
  */
 export async function GET(request) {
-  console.log('did we get?')
   try {
     const url = new URL(request.url);
     const userId = url.searchParams.get('userId');
@@ -24,7 +23,6 @@ export async function GET(request) {
     }
     const db = await connectToDatabase();
     const collection = db.collection('shopping_lists');
-    console.log('did we shop')
     const shoppingList = await collection.findOne({ userId });
     if (!shoppingList) {
       return NextResponse.json({ success: false, message: 'Shopping list not found' }, { status: 404 });
@@ -49,7 +47,6 @@ export async function GET(request) {
  * - Error (500): { success: false, error: 'Internal server error' }
  */
 export async function POST(request) {
-  console.log('did we post?')
   try {
     const url = new URL(request.url);
     const userId = url.searchParams.get('userId');
@@ -115,7 +112,6 @@ export async function POST(request) {
  * - Error (500): { success: false, error: 'Internal server error' }
  */
 export async function PATCH(request) {
-  console.log('WE PATCH?')
   try {
     const url = new URL(request.url);
     const userId = url.searchParams.get('userId');

@@ -17,11 +17,11 @@ const geistSans = localFont({
   variable: "--font-geist-sans",
   weight: "100 900",
 });
-{/*const geistMono = localFont({
+const geistMono = localFont({
   src: "./fonts/GeistMonoVF.woff",
   variable: "--font-geist-mono",
   weight: "100 900",
-});*/}
+});
 
 const montserrat = Montserrat({
   subsets: ["latin"],
@@ -69,7 +69,7 @@ export default function RootLayout({ children }) {
       </head>
 
       <body
-        className={`${geistSans.variable} antialiased`} // Applying custom fonts and antialiasing for better text rendering
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`} // Applying custom fonts and antialiasing for better text rendering
       >
         <Providers>
           <ThemeProvider attribute="class">
