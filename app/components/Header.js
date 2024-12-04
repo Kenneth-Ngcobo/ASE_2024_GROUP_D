@@ -167,9 +167,7 @@ const Header = ({ isAuthenticated, onLogout }) => {
       {isFilterOpen && <FilterModal onClose={() => setIsFilterOpen(false)} />}
       <RecipeSearchBar />
       <UserModal show={showModal} onClose={() => setShowModal(false)} />
-      <ShoppingListProvider>
-        <ShoppingBagHeader />
-      </ShoppingListProvider>
+    
 
     </header>
   );
