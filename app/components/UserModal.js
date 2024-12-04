@@ -124,7 +124,7 @@ export default function UserModal({ show, onClose }) {
           body: JSON.stringify({
             fullName: formState.fullName,
             email: formState.email,
-            phoneNumber: formState.phoneNumber,
+            phone: formState.phoneNumber,
             password: formState.password,
           }),
         });
