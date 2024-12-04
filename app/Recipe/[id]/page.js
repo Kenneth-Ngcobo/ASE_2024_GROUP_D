@@ -10,6 +10,7 @@ import AllergensSection from '../../components/recipe-detail/AllergensSection';
 import VoiceAssistant from "../../components/voice-ai/VoiceAssistant";
 import Link from 'next/link';
 
+
 // Generate metadata for the recipe page dynamically
 export async function generateMetadata({ params }) {
     const { id } = params;

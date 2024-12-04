@@ -10,7 +10,6 @@ import ThemeButton from "./ui/ThemeButton";
 import RecipeSearchBar from "./ui/searchBar.js";
 import UserModal from "./UserModal.js";
 import { FilterModal } from "./filter-sort/FilterButton.js";
-
 import Loading from "../loading.js";
 
 /**
