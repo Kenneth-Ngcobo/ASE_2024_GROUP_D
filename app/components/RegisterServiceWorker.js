@@ -1,7 +1,7 @@
 // 'use client';
 // import { useEffect } from "react";
 
-// export default function RegisterServiceWorker() {
+export default function RegisterServiceWorker() {
 //   useEffect(() => {
 //     if ("serviceWorker" in navigator) {
 //       navigator.serviceWorker
@@ -19,4 +19,4 @@
 //   }, []);
 
 //   return null;
-// }
+}
