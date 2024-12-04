@@ -84,6 +84,7 @@ export default function EditDetails() {
             email: userDetails.email,
             fullName: userDetails.fullName,
             phoneNumber: userDetails.phoneNumber,
+            password: userDetails.password,
           }),
         }
       );
