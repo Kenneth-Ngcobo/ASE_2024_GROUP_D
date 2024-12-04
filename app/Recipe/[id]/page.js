@@ -3,13 +3,10 @@ import Image from 'next/image';
 import BackButton from "../../components/ui/BackButton";
 import { fetchRecipeById } from '../../api';
 import ImageGallery from '../../components/recipe-detail/ImageGallery';
-import CollapsibleSection from '../../components/recipe-detail/CollapsibleSection';
 import Loading from './loading';
 import EditableRecipeDetails from '../../components/recipe-detail/EditableRecipeDetails';
 import ReviewsSection from '../../components/recipe-detail/ReviewsSection';
-import AllergensSection from '../../components/recipe-detail/AllergensSection';
-import RecipeIngredientsSelector from '../../components/recipe/RecipeIngredientsSelector';
-import { ShoppingListProvider } from '../../context/ShoppingListContext';
+import AllergensSection from '../../components/recipe-detail/AllergensSection';;
 import VoiceAssistant from "../../components/voice-ai/VoiceAssistant"
 
 // Generate metadata for the recipe page dynamically
@@ -58,7 +55,7 @@ export default async function RecipePage({ params }) {
 
     return (
         <div className="min-h-screen bg-[#fcfde2] dark:bg-[#1c1d02] py-8">
-            <ShoppingListProvider>
+            <>
                 <Suspense fallback={<Loading />}>
                     <div className="container mx-auto px-4 max-w-5xl">
                         {/* Back Button */}
@@ -132,7 +129,6 @@ export default async function RecipePage({ params }) {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-white dark:bg-gray-950 rounded-2xl shadow-xl p-6">
                                 <div className="space-y-4 ">
                                     <h2 className="text-3xl font-bold text-[#fc9d4f] dark:text-[#b05103]">Ingredients</h2>
-                                    <RecipeIngredientsSelector ingredients={recipe.ingredients || {}} />
                                 </div>
                                 <div className="space-y-4">
                                     <h2 className="text-3xl font-bold text-[#fc9d4f] dark:text-[#b05103]">Instructions</h2>
@@ -178,7 +174,7 @@ export default async function RecipePage({ params }) {
                         </div>
                     </div>
                 </Suspense>
-            </ShoppingListProvider>
+            </>
         </div>
     );
 }
