@@ -8,13 +8,13 @@ import {
   FaClock,
   FaUtensils,
   FaCaretDown,
-  FaShoppingBag,
+  
 } from "react-icons/fa";
 import { PiCookingPotDuotone, PiHeart } from "react-icons/pi";
 import Carousel from "./ui/Carousel";
 import { SortControl } from "./filter-sort/SortControl";
 import { useSearchParams } from "next/navigation";
-import { useShoppingList } from '../context/ShoppingListContext';
+
 
 /**
  * Recipes component displays a list of recipes, allows the user to favorite recipes,
@@ -32,8 +32,7 @@ const Recipes = ({ recipes: initialRecipes }) => {
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const searchParams = useSearchParams();
-  const { dispatch: dispatchShoppingList } = useShoppingList();
-  const [addedToList, setAddedToList] = useState(new Set());
+
 
 
   /**

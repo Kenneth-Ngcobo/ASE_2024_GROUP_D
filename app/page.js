@@ -6,7 +6,6 @@ import Recipes from './components/recipes';
 import Footer from './components/ui/footer';
 import Loading from './loading';
 import RecipeCarousel from './components/recipe/RecipeCarousel';
-import { ShoppingListProvider } from './context/ShoppingListContext';
 import RegisterServiceWorker from './components/RegisterServiceWorker';
 
 export default async function Home({ searchParams }) {
@@ -30,7 +29,7 @@ export default async function Home({ searchParams }) {
 
     return (
 
-        <ShoppingListProvider>
+        <>
            {/** <RegisterServiceWorker />*/} 
           <RecipeCarousel />
 
@@ -49,6 +48,6 @@ export default async function Home({ searchParams }) {
                 />
                 <Footer />
             </Suspense>
-        </ShoppingListProvider>
+        </>
     );
 }

@@ -8,7 +8,7 @@ import Providers from "./providers";
 import { Montserrat } from "next/font/google";
 import DynamicManifest from "./components/DynamicLink";
 // import RegisterServiceWorker from "./components/RegisterServiceWorker";
-import { ShoppingListProvider } from "./context/ShoppingListContext";
+
 
 
 
@@ -75,9 +75,6 @@ export default function RootLayout({ children }) {
           <ThemeProvider attribute="class">
             <Header /> {/* Rendering the Header component */}
             <Suspense fallback={<Loading />}>
-              <ShoppingListProvider>
-                {children} {/* Rendering the child components or pages */}
-              </ShoppingListProvider>
             </Suspense>
           </ThemeProvider>
         </Providers>
