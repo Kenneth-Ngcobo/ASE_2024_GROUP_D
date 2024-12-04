@@ -1,21 +1,24 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { serialize } from "cookie"; // Import serialize as a named import
+import { serialize } from "cookie";
 import connectToDatabase from "../../../../db";
 
 /**
- * Handles the POST request to log in a user.
- * This function verifies the user's email and password against the database.
- * If valid, it generates a JWT and sets it in a cookie.
+ * Handles the user login process.
+ * 
+ * This function performs the following steps:
+ * 1. Validates user credentials against the database
+ * 2. Verifies the password using bcrypt
+ * 3. Generates a JWT token
+ * 4. Sets an HTTP-only authentication cookie
  *
  * @async
  * @function POST
  * @param {Request} req - The incoming HTTP request containing user credentials.
- * @returns {Promise<Response>} A promise that resolves to a Response object.
- *                             - If the user is not found, a 400 status with an error message is returned.
- *                             - If the password is invalid, a 400 status with an error message is returned.
- *                             - If the login is successful, a 200 status with a success message is returned,
- *                               along with a Set-Cookie header containing the JWT.
+ * @returns {Promise<Response>} A promise that resolves to a Response object:
+ *                             - 200 status with success message and set authentication cookie on successful login
+ *                             - 400 status if user not found or password is invalid
+ * @throws {Error} Throws an error if database connection or authentication process fails
  */
 export async function POST(req) {
     const { email, password } = await req.json();

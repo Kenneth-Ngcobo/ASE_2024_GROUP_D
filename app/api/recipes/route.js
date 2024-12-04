@@ -1,9 +1,46 @@
 import connectToDatabase from '../../../db.js';
 
 /**
- * GET handler for fetching paginated and sorted recipes from the database.
- * @param {Request} req - The incoming HTTP request.
- * @returns {Response} - JSON response containing paginated recipes and metadata.
+ * Retrieves paginated and filtered recipes from the database.
+ * 
+ * @async
+ * @function GET
+ * @param {Request} req - The incoming HTTP request object
+ * @returns {Response} JSON response with paginated recipes and metadata
+ * - Success (200): {
+ *     totalRecipes: number,
+ *     totalPages: number,
+ *     currentPage: number,
+ *     recipes: Recipe[]
+ * }
+ * - Error (500): { 
+ *     error: 'Failed to fetch recipes', 
+ *     details: string 
+ * }
+ * 
+ * @description
+ * - Supports multiple filtering options:
+ *   - Search term
+ *   - Category
+ *   - Tags
+ *   - Ingredients
+ *   - Number of instructions
+ * - Supports pagination (page and limit)
+ * - Supports sorting by various fields
+ * - Provides exact title search
+ * - Uses MongoDB aggregation pipeline for complex querying
+ * 
+ * @query-params
+ * - page: number (default: 1)
+ * - limit: number (default: 50, max: 50)
+ * - sort: string (field to sort by)
+ * - order: 'asc' | 'desc'
+ * - search: string (text search)
+ * - exactTitle: string (exact title match)
+ * - category: string
+ * - tags: string (comma-separated)
+ * - ingredients: string (comma-separated)
+ * - instructions: number (exact number of instructions)
  */
 export async function GET(req) {
   try {
