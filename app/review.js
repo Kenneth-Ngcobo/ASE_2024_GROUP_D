@@ -1,5 +1,17 @@
 import { ObjectId } from 'mongodb';
 
+/**
+ * Creates a new review for a recipe.
+ *
+ * @param {Object} db - The MongoDB database instance.
+ * @param {Object} reviewData - Data for the review.
+ * @param {ObjectId} reviewData.recipeId - The ID of the recipe being reviewed.
+ * @param {number} reviewData.rating - Rating given by the user.
+ * @param {string} reviewData.comment - Comment provided by the user.
+ * @param {string} [reviewData.username] - Name of the reviewer (defaults to 'Anonymous').
+ * @returns {Promise<Object>} The newly created review.
+ * @throws {Error} If recipe validation or database updates fail.
+ */
 async function createReview(db, reviewData) {
   const collection = db.collection('recipes');
   const recipeId = reviewData.recipeId;
@@ -40,6 +52,13 @@ async function createReview(db, reviewData) {
   return review;
 }
 
+/**
+ * Validates if a recipe exists in the database.
+ *
+ * @param {Object} db - The MongoDB database instance.
+ * @param {ObjectId} recipeId - The ID of the recipe to validate.
+ * @throws {Error} If the recipe is not found.
+ */
 async function validateRecipe(db, recipeId) {
   const recipe = await db.collection('recipes').findOne({ _id: recipeId });
   if (!recipe) {
@@ -47,6 +66,13 @@ async function validateRecipe(db, recipeId) {
   }
 }
 
+/**
+ * Updates the average rating and review count of a recipe.
+ *
+ * @param {Object} db - The MongoDB database instance.
+ * @param {ObjectId} recipeId - The ID of the recipe to update.
+ * @throws {Error} If updating the average rating fails.
+ */
 async function updateAverageRating(db, recipeId) {
   const collection = db.collection('recipes');
 
@@ -59,11 +85,11 @@ async function updateAverageRating(db, recipeId) {
     if (!recipe || !recipe.reviews || recipe.reviews.length === 0) {
       await collection.updateOne(
         { _id: recipeId },
-        { 
-          $set: { 
+        {
+          $set: {
             averageRating: 0,
-            reviewCount: 0 
-          } 
+            reviewCount: 0
+          }
         }
       );
       return;
@@ -74,11 +100,11 @@ async function updateAverageRating(db, recipeId) {
 
     await collection.updateOne(
       { _id: recipeId },
-      { 
-        $set: { 
+      {
+        $set: {
           averageRating,
-          reviewCount: recipe.reviews.length 
-        } 
+          reviewCount: recipe.reviews.length
+        }
       }
     );
   } catch (error) {
@@ -86,6 +112,17 @@ async function updateAverageRating(db, recipeId) {
   }
 }
 
+/**
+ * Updates an existing review in a recipe.
+ *
+ * @param {Object} db - The MongoDB database instance.
+ * @param {ObjectId|string} reviewId - The ID of the review to update.
+ * @param {Object} updateData - Data to update the review.
+ * @param {number} updateData.rating - Updated rating.
+ * @param {string} updateData.comment - Updated comment.
+ * @returns {Promise<Object>} The updated review.
+ * @throws {Error} If the review is not found or update fails.
+ */
 async function updateReview(db, reviewId, updateData) {
   const collection = db.collection('recipes');
   const objectId = typeof reviewId === 'string' ? new ObjectId(reviewId) : reviewId;
@@ -129,6 +166,14 @@ async function updateReview(db, reviewId, updateData) {
   }
 }
 
+/**
+ * Deletes a review from a recipe.
+ *
+ * @param {Object} db - The MongoDB database instance.
+ * @param {ObjectId|string} reviewId - The ID of the review to delete.
+ * @returns {Promise<Object>} The result of the deletion operation.
+ * @throws {Error} If the review is not found or deletion fails.
+ */
 async function deleteReview(db, reviewId) {
   const collection = db.collection('recipes');
 
@@ -160,6 +205,17 @@ async function deleteReview(db, reviewId) {
   }
 }
 
+/**
+ * Retrieves reviews for a specific recipe with optional sorting.
+ *
+ * @param {Object} db - The MongoDB database instance.
+ * @param {ObjectId} recipeId - The ID of the recipe.
+ * @param {Object} [sortOptions] - Options for sorting reviews.
+ * @param {string} [sortOptions.sortBy] - Field to sort by ('rating' or 'date').
+ * @param {string} [sortOptions.order] - Sort order ('asc' or 'desc').
+ * @returns {Promise<Object>} An object containing reviews, average rating, and review count.
+ * @throws {Error} If retrieving reviews fails.
+ */
 async function getRecipeReviews(db, recipeId, sortOptions) {
   const collection = db.collection('recipes');
 
@@ -203,6 +259,14 @@ async function getRecipeReviews(db, recipeId, sortOptions) {
   }
 }
 
+/**
+ * Calculates and returns statistics for reviews of a recipe.
+ *
+ * @param {Object} db - The MongoDB database instance.
+ * @param {ObjectId} recipeId - The ID of the recipe.
+ * @returns {Promise<Object>} An object containing total reviews, average rating, and rating distribution.
+ * @throws {Error} If retrieving statistics fails.
+ */
 async function getReviewStatistics(db, recipeId) {
   const collection = db.collection('recipes');
 
@@ -226,7 +290,7 @@ async function getReviewStatistics(db, recipeId) {
     const averageRating = totalReviews > 0 ? Number((totalRating / totalReviews).toFixed(1)) : 0;
 
     // Calculate rating distribution
-    const ratingDistribution = [1, 2, 3, 4, 5].map(rating => 
+    const ratingDistribution = [1, 2, 3, 4, 5].map(rating =>
       reviews.filter(review => review.rating === rating).length
     );
 

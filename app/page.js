@@ -7,8 +7,23 @@ import Footer from './components/ui/footer';
 import Loading from './loading';
 import RecipeCarousel from './components/RecipeCarousel';
 import { ShoppingListProvider } from './context/ShoppingListContext';
-import RegisterServiceWorker from './components/RegisterServiceWorker';
+// import RegisterServiceWorker from './components/RegisterServiceWorker';
 
+/**
+ * Home page component that fetches and displays a list of recipes.
+ *
+ * @param {Object} props - Component props.
+ * @param {Object} props.searchParams - Query parameters from the URL.
+ * @param {string} [props.searchParams.page] - Current page number.
+ * @param {string} [props.searchParams.sort] - Sorting field.
+ * @param {string} [props.searchParams.order] - Sorting order (e.g., 'asc', 'desc').
+ * @param {string} [props.searchParams.search] - Search keyword.
+ * @param {string} [props.searchParams.tags] - Filter by tags.
+ * @param {string} [props.searchParams.category] - Filter by category.
+ * @param {string} [props.searchParams.ingredients] - Filter by ingredients.
+ * @param {string} [props.searchParams.instructions] - Filter by instructions.
+ * @returns {JSX.Element} The rendered Home page.
+ */
 export default async function Home({ searchParams }) {
     let recipes = {};
     let error = null;

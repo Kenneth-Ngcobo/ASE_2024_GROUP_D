@@ -31,6 +31,11 @@ if (env === 'development') {
 
 let cachedDb = null; // Cache database instance for reuse
 
+/**
+ * Establishes a connection to the MongoDB database.
+ * @returns {Promise<Db>} The connected database instance.
+ * @throws {Error} If the MongoDB URI is missing or the connection fails.
+ */
 async function connectToDatabase() {
   const client = await clientPromise;
   const db = client.db('devdb');
@@ -39,14 +44,20 @@ async function connectToDatabase() {
     return cachedDb;
   }
   cachedDb = db; // Caches the DB connection for future requests
-  
+
   // Ensure indexes and reviews setup
   await initializeIndexes(db);
   await checkAndCreateReviews(db);
-  
+
   return db;
 }
 
+/**
+ * Initializes indexes for the `recipes` collection.
+ * Ensures optimized query performance.
+ * @param {Db} db - The database instance.
+ * @returns {Promise<void>}
+ */
 async function initializeIndexes(db) {
   const collection = db.collection('recipes');
   const errors = [];
@@ -147,12 +158,17 @@ async function initializeIndexes(db) {
   }
 }
 
+/**
+ * Ensures all recipes have an empty reviews array.
+ * @param {Db} db - The database instance.
+ * @returns {Promise<void>}
+ */
 async function checkAndCreateReviews(db) {
   const collection = db.collection('recipes');
 
   try {
     const recipesWithoutReviews = await collection.find({ reviews: { $exists: false } }).toArray();
-    
+
     if (recipesWithoutReviews.length > 0) {
       const updatePromises = recipesWithoutReviews.map(recipe => {
         return collection.updateOne(

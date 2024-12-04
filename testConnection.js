@@ -1,7 +1,10 @@
 // Import the default connectToDatabase function from the db module
 const connectToDatabase = require("./db").default;
 
-// Async function to test the MongoDB connection
+/**
+ * Tests the MongoDB connection by fetching a document from the database.
+ * Logs the fetched document or an error message to the console.
+ */
 async function testMongoConnection() {
   try {
     // Attempt to connect to the database

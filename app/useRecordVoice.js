@@ -1,5 +1,14 @@
 import { useState, useEffect } from "react";
 
+/**
+ * Custom hook to handle voice recording and transcription.
+ *
+ * @returns {Object} An object containing:
+ *  - {boolean} isRecording - Whether recording is in progress.
+ *  - {string} transcript - The transcribed text.
+ *  - {string|null} error - Any error message.
+ *  - {Function} startRecording - Function to start the voice recording.
+ */
 export default function useRecordVoice() {
   const [isRecording, setIsRecording] = useState(false);
   const [transcript, setTranscript] = useState("");

@@ -3,16 +3,22 @@ import Image from 'next/image';
 import BackButton from "../../components/ui/BackButton";
 import { fetchRecipeById } from '../../api';
 import ImageGallery from '../../components/ImageGallery';
-import CollapsibleSection from '../../components/CollapsibleSection';
 import Loading from './loading';
-import EditableRecipeDetails from '../../components/recipe-detail/EditableRecipeDetails';
+import EditableRecipeDetails from '../../components/EditableRecipeDetails';
 import ReviewsSection from '../../components/ReviewsSection';
 import AllergensSection from '../../components/AllergensSection';
-import RecipeIngredientsSelector from '../../components/recipe/RecipeIngredientsSelector';
+import RecipeIngredientsSelector from '../../components/RecipeIngredientsSelector';
 import { ShoppingListProvider } from '../../context/ShoppingListContext';
-import VoiceAssistant from "../../components/voice-ai/VoiceAssistant"
+import VoiceAssistant from "../../components/VoiceAssistant"
 
-// Generate metadata for the recipe page dynamically
+/**
+ * Dynamically generates metadata for the recipe page.
+ *
+ * @param {Object} context - The context object containing route parameters.
+ * @param {Object} context.params - Route parameters.
+ * @param {string} context.params.id - The recipe ID.
+ * @returns {Promise<Object>} Metadata for the recipe page.
+ */
 export async function generateMetadata({ params }) {
     const { id } = params;
     const recipe = await fetchRecipeById(id);
@@ -36,7 +42,14 @@ export async function generateMetadata({ params }) {
     };
 }
 
-// Main Recipe Page Component
+/**
+ * Recipe page component that displays detailed information about a recipe.
+ *
+ * @param {Object} props - The component props.
+ * @param {Object} props.params - Route parameters.
+ * @param {string} props.params.id - The recipe ID.
+ * @returns {Promise<JSX.Element>} The rendered recipe page.
+ */
 export default async function RecipePage({ params }) {
     const { id } = params;
     let recipe;

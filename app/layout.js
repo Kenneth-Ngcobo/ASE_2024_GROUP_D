@@ -28,6 +28,13 @@ const montserrat = Montserrat({
   weight: ["400", "500", "600", "700"],
 });
 
+/**
+ * Root layout for the application, defining global settings and providers.
+ *
+ * @param {Object} props - Component props.
+ * @param {React.ReactNode} props.children - The child components or pages.
+ * @returns {JSX.Element} The rendered layout with header, providers, and other settings.
+ */
 export default function RootLayout({ children }) {
 
   return (

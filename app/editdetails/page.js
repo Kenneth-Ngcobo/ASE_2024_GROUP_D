@@ -3,6 +3,13 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import LoadingSpinner from "../components/loadingSpinner";
 
+/**
+ * EditDetails component allows users to view and update their profile details.
+ * It provides a form to edit the full name, phone number, and view other details.
+ * 
+ * @component
+ * @returns {JSX.Element} A form interface for editing user details or viewing them.
+ */
 export default function EditDetails() {
   const [userDetails, setUserDetails] = useState({
     email: "",
@@ -25,7 +32,11 @@ export default function EditDetails() {
 
   const router = useRouter();
 
-  // Fetch user details from localStorage or API
+  /**
+   * Fetches the logged-in user's data from localStorage and an API endpoint.
+   * Sets the user details to the state upon successful retrieval.
+   * Handles errors and ensures the loading state is updated appropriately.
+   */
   useEffect(() => {
     const loggedInUserEmail = localStorage.getItem("loggedInUserEmail");
 
@@ -65,7 +76,12 @@ export default function EditDetails() {
     }
   };
 
-  // Handle user details update
+  /**
+   * Handles the submission of updated user details to the server.
+   * Displays a success message upon successful update.
+   * 
+   * @param {React.FormEvent<HTMLFormElement>} e - The form submission event.
+   */
   const handleUpdate = async (e) => {
     e.preventDefault();
     setIsSaving(true);
@@ -99,6 +115,12 @@ export default function EditDetails() {
     }
   };
 
+  /**
+   * Handles changes to input fields in the form.
+   * Updates the corresponding field in the userDetails state.
+   * 
+   * @param {React.ChangeEvent<HTMLInputElement>} e - The input change event.
+   */
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setUserDetails((prev) => ({

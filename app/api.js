@@ -1,4 +1,3 @@
-// Base URL for the API requests related to recipes
 const API_BASE_URL = process.env.API_BASE_URL;
 
 /**
