@@ -49,7 +49,7 @@ export default function AllergensSection({ recipeId }) {
 
     if (isLoading) {
         return (
-            <div className="bg-white dark:bg-gray-950  p-4">
+            <div className="bg-white dark:bg-gray-950 rounded-2xl shadow-xl p-4">
                 <div className="animate-pulse space-y-2">
                     <div className="h-4 bg-gray-200 rounded w-1/3"></div>
                     <div className="h-8 bg-gray-100 rounded"></div>
@@ -60,7 +60,7 @@ export default function AllergensSection({ recipeId }) {
 
     if (error) {
         return (
-            <div className="bg-white dark:bg-gray-950 p-4">
+            <div className="bg-white dark:bg-gray-950 rounded-2xl shadow-xl p-4">
                 <div className="text-red-500 text-sm">
                     Unable to load allergens: {error}
                 </div>
@@ -70,7 +70,7 @@ export default function AllergensSection({ recipeId }) {
 
     if (!allergens || allergens.length === 0) {
         return (
-            <div className="bg-white dark:bg-gray-950  p-4">
+            <div className="bg-white dark:bg-gray-950 rounded-2xl shadow-xl p-4">
                 <div className="text-gray-500 text-sm">
                     No allergen information available
                 </div>
@@ -79,7 +79,7 @@ export default function AllergensSection({ recipeId }) {
     }
 
     return (
-        <div className="bg-white dark:bg-gray-950 rounded-2xl  p-4">
+        <div className="bg-white dark:bg-gray-950 rounded-2xl shadow-xl p-4">
             <h3 className="text-lg font-semibold text-[#fc9d4f] mb-2">
                 ⚠️ Potential Allergens
             </h3>
