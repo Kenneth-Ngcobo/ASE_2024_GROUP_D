@@ -10,7 +10,7 @@ import ReviewsSection from '../../components/ReviewsSection';
 import AllergensSection from '../../components/AllergensSection';
 import RecipeIngredientsSelector from '../../components/recipe/RecipeIngredientsSelector';
 import { ShoppingListProvider } from '../../context/ShoppingListContext';
-import VoiceAssistant from '../../components/VoiceAssistant';
+import VoiceAssistant from "../../components/voice-ai/VoiceAssistant"
 
 // Generate metadata for the recipe page dynamically
 export async function generateMetadata({ params }) {

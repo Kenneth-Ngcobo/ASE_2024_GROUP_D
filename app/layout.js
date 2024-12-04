@@ -7,7 +7,7 @@ import { ThemeProvider } from "next-themes";
 import Providers from "./providers";
 import { Montserrat } from "next/font/google";
 import DynamicManifest from "./components/DynamicLink";
-import RegisterServiceWorker from "./components/RegisterServiceWorker";
+// import RegisterServiceWorker from "./components/RegisterServiceWorker";
 import { ShoppingListProvider } from "./context/ShoppingListContext";
 
 
@@ -81,7 +81,7 @@ export default function RootLayout({ children }) {
             </Suspense>
           </ThemeProvider>
         </Providers>
-        <RegisterServiceWorker /> {/* Register the service worker */}
+        {/* <RegisterServiceWorker /> Register the service worker */}
       </body>
     </html>
   );
