@@ -79,18 +79,6 @@ const Header = ({ isAuthenticated, onLogout }) => {
             >
               Recipes
             </Link>
-            <Link
-              href="/recommended"
-              className="block text-[#020123] hover:text-[#fc9d4f] font-medium py-2 uppercase"
-            >
-              Recommended
-            </Link>
-            <Link
-              href="/favourites"
-              className="block text-[#020123] hover:text-[#fc9d4f] font-medium py-2 uppercase"
-            >
-              Favourites
-            </Link>
             <Suspense fallback={<Loading />}>
               <CategoryList
                 totalRecipes={totalRecipes}
@@ -111,17 +99,7 @@ const Header = ({ isAuthenticated, onLogout }) => {
           </Link>
 
           <div className="hidden md:flex items-center space-x-8">
-            <Suspense fallback={<Loading />}>
-              <CategoryList
-                totalRecipes={totalRecipes}
-                onCategoryChange={() => { }}
-              />
-            </Suspense>
-            <FilterButton onClick={toggleFilterModal} />
-            <button
-              onClick={toggleSearch}
-              className="text-[#020123] dark:text-white hover:text-[#fc9d4f]"
-            >
+           <button>
               <FaSearch className="w-5 h-5" />
             </button>
 
