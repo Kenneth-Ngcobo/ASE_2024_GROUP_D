@@ -30,10 +30,11 @@ export const FilterModal = ({ onClose }) => {
         return 60;
     };
 
-    const handleSliderChange = (setValue) => (e) => {
-        const value = Number(e.target.value);
-        setValue(snapToNearest(value));
+    const handleSliderChange = (e) => {
+        const value = snapToNearest(Number(e.target.value));
+        setCookTime(value);
     };
+    
 
     const handleStepsChange = (steps) => {
         setSteps(steps);
@@ -43,47 +44,38 @@ export const FilterModal = ({ onClose }) => {
         console.log("Handling tags change:", tags); // Log the selected tags
         if (JSON.stringify(tags) !== JSON.stringify(selectedTags)) {
             setSelectedTags(tags);
-            console.log("Updated Selected Tags:", tags); // Log updated tags
-        }
+         }
     };
 
     const handleIngsChange = (ing) => {
         console.log("Handling ingredients change:", ing); // Log the selected ingredients
         if (JSON.stringify(ing) !== JSON.stringify(selectedIngs)) {
             setSelectedIngs(ing);
-            console.log("Updated Selected Ingredients:", ing); // Log updated ingredients
         }
     };
 
     const handleSubmit = async () => {
         const currentQuery = Object.fromEntries(searchParams.entries());
-
-        console.log("Current Query Params Before Submit:", currentQuery); // Log current query
-
-        if (steps === 0) {
-            setSteps(""); // Clear steps if zero
-        }
-
+        const stepsValue = steps === 0 ? "" : steps;
+    
         const newQuery = {
             ...currentQuery,
-            page: 1, // Reset to the first page
-            tags: selectedTags.join(","), // Join tags for the query string
-            ingredients: selectedIngs.join(","), // Join ingredients for the query string
-            instructions: steps,
+            page: 1,
+            tags: selectedTags.join(","),
+            ingredients: selectedIngs.join(","),
+            instructions: stepsValue,
         };
-
+    
         const queryString = new URLSearchParams(newQuery).toString();
-
-        // Only push if the query string is different
         if (window.location.search !== `?${queryString}`) {
-            console.log("Updating URL with New Query:", queryString); // Log query string
-            router.push(`?${queryString}`);
-            onClose(); // Close the modal after submitting
+            router.replace(`?${queryString}`, undefined, { shallow: true });
+            onClose();
         }
     };
+    
 
     return (
-        <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50 lg:w-[50%].">
             <div className="bg-white dark:bg-black w-[60%] p-6 rounded-lg shadow-lg">
                 {/* Header */}
                 <div className="flex justify-between items-center mb-4">
@@ -105,33 +97,17 @@ export const FilterModal = ({ onClose }) => {
                         <IngDisplay selectedIngs={selectedIngs} onIngsChange={handleIngsChange} />
                         <StepsDropdown selectedSteps={steps} onStepsChange={handleStepsChange} />
                     </div>
-
-                    {/* Time Slider */}
-                    {/* Uncomment to enable */}
-                    {/* <div className="flex flex-col">
-                        <label className="text-sm font-medium text-gray-700">Time for meal</label>
-                        <input
-                            type="range"
-                            min="0"
-                            max="60"
-                            value={cookTime}
-                            onChange={handleSliderChange(setCookTime)}
-                            className="mt-2"
-                            step="5"
-                        />
-                        <div className="flex justify-between text-xs text-gray-600">
-                            <span>{getRangeLabel(cookTime)}</span>
-                            <span>60</span>
-                        </div>
-                    </div> */}
                 </div>
 
                 {/* Clear All Filters */}
                 <div
                     onClick={() => {
                         setCookTime(0);
-                        setSelectedTags([]); // Clear selected tags
+                        setSelectedTags([]);// Clear selected tags
+                        setSelectedIngs([]); // Clear selected ingredients  
+                        setSteps(0); // Clear selected steps
                     }}
+                         
                     className="text-red-600 text-sm cursor-pointer mb-4 hover:underline"
                 >
                     Clear All Filters
@@ -178,10 +154,22 @@ const ParentComponent = () => {
     };
 
     return (
-        <div>
-            <FilterButton onClick={toggleFilterModal} />
+        <div className="fixed inset-0 bg-black bg-opacity-50"
+         onClick={onClose}
+         >  
+
+         <div className="modal-content"
+         onClick={(e) => e.stopPropagation()} 
+         
+         >
+
+             <FilterButton onClick={toggleFilterModal} />
             {isFilterOpen && <FilterModal onClose={toggleFilterModal} />}
+         </div>
+            
         </div>
+
+
     );
 };
 
