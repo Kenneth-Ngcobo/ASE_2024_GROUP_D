@@ -11,7 +11,7 @@ import ThemeButton from "./ui/ThemeButton";
 import RecipeSearchBar from "./ui/searchBar.js";
 import UserModal from "./UserModal.js";
 import { FilterModal } from "./filter-sort/FilterButton.js";
-import { ShoppingListProvider } from "../context/ShoppingListContext.js";
+import { ShoppingListProvider } from "../context/shoppingListContext.js";
 import ShoppingBagHeader from "../components/shopping-list/ShoppingBagHeader.js"
 import Loading from "../loading.js";
 
