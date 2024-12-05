@@ -115,7 +115,7 @@ const RecipeCarousel = () => {
       <div className="relative">
         <div className="overflow-hidden rounded-xl">
           <div
-            className="flex gap-6 transition-transform duration-500 ease-out"
+            className="flex gap-4 transition-transform duration-500 ease-out"
             style={{
               transform: `translateX(-${currentIndex * (100 / visibleRecipes)}%)`,
             }}
@@ -123,7 +123,7 @@ const RecipeCarousel = () => {
             {topRecipes.map((recipe) => (
               <div
                 key={recipe._id}
-                className="flex-none w-1/3 group cursor-pointer"
+                className="flex-none w-1/4 group cursor-pointer"  
               >
                 <Link href={`/Recipe/${recipe._id}`}>
                   <div className="bg-[#fcfde2] dark:bg-[#1c1d02] rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
@@ -141,29 +141,30 @@ const RecipeCarousel = () => {
                       />
                     </div>
                     <div className="p-6">
-                      <h3 className="font-semibold text-xl text-[#fc9d4f] dark:text-[#b05103] mb-3 line-clamp-2">
+                      <h3 className="font-semibold text-[#fc9d4f] dark:text-[#b05103] mb-3 line-clamp-2">
                         {recipe.title}
                       </h3>
                       <div className="flex items-center gap-4 text-[#020123] dark:text-[#dddcfe]">
                         <StarRating rating={recipe.averageRating || 0} />
-                        <div className="flex items-center gap-1.5">
-                          <FaClock className="w-4 h-4" />
-                          <span className="text-sm">
-                            {recipe.cookTime || "30 mins"}
-                          </span>
                         </div>
-                        <div className="flex items-center gap-2">
+                   {/* Cook time and servings as list */}
+                   <ul className="mt-4 text-sm text-gray-600 dark:text-gray-300">
+                        <li className="flex items-center gap-2">
+                          <FaClock className="w-4 h-4" />
+                          {recipe.cookTime || "30 mins"}
+                        </li>
+                        <li className="flex items-center gap-2">
                           <FaUtensils className="w-4 h-4" />
-                          <span className="text-sm">
-                            serves {recipe.servings || "4"}
-                          </span>
+                          {`Serves: ${recipe.servings || "4"}`}
+                        </li>
+                      </ul>
                         </div>
                       </div>
-                    </div>
-                  </div>
+                    
                 </Link>
               </div>
             ))}
+            
           </div>
         </div>
       </div>
@@ -172,4 +173,3 @@ const RecipeCarousel = () => {
 };
 
 export default RecipeCarousel;
-

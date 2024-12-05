@@ -16,6 +16,7 @@ import { SortControl } from "./filter-sort/SortControl";
 import { useSearchParams } from "next/navigation";
 import { useShoppingList } from '../context/ShoppingListContext';
 
+
 /**
  * Recipes component displays a list of recipes, allows the user to favorite recipes,
  * and adds ingredients to the shopping list.
