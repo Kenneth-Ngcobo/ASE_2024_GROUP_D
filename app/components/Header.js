@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useState, useEffect, Suspense } from 'react';
-import { FaUser, FaShoppingBag, FaHeart } from 'react-icons/fa';
+import { FaUser, FaShoppingBag, FaHeart, FaSearch } from 'react-icons/fa';
 import { useRouter } from 'next/navigation';
 import CategoryList from './ui/CategoryList.js';
 import { FilterButton } from './filter-sort/FilterButton.js';
@@ -45,7 +45,7 @@ const Header = ({ isAuthenticated, onLogout }) => {
    * Fetches the shopping list items from the API and updates the shopping list count state.
    * @async
    */
-  useEffect(() => {
+ /* useEffect(() => {
     const fetchShoppingList = async () => {
       try {
         const response = await fetch('/api/shopping_lists');
@@ -64,7 +64,7 @@ const Header = ({ isAuthenticated, onLogout }) => {
     };
 
     fetchShoppingList();
-  }, []);
+  }, []);*/
 
   const toggleSearch = () => setIsSearchOpen((prev) => !prev);
 
