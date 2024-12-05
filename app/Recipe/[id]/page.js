@@ -10,7 +10,6 @@ import AllergensSection from '../../components/recipe-detail/AllergensSection';
 import VoiceAssistant from "../../components/voice-ai/VoiceAssistant";
 import Link from 'next/link';
 
-
 // Generate metadata for the recipe page dynamically
 export async function generateMetadata({ params }) {
     const { id } = params;
@@ -132,16 +131,20 @@ export default async function RecipePage({ params }) {
                                 <h2 className="text-3xl font-bold text-[#fc9d4f] dark:text-[#b05103]">Ingredients</h2>
                                 <form method="POST" action="/api/shoppingList">
                                     <ul className="list-disc list-inside">
-                                        {recipe.ingredients?.map((ingredient, index) => (
-                                            <li key={index} className="text-[#020123] dark:text-[#dddcfe]">
-                                                <input
-                                                    type="hidden"
-                                                    name="ingredients"
-                                                    value={ingredient}
-                                                />
-                                                {ingredient}
-                                            </li>
-                                        ))}
+                                        {Array.isArray(recipe.ingredients) ? (
+                                            recipe.ingredients.map((ingredient, index) => (
+                                                <li key={index} className="text-[#020123] dark:text-[#dddcfe]">
+                                                    <input
+                                                        type="hidden"
+                                                        name="ingredients"
+                                                        value={ingredient}
+                                                    />
+                                                    {ingredient}
+                                                </li>
+                                            ))
+                                        ) : (
+                                            <li className="text-[#020123] dark:text-[#dddcfe]">No ingredients available</li>
+                                        )}
                                     </ul>
                                     <button
                                         type="submit"
@@ -200,4 +203,5 @@ export default async function RecipePage({ params }) {
         </div>
     );
 }
+
 

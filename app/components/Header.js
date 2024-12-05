@@ -40,11 +40,17 @@ const Header = ({ isAuthenticated, onLogout }) => {
   const toggleFilterModal = () => setIsFilterOpen((prev) => !prev);
   const toggleModal = () => setShowModal((prev) => !prev);
 
-  // Fetch the shopping list items from the API when the component mounts
+  /**
+   * Fetches the shopping list items from the API and updates the shopping list count state.
+   * @async
+   */
   useEffect(() => {
     const fetchShoppingList = async () => {
       try {
         const response = await fetch('/api/shoppingList');
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
         const data = await response.json();
         if (data.success) {
           setShoppingListCount(data.data.length); // Update the shopping list count
@@ -55,9 +61,10 @@ const Header = ({ isAuthenticated, onLogout }) => {
         console.error('Error fetching shopping list:', error);
       }
     };
-
+  
     fetchShoppingList();
   }, []);
+  
 
   return (
     <header className="sticky top-0 bg-[#f9efd2] dark:bg-gray-950 z-50 shadow-md">
@@ -189,3 +196,4 @@ const Header = ({ isAuthenticated, onLogout }) => {
 };
 
 export default Header;
+
