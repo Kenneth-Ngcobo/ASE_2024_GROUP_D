@@ -6,12 +6,23 @@ import Image from "next/image";
 import Link from "next/link";
 import { FaClock, FaUtensils } from "react-icons/fa";
 
+/**
+ * Carousel component displaying top-rated recipes.
+ * Fetches and displays recommended recipes sorted by rating.
+ * 
+ * @component
+ * @returns {JSX.Element} Rendered recipe carousel with navigation
+ */
 const RecipeCarousel = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [topRecipes, setTopRecipes] = useState([]);
 
   useEffect(() => {
-    // Fetch recommended recipes from API
+    /**
+     * Fetches top recipes from the API and sorts them by rating.
+     * Updates the topRecipes state with sorted recipes.
+     * Logs any errors during fetching.
+     */
     const fetchTopRecipes = async () => {
       try {
         const response = await fetch("/api/recipes/recommendations?limit=10");
@@ -32,10 +43,26 @@ const RecipeCarousel = () => {
   const visibleRecipes = 3;
   const maxIndex = Math.max(0, topRecipes.length - visibleRecipes);
 
+  /**
+     * Moves to the next slide in the carousel.
+     * Ensures the index doesn't exceed the maximum possible index.
+     */
   const nextSlide = () => setCurrentIndex((prev) => Math.min(prev + 1, maxIndex));
+
+  /**
+   * Moves to the previous slide in the carousel.
+   * Ensures the index doesn't go below zero.
+   */
   const prevSlide = () => setCurrentIndex((prev) => Math.max(prev - 1, 0));
 
-  // Render star rating
+  /**
+  * Renders a star rating display for a given rating.
+  * 
+  * @component
+  * @param {Object} props - Component props
+  * @param {number} props.rating - Numerical rating to display
+  * @returns {JSX.Element} Rendered star rating with number of stars
+  */
   const StarRating = ({ rating }) => {
     const fullStars = Math.floor(rating);
     const hasHalfStar = rating % 1 >= 0.5;
@@ -45,13 +72,12 @@ const RecipeCarousel = () => {
         {[...Array(5)].map((_, index) => (
           <Star
             key={index}
-            className={`w-4 h-4 ${
-              index < fullStars
-                ? "fill-yellow-400 text-yellow-400"
-                : index === fullStars && hasHalfStar
+            className={`w-4 h-4 ${index < fullStars
+              ? "fill-yellow-400 text-yellow-400"
+              : index === fullStars && hasHalfStar
                 ? "fill-yellow-400 text-yellow-400"
                 : "fill-gray-200 text-gray-200"
-            }`}
+              }`}
           />
         ))}
         <span className="text-sm text-gray-600 ml-1">({rating.toFixed(1)})</span>
@@ -89,7 +115,7 @@ const RecipeCarousel = () => {
       <div className="relative">
         <div className="overflow-hidden rounded-xl">
           <div
-            className="flex gap-6 transition-transform duration-500 ease-out"
+            className="flex gap-4 md:gap-2 transition-transform duration-500 ease-out"
             style={{
               transform: `translateX(-${currentIndex * (100 / visibleRecipes)}%)`,
             }}
@@ -97,7 +123,7 @@ const RecipeCarousel = () => {
             {topRecipes.map((recipe) => (
               <div
                 key={recipe._id}
-                className="flex-none w-1/3 group cursor-pointer"
+                className="flex-none w-1/4 group cursor-pointer"  
               >
                 <Link href={`/Recipe/${recipe._id}`}>
                   <div className="bg-[#fcfde2] dark:bg-[#1c1d02] rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
@@ -115,29 +141,30 @@ const RecipeCarousel = () => {
                       />
                     </div>
                     <div className="p-6">
-                      <h3 className="font-semibold text-xl text-[#fc9d4f] dark:text-[#b05103] mb-3 line-clamp-2">
+                      <h3 className="font-semibold text-[#fc9d4f] dark:text-[#b05103] mb-3 line-clamp-2">
                         {recipe.title}
                       </h3>
                       <div className="flex items-center gap-4 text-[#020123] dark:text-[#dddcfe]">
                         <StarRating rating={recipe.averageRating || 0} />
-                        <div className="flex items-center gap-1.5">
-                          <FaClock className="w-4 h-4" />
-                          <span className="text-sm">
-                            {recipe.cookTime || "30 mins"}
-                          </span>
                         </div>
-                        <div className="flex items-center gap-2">
+                   {/* Cook time and servings as list */}
+                   <ul className="mt-4 text-sm text-gray-600 dark:text-gray-300">
+                        <li className="flex items-center gap-2">
+                          <FaClock className="w-4 h-4" />
+                          {recipe.cookTime || "30 mins"}
+                        </li>
+                        <li className="flex items-center gap-2">
                           <FaUtensils className="w-4 h-4" />
-                          <span className="text-sm">
-                            serves {recipe.servings || "4"}
-                          </span>
+                          {`Serves: ${recipe.servings || "4"}`}
+                        </li>
+                      </ul>
                         </div>
                       </div>
-                    </div>
-                  </div>
+                    
                 </Link>
               </div>
             ))}
+            
           </div>
         </div>
       </div>
@@ -146,4 +173,3 @@ const RecipeCarousel = () => {
 };
 
 export default RecipeCarousel;
-
