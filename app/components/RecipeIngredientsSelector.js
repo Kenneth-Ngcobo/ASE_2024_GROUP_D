@@ -87,7 +87,7 @@ const RecipeIngredientsSection = ({ ingredients }) => {
     // Clear selections after adding
     setSelectedIngredients(new Set());
     // Navigate to shopping list page
-    router.push('/shopping-list');
+    router.push('/shopping_lists');
   };
 
   return (
