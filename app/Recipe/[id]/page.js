@@ -67,25 +67,25 @@ export default async function RecipePage({ params }) {
                         <BackButton />
                     </div>
 
-                    <div className="space-y-8">
-                        {/* Image Section */}
-                        <div className="bg-white dark:bg-gray-950 rounded-2xl shadow-xl p-6 overflow-hidden">
-                            <Suspense fallback={<Loading />}>
-                                {recipe.images && recipe.images.length > 0 ? (
-                                    <ImageGallery images={recipe.images} />
-                                ) : recipe.images?.[0] ? (
-                                    <Image
-                                        src={recipe.images[0]}
-                                        alt={recipe.title || 'Recipe Image'}
-                                        width={300}
-                                        height={200}
-                                        className="w-full h-[400px] object-cover rounded-xl"
-                                    />
-                                ) : (
-                                    <div className="w-full h-[400px] bg-gray-100 dark:bg-gray-950 rounded-xl flex items-center justify-center">
-                                        <p className="text-[#020123] dark:text-[#dddcfe">No image available</p>
-                                    </div>
-                                )}
+                        <div className="space-y-8">
+                            {/* Image Section */}
+                            <div className="bg-white dark:bg-gray-950 rounded-2xl shadow-xl p-6 overflow-hidden">
+                                <Suspense fallback={<Loading />}>
+                                    {recipe.images && recipe.images.length > 0 ? (
+                                        <ImageGallery images={recipe.images} />
+                                    ) : recipe.images?.[0] ? (
+                                        <Image
+                                            src={recipe.images[0]}
+                                            alt={recipe.title || 'Recipe Image'}
+                                            width={300}
+                                            height={200}
+                                            className="w-full h-[400px] object-cover rounded-xl"
+                                        />
+                                    ) : (
+                                        <div className="w-full h-[400px] bg-gray-100 dark:bg-gray-950 rounded-xl flex items-center justify-center">
+                                            <p className="text-[#020123] dark:text-[#dddcfe">No image available</p>
+                                        </div>
+                                    )}
                                 </Suspense>
                                 
                         </div>
@@ -151,33 +151,33 @@ export default async function RecipePage({ params }) {
                             defaultOpen={true}
                         />
 
-                        {/* New Reviews Section */}
-                        <CollapsibleSection
-                            title="Reviews"
-                            content={<ReviewsSection recipeId={id} />}
-                            defaultOpen={true}
-                        />
-                       
-                        {/* Footer Information */}
-                        <div className="mt-8 bg-white dark:bg-[#1c1d02] p-6 rounded-xl shadow-xl">
-                            <p className="text-sm text-[#020123] dark:text-[#dddcfe">
-                                <strong>Published:</strong> {new Date(recipe.published).toDateString()}
-                            </p>
-                            <p className="text-sm">
-                                <strong className="text-[#020123] dark:text-[#dddcfe">Prep Time:</strong> {recipe.prep} minutes
-                            </p>
-                            <p className="text-sm">
-                                <strong className="text-[#020123] dark:text-[#dddcfe">Cook Time:</strong> {recipe.cook} minutes
-                            </p>
-                            <p className="text-sm">
-                                <strong className="text-[#020123] dark:text-[#dddcfe">Servings:</strong> {recipe.servings}
-                            </p>
-                            <p className="text-sm">
-                                <strong className="text-[#020123] dark:text-[#dddcfe">Category:</strong> {recipe.category}
-                            </p>
+                            {/* New Reviews Section */}
+                            <CollapsibleSection
+                                title="Reviews"
+                                content={<ReviewsSection recipeId={id} />}
+                                defaultOpen={true}
+                            />
+
+                            {/* Footer Information */}
+                            <div className="mt-8 bg-white dark:bg-[#1c1d02] p-6 rounded-xl shadow-xl">
+                                <p className="text-sm text-[#020123] dark:text-[#dddcfe">
+                                    <strong>Published:</strong> {new Date(recipe.published).toDateString()}
+                                </p>
+                                <p className="text-sm">
+                                    <strong className="text-[#020123] dark:text-[#dddcfe">Prep Time:</strong> {recipe.prep} minutes
+                                </p>
+                                <p className="text-sm">
+                                    <strong className="text-[#020123] dark:text-[#dddcfe">Cook Time:</strong> {recipe.cook} minutes
+                                </p>
+                                <p className="text-sm">
+                                    <strong className="text-[#020123] dark:text-[#dddcfe">Servings:</strong> {recipe.servings}
+                                </p>
+                                <p className="text-sm">
+                                    <strong className="text-[#020123] dark:text-[#dddcfe">Category:</strong> {recipe.category}
+                                </p>
+                            </div>
                         </div>
                     </div>
-                </div>
                 </Suspense>
                 </ShoppingListProvider>
         </div>
