@@ -8,6 +8,7 @@ import EditableRecipeDetails from '../../components/recipe-detail/EditDescriptio
 import ReviewsSection from '../../components/recipe-detail/ReviewsSection';
 import AllergensSection from '../../components/recipe-detail/AllergensSection';
 import VoiceAssistant from "../../components/voice-ai/VoiceAssistant";
+import RecipeIngredientsSelector from '../../components/recipe/RecipeIngredientsSelector'
 import Link from 'next/link';
 
 // Generate metadata for the recipe page dynamically
@@ -122,47 +123,25 @@ export default async function RecipePage({ params }) {
                             </div>
                         </div>
 
-                        {/* Ingredients and Instructions Section */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-white dark:bg-gray-950 rounded-2xl shadow-xl p-6">
-                            <div className="space-y-4">
-                                <h2 className="text-3xl font-bold text-[#fc9d4f] dark:text-[#b05103]">Ingredients</h2>
-                                <form method="POST" action="/api/shopping_lists">
-                                    <ul className="list-disc list-inside">
-                                        {Array.isArray(recipe.ingredients) ? (
-                                            recipe.ingredients.map((ingredient, index) => (
-                                                <li key={index} className="text-[#020123] dark:text-[#dddcfe]">
-                                                    <input
-                                                        type="hidden"
-                                                        name="ingredients"
-                                                        value={ingredient}
-                                                    />
-                                                    {ingredient}
-                                                </li>
-                                            ))
-                                        ) : (
-                                            <li className="text-[#020123] dark:text-[#dddcfe]">No ingredients available</li>
-                                        )}
-                                    </ul>
-                                    <button
-                                        type="submit"
-                                        className="mt-4 px-4 py-2 bg-[#fc9d4f] dark:bg-[#b05103] text-white rounded-xl"
-                                    >
-                                        Add to Shopping List
-                                    </button>
-                                </form>
+                        {/* Ingredients and Instructions Section*/}
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-white dark:bg-gray-950 rounded-2xl shadow-xl p-6">
+                         <div className="space-y-4">
+                                    <h2 className="text-xl font-bold text-[#fc9d4f] dark:text-[#b05103]">Ingredients</h2>
+                                    <RecipeIngredientsSelector ingredients={recipe.ingredients || {}} />
+                                </div>
+                                <div className="space-y-4">
+                                    <h2 className="text-xl font-bold text-[#fc9d4f] dark:text-[#b05103]">Instructions</h2>
+                                    <ol className="list-decimal list-inside">
+                                        {Object.entries(recipe.instructions || {}).map(([key, value], index) => (
+                                            <li key={index} className="text-[#020123] dark:text-[#dddcfe]">
+                                                {key}: {value}
+                                            </li>
+                                        ))}
+                                    </ol>
+                                    <VoiceAssistant instructions={recipe.instructions || []} />
+                                </div>
                             </div>
-                            <div className="space-y-4">
-                                <h2 className="text-3xl font-bold text-[#fc9d4f] dark:text-[#b05103]">Instructions</h2>
-                                <ol className="space-y-2">
-                                    {Object.entries(recipe.instructions || {}).map(([key, value], index) => (
-                                        <li key={index} className="text-[#020123] dark:text-[#dddcfe]">
-                                            {key}: {value}
-                                        </li>
-                                    ))}
-                                </ol>
-                                <VoiceAssistant instructions={recipe.instructions || []} />
-                            </div>
-                        </div>
 
                         {/* Reviews Section */}
                         <div className="space-y-4">
@@ -189,7 +168,7 @@ export default async function RecipePage({ params }) {
                             </p>
                         </div>
 
-                        <Link href="/shopping-list">
+                        <Link href="/shopping_lists">
                             <p className="mt-4 px-4 py-2 bg-[#fc9d4f] dark:bg-[#b05103] text-white rounded-xl">
                                 View Shopping List
                             </p>

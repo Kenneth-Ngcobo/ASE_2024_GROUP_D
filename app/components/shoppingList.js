@@ -17,7 +17,7 @@ const ShoppingListPage = () => {
   useEffect(() => {
     const fetchShoppingList = async () => {
       try {
-        const response = await fetch('/api/shopping_lists'); // Corrected endpoint
+        const response = await fetch('/api/shopping_lists'); 
         const data = await response.json();
         if (data.success) {
           setShoppingList(data.data);
@@ -56,41 +56,38 @@ const ShoppingListPage = () => {
         throw new Error('Failed to delete item');
       }
     } catch (error) {
-      setError(error.message);
+      console.error('Error deleting item:', error);
     }
   };
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <p>Loading...</p>;
   }
 
   if (error) {
-    return <div>Error: {error}</div>;
+    return <p>Error: {error}</p>;
   }
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Shopping List</h1>
-      {shoppingList.length === 0 ? (
-        <div>Your shopping list is empty.</div>
-      ) : (
-        <ul className="space-y-2">
-          {shoppingList.map((item) => (
-            <li key={item._id} className="flex items-center justify-between p-2 hover:bg-gray-50 rounded-lg">
-              <div>
-                <span className="text-gray-700 dark:text-gray-300">{item.name}</span> -{' '}
-                <span className="text-gray-500 dark:text-gray-400">{item.quantity}</span>
-              </div>
+    <div className="container mx-auto py-6">
+      <h1 className="text-2xl font-semibold mb-4">Shopping List</h1>
+      <ul className="space-y-4">
+        {shoppingList.length > 0 ? (
+          shoppingList.map((item) => (
+            <li key={item._id} className="flex items-center justify-between">
+              <span>{item.name}</span>
               <button
+                className="bg-red-500 text-white px-3 py-1 rounded"
                 onClick={() => deleteItem(item._id)}
-                className="bg-red-500 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm"
               >
                 Delete
               </button>
             </li>
-          ))}
-        </ul>
-      )}
+          ))
+        ) : (
+          <p>Your shopping list is empty.</p>
+        )}
+      </ul>
     </div>
   );
 };
