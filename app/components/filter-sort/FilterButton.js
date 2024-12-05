@@ -1,19 +1,33 @@
-"use client"; // Ensure this component is rendered on the client side
+"use client";
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import TagDisplay from "./TagList"; // Correctly imported TagDisplay
-import { fetchRecipes } from "../api"; // Import your fetchRecipes function
-import IngDisplay from "./IngredientList";
-import StepsDropdown from "./StepsDropdown"; // Import StepsDropdown
+import TagDisplay from "../TagList";
+import { fetchRecipes } from "../../api";
+import IngDisplay from "../IngredientList";
+import StepsDropdown from "../StepsDropdown";
 
+/**
+ * Modal component for filtering recipes with various search criteria.
+ * 
+ * @component
+ * @param {Object} props - Component props
+ * @param {Function} props.onClose - Callback function to close the filter modal
+ * @returns {JSX.Element} Rendered filter modal
+ */
 export const FilterModal = ({ onClose }) => {
     const [cookTime, setCookTime] = useState(0);
-    const [selectedTags, setSelectedTags] = useState([]); // State to store selected tags
-    const [selectedIngs, setSelectedIngs] = useState([]); // State to store selected ingredients
-    const [steps, setSteps] = useState(0); // State for steps
+    const [selectedTags, setSelectedTags] = useState([]);
+    const [selectedIngs, setSelectedIngs] = useState([]);
+    const [steps, setSteps] = useState(0);
     const searchParams = useSearchParams();
     const router = useRouter();
 
+    /**
+     * Converts a numeric time value to a human-readable range label.
+     * 
+     * @param {number} value - The time value to convert
+     * @returns {string} Formatted time range label
+     */
     const getRangeLabel = (value) => {
         if (value === 0) return "All";
         if (value <= 15) return "5-15 min";
@@ -22,6 +36,12 @@ export const FilterModal = ({ onClose }) => {
         return "45-60 min";
     };
 
+    /**
+     * Snaps the input value to the nearest predefined time range.
+     * 
+     * @param {number} value - The input time value
+     * @returns {number} Snapped time value
+     */
     const snapToNearest = (value) => {
         if (value < 5) return 0;
         if (value <= 15) return 15;
@@ -30,52 +50,85 @@ export const FilterModal = ({ onClose }) => {
         return 60;
     };
 
-    const handleSliderChange = (e) => {
-        const value = snapToNearest(Number(e.target.value));
-        setCookTime(value);
+    /**
+     * Creates a handler for slider change events that snaps to nearest value.
+     * 
+     * @param {Function} setValue - State setter function
+     * @returns {Function} Event handler for slider changes
+     */
+    const handleSliderChange = (setValue) => (e) => {
+        const value = Number(e.target.value);
+        setValue(snapToNearest(value));
     };
-    
 
+    /**
+     * Handles changes to the number of steps in a recipe.
+     * 
+     * @param {number} steps - Number of recipe steps
+     */
     const handleStepsChange = (steps) => {
         setSteps(steps);
     };
 
+    /**
+     * Handles changes to selected tags, with logging.
+     * 
+     * @param {string[]} tags - Array of selected tags
+     */
     const handleTagsChange = (tags) => {
         console.log("Handling tags change:", tags); // Log the selected tags
         if (JSON.stringify(tags) !== JSON.stringify(selectedTags)) {
             setSelectedTags(tags);
-         }
+            console.log("Updated Selected Tags:", tags); // Log updated tags
+        }
     };
 
+    /**
+     * Handles changes to selected ingredients, with logging.
+     * 
+     * @param {string[]} ing - Array of selected ingredients
+     */
     const handleIngsChange = (ing) => {
         console.log("Handling ingredients change:", ing); // Log the selected ingredients
         if (JSON.stringify(ing) !== JSON.stringify(selectedIngs)) {
             setSelectedIngs(ing);
+            console.log("Updated Selected Ingredients:", ing); // Log updated ingredients
         }
     };
 
+    /**
+     * Submits filter criteria by updating URL search parameters.
+     * Resets to the first page and applies selected filters.
+     */
     const handleSubmit = async () => {
         const currentQuery = Object.fromEntries(searchParams.entries());
-        const stepsValue = steps === 0 ? "" : steps;
-    
+
+        console.log("Current Query Params Before Submit:", currentQuery); // Log current query
+
+        if (steps === 0) {
+            setSteps(""); // Clear steps if zero
+        }
+
         const newQuery = {
             ...currentQuery,
-            page: 1,
-            tags: selectedTags.join(","),
-            ingredients: selectedIngs.join(","),
-            instructions: stepsValue,
+            page: 1, // Reset to the first page
+            tags: selectedTags.join(","), // Join tags for the query string
+            ingredients: selectedIngs.join(","), // Join ingredients for the query string
+            instructions: steps,
         };
-    
+
         const queryString = new URLSearchParams(newQuery).toString();
+
+        // Only push if the query string is different
         if (window.location.search !== `?${queryString}`) {
-            router.replace(`?${queryString}`, undefined, { shallow: true });
-            onClose();
+            console.log("Updating URL with New Query:", queryString); // Log query string
+            router.push(`?${queryString}`);
+            onClose(); // Close the modal after submitting
         }
     };
-    
 
     return (
-        <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50 lg:w-[50%].">
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
             <div className="bg-white dark:bg-black w-[60%] p-6 rounded-lg shadow-lg">
                 {/* Header */}
                 <div className="flex justify-between items-center mb-4">
@@ -97,17 +150,33 @@ export const FilterModal = ({ onClose }) => {
                         <IngDisplay selectedIngs={selectedIngs} onIngsChange={handleIngsChange} />
                         <StepsDropdown selectedSteps={steps} onStepsChange={handleStepsChange} />
                     </div>
+
+                    {/* Time Slider */}
+                    {/* Uncomment to enable */}
+                    {/* <div className="flex flex-col">
+                        <label className="text-sm font-medium text-gray-700">Time for meal</label>
+                        <input
+                            type="range"
+                            min="0"
+                            max="60"
+                            value={cookTime}
+                            onChange={handleSliderChange(setCookTime)}
+                            className="mt-2"
+                            step="5"
+                        />
+                        <div className="flex justify-between text-xs text-gray-600">
+                            <span>{getRangeLabel(cookTime)}</span>
+                            <span>60</span>
+                        </div>
+                    </div> */}
                 </div>
 
                 {/* Clear All Filters */}
                 <div
                     onClick={() => {
                         setCookTime(0);
-                        setSelectedTags([]);// Clear selected tags
-                        setSelectedIngs([]); // Clear selected ingredients  
-                        setSteps(0); // Clear selected steps
+                        setSelectedTags([]); // Clear selected tags
                     }}
-                         
                     className="text-red-600 text-sm cursor-pointer mb-4 hover:underline"
                 >
                     Clear All Filters
@@ -133,6 +202,14 @@ export const FilterModal = ({ onClose }) => {
     );
 };
 
+/**
+ * Button component to open the filter modal.
+ * 
+ * @component
+ * @param {Object} props - Component props
+ * @param {Function} props.onClick - Callback function to trigger filter modal
+ * @returns {JSX.Element} Rendered filter button
+ */
 export const FilterButton = ({ onClick }) => {
     return (
         <button
@@ -145,31 +222,27 @@ export const FilterButton = ({ onClick }) => {
     );
 };
 
-// Parent Component
+/**
+ * Parent component managing the filter modal's visibility.
+ * 
+ * @component
+ * @returns {JSX.Element} Rendered parent component with filter button and modal
+ */
 const ParentComponent = () => {
     const [isFilterOpen, setIsFilterOpen] = useState(false);
 
+    /**
+     * Toggles the filter modal's open/closed state.
+     */
     const toggleFilterModal = () => {
         setIsFilterOpen((prev) => !prev); // Toggle modal open/close state
     };
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-50"
-         onClick={onClose}
-         >  
-
-         <div className="modal-content"
-         onClick={(e) => e.stopPropagation()} 
-         
-         >
-
-             <FilterButton onClick={toggleFilterModal} />
+        <div>
+            <FilterButton onClick={toggleFilterModal} />
             {isFilterOpen && <FilterModal onClose={toggleFilterModal} />}
-         </div>
-            
         </div>
-
-
     );
 };
 

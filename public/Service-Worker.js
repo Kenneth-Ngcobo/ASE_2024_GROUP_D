@@ -1,9 +1,9 @@
 // const CACHE_NAME = 'staticCache-v2';
 // const urlsToCache = [
 //     // Add more static assets to cache here
-// ];
+//
 
-// self.addEventListener('install', event => {
+//  self.addEventListener('install', event => {
 //     self.skipWaiting();  // Activate the service worker immediately after install
 //     event.waitUntil(
 //         caches.open(CACHE_NAME)
