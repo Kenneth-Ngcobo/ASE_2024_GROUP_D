@@ -92,9 +92,7 @@ const Header = ({ isAuthenticated, onLogout }) => {
               <FaHeart className="w-5 h-5" />
             </Link>
 
-            <Suspense fallback={<Loading />}>
-
-            </Suspense>
+            <Suspense fallback={<Loading />}></Suspense>
 
             <ThemeButton />
           </div>

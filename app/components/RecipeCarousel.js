@@ -115,7 +115,7 @@ const RecipeCarousel = () => {
       <div className="relative">
         <div className="overflow-hidden rounded-xl">
           <div
-            className="flex gap-4 transition-transform duration-500 ease-out"
+            className="flex gap-4 md:gap-2 transition-transform duration-500 ease-out"
             style={{
               transform: `translateX(-${currentIndex * (100 / visibleRecipes)}%)`,
             }}
