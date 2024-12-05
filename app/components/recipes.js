@@ -15,6 +15,7 @@ import Carousel from "./ui/Carousel";
 import { SortControl } from "./SortControl";
 import { useSearchParams } from "next/navigation";
 
+
 /**
  * Recipes component displays a list of recipes, allows the user to favorite recipes,
  * and adds ingredients to the shopping list.
