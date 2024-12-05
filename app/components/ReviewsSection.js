@@ -217,7 +217,7 @@ const ReviewsSection = ({ recipeId }) => {
         <h2 className="text-2xl font-bold">Reviews</h2>
         <div className="flex items-center space-x-2">
           <StarRating averageRating={averageRating} />
-          <span className="text-[#020123]dark:text-[#dddcfe]">({reviews.length} reviews)</span>
+          <span className="text-gray-600">({reviews.length} reviews)</span>
         </div>
       </div>
 
@@ -246,17 +246,17 @@ const ReviewsSection = ({ recipeId }) => {
 
       <div className="space-y-4">
         {reviews.map((review) => (
-          <div key={review._id} className=" p-4 rounded-lg shadow-md">
+          <div key={review._id} className="bg-white p-4 rounded-lg shadow-md">
             <div className="flex justify-between items-center mb-2">
               <div className="flex items-center space-x-2">
                 <span className="font-bold">{review.username || "Anonymous"}</span>
                 <StarRating averageRating={review.rating} />
               </div>
-              <div className="text-sm text-[#020123]dark:text-[#dddcfe]">
+              <div className="text-sm text-gray-500">
                 {new Date(review.updatedAt || review.createdAt).toLocaleString()}
               </div>
             </div>
-            <p className="text-[#020123]dark:text-[#dddcfe] mb-2">{review.comment}</p>
+            <p className="text-gray-800 mb-2">{review.comment}</p>
             <div className="flex space-x-4">
               <button
                 onClick={() => handleEdit(review)}

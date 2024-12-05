@@ -1,37 +1,45 @@
-
-import { fetchRecipes } from './api';
-import { Suspense } from 'react';
-import Pagination from './components/pagination';
-import Recipes from './components/recipes';
-import Footer from './components/ui/footer';
-import Loading from './loading';
-import RecipeCarousel from './components/RecipeCarousel';
-import { ShoppingListProvider } from './context/ShoppingListContext';
-import RegisterServiceWorker from './components/RegisterServiceWorker';
+import { fetchRecipes } from "./api";
+import { Suspense } from "react";
+import Pagination from "./components/pagination";
+import Recipes from "./components/recipes";
+import Footer from "./components/ui/footer";
+import Loading from "./loading";
+import RecipeCarousel from "./components/recipe/RecipeCarousel";
+import RegisterServiceWorker from "./components/RegisterServiceWorker";
 
 export default async function Home({ searchParams }) {
     let recipes = {};
     let error = null;
 
     const page = searchParams.page ? parseInt(searchParams.page) : 1;
-    const sort = searchParams.sort || '';
-    const order = searchParams.order || 'desc';
-    const search = searchParams.search || '';
-    const tags = searchParams.tags || '';
-    const category = searchParams.category || '';
-    const ingredients = searchParams.ingredients || '';
-    const instructions = searchParams.instructions || '';
+    const sort = searchParams.sort || "";
+    const order = searchParams.order || "desc";
+    const search = searchParams.search || "";
+    const tags = searchParams.tags || "";
+    const category = searchParams.category || "";
+    const ingredients = searchParams.ingredients || "";
+    const instructions = searchParams.instructions || "";
 
     try {
-        recipes = await fetchRecipes(20, page, search, tags, category, ingredients, instructions, sort, order);
+        recipes = await fetchRecipes(
+            20,
+            page,
+            search,
+            tags,
+            category,
+            ingredients,
+            instructions,
+            sort,
+            order
+        );
     } catch (err) {
         error = err.message;
     }
 
     return (
+        <>
+            <RegisterServiceWorker />
 
-        <ShoppingListProvider>
-            {/** <RegisterServiceWorker />*/}
             <RecipeCarousel />
 
             <Suspense fallback={<Loading />}>
@@ -49,6 +57,6 @@ export default async function Home({ searchParams }) {
                 />
                 <Footer />
             </Suspense>
-        </ShoppingListProvider>
+        </>
     );
 }

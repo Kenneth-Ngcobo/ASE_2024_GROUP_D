@@ -1,201 +1,95 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useShoppingList } from '../context/ShoppingListContext';
-import { FaWhatsapp } from 'react-icons/fa';
-import BackButton from './ui/BackButton';
-import { useAuth } from '../hook/useAuth'
 
 /**
- * ShoppingList component - Manages the display and actions for the shopping list.
- * Includes features like adding, removing, and updating items, as well as sharing the list via WhatsApp.
- *
- * @returns {JSX.Element} The ShoppingList component.
+ * Renders the shopping list page, displaying items fetched from the API.
+ * 
+ * @component
+ * @returns {JSX.Element} Shopping list with functionality to delete items
  */
-const ShoppingList = () => {
-  const { state, dispatch,
-    syncLoadList,
-    syncAddItem,
-    syncRemoveItem,
-    syncUpdateQuantity,
-    syncTogglePurchased,
-    syncClearList
-  } = useShoppingList();
+const ShoppingListPage = () => {
+  const [shoppingList, setShoppingList] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-
+  // Fetch the shopping list items from the API when the component mounts
   useEffect(() => {
-    console.log('current shopping list items:', state.items)
+    const fetchShoppingList = async () => {
+      try {
+        const response = await fetch('/api/shopping_lists');
+        const data = await response.json();
+        if (data.success) {
+          setShoppingList(data.data);
+        } else {
+          throw new Error('Failed to fetch shopping list');
+        }
+      } catch (error) {
+        setError(error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  }, [state.items]);
+    fetchShoppingList();
+  }, []);
 
-  const { user } = useAuth();
+  /**
+   * Deletes an item from the shopping list.
+   * 
+   * @param {string} id - The ID of the item to delete
+   */
+  const deleteItem = async (id) => {
+    try {
+      const response = await fetch('/api/shopping_lists', { // Corrected endpoint
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ id }),
+      });
 
-  const [newItemName, setNewItemName] = useState('');
-  const [newItemQuantity, setNewItemQuantity] = useState('');
-  const [error, setError] = useState('');
-
-  useEffect(() => {
-    if (user?.id) {
-      syncLoadList(user.id);
+      const data = await response.json();
+      if (data.success) {
+        setShoppingList((prevList) => prevList.filter((item) => item._id !== id));
+      } else {
+        throw new Error('Failed to delete item');
+      }
+    } catch (error) {
+      console.error('Error deleting item:', error);
     }
-  }, [user]);
-
-
-  const removeItem = (id) => {
-    dispatch({
-      type: 'REMOVE_ITEM',
-      payload: { id },
-    });
   };
 
-  const clearList = () => {
-    dispatch({ type: 'CLEAR_LIST' });
-  };
-
-  const togglePurchased = (id) => {
-    dispatch({
-      type: 'TOGGLE_PURCHASED',
-      payload: { id },
-    });
-  };
-
-  const handleAddItem = (e) => {
-    e.preventDefault();
-
-    if (!newItemName.trim()) {
-      setError('Please enter a valid item name');
-      return;
-    }
-
-    // Dispatch the action to add the new item
-    dispatch({
-      type: 'ADD_ITEM',
-      payload: {
-        id: newItemName.toLowerCase().replace(/\s+/g, '-'),
-        name: newItemName,
-        quantity: newItemQuantity || 'N/A',
-        purchased: false,
-      },
-    });
-
-    if (user?.id) {
-      syncAddItem(user.id, newItem)
-    }
-
-    // Clear the input fields after adding
-    setNewItemName('');
-    setNewItemQuantity('');
-    setError('');
-  };
-
-  const handleQuantityChange = (id, newQuantity) => {
-    dispatch({
-      type: 'UPDATE_QUANTITY',
-      payload: { id, quantity: newQuantity },
-    });
-  };
-  const generateWhatsAppMessage = () => {
-    const baseURL = 'https://api.whatsapp.com/send?text=';
-    const message = state.items.map(item => `${item.name}: ${item.quantity}`).join('\n');
-    return `${baseURL}${encodeURIComponent(`Here is my shopping list:\n${message}`)}`;
-  };
-
-  const shareOnWhatsApp = () => {
-    const url = generateWhatsAppMessage();
-    window.open(url, '_blank');
-  };
-
-  if (state.isLoading) {
-    return <div>Loading shopping list...</div>;
+  if (loading) {
+    return <p>Loading...</p>;
   }
 
-  if (state.error) {
-    return <div>Error loading shopping list: {state.error}</div>;
+  if (error) {
+    return <p>Error: {error}</p>;
   }
 
   return (
-
-    <div className="shopping-list p-4 bg-white rounded shadow-lg">
-      <h2 className="text-2xl font-bold mb-4">Shopping List</h2>
-
-      {/* Error Message */}
-      {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
-          <strong className="font-bold">Error:</strong>
-          <span className="block sm:inline"> {error}</span>
-        </div>
-      )}
-
-      {/* Form to add items manually */}
-      <form onSubmit={handleAddItem} className="mb-4 flex space-x-4">
-        <input
-          type="text"
-          value={newItemName}
-          onChange={(e) => setNewItemName(e.target.value)}
-          placeholder="Item name"
-          className="border p-2 rounded w-full"
-        />
-        <input
-          type="text"
-          value={newItemQuantity}
-          onChange={(e) => setNewItemQuantity(e.target.value)}
-          className="border p-2 rounded w-1/4"
-        />
-        <button type="submit" className="bg-[#fc9d4f] text-[#020123] hover:bg-[#edd282] p-2 rounded">
-          Add Item
-        </button>
-      </form>
-
-      {/* List of items */}
-      <ul>
-        {state.items.map((item) => (
-          <li
-            key={item.id}
-            className={`flex justify-between items-center mb-2 ${item.purchased ? 'line-through text-gray-500' : ''}`}
-          >
-            <div className="flex items-center">
-              {/* Checkbox to mark item as purchased */}
-              <input
-                type="checkbox"
-                checked={item.purchased}
-                onChange={() => togglePurchased(item.id)}
-                className="mr-2"
-              />
+    <div className="container mx-auto py-6">
+      <h1 className="text-2xl font-semibold mb-4">Shopping List</h1>
+      <ul className="space-y-4">
+        {shoppingList.length > 0 ? (
+          shoppingList.map((item) => (
+            <li key={item._id} className="flex items-center justify-between">
               <span>{item.name}</span>
-            </div>
-            <div className="flex items-center">
-              <input
-                type="number"
-                value={item.quantity}
-                onChange={(e) => handleQuantityChange(item.id, e.target.value)}
-                className="border p-2 rounded w-16 mr-2"
-                min="1"
-              />
-              {/* Remove Item Button */}
-              <button onClick={() => removeItem(item.id)} className="text-red-500 ml-2">
-                Remove
+              <button
+                className="bg-red-500 text-white px-3 py-1 rounded"
+                onClick={() => deleteItem(item._id)}
+              >
+                Delete
               </button>
-            </div>
-          </li>
-        ))}
+            </li>
+          ))
+        ) : (
+          <p>Your shopping list is empty.</p>
+        )}
       </ul>
-
-      {/* Action Buttons */}
-
-      <div className="absolute  left-2 mb-4">
-        <BackButton />
-      </div>
-
-      <div className='flex mt-4 space-x-2'>
-        <button onClick={clearList} className="mt-4 bg-[#fc9d4f]  text-[#020123] hover:bg-[#edd282] p-2 rounded">
-          Clear List
-        </button>
-        <button onClick={shareOnWhatsApp} className="mt-4 text-green-800 hover:text-green-500 p-2 rounded flex items-center">
-          <FaWhatsapp size={30} />
-        </button>
-      </div>
     </div>
   );
 };
 
-export default ShoppingList;
+export default ShoppingListPage;

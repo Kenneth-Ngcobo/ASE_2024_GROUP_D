@@ -7,21 +7,18 @@ import { ThemeProvider } from "next-themes";
 import Providers from "./providers";
 import { Montserrat } from "next/font/google";
 import DynamicManifest from "./components/DynamicLink";
-import RegisterServiceWorker from "./components/RegisterServiceWorker";
-import { ShoppingListProvider } from "./context/ShoppingListContext";
-
-
+// import RegisterServiceWorker from "./components/RegisterServiceWorker";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
   variable: "--font-geist-sans",
   weight: "100 900",
 });
-{/*const geistMono = localFont({
+const geistMono = localFont({
   src: "./fonts/GeistMonoVF.woff",
   variable: "--font-geist-mono",
   weight: "100 900",
-});*/}
+});
 
 const montserrat = Montserrat({
   subsets: ["latin"],
@@ -29,7 +26,6 @@ const montserrat = Montserrat({
 });
 
 export default function RootLayout({ children }) {
-
   return (
     <html lang="en" className={montserrat.className}>
       <head>
@@ -69,20 +65,18 @@ export default function RootLayout({ children }) {
       </head>
 
       <body
-        className={`${geistSans.variable} antialiased`} // Applying custom fonts and antialiasing for better text rendering
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`} // Applying custom fonts and antialiasing for better text rendering
       >
         <Providers>
           <ThemeProvider attribute="class">
             <Header /> {/* Rendering the Header component */}
             <Suspense fallback={<Loading />}>
-              <ShoppingListProvider>
-                {children} {/* Rendering the child components or pages */}
-              </ShoppingListProvider>
-            </Suspense>
-          </ThemeProvider>
-        </Providers>
-        <RegisterServiceWorker /> {/* Register the service worker */}
-      </body>
-    </html>
+              {children} {/* Rendering the child components or pages */}
+            </Suspense >
+          </ThemeProvider >
+        </Providers >
+        {/* <RegisterServiceWorker /> Register the service worker */}
+      </body >
+    </html >
   );
 }

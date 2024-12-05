@@ -8,13 +8,12 @@ import {
   FaClock,
   FaUtensils,
   FaCaretDown,
-  FaShoppingBag,
+
 } from "react-icons/fa";
 import { PiCookingPotDuotone, PiHeart } from "react-icons/pi";
 import Carousel from "./ui/Carousel";
 import { SortControl } from "./SortControl";
 import { useSearchParams } from "next/navigation";
-import { useShoppingList } from '../context/ShoppingListContext';
 
 /**
  * Recipes component displays a list of recipes, allows the user to favorite recipes,
@@ -32,10 +31,9 @@ const Recipes = ({ recipes: initialRecipes }) => {
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const searchParams = useSearchParams();
-  const { dispatch: dispatchShoppingList } = useShoppingList();
-  const [addedToList, setAddedToList] = useState(new Set());
 
 
+  console.log("received recipes is :", recipes)
   /**
    * Fetches the user's favorite recipes when the component mounts.
    */
@@ -146,6 +144,9 @@ const Recipes = ({ recipes: initialRecipes }) => {
     }
   };
 
+  console.log("received recipes is :", recipes)
+
+
 
   return (
     <>
@@ -252,6 +253,7 @@ const Recipes = ({ recipes: initialRecipes }) => {
                 <span className="inline-block bg-[#f9efd2] text-[#020123]  dark:bg-[#1c1d02] dark:text-[#dddcfe] text-sm px-2 py-1 rounded">
                   {new Date(recipe.published).toDateString()}
                 </span>
+
               </div>
             </Link>
           ))}
