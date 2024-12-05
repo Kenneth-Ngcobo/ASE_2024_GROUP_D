@@ -4,6 +4,11 @@ async function createReview(db, reviewData) {
   const collection = db.collection('recipes');
   const recipeId = reviewData.recipeId;
 
+  if (!reviewData.username) {
+    throw new Error('Username is required for review submission');
+  }
+
+
   try {
     await validateRecipe(db, recipeId);
   } catch (error) {
@@ -14,7 +19,7 @@ async function createReview(db, reviewData) {
     _id: new ObjectId(),
     rating: Number(reviewData.rating),
     comment: reviewData.comment,
-    username: reviewData.username || 'Anonymous',
+    username: reviewData.username ,
     createdAt: new Date(),
     updatedAt: new Date(),
   };
