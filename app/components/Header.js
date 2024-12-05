@@ -132,7 +132,14 @@ const Header = ({ isAuthenticated, onLogout }) => {
               <FaUser className="w-5 h-5" />
             </button>
 
-            <UserModal show={showModal} onClose={toggleModal} />
+            <Link
+              href="/Favourite"
+              className="text-[#020123] dark:text-white hover:text-[#fc9d4f]"
+            >
+              <FaHeart className="w-5 h-5" />
+            </Link>
+
+            <Suspense fallback={<Loading />}></Suspense>
 
             <ThemeButton />
 
@@ -145,7 +152,7 @@ const Header = ({ isAuthenticated, onLogout }) => {
               )}
             </Link>
           </div>
-          
+
           <button
             className="md:hidden text-gray-600 dark:text-white"
             onClick={toggleDropdown}
@@ -205,4 +212,3 @@ const Header = ({ isAuthenticated, onLogout }) => {
 };
 
 export default Header;
-

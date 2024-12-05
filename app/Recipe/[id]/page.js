@@ -1,5 +1,5 @@
-import { Suspense } from 'react';
-import Image from 'next/image';
+import { Suspense } from "react";
+import Image from "next/image";
 import BackButton from "../../components/ui/BackButton";
 import { fetchRecipeById } from '../../api';
 import ImageGallery from '../../components/recipe-detail/ImageGallery';
@@ -12,47 +12,47 @@ import Link from 'next/link';
 
 // Generate metadata for the recipe page dynamically
 export async function generateMetadata({ params }) {
-    const { id } = params;
-    const recipe = await fetchRecipeById(id);
+  const { id } = params;
+  const recipe = await fetchRecipeById(id);
 
-    if (!recipe) {
-        return {
-            title: 'Recipe not found',
-            description: 'Error occurred while fetching the recipe.'
-        };
-    }
-
+  if (!recipe) {
     return {
-        title: recipe.title || 'Untitled Recipe',
-        description: recipe.description || 'No description available.',
-        openGraph: {
-            title: recipe.title || 'Untitled Recipe',
-            description: recipe.description || 'No description available.',
-            images: recipe.images?.[0] || '/0.png',
-            type: 'article'
-        }
+      title: "Recipe not found",
+      description: "Error occurred while fetching the recipe.",
     };
+  }
+
+  return {
+    title: recipe.title || "Untitled Recipe",
+    description: recipe.description || "No description available.",
+    openGraph: {
+      title: recipe.title || "Untitled Recipe",
+      description: recipe.description || "No description available.",
+      images: recipe.images?.[0] || "/0.png",
+      type: "article",
+    },
+  };
 }
 
 // Main Recipe Page Component
 export default async function RecipePage({ params }) {
-    const { id } = params;
-    let recipe;
-    let load = true;
-    let error = null;
+  const { id } = params;
+  let recipe;
+  let load = true;
+  let error = null;
 
-    try {
-        recipe = await fetchRecipeById(id);
-    } catch (error) {
-        console.error('Error fetching recipe:', error);
-        error = 'Failed to load recipe data.';
-    } finally {
-        load = false;
-    }
+  try {
+    recipe = await fetchRecipeById(id);
+  } catch (error) {
+    console.error("Error fetching recipe:", error);
+    error = "Failed to load recipe data.";
+  } finally {
+    load = false;
+  }
 
-    if (error) {
-        throw error;
-    }
+  if (error) {
+    throw error;
+  }
 
     return (
         <div className="min-h-screen bg-[#fcfde2] dark:bg-[#1c1d02] py-8">
@@ -201,7 +201,8 @@ export default async function RecipePage({ params }) {
                 </div>
             </Suspense>
         </div>
-    );
+     
+  );
 }
 
 
