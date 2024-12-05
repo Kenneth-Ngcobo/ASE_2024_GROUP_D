@@ -68,6 +68,9 @@ export default function FavoritesPage() {
 
       // Remove the recipe from the local state
       setFavorites(prev => prev.filter(recipe => recipe._id !== recipeId));
+
+      // Dispatch event to update favorites count in Header
+      window.dispatchEvent(new Event('favorites-updated'));
     } catch (err) {
       setError('Failed to remove favorite. Please try again.');
       console.error('Error removing favorite:', err);

@@ -17,17 +17,58 @@ import Loading from "../loading.js";
 const Header = ({ isAuthenticated, onLogout }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [totalRecipes, setTotalRecipes] = useState(0); // State to hold total recipes
+  const [totalRecipes, setTotalRecipes] = useState(0);
   const [showModal, setShowModal] = useState(false);
+  const [favoritesCount, setFavoritesCount] = useState(0);
+  const [error, setError] = useState(null);
   const router = useRouter();
+
+  useEffect(() => {
+    const fetchFavorites = async () => {
+      const loggedInEmail = localStorage.getItem('loggedInUserEmail');
+      if (!loggedInEmail) {
+        return;
+      }
+
+      try {
+        const response = await fetch(`/api/favorites?email=${encodeURIComponent(loggedInEmail)}`, {
+          credentials: 'include',
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch favorites');
+        }
+
+        const data = await response.json();
+        setFavoritesCount(data.favorites.length);
+      } catch (err) {
+        setError('Failed to load favorites.');
+        console.error('Error fetching favorites:', err);
+      }
+    };
+
+    // Fetch favorites initially
+    fetchFavorites();
+
+    // Add event listener for favorites updates
+    const handleFavoritesUpdate = () => {
+      fetchFavorites();
+    };
+
+    window.addEventListener('favorites-updated', handleFavoritesUpdate);
+
+    // Cleanup listener
+    return () => {
+      window.removeEventListener('favorites-updated', handleFavoritesUpdate);
+    };
+  }, []);
 
   const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
   const toggleFilterModal = () => setIsFilterOpen((prev) => !prev);
   const toggleModal = () => setShowModal((prev) => !prev);
 
-
   return (
-    <header className=" sticky top-0 bg-[#f9efd2] dark:bg-gray-950 z-50 shadow-md">
+    <header className="sticky top-0 bg-[#f9efd2] dark:bg-gray-950 z-50 shadow-md">
       <div className="container mx-auto px-4">
         <nav className="flex items-center justify-between h-16">
           <div className="hidden md:flex space-x-8">
@@ -45,9 +86,14 @@ const Header = ({ isAuthenticated, onLogout }) => {
             </Link>
             <Link
               href="/favorites"
-              className="block text-[ #020123] hover:text-[#fc9d4f] font-medium py-2 uppercase "
+              className="block text-[ #020123] hover:text-[#fc9d4f] font-medium py-2 uppercase flex items-center"
             >
               Favourite
+              {favoritesCount > 0 && (
+                <span className="ml-2 bg-[#fc9d4f] text-white text-xs rounded-full px-2 py-1">
+                  {favoritesCount}
+                </span>
+              )}
             </Link>
           </div>
 
@@ -130,9 +176,14 @@ const Header = ({ isAuthenticated, onLogout }) => {
           </Link>
           <Link
             href="/Favourite"
-            className="block text-[#020123] hover:text-[#fc9d4f] font-medium py-2"
+            className=" text-[#020123] hover:text-[#fc9d4f] font-medium py-2 flex items-center"
           >
             Favourites
+            {favoritesCount > 0 && (
+              <span className="ml-2 bg-[#fc9d4f] text-white text-xs rounded-full px-2 py-1">
+                {favoritesCount}
+              </span>
+            )}
           </Link>
           <div className="py-2">
             <Suspense fallback={<Loading />}>

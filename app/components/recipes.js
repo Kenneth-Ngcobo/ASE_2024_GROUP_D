@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useEffect } from 'react';
@@ -7,28 +6,22 @@ import Image from 'next/image';
 import {
   FaClock,
   FaUtensils,
-  FaCaretDown,
   FaShoppingBag,
 } from "react-icons/fa";
 import { PiCookingPotDuotone, PiHeart } from "react-icons/pi";
 import Carousel from "./Carousel";
 import { SortControl } from "./SortControl";
-import {  useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useShoppingList } from '../context/shoppingListContext';
-
-
 
 const Recipes = ({ recipes: initialRecipes }) => {
   const [recipes, setRecipes] = useState(initialRecipes);
   const [favoritedRecipes, setFavoritedRecipes] = useState(new Set());
-  const [favoriteDetails, setFavoriteDetails] = useState([]);
-  const [dropdownVisible, setDropdownVisible] = useState(false);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const searchParams = useSearchParams();
   const { dispatch: dispatchShoppingList } = useShoppingList();
   const [addedToList, setAddedToList] = useState(new Set());
- 
 
   // Fetch favorites when component mounts
   useEffect(() => {
@@ -49,7 +42,6 @@ const Recipes = ({ recipes: initialRecipes }) => {
         }
 
         const data = await response.json();
-        setFavoriteDetails(data.favorites);
         const favoriteIds = new Set(data.favorites.map((recipe) => recipe._id));
         setFavoritedRecipes(favoriteIds);
       } catch (err) {
@@ -78,6 +70,7 @@ const Recipes = ({ recipes: initialRecipes }) => {
     const recipe = recipes.find((r) => r._id === recipeId);
 
     try {
+      // Optimistically update the local state
       setFavoritedRecipes((prev) => {
         const updated = new Set(prev);
         if (isFavorited) {
@@ -88,15 +81,7 @@ const Recipes = ({ recipes: initialRecipes }) => {
         return updated;
       });
 
-      setFavoriteDetails((prev) => {
-        if (isFavorited) {
-          return prev.filter((r) => r._id !== recipeId);
-        } else if (recipe) {
-          return [...prev, recipe];
-        }
-        return prev;
-      });
-
+      // Send request to backend
       const response = await fetch('/api/favorites', {
         method: isFavorited ? 'DELETE' : 'POST',
         body: JSON.stringify({ recipeId, email: loggedInEmail }),
@@ -109,7 +94,12 @@ const Recipes = ({ recipes: initialRecipes }) => {
       if (!response.ok) {
         throw new Error('Failed to update favorites');
       }
+
+      // Dispatch a custom event to update favorites count in Header
+      window.dispatchEvent(new Event('favorites-updated'));
+
     } catch (err) {
+      // Revert the local state if the request fails
       setFavoritedRecipes((prev) => {
         const reverted = new Set(prev);
         if (isFavorited) {
@@ -120,20 +110,12 @@ const Recipes = ({ recipes: initialRecipes }) => {
         return reverted;
       });
 
-      setFavoriteDetails((prev) => {
-        if (isFavorited && recipe) {
-          return [...prev, recipe];
-        } else {
-          return prev.filter((r) => r._id !== recipeId);
-        }
-      });
-
       setError('Failed to update favorites. Please try again.');
       console.error('Error updating favorites:', err);
     }
   };
 
-  const addIngredientsToShoppingList = (ingredients) => {
+  const addIngredientsToShoppingList = (ingredients, recipeId) => {
     const ingredientsArray = Object.keys(ingredients).map((key) => ({
       name: key,
       quantity: ingredients[key], 
@@ -149,9 +131,10 @@ const Recipes = ({ recipes: initialRecipes }) => {
         },
       });
     });
-  };
 
- 
+    // Update addedToList state
+    setAddedToList(prev => new Set([...prev, recipeId]));
+  };
 
   return (
     <>
@@ -164,38 +147,6 @@ const Recipes = ({ recipes: initialRecipes }) => {
         )}
 
         <SortControl />
-
-        <div className="mb-4 relative">
-          <button
-            onClick={() => setDropdownVisible(!dropdownVisible)}
-            className="flex items-center text-gray-800 font-roboto"
-          >
-            <PiHeart className="mr-2" size={20} />
-            <span>Favorites ({favoritedRecipes.size})</span>
-            <FaCaretDown
-              className={`ml-2 ${dropdownVisible ? "transform rotate-180" : ""
-                }`}
-            />
-          </button>
-
-          {dropdownVisible && (
-            <div className="mt-2 absolute bg-white border border-gray-200 rounded-lg shadow-lg w-60 z-10">
-              {favoriteDetails.length === 0 ? (
-                <p className="p-4 text-gray-500">No favorites yet</p>
-              ) : (
-                <ul className="max-h-60 overflow-y-auto p-2">
-                  {favoriteDetails.map((recipe) => (
-                    <li key={recipe._id} className="p-2 hover:bg-gray-100">
-                      <Link href={`/Recipe/${recipe._id}`} className="block text-sm text-gray-800">
-                        {recipe.title}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-          )}
-        </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {recipes.map((recipe) => (
@@ -260,32 +211,27 @@ const Recipes = ({ recipes: initialRecipes }) => {
                 </span>
                 
                 <button
-              className={`inline-block bg-[#f9efd2] text-sm px-2 py-1 rounded mt-2 transition-colors duration-300 ${
-                addedToList.has(recipe._id) ? 'bg-[#fc9d4f]' : 'bg-[#f9efd2]'
-              }`}
-              onClick={(e) => {
-                e.preventDefault();
-                addIngredientsToShoppingList(recipe.ingredients);
-                setAddedToList(prev => new Set([...prev, recipe._id]));
-              }}
-            >
-              <FaShoppingBag 
-                className={`${
-                  addedToList.has(recipe._id) ? 'text-white' : 'text-[#020123]'
-                } mr-2`} 
-              />
-            </button>
+                  className={`inline-block bg-[#f9efd2] text-sm px-2 py-1 rounded mt-2 transition-colors duration-300 ${
+                    addedToList.has(recipe._id) ? 'bg-[#fc9d4f]' : 'bg-[#f9efd2]'
+                  }`}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    addIngredientsToShoppingList(recipe.ingredients, recipe._id);
+                  }}
+                >
+                  <FaShoppingBag 
+                    className={`${
+                      addedToList.has(recipe._id) ? 'text-white' : 'text-[#020123]'
+                    } mr-2`} 
+                  />
+                </button>
               </div>
             </Link>
           ))}
         </div>
       </div>
-        
-    
     </>
   );
 };
 
 export default Recipes;
-
-
