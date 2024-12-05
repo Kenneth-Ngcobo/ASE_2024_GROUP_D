@@ -144,18 +144,22 @@ export default async function RecipePage({ params }) {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-white dark:bg-gray-950 rounded-2xl shadow-xl p-6">
                             <div className="space-y-4">
                                 <h2 className="text-3xl font-bold text-[#fc9d4f] dark:text-[#b05103]">Ingredients</h2>
-                                <form method="POST" action="/api/shopping-list">
+                                <form method="POST" action="/api/shopping_lists">
                                     <ul className="list-disc list-inside">
-                                        {recipe.ingredients?.map((ingredient, index) => (
-                                            <li key={index} className="text-[#020123] dark:text-[#dddcfe]">
-                                                <input
-                                                    type="hidden"
-                                                    name="ingredients"
-                                                    value={ingredient}
-                                                />
-                                                {ingredient}
-                                            </li>
-                                        ))}
+                                        {Array.isArray(recipe.ingredients) ? (
+                                            recipe.ingredients.map((ingredient, index) => (
+                                                <li key={index} className="text-[#020123] dark:text-[#dddcfe]">
+                                                    <input
+                                                        type="hidden"
+                                                        name="ingredients"
+                                                        value={ingredient}
+                                                    />
+                                                    {ingredient}
+                                                </li>
+                                            ))
+                                        ) : (
+                                            <li className="text-[#020123] dark:text-[#dddcfe]">No ingredients available</li>
+                                        )}
                                     </ul>
                                     <button
                                         type="submit"
@@ -214,4 +218,5 @@ export default async function RecipePage({ params }) {
         </div>
     );
 }
+
 
