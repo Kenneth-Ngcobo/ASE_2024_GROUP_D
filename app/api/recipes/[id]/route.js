@@ -24,7 +24,7 @@ import { ObjectId } from 'mongodb';
  * - Returns the complete recipe details
  */
 export async function GET(req, { params }) {
-  const awaitedParams = await params;
+  // const awaitedParams = await params;
   const { id } = params;
 
   try {
