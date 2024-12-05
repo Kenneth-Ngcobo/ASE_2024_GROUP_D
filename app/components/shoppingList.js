@@ -17,7 +17,7 @@ const ShoppingListPage = () => {
   useEffect(() => {
     const fetchShoppingList = async () => {
       try {
-        const response = await fetch('/api/shoppingList'); // Corrected endpoint
+        const response = await fetch('/api/shopping_lists'); // Corrected endpoint
         const data = await response.json();
         if (data.success) {
           setShoppingList(data.data);
@@ -41,7 +41,7 @@ const ShoppingListPage = () => {
    */
   const deleteItem = async (id) => {
     try {
-      const response = await fetch('/api/shoppingList', { // Corrected endpoint
+      const response = await fetch('/api/shopping_lists', { // Corrected endpoint
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',

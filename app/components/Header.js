@@ -47,7 +47,7 @@ const Header = ({ isAuthenticated, onLogout }) => {
   useEffect(() => {
     const fetchShoppingList = async () => {
       try {
-        const response = await fetch('/api/shoppingList');
+        const response = await fetch('/api/shopping_lists');
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -61,10 +61,10 @@ const Header = ({ isAuthenticated, onLogout }) => {
         console.error('Error fetching shopping list:', error);
       }
     };
-  
+
     fetchShoppingList();
   }, []);
-  
+
 
   return (
     <header className="sticky top-0 bg-[#f9efd2] dark:bg-gray-950 z-50 shadow-md">
@@ -105,7 +105,7 @@ const Header = ({ isAuthenticated, onLogout }) => {
             <Suspense fallback={<Loading />}>
               <CategoryList
                 totalRecipes={totalRecipes}
-                onCategoryChange={() => {}}
+                onCategoryChange={() => { }}
               />
             </Suspense>
             <FilterButton onClick={toggleFilterModal} />
@@ -152,9 +152,8 @@ const Header = ({ isAuthenticated, onLogout }) => {
       </div>
 
       <div
-        className={`md:hidden bg-white border-t transition-all duration-300 ${
-          isDropdownOpen ? 'max-h-screen py-4' : 'max-h-0 overflow-hidden'
-        }`}
+        className={`md:hidden bg-white border-t transition-all duration-300 ${isDropdownOpen ? 'max-h-screen py-4' : 'max-h-0 overflow-hidden'
+          }`}
       >
         <div className="container mx-auto px-4 space-y-4">
           <Link
@@ -179,7 +178,7 @@ const Header = ({ isAuthenticated, onLogout }) => {
             <Suspense fallback={<Loading />}>
               <CategoryList
                 totalRecipes={totalRecipes}
-                onCategoryChange={() => {}}
+                onCategoryChange={() => { }}
               />
             </Suspense>
           </div>

@@ -43,7 +43,7 @@ const RecipeIngredientsSection = ({ ingredients }) => {
     for (const [ingredient, amount] of Object.entries(ingredients)) {
       const ingredientId = `${ingredient.toLowerCase().replace(/\s+/g, '-')}`;
       if (selectedIngredients.has(ingredientId)) {
-        await fetch('/api/shoppingList', {
+        await fetch('/api/shopping_lists', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -71,7 +71,7 @@ const RecipeIngredientsSection = ({ ingredients }) => {
   const addAllToList = async () => {
     for (const [ingredient, amount] of Object.entries(ingredients)) {
       const ingredientId = `${ingredient.toLowerCase().replace(/\s+/g, '-')}`;
-      await fetch('/api/shoppingList', {
+      await fetch('/api/shopping_lists', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
