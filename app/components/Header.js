@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useState, useEffect, Suspense } from 'react';
-import { FaUser, FaShoppingBag } from 'react-icons/fa';
+import { FaUser, FaShoppingBag, FaHeart } from 'react-icons/fa';
 import { useRouter } from 'next/navigation';
 import CategoryList from './ui/CategoryList.js';
 import { FilterButton } from './filter-sort/FilterButton.js';
@@ -13,16 +13,16 @@ import { FilterModal } from './filter-sort/FilterButton.js';
 import Loading from '../loading.js';
 
 /**
- * Header component renders the navigation bar, including the logo, links, 
+ * Header component renders the navigation bar, including the logo, links,
  * category list, user modal, shopping bag, and theme button.
  * It also handles user authentication and dropdown menu visibility.
- * 
+ *
  * @param {Object} props - Component props
  * @param {boolean} props.isAuthenticated - Flag to indicate if the user is authenticated
  * @param {function} props.onLogout - Callback to handle user logout
- * 
+ *
  * @returns {JSX.Element} The header component
- * 
+ *
  * @component
  * @example
  * // Usage:
@@ -34,6 +34,7 @@ const Header = ({ isAuthenticated, onLogout }) => {
   const [totalRecipes, setTotalRecipes] = useState(0); // State to hold total recipes
   const [showModal, setShowModal] = useState(false);
   const [shoppingListCount, setShoppingListCount] = useState(0); // State for shopping list count
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const router = useRouter();
 
   const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
@@ -65,12 +66,13 @@ const Header = ({ isAuthenticated, onLogout }) => {
     fetchShoppingList();
   }, []);
 
+  const toggleSearch = () => setIsSearchOpen((prev) => !prev);
 
   return (
     <header className="sticky top-0 bg-[#f9efd2] dark:bg-gray-950 z-50 shadow-md">
       <div className="container mx-auto px-4">
         <nav className="flex items-center justify-between h-16">
-          <div className="hidden md:flex space-x-8">
+          <div className="hidden md:flex space-x-8 items-center">
             <Link
               href="/"
               className="block text-[#020123] hover:text-[#fc9d4f] font-medium py-2 uppercase"
@@ -89,9 +91,16 @@ const Header = ({ isAuthenticated, onLogout }) => {
             >
               Favourites
             </Link>
+            <Suspense fallback={<Loading />}>
+              <CategoryList
+                totalRecipes={totalRecipes}
+                onCategoryChange={() => {}}
+              />
+              <FilterButton onClick={toggleFilterModal} />
+            </Suspense>
           </div>
 
-          <Link href="/" className="flex items-center">
+          <Link href="/" className="flex items-center justify-center">
             <Image
               src="/0.png"
               alt="Logo"
@@ -109,6 +118,12 @@ const Header = ({ isAuthenticated, onLogout }) => {
               />
             </Suspense>
             <FilterButton onClick={toggleFilterModal} />
+            <button
+              onClick={toggleSearch}
+              className="text-[#020123] dark:text-white hover:text-[#fc9d4f]"
+            >
+              <FaSearch className="w-5 h-5" />
+            </button>
 
             <button
               onClick={toggleModal}
@@ -130,7 +145,7 @@ const Header = ({ isAuthenticated, onLogout }) => {
               )}
             </Link>
           </div>
-
+          
           <button
             className="md:hidden text-gray-600 dark:text-white"
             onClick={toggleDropdown}
@@ -152,8 +167,9 @@ const Header = ({ isAuthenticated, onLogout }) => {
       </div>
 
       <div
-        className={`md:hidden bg-white border-t transition-all duration-300 ${isDropdownOpen ? 'max-h-screen py-4' : 'max-h-0 overflow-hidden'
-          }`}
+        className={`md:hidden bg-white border-t transition-all duration-300 ${
+          isDropdownOpen ? "max-h-screen py-4" : "max-h-0 overflow-hidden"
+        }`}
       >
         <div className="container mx-auto px-4 space-y-4">
           <Link
@@ -162,34 +178,28 @@ const Header = ({ isAuthenticated, onLogout }) => {
           >
             Recipes
           </Link>
-          <Link
-            href="/recommended"
-            className="block text-[#020123] hover:text-[#fc9d4f] font-medium py-2"
-          >
-            Recommended
-          </Link>
-          <Link
-            href="/favourites"
-            className="block text-[#020123] hover:text-[#fc9d4f] font-medium py-2"
-          >
-            Favourites
-          </Link>
-          <div className="py-2">
-            <Suspense fallback={<Loading />}>
-              <CategoryList
-                totalRecipes={totalRecipes}
-                onCategoryChange={() => { }}
-              />
-            </Suspense>
-          </div>
-          <div className="py-2">
-            <FilterButton onClick={() => setIsFilterOpen(!isFilterOpen)} />
-          </div>
+          <Suspense fallback={<Loading />}>
+            <CategoryList
+              totalRecipes={totalRecipes}
+              onCategoryChange={() => {}}
+            />
+            <div className="py-2">
+              <FilterButton onClick={() => setIsFilterOpen(!isFilterOpen)} />
+            </div>
+          </Suspense>
         </div>
       </div>
+
+      {/* Modals */}
       {isFilterOpen && <FilterModal onClose={() => setIsFilterOpen(false)} />}
-      <RecipeSearchBar />
       <UserModal show={showModal} onClose={() => setShowModal(false)} />
+
+      {/* Search Bar Conditionally Rendered */}
+      {isSearchOpen && (
+        <div className="absolute top-full left-0 w-full z-50">
+          <RecipeSearchBar onClose={toggleSearch} />
+        </div>
+      )}
     </header>
   );
 };
