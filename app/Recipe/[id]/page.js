@@ -105,10 +105,7 @@ export default async function RecipePage({ params }) {
                                 <AllergensSection recipeId={id} />
                                 {/* Editable Recipe Details */}
                                 <EditableRecipeDetails
-                                    id={id}
-                                    initialDescription={recipe.description}
-                                    lastEditedBy={recipe.lastEditedBy}
-                                    lastEditedAt={recipe.lastEditedAt}
+                                    recipe={recipe}
                                 />
 
                                 {/* Nutrition info */}
@@ -193,9 +190,9 @@ export default async function RecipePage({ params }) {
                         </div>
 
                         <Link href="/shopping-list">
-                            <a className="mt-4 px-4 py-2 bg-[#fc9d4f] dark:bg-[#b05103] text-white rounded-xl">
+                            <p className="mt-4 px-4 py-2 bg-[#fc9d4f] dark:bg-[#b05103] text-white rounded-xl">
                                 View Shopping List
-                            </a>
+                            </p>
                         </Link>
                     </div>
                 </div>
