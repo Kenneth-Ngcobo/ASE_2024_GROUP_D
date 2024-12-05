@@ -1,53 +1,63 @@
 import { connectToDatabase } from '../../../db';
 import { ObjectId } from 'mongodb';
+import { NextResponse } from 'next/server';
 
 // Function to handle GET requests
-async function handleGet(req, res) {
+async function handleGet() {
   const db = await connectToDatabase();
   const collection = db.collection('shoppingList');
   const items = await collection.find({}).toArray();
-  res.status(200).json({ success: true, data: items });
+  return NextResponse.json({ success: true, data: items });
 }
 
 // Function to handle POST requests
-async function handlePost(req, res) {
+async function handlePost(req) {
+  const newItem = await req.json();
   const db = await connectToDatabase();
   const collection = db.collection('shoppingList');
-  const newItem = req.body;
   await collection.insertOne(newItem);
-  res.status(201).json({ success: true, data: newItem });
+  return NextResponse.json({ success: true, data: newItem }, { status: 201 });
 }
 
 // Function to handle DELETE requests
-async function handleDelete(req, res) {
+async function handleDelete(req) {
+  const { id } = await req.json();
   const db = await connectToDatabase();
   const collection = db.collection('shoppingList');
-  const { id } = req.body;
   await collection.deleteOne({ _id: new ObjectId(id) });
-  res.status(200).json({ success: true });
+  return NextResponse.json({ success: true });
 }
 
-export async function GET(req, res) {
+export async function GET() {
   try {
-    await handleGet(req, res);
+    return await handleGet();
   } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
+    return NextResponse.json(
+      { success: false, error: error.message }, 
+      { status: 500 }
+    );
   }
 }
 
-export async function POST(req, res) {
+export async function POST(req) {
   try {
-    await handlePost(req, res);
+    return await handlePost(req);
   } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
+    return NextResponse.json(
+      { success: false, error: error.message }, 
+      { status: 500 }
+    );
   }
 }
 
-export async function DELETE(req, res) {
+export async function DELETE(req) {
   try {
-    await handleDelete(req, res);
+    return await handleDelete(req);
   } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
+    return NextResponse.json(
+      { success: false, error: error.message }, 
+      { status: 500 }
+    );
   }
 }
 
