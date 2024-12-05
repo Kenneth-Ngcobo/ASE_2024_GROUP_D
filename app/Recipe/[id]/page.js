@@ -5,12 +5,11 @@ import { fetchRecipeById } from "../../api";
 import ImageGallery from "../../components/recipe-detail/ImageGallery";
 import CollapsibleSection from "../../components/recipe-detail/CollapsibleSection";
 import Loading from "./loading";
-import EditDescription from "../../components/recipe-detail/EditDescription";
 import ReviewsSection from "../../components/recipe-detail/ReviewsSection";
 import AllergensSection from "../../components/recipe-detail/AllergensSection";
 import RecipeIngredientsSelector from "../../components/recipe/RecipeIngredientsSelector";
 import VoiceAssistant from "../../components/voice-ai/VoiceAssistant";
-
+import EditableRecipeDetails from "../../components/recipe-detail/EditDescription";
 // Generate metadata for the recipe page dynamically
 export async function generateMetadata({ params }) {
   const { id } = params;
@@ -106,7 +105,12 @@ export default async function RecipePage({ params }) {
             </div>
 
             {/* Editable Recipe Details */}
-            <EditDescription recipe={recipe} />
+            <EditableRecipeDetails
+              id={id}
+              initialDescription={recipe.description}
+              lastEditedBy={recipe.lastEditedBy}
+              lastEditedAt={recipe.lastEditedAt}
+            />
             {/* Allergens Section */}
             <AllergensSection recipeId={id} />
 
