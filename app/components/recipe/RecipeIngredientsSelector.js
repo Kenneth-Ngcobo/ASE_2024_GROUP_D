@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { useShoppingList } from '../../context/shoppingListContext';
 import { useRouter } from 'next/navigation';
 
 /**
@@ -13,7 +12,7 @@ import { useRouter } from 'next/navigation';
  * @returns {JSX.Element} Ingredient list with add to shopping list options
  */
 const RecipeIngredientsSection = ({ ingredients }) => {
-  const { dispatch } = useShoppingList();
+
   const [selectedIngredients, setSelectedIngredients] = useState(new Set());
   const router = useRouter();
 
