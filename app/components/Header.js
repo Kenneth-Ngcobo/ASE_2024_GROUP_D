@@ -1,16 +1,16 @@
-"use client";
-import Link from "next/link";
-import Image from "next/image";
-import { useState, useEffect, Suspense } from "react";
-import { FaUser } from "react-icons/fa";
-import { useRouter } from "next/navigation";
-import CategoryList from "./ui/CategoryList.js";
-import { FilterButton } from "./filter-sort/FilterButton.js";
-import ThemeButton from "./ui/ThemeButton";
-import RecipeSearchBar from "./ui/searchBar.js";
-import UserModal from "./UserModal.js";
-import { FilterModal } from "./filter-sort/FilterButton.js";
-import Loading from "../loading.js";
+'use client';
+import Link from 'next/link';
+import Image from 'next/image';
+import { useState, useEffect, Suspense } from 'react';
+import { FaUser, FaShoppingBag } from 'react-icons/fa';
+import { useRouter } from 'next/navigation';
+import CategoryList from './ui/CategoryList.js';
+import { FilterButton } from './filter-sort/FilterButton.js';
+import ThemeButton from './ui/ThemeButton';
+import RecipeSearchBar from './ui/searchBar.js';
+import UserModal from './UserModal.js';
+import { FilterModal } from './filter-sort/FilterButton.js';
+import Loading from '../loading.js';
 
 /**
  * Header component renders the navigation bar, including the logo, links, 
@@ -33,35 +33,54 @@ const Header = ({ isAuthenticated, onLogout }) => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [totalRecipes, setTotalRecipes] = useState(0); // State to hold total recipes
   const [showModal, setShowModal] = useState(false);
+  const [shoppingListCount, setShoppingListCount] = useState(0); // State for shopping list count
   const router = useRouter();
 
   const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
   const toggleFilterModal = () => setIsFilterOpen((prev) => !prev);
   const toggleModal = () => setShowModal((prev) => !prev);
 
+  // Fetch the shopping list items from the API when the component mounts
+  useEffect(() => {
+    const fetchShoppingList = async () => {
+      try {
+        const response = await fetch('/api/shoppingList');
+        const data = await response.json();
+        if (data.success) {
+          setShoppingListCount(data.data.length); // Update the shopping list count
+        } else {
+          throw new Error('Failed to fetch shopping list');
+        }
+      } catch (error) {
+        console.error('Error fetching shopping list:', error);
+      }
+    };
+
+    fetchShoppingList();
+  }, []);
 
   return (
-    <header className=" sticky top-0 bg-[#f9efd2] dark:bg-gray-950 z-50 shadow-md">
+    <header className="sticky top-0 bg-[#f9efd2] dark:bg-gray-950 z-50 shadow-md">
       <div className="container mx-auto px-4">
         <nav className="flex items-center justify-between h-16">
           <div className="hidden md:flex space-x-8">
             <Link
               href="/"
-              className="block text-[ #020123] hover:text-[#fc9d4f] font-medium py-2 uppercase "
+              className="block text-[#020123] hover:text-[#fc9d4f] font-medium py-2 uppercase"
             >
               Recipes
             </Link>
             <Link
-              href=""
-              className="block text-[ #020123] hover:text-[#fc9d4f] font-medium py-2 uppercase"
+              href="/recommended"
+              className="block text-[#020123] hover:text-[#fc9d4f] font-medium py-2 uppercase"
             >
               Recommended
             </Link>
             <Link
-              href=""
-              className="block text-[ #020123] hover:text-[#fc9d4f] font-medium py-2 uppercase "
+              href="/favourites"
+              className="block text-[#020123] hover:text-[#fc9d4f] font-medium py-2 uppercase"
             >
-              Favourite
+              Favourites
             </Link>
           </div>
 
@@ -71,20 +90,19 @@ const Header = ({ isAuthenticated, onLogout }) => {
               alt="Logo"
               width={150}
               height={100}
-              className="h-20 w- "
+              className="h-20 w-"
             />
           </Link>
+
           <div className="hidden md:flex items-center space-x-8">
-            {/* Wrapping CategoryList in Suspense */}
             <Suspense fallback={<Loading />}>
               <CategoryList
                 totalRecipes={totalRecipes}
-                onCategoryChange={() => { }}
+                onCategoryChange={() => {}}
               />
             </Suspense>
             <FilterButton onClick={toggleFilterModal} />
 
-            {/* User Icon Toggle */}
             <button
               onClick={toggleModal}
               className="text-[#020123] dark:text-white hover:text-[#fc9d4f]"
@@ -92,15 +110,20 @@ const Header = ({ isAuthenticated, onLogout }) => {
               <FaUser className="w-5 h-5" />
             </button>
 
-            {/* Authentication Modal */}
-            <Suspense fallback={<Loading />}>
-             
-            </Suspense>
-
             <UserModal show={showModal} onClose={toggleModal} />
 
             <ThemeButton />
+
+            <Link href="/shopping-list" className="relative">
+              <FaShoppingBag className="w-5 h-5 text-[#020123] dark:text-white hover:text-[#fc9d4f]" />
+              {shoppingListCount > 0 && (
+                <span className="absolute -top-1 -right-2 bg-red-500 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">
+                  {shoppingListCount}
+                </span>
+              )}
+            </Link>
           </div>
+
           <button
             className="md:hidden text-gray-600 dark:text-white"
             onClick={toggleDropdown}
@@ -121,26 +144,26 @@ const Header = ({ isAuthenticated, onLogout }) => {
         </nav>
       </div>
 
-      {/* Mobile Menu */}
       <div
-        className={`md:hidden bg-white border-t transition-all duration-300 ${isDropdownOpen ? 'max-h-screen py-4' : 'max-h-0 overflow-hidden'
-          }`}
+        className={`md:hidden bg-white border-t transition-all duration-300 ${
+          isDropdownOpen ? 'max-h-screen py-4' : 'max-h-0 overflow-hidden'
+        }`}
       >
         <div className="container mx-auto px-4 space-y-4">
           <Link
             href="/recipes"
-            className="block text-[ #020123] hover:text-[#fc9d4f] font-medium py-2"
+            className="block text-[#020123] hover:text-[#fc9d4f] font-medium py-2"
           >
             Recipes
           </Link>
           <Link
-            href="/Recomended"
+            href="/recommended"
             className="block text-[#020123] hover:text-[#fc9d4f] font-medium py-2"
           >
             Recommended
           </Link>
           <Link
-            href="/Favourite"
+            href="/favourites"
             className="block text-[#020123] hover:text-[#fc9d4f] font-medium py-2"
           >
             Favourites
@@ -149,22 +172,18 @@ const Header = ({ isAuthenticated, onLogout }) => {
             <Suspense fallback={<Loading />}>
               <CategoryList
                 totalRecipes={totalRecipes}
-                onCategoryChange={() => { }}
+                onCategoryChange={() => {}}
               />
             </Suspense>
-
           </div>
           <div className="py-2">
             <FilterButton onClick={() => setIsFilterOpen(!isFilterOpen)} />
           </div>
         </div>
       </div>
-      {/* Modals */}
       {isFilterOpen && <FilterModal onClose={() => setIsFilterOpen(false)} />}
       <RecipeSearchBar />
       <UserModal show={showModal} onClose={() => setShowModal(false)} />
-    
-
     </header>
   );
 };

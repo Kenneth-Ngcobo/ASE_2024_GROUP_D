@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { useShoppingList } from '../../context/shoppingListContext';
 import { useRouter } from 'next/navigation';
 
 /**
@@ -13,7 +12,6 @@ import { useRouter } from 'next/navigation';
  * @returns {JSX.Element} Ingredient list with add to shopping list options
  */
 const RecipeIngredientsSection = ({ ingredients }) => {
-  const { dispatch } = useShoppingList();
   const [selectedIngredients, setSelectedIngredients] = useState(new Set());
   const router = useRouter();
 
@@ -38,24 +36,27 @@ const RecipeIngredientsSection = ({ ingredients }) => {
 
   /**
    * Adds selected ingredients to the shopping list.
-   * Dispatches an 'ADD_ITEM' action for each selected ingredient.
+   * Sends a POST request to the API for each selected ingredient.
    * Navigates to the shopping list page after adding.
    */
-  const addSelectedToList = () => {
-    Object.entries(ingredients).forEach(([ingredient, amount]) => {
+  const addSelectedToList = async () => {
+    for (const [ingredient, amount] of Object.entries(ingredients)) {
       const ingredientId = `${ingredient.toLowerCase().replace(/\s+/g, '-')}`;
       if (selectedIngredients.has(ingredientId)) {
-        dispatch({
-          type: 'ADD_ITEM',
-          payload: {
+        await fetch('/api/shoppingList', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
             id: ingredientId,
             name: ingredient,
             quantity: amount,
-            purchased: false
-          }
+            purchased: false,
+          }),
         });
       }
-    });
+    }
     // Clear selections after adding
     setSelectedIngredients(new Set());
     // Navigate to shopping list page
@@ -64,22 +65,25 @@ const RecipeIngredientsSection = ({ ingredients }) => {
 
   /**
    * Adds all ingredients to the shopping list.
-   * Dispatches an 'ADD_ITEM' action for every ingredient.
+   * Sends a POST request to the API for every ingredient.
    * Navigates to the shopping list page after adding.
    */
-  const addAllToList = () => {
-    Object.entries(ingredients).forEach(([ingredient, amount]) => {
+  const addAllToList = async () => {
+    for (const [ingredient, amount] of Object.entries(ingredients)) {
       const ingredientId = `${ingredient.toLowerCase().replace(/\s+/g, '-')}`;
-      dispatch({
-        type: 'ADD_ITEM',
-        payload: {
+      await fetch('/api/shoppingList', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
           id: ingredientId,
           name: ingredient,
           quantity: amount,
-          purchased: false
-        }
+          purchased: false,
+        }),
       });
-    });
+    }
     // Clear selections after adding
     setSelectedIngredients(new Set());
     // Navigate to shopping list page
