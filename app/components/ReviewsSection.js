@@ -1,58 +1,38 @@
 "use client";
 import { useState, useEffect } from "react";
 
-/**
- * StarRating Component
- * 
- * Displays a star rating system with an optional editable feature.
- * 
- * @component
- * @param {Object} props - The properties object.
- * @param {number} props.averageRating - The average rating value to display.
- * @param {boolean} [props.editable=false] - Whether the rating is editable.
- * @param {function} [props.onRatingChange] - Callback function triggered when the user changes the rating.
- * @returns {JSX.Element}
- */
 const StarRating = ({ averageRating, editable = false, onRatingChange }) => {
   const [hoverRating, setHoverRating] = useState(0);
 
-  /**
-   * Handles rating change when a user clicks on a star.
-   * 
-   * @param {number} rating - The selected star rating.
-   */
   const handleRatingChange = (rating) => {
     if (editable && onRatingChange) {
       onRatingChange(rating);
     }
   };
 
-  /**
-   * Renders star icons based on the rating and hover state.
-   * 
-   * @returns {JSX.Element[]} An array of star elements.
-   */
   const renderStars = () => {
     return [...Array(5)].map((_, index) => {
       const starValue = index + 1;
       const isActive = starValue <= (hoverRating || averageRating);
-
+      
       return editable ? (
         <span
           key={index}
           onMouseEnter={() => setHoverRating(starValue)}
           onMouseLeave={() => setHoverRating(0)}
           onClick={() => handleRatingChange(starValue)}
-          className={`cursor-pointer text-2xl ${isActive ? 'text-yellow-500' : 'text-gray-300'
-            }`}
+          className={`cursor-pointer text-2xl ${
+            isActive ? 'text-yellow-500' : 'text-gray-300'
+          }`}
         >
           ★
         </span>
       ) : (
         <span
           key={index}
-          className={`text-2xl ${isActive ? 'text-yellow-500' : 'text-gray-300'
-            }`}
+          className={`text-2xl ${
+            isActive ? 'text-yellow-500' : 'text-gray-300'
+          }`}
         >
           ★
         </span>
@@ -63,16 +43,6 @@ const StarRating = ({ averageRating, editable = false, onRatingChange }) => {
   return <div className="flex">{renderStars()}</div>;
 };
 
-/**
- * ReviewsSection Component
- * 
- * Manages and displays reviews for a specific recipe.
- * 
- * @component
- * @param {Object} props - The properties object.
- * @param {string} props.recipeId - The ID of the recipe for which reviews are displayed.
- * @returns {JSX.Element}
- */
 const ReviewsSection = ({ recipeId }) => {
   const [reviews, setReviews] = useState([]);
   const [newReview, setNewReview] = useState({ rating: 0, comment: "", recipeId });
@@ -84,9 +54,6 @@ const ReviewsSection = ({ recipeId }) => {
   const [sortOption, setSortOption] = useState({ sortBy: "rating", order: "desc" });
   const [averageRating, setAverageRating] = useState(0);
 
-  /**
-   * Fetches reviews and the average rating for the recipe.
-   */
   useEffect(() => {
     const fetchReviews = async () => {
       try {
@@ -95,9 +62,9 @@ const ReviewsSection = ({ recipeId }) => {
         );
         if (!response.ok) throw new Error("Failed to fetch reviews.");
         const data = await response.json();
-
+        
         // Use data.reviews with a fallback, set average rating from API response
-        setReviews(data.reviews || []);
+        setReviews(data.reviews || []); 
         setAverageRating(data.averageRating || 0);
       } catch (error) {
         setMessage({ text: "Failed to fetch reviews.", type: "error" });
@@ -107,9 +74,6 @@ const ReviewsSection = ({ recipeId }) => {
     fetchReviews();
   }, [recipeId, sortOption]);
 
-  /**
-   * Submits a new review or updates an existing review.
-   */
   const handleReviewSubmit = async () => {
     try {
       setIsLoading(true);
@@ -117,7 +81,7 @@ const ReviewsSection = ({ recipeId }) => {
       const endpoint = editMode
         ? `/api/recipes/${recipeId}/reviews?editId=${editReviewId}`
         : `/api/recipes/${recipeId}/reviews`;
-
+  
       const response = await fetch(endpoint, {
         method,
         headers: { "Content-Type": "application/json" },
@@ -126,11 +90,11 @@ const ReviewsSection = ({ recipeId }) => {
           username: username.trim() || "Anonymous",
         }),
       });
-
+  
       if (!response.ok) throw new Error("Failed to submit review.");
-
+  
       const updatedReview = await response.json();
-
+  
       if (editMode) {
         setReviews((prevReviews) =>
           prevReviews.map((review) =>
@@ -140,12 +104,12 @@ const ReviewsSection = ({ recipeId }) => {
       } else {
         setReviews((prevReviews) => [updatedReview, ...prevReviews]);
       }
-
+  
       setMessage({
         text: editMode ? "Review updated successfully!" : "Review added successfully!",
         type: "success",
       });
-
+  
       // Reset fields
       setNewReview({ rating: 0, comment: "", recipeId });
       setUsername("");
@@ -157,12 +121,7 @@ const ReviewsSection = ({ recipeId }) => {
       setIsLoading(false);
     }
   };
-
-  /**
-   * Initiates edit mode for an existing review.
-   * 
-   * @param {Object} review - The review to edit.
-   */
+  
   const handleEdit = (review) => {
     setEditMode(true);
     setEditReviewId(review._id);
@@ -170,11 +129,6 @@ const ReviewsSection = ({ recipeId }) => {
     setUsername(review.username || "");
   };
 
-  /**
-   * Deletes a review.
-   * 
-   * @param {string} reviewId - The ID of the review to delete.
-   */
   const handleDelete = async (reviewId) => {
     const confirmDelete = window.confirm(
       "Are you sure you want to delete this review?"
@@ -201,11 +155,6 @@ const ReviewsSection = ({ recipeId }) => {
     }
   };
 
-  /**
-   * Handles changes in the sort option.
-   * 
-   * @param {Object} e - The change event.
-   */
   const handleSortChange = (e) => {
     const [sortBy, order] = e.target.value.split("-");
     setSortOption({ sortBy, order });
@@ -223,8 +172,9 @@ const ReviewsSection = ({ recipeId }) => {
 
       {message.text && (
         <div
-          className={`mb-4 ${message.type === "error" ? "text-red-500" : "text-green-500"
-            }`}
+          className={`mb-4 ${
+            message.type === "error" ? "text-red-500" : "text-green-500"
+          }`}
         >
           {message.text}
         </div>
@@ -292,9 +242,9 @@ const ReviewsSection = ({ recipeId }) => {
         </div>
         <div className="mb-4">
           <label className="block mb-2">Rating:</label>
-          <StarRating
-            averageRating={newReview.rating}
-            editable={true}
+          <StarRating 
+            averageRating={newReview.rating} 
+            editable={true} 
             onRatingChange={(rating) => setNewReview({ ...newReview, rating })}
           />
         </div>

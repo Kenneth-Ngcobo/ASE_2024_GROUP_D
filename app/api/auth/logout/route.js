@@ -1,17 +1,16 @@
 import { serialize } from "cookie";
 
 /**
- * Handles the user logout process.
- * 
- * This function clears the authentication token by:
- * 1. Setting the `authToken` cookie to an empty value
- * 2. Setting the cookie's expiration to the past, effectively invalidating it
+ * Handles the POST request to log out a user.
+ * This function clears the authentication token by setting 
+ * the `authToken` cookie to an empty value and an expiration date in the past.
  * 
  * @async
  * @function POST
- * @returns {Promise<Response>} A promise that resolves to a Response object:
- *                             - 200 status with logout success message
- *                             - Sets a cookie with zero length and past expiration
+ * @returns {Promise<Response>} A promise that resolves to a Response object containing
+ *                             a JSON message indicating successful logout.
+ *                             The response includes a Set-Cookie header to clear the
+ *                             `authToken` cookie.
  */
 export async function POST() {
     return new Response(

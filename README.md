@@ -100,16 +100,11 @@ root/
 - │ ├── Header.js
 - │ ├── ImageGallery.js
 - │ ├── IngredientList.js
-- │ ├── InstallPrompt.js
 - │ ├── LoadingSpinner.js
 - │ ├── Pagination.js
-- │ ├── PushNotificationManager.js
 - │ ├── RecipeCarousel.js
 - │ ├── RecipeGrid.js
-- │ ├── RecipeIngredientsSelector.js
 - │ ├── Recipes.js
-- │ ├── RecordVoice.js
-- │ ├── RegisterServiceWorker.js
 - │ ├── ReviewsSection.js
 - │ ├── SearchBar.js
 - │ ├── SortControl.js
@@ -117,12 +112,8 @@ root/
 - │ ├── TagList.js
 - │ ├── ThemeButton.js
 - │ ├── UserModal.js
-- │ ├── VoiceAssistant.js
-- │ ├── ReviewsSection.js
-- │ ├── context/
-- │    └──  shoppingListContext.js
-- │ ├── editdetails/
-- │    └── page.js
+- │ └── editdetails/
+- │ └── page.js
 - ├── fonts/
 - ├── hook/
 - ├── images/
@@ -136,15 +127,13 @@ root/
 - ├── page.js
 - ├── providers.js
 - ├── review.js
-- ├── useRecordVoice.js
 - ├── lib/
 - │ ├── AuthMiddleware.js
 - │ ├── utils.js
-- ├── node_modules/
+- ├── components/
 - ├── public/
 - ├── auth.js
 - ├── db.js
-- ├── generate-vapid-keys.js
 - ├── next.config.mjs
 - ├── packgae-lock.json
 - ├── package.json

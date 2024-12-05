@@ -2,14 +2,6 @@
 
 import { useState, useEffect } from 'react';
 
-/**
- * A component that displays an install prompt for iOS devices.
- * It shows a button to add the app to the home screen, and provides instructions for iOS users.
- * 
- * @component
- * @example
- * return <InstallPrompt />;
- */
 export default function InstallPrompt() {
   const [isIOS, setIsIOS] = useState(false);
   const [isStandalone, setIsStandalone] = useState(false);

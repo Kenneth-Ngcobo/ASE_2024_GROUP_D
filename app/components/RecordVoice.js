@@ -2,21 +2,11 @@
 
 import React, { useEffect, useState } from 'react';
 
-/**
- * RecordVoice component - Allows users to follow instructions step-by-step with voice feedback
- * and control using voice commands.
- * 
- * @param {Object} props - The component props.
- * @param {Array} props.instructions - List of instructions to be read aloud.
- * @returns {JSX.Element} The RecordVoice component.
- */
 const RecordVoice = ({ instructions = [] }) => {
     const [currentStep, setCurrentStep] = useState(0); // Track the current instruction step
     const [isListening, setIsListening] = useState(false); // Track listening status
 
-    /**
-     * Reads the current instruction aloud using speech synthesis.
-     */
+    // Function to read the current instruction
     const readInstruction = () => {
         if (currentStep < instructions.length) {
             const message = new SpeechSynthesisUtterance(instructions[currentStep]);
@@ -27,9 +17,7 @@ const RecordVoice = ({ instructions = [] }) => {
         }
     };
 
-    /**
-     * Handles the voice commands for navigation between instructions.
-     */
+    // Function to handle speech recognition
     const handleVoiceCommands = () => {
         const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
         recognition.lang = 'en-US'; // Set language
