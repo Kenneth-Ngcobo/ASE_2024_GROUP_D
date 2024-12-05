@@ -5,7 +5,7 @@ import { fetchRecipeById } from '../../api';
 import ImageGallery from '../../components/recipe-detail/ImageGallery';
 import CollapsibleSection from '../../components/recipe-detail/CollapsibleSection';
 import Loading from './loading';
-import EditableRecipeDetails from '../../components/recipe-detail/EditableRecipeDetails';
+import EditDescription from '../../components/recipe-detail/EditDescription';
 import ReviewsSection from '../../components/recipe-detail/ReviewsSection';
 import AllergensSection from '../../components/recipe-detail/AllergensSection';
 import RecipeIngredientsSelector from '../../components/recipe/RecipeIngredientsSelector';
@@ -105,13 +105,7 @@ export default async function RecipePage({ params }) {
                             </div>
 
                             {/* Editable Recipe Details */}
-                            <EditableRecipeDetails
-                                id={id}
-                                initialDescription={recipe.description}
-                                lastEditedBy={recipe.lastEditedBy}
-                                lastEditedAt={recipe.lastEditedAt}
-                            />
-
+                <EditDescription recipe={recipe} />
                             {/* Allergens Section */}
                             <AllergensSection recipeId={id} />
 
