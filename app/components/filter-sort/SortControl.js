@@ -8,9 +8,16 @@ export const SortControl = () => {
     const router = useRouter();
     const searchParams = useSearchParams();
 
+    // Get current sort and order values from URL search params
     const sortValue = searchParams.get("sort") || "";
     const orderValue = searchParams.get("order") || "desc";
 
+    /**
+     * Handles changes to the sort criteria.
+     * Updates URL search parameters and resets to first page.
+     * 
+     * @param {React.ChangeEvent<HTMLSelectElement>} event - Select change event
+     */
     const handleSortChange = (event) => {
         const newSortBy = event.target.value;
         const params = new URLSearchParams(searchParams);
@@ -29,6 +36,12 @@ export const SortControl = () => {
         router.push(`?${params.toString()}`);
     };
 
+    /**
+     * Handles changes to the order (ascending/descending).
+     * Updates URL search parameters and resets to first page.
+     * 
+     * @param {React.ChangeEvent<HTMLSelectElement>} event - Select change event
+     */
     const handleOrderChange = (event) => {
         const newOrder = event.target.value;
         const params = new URLSearchParams(searchParams);

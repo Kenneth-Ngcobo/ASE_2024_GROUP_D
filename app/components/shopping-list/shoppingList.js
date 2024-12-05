@@ -1,26 +1,31 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useShoppingList } from '../context/shoppingListContext';
+import { useShoppingList } from '../../context/shoppingListContext';
 import { FaWhatsapp } from 'react-icons/fa';
-import BackButton from './BackButton';
-import {useAuth} from '../hook/useAuth'
+import BackButton from '../ui/BackButton';
+import { useAuth } from '../../hook/useAuth'
 
-
+/**
+ * ShoppingList component - Manages the display and actions for the shopping list.
+ * Includes features like adding, removing, and updating items, as well as sharing the list via WhatsApp.
+ *
+ * @returns {JSX.Element} The ShoppingList component.
+ */
 const ShoppingList = () => {
-  const { state, dispatch ,
-    syncLoadList, 
-    syncAddItem, 
-    syncRemoveItem, 
-    syncUpdateQuantity, 
+  const { state, dispatch,
+    syncLoadList,
+    syncAddItem,
+    syncRemoveItem,
+    syncUpdateQuantity,
     syncTogglePurchased,
     syncClearList
   } = useShoppingList();
 
 
   useEffect(() => {
-    console.log('current shopping list items:',state.items)
-    
+    console.log('current shopping list items:', state.items)
+
   }, [state.items]);
 
   const { user } = useAuth();
@@ -74,7 +79,7 @@ const ShoppingList = () => {
     });
 
     if (user?.id) {
-      syncAddItem(user.id , newItem)
+      syncAddItem(user.id, newItem)
     }
 
     // Clear the input fields after adding
@@ -109,7 +114,7 @@ const ShoppingList = () => {
   }
 
   return (
-    
+
     <div className="shopping-list p-4 bg-white rounded shadow-lg">
       <h2 className="text-2xl font-bold mb-4">Shopping List</h2>
 
@@ -176,19 +181,19 @@ const ShoppingList = () => {
       </ul>
 
       {/* Action Buttons */}
-     
-       <div className="absolute  left-2 mb-4">
-            <BackButton />
-         </div>
-      
+
+      <div className="absolute  left-2 mb-4">
+        <BackButton />
+      </div>
+
       <div className='flex mt-4 space-x-2'>
-      <button onClick={clearList} className="mt-4 bg-[#fc9d4f]  text-[#020123] hover:bg-[#edd282] p-2 rounded">
-        Clear List
-      </button>
-      <button onClick={shareOnWhatsApp} className="mt-4 text-green-800 hover:text-green-500 p-2 rounded flex items-center">
-      <FaWhatsapp size={30} />
+        <button onClick={clearList} className="mt-4 bg-[#fc9d4f]  text-[#020123] hover:bg-[#edd282] p-2 rounded">
+          Clear List
         </button>
-        </div>
+        <button onClick={shareOnWhatsApp} className="mt-4 text-green-800 hover:text-green-500 p-2 rounded flex items-center">
+          <FaWhatsapp size={30} />
+        </button>
+      </div>
     </div>
   );
 };

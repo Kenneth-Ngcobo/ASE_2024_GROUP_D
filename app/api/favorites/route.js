@@ -1,6 +1,17 @@
 import { NextResponse } from 'next/server';
 import connectToDatabase from '../../../db';
 
+/**
+ * Adds a recipe to a user's favorites.
+ * 
+ * @async
+ * @function POST
+ * @param {Request} req - The incoming HTTP request with user email and recipe ID
+ * @returns {Promise<NextResponse>} A promise that resolves to a Response object:
+ *                                  - 200 status with success message
+ *                                  - 400 status if email or recipeId is missing
+ *                                  - 500 status for internal server errors
+ */
 export async function POST(req) {
   try {
     const { email, recipeId } = await req.json();
@@ -47,6 +58,18 @@ const updateResult = await usersCollection.updateOne(
   }
 }
 
+/**
+ * Removes a recipe from a user's favorites.
+ * 
+ * @async
+ * @function DELETE
+ * @param {Request} req - The incoming HTTP request with user email and recipe ID
+ * @returns {Promise<NextResponse>} A promise that resolves to a Response object:
+ *                                  - 200 status with success message
+ *                                  - 400 status if email or recipeId is missing
+ *                                  - 404 status if user is not found
+ *                                  - 500 status for internal server errors
+ */
 export async function DELETE(req) {
   try {
     const { email, recipeId } = await req.json();
@@ -80,6 +103,17 @@ export async function DELETE(req) {
   }
 }
 
+/**
+ * Retrieves a user's favorite recipes.
+ * 
+ * @async
+ * @function GET
+ * @param {Request} req - The incoming HTTP request with user email as a query parameter
+ * @returns {Promise<NextResponse>} A promise that resolves to a Response object:
+ *                                  - 200 status with user's favorites and count
+ *                                  - 400 status if email is missing
+ *                                  - 500 status for internal server errors
+ */
 export async function GET(req) {
   try {
     // Get email from searchParams
