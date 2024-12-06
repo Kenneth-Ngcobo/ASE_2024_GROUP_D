@@ -1,22 +1,21 @@
-'use client';
-import { useEffect } from "react";
+ 'use client';
+ import { useEffect } from "react";
 
-export default function RegisterServiceWorker() {
+ export default function RegisterServiceWorker() {
   useEffect(() => {
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker
         .register("/Service-Worker.js")
-        .then((registration) => {
-          console.log(
+       .then((registration) => {           console.log(
             "Service Worker registered with scope:",
-            registration.scope
+             registration.scope
           );
         })
-        .catch((error) => {
-          console.error("Service Worker registration failed:", error);
-        });
-    }
-  }, []);
+       .catch((error) => {
+         console.error("Service Worker registration failed:", error);
+         });
+     }
+   }, []);
 
-  return null;
+   return null;
 }
