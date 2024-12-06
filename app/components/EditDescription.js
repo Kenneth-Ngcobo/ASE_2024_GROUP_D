@@ -48,9 +48,9 @@ export default function EditDescription({ recipe }) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          recipeId: recipe._id, 
+          recipeId: recipe._id,
           description,
-          editedBy: currentUser, 
+          editedBy: currentUser,
         }),
       });
 

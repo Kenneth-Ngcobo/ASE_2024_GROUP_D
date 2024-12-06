@@ -13,6 +13,7 @@ import { useRouter } from 'next/navigation';
  */
 const RecipeIngredientsSection = ({ ingredients }) => {
   const [selectedIngredients, setSelectedIngredients] = useState(new Set());
+  const [notification, setNotification] = useState(null);
   const router = useRouter();
 
   /**
@@ -21,7 +22,15 @@ const RecipeIngredientsSection = ({ ingredients }) => {
    * 
    * @param {string} ingredient - The name of the ingredient
    * @param {string} amount - The quantity of the ingredient
+   * 
+   * 
    */
+
+  const showNotification = (message) => {
+    setNotification(message);
+    setTimeout(() => setNotification(null), 3000);
+  };
+
   const toggleIngredient = (ingredient, amount) => {
     const newSelected = new Set(selectedIngredients);
     const ingredientId = `${ingredient.toLowerCase().replace(/\s+/g, '-')}`;
@@ -59,8 +68,9 @@ const RecipeIngredientsSection = ({ ingredients }) => {
     }
     // Clear selections after adding
     setSelectedIngredients(new Set());
+    showNotification('Selected ingredients added to shopping list!');
     // Navigate to shopping list page
-    router.push('/shopping-list');
+    router.push('/ShoppingList');
   };
 
   /**
@@ -86,12 +96,18 @@ const RecipeIngredientsSection = ({ ingredients }) => {
     }
     // Clear selections after adding
     setSelectedIngredients(new Set());
+    showNotification('All ingredients added to shopping list!');
     // Navigate to shopping list page
-    router.push('/shopping_lists');
+    router.push('/ShoppingList');
   };
 
   return (
     <div className="space-y-6">
+            {notification && (
+        <div className="mb-4 bg-green-200 text-green-800 p-2 rounded">
+          {notification}
+        </div>
+      )}
       <div className="flex justify-end gap-4 mb-4">
         <button
           onClick={addSelectedToList}

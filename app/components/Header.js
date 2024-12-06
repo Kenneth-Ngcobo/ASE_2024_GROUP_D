@@ -121,14 +121,14 @@ const Header = ({ isAuthenticated, onLogout }) => {
 
             <ThemeButton />
 
-            <Link href="/shopping_lists" className="relative">
-              <FaShoppingBag className="w-5 h-5 text-[#020123] dark:text-white hover:text-[#fc9d4f]" />
-              {shoppingListCount > 0 && (
-                <span className="absolute -top-1 -right-2 bg-red-500 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">
-                  {shoppingListCount}
-                </span>
-              )}
-            </Link>
+            <Link href="/ShoppingList" className="relative">
+            <FaShoppingBag className="w-5 h-5 text-[#020123] dark:text-white hover:text-[#fc9d4f]" />
+            {shoppingListCount > 0 && (
+              <span className="absolute -top-1 -right-2 bg-red-500 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">
+                {shoppingListCount}
+              </span>
+            )}
+          </Link>
           </div>
 
           <button
