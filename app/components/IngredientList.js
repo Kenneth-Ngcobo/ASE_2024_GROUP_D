@@ -1,39 +1,25 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 
-/**
- * IngDisplay component allows users to select ingredients from a list, 
- * and handles search functionality for filtering ingredients.
- * It also synchronizes selected ingredients with the URL query parameters.
- * 
- * @param {Object} props - Component props
- * @param {string[]} [props.selectedIngs=[]] - List of selected ingredients
- * @param {function} [props.onIngsChange] - Callback to handle the changes in selected ingredients
- * 
- * @returns {JSX.Element} The ingredient display component
- * 
- * @component
- * @example
- * // Usage:
- * <IngDisplay selectedIngs={['ingredient1', 'ingredient2']} onIngsChange={handleIngsChange} />
- */
-export default function IngDisplay({ selectedIngs = [], onIngsChange = () => { } }) {
+export default function IngDisplay({ selectedIngs = [], onIngsChange = () => {} }) {
   const [ings, setIngs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
 
-  const router = useRouter();
   const searchParams = useSearchParams();
 
   useEffect(() => {
-    const params = new URLSearchParams(searchParams.toString);
-    params.set('tags', selectedIngs.join(','));
-    router.push(`?${params.toString()}`);
-  }, [selectedIngs, searchParams]);
+    const urlIngs = searchParams.get('ingredients')?.split(',') || [];
+    if (urlIngs.length && urlIngs !== ' ' && urlIngs !== '') {
+      if (urlIngs.join(',') !== selectedIngs.join(',')) {
+        onIngsChange(urlIngs);
+      }
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     const fetchIngs = async () => {
@@ -59,8 +45,8 @@ export default function IngDisplay({ selectedIngs = [], onIngsChange = () => { }
     params.set('ingredients', selectedIngs.join(','));
   }, [selectedIngs, searchParams]);
 
-  if (!loading && ings.length === 0) {
-    return <div className="text-center py-4">No ingredients found</div>;
+  if (loading) {
+    return <div className="text-center py-4">Loading ingredients...</div>;
   }
 
   if (error) {
@@ -73,17 +59,12 @@ export default function IngDisplay({ selectedIngs = [], onIngsChange = () => { }
     } else {
       onIngsChange(selectedIngs.filter((t) => t !== ing));
     }
+    setIsOpen(false);
   };
 
-  const filteredIngs = ings.filter((ing) =>
+  const filteredIngs = ings.filter(ing =>
     ing.toLowerCase().includes(searchTerm.toLowerCase())
-);
- 
-const clearAll = () => {
-  onTagsChange([]); // Clear selected tags
-  router.push('/'); // Navigate back to the home page
-};
-
+  );
 
   return (
     <div className="p-6 bg-white dark:bg-gray-950 shadow-md rounded-lg">
@@ -108,8 +89,9 @@ const clearAll = () => {
               {filteredIngs.map((ing, index) => (
                 <button
                   key={index}
-                  className={`p-2 border border-gray-300 rounded-md transition duration-200 ${selectedIngs.includes(ing) ? 'bg-blue-300' : 'bg-gray-200 hover:bg-gray-300'
-                    }`}
+                  className={`p-2 border border-gray-300 rounded-md transition duration-200 ${
+                    selectedIngs.includes(ing) ? 'bg-blue-300' : 'bg-gray-200 hover:bg-gray-300'
+                  }`}
                   onClick={() => handleIngSelect(ing)}
                 >
                   {ing}
