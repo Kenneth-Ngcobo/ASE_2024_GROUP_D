@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import LoadingSpinner from "./../loadingSpinner";
+import LoadingSpinner from "./loadingSpinner";
 
 export default function EditDescription({ recipe }) {
   const [description, setDescription] = useState(recipe.description);
@@ -48,9 +48,9 @@ export default function EditDescription({ recipe }) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          recipeId: recipe._id, 
+          recipeId: recipe._id,
           description,
-          editedBy: currentUser, 
+          editedBy: currentUser,
         }),
       });
 
