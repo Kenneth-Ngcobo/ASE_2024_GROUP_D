@@ -63,38 +63,37 @@ export async function GET(req) {
     const pipeline = [];
     const matchStage = {};
 
-    // Prioritize exact title search
-    if (exactTitle) {
-      const recipe = await recipesCollection.findOne({ title: exactTitle });
-      if (recipe) {
-        return new Response(
-          JSON.stringify({
-            totalRecipes: 1,
-            recipes: [recipe],
-          }),
-          {
-            status: 200,
-            headers: { "Content-Type": "application/json" },
-          }
-        );
-      } else {
-        // Return empty if no exact match is found
-        return new Response(
-          JSON.stringify({
-            totalRecipes: 0,
-            recipes: [],
-          }),
-          {
-            status: 200,
-            headers: { "Content-Type": "application/json" },
-          }
-        );
+    // Exact Title Match Logic for Multiple Matches
+if (exactTitle) {
+  const recipes = await recipesCollection.find({ title: exactTitle }).toArray();
+  if (recipes.length > 0) {
+    return new Response(
+      JSON.stringify({
+        totalRecipes: recipes.length,
+        recipes: recipes,
+      }),
+      {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
       }
-    }
+    );
+  } else {
+    return new Response(
+      JSON.stringify({
+        totalRecipes: 0,
+        recipes: [],
+      }),
+      {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+  }
+}
 
     // Fallback to text-based and other filters
     if (searchTerm) {
-      matchStage.$text = { $search: searchTerm };
+      matchStage.title = { $regex: searchTerm, $options: "i" }; // Partial match with regex
     }
 
     if (category) {
@@ -121,10 +120,12 @@ export async function GET(req) {
       matchStage.instructions = { $size: instructions };
     }
 
+    // Add the $match stage if there are any conditions
     if (Object.keys(matchStage).length > 0) {
       pipeline.push({ $match: matchStage });
     }
 
+    // Sorting Logic
     if (sort === "instructions") {
       pipeline.push({
         $addFields: {
@@ -141,9 +142,11 @@ export async function GET(req) {
       });
     }
 
+    // Pagination
     pipeline.push({ $skip: (page - 1) * limit });
     pipeline.push({ $limit: limit });
 
+    // Execute the Aggregation Pipeline
     const recipes = await recipesCollection.aggregate(pipeline).toArray();
     const totalRecipes = await recipesCollection.countDocuments(matchStage);
 
