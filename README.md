@@ -32,6 +32,7 @@ Kwamaimai is a dynamic recipe web application for designed users to discover, sh
 - Offline usage
 - Pagination
 - Navigation to recipe details
+- Voice AI
 
 # Demo
 
@@ -63,13 +64,16 @@ NB! Please use the contact given to get the pairs for the environment variables
 
 #### Server Configuration
 
+- API_BASE_URL=http://localhost:3000
 - NEXTAUTH_URL=http://localhost:3000
 - NEXTAUTH_SECRET=your_secret_key
+- AUTH_SECRET=your_auth_key
 
 #### Google OAuth
 
 - AUTH_GOOGLE_ID=your_google_client_id
 - AUTH_GOOGLE_SECRET=your_google_client_secret
+- JWT_SECRET=your_jwt_token
 
 #### Database Configuration
 
@@ -78,6 +82,7 @@ NB! Please use the contact given to get the pairs for the environment variables
 # Project Structure
 
 root/
+
 - ├── .next/
 - ├── app/
 - ├── api/
@@ -85,18 +90,37 @@ root/
 - │ │ └── nextauth/route.js
 - │ ├── checkuser/route.js
 - │ └── login/route.js
+- │ └── logout/route.js
+- │ └── signup/route.js
+- │ └── user/[email]/profile
+- │ └── favorites/route.js
+- │ └── manifest/route.js
+- │ ├── recipes/[id]/
+- │ │   └── allergens/route.js
+- │ │   └── reviews/route.js
+- │ │   └── update/route.js
+- │ │   └──route.js
+- │ │  └── categories/route.js
+- │ │  └── ingredients/route.js
+- │ │  └── instructions/route.js
+- │ │  └── recommendations/route.js
+- │ │  └── tags/route.js
+- │ │   └──route.js
+- │ ├── shopping_lists/route.js
 - ├── components/
 - │ ├── ui/
-- │ │ ├── alert.js
-- │ │ └── button.js
-- │ ├── BackButton.js
-- │ ├── Carousel.js
-- │ ├── CategoryList.js
-- │ ├── CollapsibleSection.js
+- │ │ ├── BackButton.js
+- │ │ ├── button.js
+- │ │ ├── Carousel.js
+- │ │ ├── CategoryList.js
+- │ │ ├── DownloadButton.js
+- │ │ ├── FavoriteButton.js
+- │ │ ├── footer.js
+- │ │ ├── searchBar.js
+- │ ├── AllergensSection.js
+- │ ├── DynamicLink.js
 - │ ├── EditableRecipeDetails.js
-- │ ├── FavoriteButton.js
 - │ ├── FilterButton.js
-- │ ├── Footer.js
 - │ ├── Header.js
 - │ ├── ImageGallery.js
 - │ ├── IngredientList.js
@@ -111,25 +135,28 @@ root/
 - │ ├── RecordVoice.js
 - │ ├── RegisterServiceWorker.js
 - │ ├── ReviewsSection.js
-- │ ├── SearchBar.js
+- │ ├── ShoppingList.js
 - │ ├── SortControl.js
 - │ ├── StepsDropdown.js
 - │ ├── TagList.js
-- │ ├── ThemeButton.js
 - │ ├── UserModal.js
 - │ ├── VoiceAssistant.js
-- │ ├── ReviewsSection.js
 - │ ├── context/
-- │    └──  shoppingListContext.js
+- │ └── DowloadContext.js
 - │ ├── editdetails/
-- │    └── page.js
+- │ └── page.js
 - ├── fonts/
 - ├── hook/
+- │ └── useAuth.js
 - ├── images/
 - ├── Recipe/[id]/
+- │   ├── error.js
+- │   ├── loading.js
+- │   └── page.js
 - ├── styles/global.css
 - ├── api.js
 - ├── error.js
+- ├── global.css
 - ├── layout.js
 - ├── loading.js
 - ├── not-found.js
@@ -159,7 +186,7 @@ This section outlines the key API endpoints available in the application, their 
 
 #### BASE URL
 
-http://localhost:3000 
+http://localhost:3000
 
 ##### API Endpoints
 
@@ -207,12 +234,13 @@ Handles user authentication processes, including login, signup, logout, and prof
 - 201 Created: User created successfully.
 - 400 Bad Request: User already exists.
 
-2. Recipe Endpoints
+#### 2. Recipe Endpoints
 
 ##### Route
 
 - /api/recipes
-[http://localhost:3000.api/recipes]
+  [http://localhost:3000.api/recipes]
+
 ##### Description
 
 Handles CRUD operations for recipes.
@@ -235,7 +263,7 @@ Handles CRUD operations for recipes.
   - 201 Created: Recipe created successfully.
   - 400 Bad Request: Missing or invalid data.
 
-3. Profile Endpoints
+#### 3. Profile Endpoints
 
 ##### Route
 
@@ -265,7 +293,7 @@ Provides user profile data and allows updates.
   - 200 OK: Update confirmation.
   - 400 Bad Request: Invalid update data.
 
-4.  Favorites Endpoints
+#### 4. Favorites Endpoints
 
 ##### Route
 
@@ -292,7 +320,7 @@ Manages users' favorite recipes.
   - Responses:
     - 200 OK: Recipe removed from favorites.
 
-5. Reviews Endpoints
+#### 5. Reviews Endpoints
 
 ##### Route
 
@@ -320,12 +348,12 @@ Handles user reviews for recipes.
 - Responses:
   - 201 Created: Review added successfully.
 
-6.  Categories Endpoints
+#### 6. Categories Endpoints
 
 ##### Route
 
 - /api/recipes/categories
-[http://localhost:3000/api/recipes/categories]
+  [http://localhost:3000/api/recipes/categories]
 
 ##### Description
 
@@ -338,7 +366,8 @@ Retrieves available recipe categories.
   - Responses:
     - 200 OK: List of categories.
 
-7.  Ingredients Endpoints
+#### 7. Ingredients Endpoints
+
     ##### Route
     - /api/ingredients
     ##### Description
@@ -351,7 +380,8 @@ Retrieves available recipe categories.
   - Responses:
     - 200 OK: List of ingredients.
 
-8.  Recommendations Endpoints
+#### 8. Recommendations Endpoints
+
     ##### Route
     - /api/recommendations
     ##### Description
@@ -364,11 +394,15 @@ Retrieves available recipe categories.
   - Responses:
     - 200 OK: List of recommended recipes.
 
-9. Tags Endpoints
-   ##### Route
-   - /api/tags
-   ##### Description
-   Manages recipe tags for better categorization and filtering.
+#### 9. Tags Endpoints
+
+##### Route
+
+- /api/tags
+
+##### Description
+
+Manages recipe tags for better categorization and filtering.
 
 ##### Methods
 
@@ -377,7 +411,8 @@ Retrieves available recipe categories.
   - Responses:
     - 200 OK: List of tags.
 
-10. Shopping List Endpoints
+#### 10. Shopping List Endpoints
+
     ##### Route
     - /api/shopping-list
     ##### Description
@@ -394,7 +429,8 @@ Retrieves available recipe categories.
   - Responses:
     - 201 Created: Item added successfully.
 
-11. Instructions Endpoints
+#### 11. Instructions Endpoints
+
     ##### Route
     - /api/instructions
     ##### Description
@@ -407,7 +443,8 @@ Retrieves available recipe categories.
   - Responses:
     - 200 OK: Recipe instructions.
 
-12. Manifest
+#### 12. Manifest
+
     ##### Route
     - /api/manifest
     ##### Description

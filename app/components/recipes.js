@@ -1,15 +1,9 @@
-
 "use client";
 
-import React, { useState, useEffect } from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
-import {
-  FaClock,
-  FaUtensils,
-  FaCaretDown,
-
-} from "react-icons/fa";
+import React, { useState, useEffect } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { FaClock, FaUtensils, FaCaretDown } from "react-icons/fa";
 import { PiCookingPotDuotone, PiHeart } from "react-icons/pi";
 import Carousel from "./ui/Carousel";
 import { SortControl } from "./SortControl";
@@ -18,7 +12,7 @@ import { useSearchParams } from "next/navigation";
 /**
  * Recipes component displays a list of recipes, allows the user to favorite recipes,
  * and adds ingredients to the shopping list.
- * 
+ *
  * @param {Object} props The component's props.
  * @param {Array} props.recipes The initial list of recipes.
  * @returns {JSX.Element} The component JSX element.
@@ -32,26 +26,28 @@ const Recipes = ({ recipes: initialRecipes }) => {
   const [isLoading, setIsLoading] = useState(true);
   const searchParams = useSearchParams();
 
-
-  console.log("received recipes is :", recipes)
+  console.log("received recipes is :", recipes);
   /**
    * Fetches the user's favorite recipes when the component mounts.
    */
   useEffect(() => {
     const fetchFavorites = async () => {
-      const loggedInEmail = localStorage.getItem('loggedInUserEmail');
+      const loggedInEmail = localStorage.getItem("loggedInUserEmail");
       if (!loggedInEmail) {
         setIsLoading(false);
         return;
       }
 
       try {
-        const response = await fetch(`/api/favorites?email=${encodeURIComponent(loggedInEmail)}`, {
-          credentials: 'include',
-        });
+        const response = await fetch(
+          `/api/favorites?email=${encodeURIComponent(loggedInEmail)}`,
+          {
+            credentials: "include",
+          }
+        );
 
         if (!response.ok) {
-          throw new Error('Failed to fetch favorites');
+          throw new Error("Failed to fetch favorites");
         }
 
         const data = await response.json();
@@ -59,8 +55,8 @@ const Recipes = ({ recipes: initialRecipes }) => {
         const favoriteIds = new Set(data.favorites.map((recipe) => recipe._id));
         setFavoritedRecipes(favoriteIds);
       } catch (err) {
-        setError('Failed to load favorites. Please try again later.');
-        console.error('Error fetching favorites:', err);
+        setError("Failed to load favorites. Please try again later.");
+        console.error("Error fetching favorites:", err);
       } finally {
         setIsLoading(false);
       }
@@ -75,13 +71,13 @@ const Recipes = ({ recipes: initialRecipes }) => {
 
   /**
    * Toggles a recipe's favorite status and updates the favorites list.
-   * 
+   *
    * @param {string} recipeId The ID of the recipe to toggle favorite status for.
    */
   const toggleFavorite = async (recipeId) => {
-    const loggedInEmail = localStorage.getItem('loggedInUserEmail');
+    const loggedInEmail = localStorage.getItem("loggedInUserEmail");
     if (!loggedInEmail) {
-      setError('Please log in to manage favorites');
+      setError("Please log in to manage favorites");
       return;
     }
 
@@ -108,17 +104,17 @@ const Recipes = ({ recipes: initialRecipes }) => {
         return prev;
       });
 
-      const response = await fetch('/api/favorites', {
-        method: isFavorited ? 'DELETE' : 'POST',
+      const response = await fetch("/api/favorites", {
+        method: isFavorited ? "DELETE" : "POST",
         body: JSON.stringify({ recipeId, email: loggedInEmail }),
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-        credentials: 'include',
+        credentials: "include",
       });
 
       if (!response.ok) {
-        throw new Error('Failed to update favorites');
+        throw new Error("Failed to update favorites");
       }
     } catch (err) {
       setFavoritedRecipes((prev) => {
@@ -139,14 +135,12 @@ const Recipes = ({ recipes: initialRecipes }) => {
         }
       });
 
-      setError('Failed to update favorites. Please try again.');
-      console.error('Error updating favorites:', err);
+      setError("Failed to update favorites. Please try again.");
+      console.error("Error updating favorites:", err);
     }
   };
 
-  console.log("received recipes is :", recipes)
-
-
+  console.log("received recipes is :", recipes);
 
   return (
     <>
@@ -158,6 +152,11 @@ const Recipes = ({ recipes: initialRecipes }) => {
           </div>
         )}
 
+        <h2 className="text-3xl font-bold text-[#ff4f1a] dark:text-[#e63600] tracking-tight">
+          Explore All Recipes
+          <div className="h-1 w-20 bg-[#fc9d4f] dark:bg-[#b05103] mt-2 mb-2 rounded-full" />
+        </h2>
+
         <SortControl />
 
         <div className="mb-4 relative">
@@ -168,8 +167,9 @@ const Recipes = ({ recipes: initialRecipes }) => {
             <PiHeart className="mr-2" size={20} />
             <span>Favorites ({favoritedRecipes.size})</span>
             <FaCaretDown
-              className={`ml-2 ${dropdownVisible ? "transform rotate-180" : ""
-                }`}
+              className={`ml-2 ${
+                dropdownVisible ? "transform rotate-180" : ""
+              }`}
             />
           </button>
 
@@ -181,7 +181,10 @@ const Recipes = ({ recipes: initialRecipes }) => {
                 <ul className="max-h-60 overflow-y-auto p-2">
                   {favoriteDetails.map((recipe) => (
                     <li key={recipe._id} className="p-2 hover:bg-gray-100">
-                      <Link href={`/Recipe/${recipe._id}`} className="block text-sm text-gray-800">
+                      <Link
+                        href={`/Recipe/${recipe._id}`}
+                        className="block text-sm text-gray-800"
+                      >
                         {recipe.title}
                       </Link>
                     </li>
@@ -204,7 +207,12 @@ const Recipes = ({ recipes: initialRecipes }) => {
                   <Carousel images={recipe.images} />
                 ) : (
                   <div className="relative w-full h-full">
-                    <Image src={recipe.images[0]} alt={recipe.title} fill className="object-cover" />
+                    <Image
+                      src={recipe.images[0]}
+                      alt={recipe.title}
+                      fill
+                      className="object-cover"
+                    />
                   </div>
                 )}
               </div>
@@ -214,10 +222,11 @@ const Recipes = ({ recipes: initialRecipes }) => {
                   {recipe.title}
                 </h2>
                 <button
-                  className={`ml-2 ${favoritedRecipes.has(recipe._id)
-                    ? "text-red-500"
-                    : "text-gray-400"
-                    } hover:text-red-500 transition-colors duration-200`}
+                  className={`ml-2 ${
+                    favoritedRecipes.has(recipe._id)
+                      ? "text-red-500"
+                      : "text-gray-400"
+                  } hover:text-red-500 transition-colors duration-200`}
                   onClick={(e) => {
                     e.preventDefault();
                     toggleFavorite(recipe._id);
@@ -253,14 +262,11 @@ const Recipes = ({ recipes: initialRecipes }) => {
                 <span className="inline-block bg-[#f9efd2] text-[#020123]  dark:bg-[#1c1d02] dark:text-[#dddcfe] text-sm px-2 py-1 rounded">
                   {new Date(recipe.published).toDateString()}
                 </span>
-
               </div>
             </Link>
           ))}
         </div>
       </div>
-
-
     </>
   );
 };

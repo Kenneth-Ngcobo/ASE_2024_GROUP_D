@@ -132,10 +132,10 @@ export const FilterModal = ({ onClose }) => {
             <div className="bg-white dark:bg-black w-[60%] p-6 rounded-lg shadow-lg">
                 {/* Header */}
                 <div className="flex justify-between items-center mb-4">
-                    <h2 className="text-lg font-bold text-gray-800 dark:text-white">Filter</h2>
+                    <h2 className="text-lg font-bold dark:text-[var(--text)]">Filter</h2>
                     <button
                         onClick={onClose}
-                        className="text-gray-500 dark:text-white hover:text-gray-700 dark:hover:text-green-500 text-xl"
+                        className="text-gray-500 dark:text-white hover:text-gray-700 dark:hover:text-[FC9D4] text-xl"
                     >
                         &times;
                     </button>

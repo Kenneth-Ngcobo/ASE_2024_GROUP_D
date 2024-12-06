@@ -74,7 +74,7 @@ export const SortControl = () => {
                     <div key={option.value} className="relative">
                         <button
                             onClick={() => handleSortChange(option.value)}
-                            className={`py-2 px-4 rounded-md text-sm ${
+                            className={`py-2 px-4 rounded-md text-sm dark:bg-gray-800 ${
                                 sortValue === option.value
                                     ? "bg-[#FCFDE2] text-[#FC9D4F]"
                                     : "bg-[#FCFDE2] text-[#FC9D4F] dark:bg-gray-800 dark:text-[#FC9D4F]"

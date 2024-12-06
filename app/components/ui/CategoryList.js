@@ -122,7 +122,7 @@ const CategoryList = ({ onCategoryChange, totalRecipes }) => {
     <div className="relative">
       <button
         onClick={() => setIsOpen((prev) => !prev)}
-        className="block text-[#020123] hover:text-[#fc9d4f] font-medium uppercase py-2"
+        className="block dark:text-[var(--text)] hover:text-[#fc9d4f] font-medium uppercase py-2"
       >
         {isOpen ? 'Close' : 'Categories'}
       </button>

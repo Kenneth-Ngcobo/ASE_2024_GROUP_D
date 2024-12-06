@@ -5,6 +5,16 @@ import { useRouter } from "next/navigation";
 import { signIn, getSession, signOut } from "next-auth/react";
 import Link from "next/link";
 
+/**
+* UserModal is a component that handles user authentication and registration.
+* It provides a modal interface for users to log in, sign up, or log out.
+*
+* @param {Object} props - The component's props.
+* @param {boolean} props.show - A boolean indicating whether the modal should be displayed.
+* @param {function} props.onClose - A function to be called when the modal should be closed.
+*
+* @returns {JSX.Element} - The UserModal component.
+*/
 export default function UserModal({ show, onClose }) {
   const router = useRouter();
   const [formState, setFormState] = useState({
@@ -195,16 +205,17 @@ export default function UserModal({ show, onClose }) {
 
   if (!show) return null;
 
-  return (
-    <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-end z-50">
-      <div className="bg-white w-96 p-6 rounded-l-3xl shadow-lg relative">
+return (
+
+    <div className="fixed inset-0 bg-gray-800 bg-opacity-50 dark:bg-black dark:bg-opacity-70 flex justify-end z-50">
+      <div className="bg-white dark:bg-[var(--background)] text-[var(--text)] w-96 p-6 rounded-l-3xl shadow-lg relative">
         <button
           onClick={onClose}
-          className="text-gray-600 hover:text-teal-500 font-medium uppercase text-sm"
+          className="text-gray-600 dark:text-[var(--accent)] hover:text-teal-500 dark:hover:text-teal-300 font-medium uppercase text-sm"
         >
           &times;
         </button>
-
+  
         {authState.loggedInUser ? (
           <div className="text-center">
             <h2 className="text-2xl font-bold mb-4">
@@ -213,14 +224,14 @@ export default function UserModal({ show, onClose }) {
             <Link href="/editdetails">
               <button
                 onClick={onClose}
-                className="w-full bg-[#fc9d4f] text-white py-3 rounded-md mb-4"
+                className="w-full bg-[var(--secondary)] dark:bg-[var(--secondary)] text-white py-3 rounded-md mb-4"
               >
                 Go to Profile
               </button>
             </Link>
             <button
               onClick={handleLogout}
-              className="w-full bg-[#FF4F1A] text-white py-3 rounded-md mb-4"
+              className="w-full bg-[var(--primary)] dark:bg-[var(--primary)] text-white py-3 rounded-md mb-4"
             >
               Log Out
             </button>
@@ -229,7 +240,7 @@ export default function UserModal({ show, onClose }) {
           <>
             <button
               onClick={handleGoogleSignIn}
-              className="w-full border rounded-md py-3 flex items-center justify-center mb-4"
+              className="w-full border dark:border-[var(--accent)] rounded-md py-3 flex items-center justify-center mb-4"
               disabled={authState.isVerifyingGoogle}
             >
               {authState.isVerifyingGoogle ? (
@@ -247,22 +258,22 @@ export default function UserModal({ show, onClose }) {
                 </>
               )}
             </button>
-
-            <div className="text-center text-gray-500 mb-4">OR</div>
-
-            <h2 className="text-2xl text-[#fc9d4f] font-bold text-center mb-4">
+  
+            <div className="text-center text-gray-500 dark:text-[var(--accent)] mb-4">OR</div>
+  
+            <h2 className="text-2xl text-[var(--secondary)] dark:text-[var(--secondary)] font-bold text-center mb-4">
               {authMode === "login" ? "Login" : "Sign Up"}
             </h2>
-
+  
             <input
               type="email"
               name="email"
               placeholder="Email"
               value={formState.email}
               onChange={handleInputChange}
-              className="w-full border rounded-md p-3 text-gray-700 mb-4"
+              className="w-full border dark:border-[var(--accent)] rounded-md p-3 text-gray-700 dark:text-[var(--text)] dark:bg-[var(--background)] mb-4"
             />
-
+  
             {authMode === "signup" && (
               <>
                 <input
@@ -271,7 +282,7 @@ export default function UserModal({ show, onClose }) {
                   placeholder="Full Name"
                   value={formState.fullName}
                   onChange={handleInputChange}
-                  className="w-full border rounded-md p-3 text-gray-700 mb-4"
+                  className="w-full border dark:border-[var(--accent)] rounded-md p-3 text-gray-700 dark:text-[var(--text)] dark:bg-[var(--background)] mb-4"
                 />
                 <input
                   type="tel"
@@ -279,23 +290,23 @@ export default function UserModal({ show, onClose }) {
                   placeholder="Phone Number"
                   value={formState.phoneNumber}
                   onChange={handleInputChange}
-                  className="w-full border rounded-md p-3 text-gray-700 mb-4"
+                  className="w-full border dark:border-[var(--accent)] rounded-md p-3 text-gray-700 dark:text-[var(--text)] dark:bg-[var(--background)] mb-4"
                 />
               </>
             )}
-
+  
             <input
               type="password"
               name="password"
               placeholder="Password"
               value={formState.password}
               onChange={handleInputChange}
-              className="w-full border rounded-md p-3 text-gray-700 mb-4"
+              className="w-full border dark:border-[var(--accent)] rounded-md p-3 text-gray-700 dark:text-[var(--text)] dark:bg-[var(--background)] mb-4"
             />
-
+  
             <button
               onClick={handleSubmit}
-              className="w-full bg-[#fc9d4f] hover:bg-[#f9efd2] text-white py-3 rounded-md mb-4"
+              className="w-full bg-[var(--secondary)] hover:bg-[var(--accent)] dark:bg-[var(--secondary)] text-white py-3 rounded-md mb-4"
               disabled={authState.isLoading}
             >
               {authState.isLoading
@@ -306,40 +317,40 @@ export default function UserModal({ show, onClose }) {
                   ? "Login"
                   : "Sign Up"}
             </button>
-
+  
             <div className="text-center mb-4">
-              <span className="text-gray-600">
+              <span className="text-gray-600 dark:text-[var(--accent)]">
                 {authMode === "login"
                   ? "Don't have an account? "
                   : "Already have an account? "}
               </span>
               <button
                 onClick={toggleAuthMode}
-                className="text-[#fc9d4f] hover:underline ml-1"
+                className="text-[var(--secondary)] dark:text-[var(--secondary)] hover:underline ml-1"
               >
                 {authMode === "login" ? "Sign Up" : "Login"}
               </button>
             </div>
           </>
         )}
-
+  
         {authState.isConfirmingLogout && (
           <div className="text-center mt-4">
             {authState.isLoggingOut ? (
-              <p>Logging out...</p>
+              <p className="dark:text-[var(--text)]">Logging out...</p>
             ) : (
               <>
-                <p>Are you sure you want to log out?</p>
+                <p className="dark:text-[var(--text)]">Are you sure you want to log out?</p>
                 <div className="flex justify-center gap-4 mt-4">
                   <button
                     onClick={confirmLogout}
-                    className="bg-teal-700 text-white px-4 py-2 rounded-md"
+                    className="bg-teal-700 dark:bg-teal-900 text-white px-4 py-2 rounded-md"
                   >
                     Yes
                   </button>
                   <button
                     onClick={cancelLogout}
-                    className="bg-gray-400 text-white px-4 py-2 rounded-md"
+                    className="bg-gray-400 dark:bg-gray-600 text-white px-4 py-2 rounded-md"
                   >
                     No
                   </button>
@@ -351,4 +362,4 @@ export default function UserModal({ show, onClose }) {
       </div>
     </div>
   );
-}
+};

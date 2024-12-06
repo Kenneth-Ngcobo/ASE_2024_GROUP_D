@@ -124,52 +124,58 @@ export default function EditDetails() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row">
+    <div className="min-h-screen flex flex-col md:flex-row bg-white dark:bg-[var(--background)] text-[var(--text)]">
       {/* Sidebar */}
-      <div className="w-full md:w-1/4 bg-gray-100 p-8">
+      <div className="w-full md:w-1/4 bg-gray-100 dark:bg-[#111] p-8">
         <button
           onClick={() => router.push("/")}
-          className="w-full bg-gray-200 text-gray-700 py-2 px-4 rounded-lg mb-4 text-center"
+          className="w-full bg-gray-200 dark:bg-[var(--accent)] text-gray-700 dark:text-[var(--text)] py-2 px-4 rounded-lg mb-4 text-center"
         >
           BACK TO WEBSITE
         </button>
         <div className="mt-8">
-          <h2 className="text-lg text-[#fc9d4f] font-semibold mb-2">ACCOUNT</h2>
-          <p className="text-sm text-gray-700 mb-1">
+          <h2 className="text-lg text-[#fc9d4f] dark:text-[var(--secondary)] font-semibold mb-2">ACCOUNT</h2>
+          <p className="text-sm text-gray-700 dark:text-[var(--accent)] mb-1">
             Signed in as:{" "}
             <span className="font-medium">{userDetails.email}</span>
           </p>
-          <button onClick={handleLogout} className="text-[#FF4F1A] font-medium">
+          <button 
+            onClick={handleLogout} 
+            className="text-[#FF4F1A] dark:text-[var(--primary)] font-medium"
+          >
             LOGOUT
           </button>
         </div>
       </div>
-
+  
       {/* Main Content */}
       <div className="w-full md:w-3/4 p-8">
-        <h1 className="text-2xl font-bold text-[#fc9d4f] mb-6">ABOUT YOU</h1>
+        <h1 className="text-2xl font-bold text-[#fc9d4f] dark:text-[var(--secondary)] mb-6">ABOUT YOU</h1>
+        
         {showSuccessMessage && (
-          <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
-            <p className="text-green-700 font-medium">
+          <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-lg p-4 mb-4">
+            <p className="text-green-700 dark:text-green-300 font-medium">
               Profile updated successfully!
             </p>
           </div>
         )}
+        
         {error && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
-            <p className="text-red-700 font-medium">{error}</p>
+          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 rounded-lg p-4 mb-4">
+            <p className="text-red-700 dark:text-red-300 font-medium">{error}</p>
           </div>
         )}
+        
         {isSaving ? (
           <div className="flex justify-center items-center w-full h-[500px]">
             <LoadingSpinner />
           </div>
         ) : (
-          <div className="bg-white shadow-lg rounded-lg p-8">
+          <div className="bg-white dark:bg-[#111] shadow-lg dark:shadow-xl rounded-lg p-8">
             <form onSubmit={handleUpdate} className="space-y-4">
               <div className="space-y-2">
                 <label
-                  className="text-sm font-medium text-gray-700"
+                  className="text-sm font-medium text-gray-700 dark:text-[var(--accent)]"
                   htmlFor="fullName"
                 >
                   Full Name
@@ -180,13 +186,13 @@ export default function EditDetails() {
                   name="fullName"
                   value={userDetails.fullName}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 border rounded-lg shadow-sm"
+                  className="w-full px-4 py-3 border dark:border-[var(--accent)] rounded-lg shadow-sm dark:bg-[var(--background)] dark:text-[var(--text)]"
                 />
               </div>
-
+  
               <div className="space-y-2">
                 <label
-                  className="text-sm font-medium text-gray-700"
+                  className="text-sm font-medium text-gray-700 dark:text-[var(--accent)]"
                   htmlFor="email"
                 >
                   Email
@@ -197,14 +203,14 @@ export default function EditDetails() {
                   name="email"
                   value={userDetails.email}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 border rounded-lg shadow-sm"
+                  className="w-full px-4 py-3 border dark:border-[var(--accent)] rounded-lg shadow-sm dark:bg-[var(--background)] dark:text-[var(--text)] opacity-60"
                   disabled
                 />
               </div>
-
+  
               <div className="space-y-2">
                 <label
-                  className="text-sm font-medium text-gray-700"
+                  className="text-sm font-medium text-gray-700 dark:text-[var(--accent)]"
                   htmlFor="phoneNumber"
                 >
                   Phone Number
@@ -215,13 +221,13 @@ export default function EditDetails() {
                   name="phoneNumber"
                   value={userDetails.phoneNumber}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 border rounded-lg shadow-sm"
+                  className="w-full px-4 py-3 border dark:border-[var(--accent)] rounded-lg shadow-sm dark:bg-[var(--background)] dark:text-[var(--text)]"
                 />
               </div>
-
+  
               <div className="space-y-2">
                 <label
-                  className="text-sm font-medium text-gray-700"
+                  className="text-sm font-medium text-gray-700 dark:text-[var(--accent)]"
                   htmlFor="password"
                 >
                   Password
@@ -232,22 +238,22 @@ export default function EditDetails() {
                   name="password"
                   value={userDetails.password}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 border rounded-lg shadow-sm"
+                  className="w-full px-4 py-3 border dark:border-[var(--accent)] rounded-lg shadow-sm dark:bg-[var(--background)] dark:text-[var(--text)] opacity-60"
                   disabled
                 />
               </div>
-
+  
               <div className="flex space-x-4 mt-6">
                 <button
                   type="submit"
-                  className="flex-1 bg-[#fc9d4f] text-white py-2 px-4 rounded-lg"
+                  className="flex-1 bg-[#fc9d4f] dark:bg-[var(--secondary)] text-white py-2 px-4 rounded-lg"
                 >
                   Save Preferences
                 </button>
                 <button
                   type="button"
                   onClick={handleCancel}
-                  className="flex-1 bg-gray-200 text-gray-700 py-2 px-4 rounded-lg"
+                  className="flex-1 bg-gray-200 dark:bg-[var(--accent)] text-gray-700 dark:text-[var(--text)] py-2 px-4 rounded-lg"
                 >
                   Cancel
                 </button>

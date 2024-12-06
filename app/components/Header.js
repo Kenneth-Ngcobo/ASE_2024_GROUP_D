@@ -5,11 +5,11 @@ import { useState, useEffect, Suspense } from "react";
 
 import { useRouter } from "next/navigation";
 import CategoryList from "./ui/CategoryList.js";
-import { FilterButton } from "./filter-sort/FilterButton.js";
+import { FilterButton} from "../components/FilterButton.js";
 import ThemeButton from "./ui/ThemeButton";
 import RecipeSearchBar from "./ui/searchBar.js";
 import UserModal from "./UserModal.js";
-import { FilterModal } from "./filter-sort/FilterButton.js";
+import { FilterModal } from "../components/FilterButton.js";
 import Loading from "../loading.js";
 import { FaUser, FaSearch, FaHeart, FaList, FaFilter } from "react-icons/fa";
 
@@ -44,22 +44,25 @@ const Header = ({ isAuthenticated, onLogout }) => {
   const toggleSearch = () => setIsSearchOpen((prev) => !prev);
 
   return (
-    <header className="sticky top-0 bg-[#f9efd2] dark:bg-gray-950 z-50 shadow-md">
+    <header className="sticky top-0 bg-[#f9efd2] dark:bg-[var(--background)] z-50 shadow-md">
       <div className="container mx-auto px-4">
         <nav className="flex items-center justify-between h-16">
           <div className="hidden md:flex space-x-8 items-center">
             <Link
               href="/"
-              className="block text-[#020123] hover:text-[#fc9d4f] font-medium py-2 uppercase"
+              className="block text-[#020123] dark:text-[var(--text)] hover:text-[#fc9d4f] dark:hover:text-[var(--secondary)] font-medium py-2 uppercase"
             >
               Recipes
             </Link>
-            <Suspense fallback={<Loading />}>
-              <CategoryList
+            <Suspense fallback={<Loading />} >
+              <CategoryList   
                 totalRecipes={totalRecipes}
                 onCategoryChange={() => {}}
+           
               />
-              <FilterButton onClick={toggleFilterModal} />
+              <FilterButton 
+               className=" text-[#020123] dark:bg-[var(--text)] hover:text-[#fc9d4f] dark:hover:text-[var(--secondary)] font-medium py-2 uppercase"
+              onClick={toggleFilterModal} />
             </Suspense>
           </div>
 
@@ -75,21 +78,28 @@ const Header = ({ isAuthenticated, onLogout }) => {
           <div className="hidden md:flex items-center space-x-8">
             <button
               onClick={toggleSearch}
-              className="text-[#020123] dark:text-white hover:text-[#fc9d4f]"
+              className="text-[#020123] dark:text-[var(--text)] hover:text-[#fc9d4f] dark:hover:text-[var(--secondary)]"
             >
               <FaSearch className="w-5 h-5" />
             </button>
 
+            {/* Search bar */}
+            {isSearchOpen && (
+              <div className="absolute top-full left-0 w-full z-50">
+                <RecipeSearchBar onClose={toggleSearch} />
+              </div>
+            )}
+
             <button
               onClick={toggleModal}
-              className="text-[#020123] dark:text-white hover:text-[#fc9d4f]"
+              className="text-[#020123] dark:text-[var(--text)] hover:text-[#fc9d4f] dark:hover:text-[var(--secondary)]"
             >
               <FaUser className="w-5 h-5" />
             </button>
 
             <Link
               href="/Favourite"
-              className="text-[#020123] dark:text-white hover:text-[#fc9d4f]"
+              className="text-[#020123] dark:text-[var(--text)] hover:text-[#fc9d4f] dark:hover:text-[var(--secondary)]"
             >
               <FaHeart className="w-5 h-5" />
             </Link>
@@ -100,7 +110,7 @@ const Header = ({ isAuthenticated, onLogout }) => {
           </div>
 
           <button
-            className="md:hidden text-gray-600 dark:text-white"
+            className="md:hidden text-gray-600 dark:text-[var(--text)]"
             onClick={toggleDropdown}
             aria-label="Menu"
           >
@@ -121,12 +131,12 @@ const Header = ({ isAuthenticated, onLogout }) => {
 
       {/* Mobile menu dropdown */}
       <div
-        className={`md:hidden items-center justify-center bg-white border-t transition-all duration-300 ${isDropdownOpen ? "max-h-24 py-2" : "max-h-0 overflow-hidden"}`}
+        className={`md:hidden items-center justify-center bg-white dark:bg-[var(--background)] border-t transition-all duration-300 ${isDropdownOpen ? "max-h-24 py-2" : "max-h-0 overflow-hidden"}`}
       >
         <div className="container mx-auto px-4 space-y-4 flex flex-col items-start">
           <Link
             href="/"
-            className="block text-[#020123] hover:text-[#fc9d4f] font-medium py-2"
+            className="block text-[#020123] dark:text-[var(--text)] hover:text-[#fc9d4f] dark:hover:text-[var(--secondary)] font-medium py-2"
           >
             {/* Optional link for logo or home */}
           </Link>
@@ -135,7 +145,7 @@ const Header = ({ isAuthenticated, onLogout }) => {
           <div className="flex space-x-6 ">
             {/* Category icon with functionality */}
             <FaList
-              className="w-5 h-5 text-[#020123] hover:text-[#fc9d4f]"
+              className="w-5 h-5 text-black dark:text-[var(--text)] hover:text-[#fc9d4f] dark:hover:text-[var(--secondary)]"
               onClick={() => setIsCategoryOpen(!isCategoryOpen)} 
             />
             {isCategoryOpen && (
@@ -147,22 +157,28 @@ const Header = ({ isAuthenticated, onLogout }) => {
 
             {/* Filter icon with functionality */}
             <FaFilter
-              className="w-5 h-5 text-[#020123] hover:text-[#fc9d4f]"
+              className="w-5 h-5 text-black dark:text-[var(--text)] hover:text-[#fc9d4f] dark:hover:text-[var(--secondary)]"
               onClick={() => setIsFilterOpen(!isFilterOpen)}
             />
 
-            {/**Search bar */}
+            <button
+              onClick={toggleSearch}
+              className="text-[#020123] dark:text-[var(--text)] hover:text-[#fc9d4f] dark:hover:text-[var(--secondary)]"
+            >
+              <FaSearch className="w-5 h-5" />
+            </button>
 
-{isSearchOpen && (
-        <div className="absolute top-full left-0 w-full z-50">
-          <RecipeSearchBar onClose={toggleSearch} />
-        </div>
-      )}
+            {/* Search bar */}
+            {isSearchOpen && (
+              <div className="absolute top-full left-0 w-full z-50">
+                <RecipeSearchBar onClose={toggleSearch} />
+              </div>
+            )}
 
             {/* User icon */}
             <button
               onClick={toggleModal}
-              className="text-[#020123] dark:text-white hover:text-[#fc9d4f]"
+              className="text-black dark:text-[var(--text)] hover:text-[#fc9d4f] dark:hover:text-[var(--secondary)]"
             >
               <FaUser className="w-5 h-5" />
             </button>
@@ -170,14 +186,12 @@ const Header = ({ isAuthenticated, onLogout }) => {
             {/* Favourite icon */}
             <Link
               href="/Favourite"
-              className="text-[#020123] dark:text-white hover:text-[#fc9d4f]"
+              className="text-black dark:text-[var(--text)] hover:text-[#fc9d4f] dark:hover:text-[var(--secondary)]"
             >
               <FaHeart className="w-5 h-5" />
             </Link>
 
             <ThemeButton />
-
-      
           </div>
 
           <Suspense fallback={<Loading />}></Suspense>
@@ -187,13 +201,6 @@ const Header = ({ isAuthenticated, onLogout }) => {
       {/* Modals */}
       {isFilterOpen && <FilterModal onClose={() => setIsFilterOpen(false)} />}
       <UserModal show={showModal} onClose={() => setShowModal(false)} />
-
-      {/* Search bar */}
-      {isSearchOpen && (
-        <div className="absolute top-full left-0 w-full z-50">
-          <RecipeSearchBar onClose={toggleSearch} />
-        </div>
-      )}
     </header>
   );
 };
