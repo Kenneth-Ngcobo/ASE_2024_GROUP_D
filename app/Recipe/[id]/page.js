@@ -1,16 +1,16 @@
 import { Suspense } from "react";
 import Image from "next/image";
 import BackButton from "../../components/ui/BackButton";
-import { fetchRecipeById } from "../../api";
-import ImageGallery from "../../components/recipe-detail/ImageGallery";
-import CollapsibleSection from "../../components/recipe-detail/CollapsibleSection";
-import Loading from "./loading";
-import EditDescription from "../../components/recipe-detail/EditDescription";
-import ReviewsSection from "../../components/recipe-detail/ReviewsSection";
-import AllergensSection from "../../components/recipe-detail/AllergensSection";
-import RecipeIngredientsSelector from "../../components/recipe/RecipeIngredientsSelector";
-import VoiceAssistant from "../../components/voice-ai/VoiceAssistant";
-import EditableRecipeDetails from "../../components/recipe-detail/EditDescription";
+import { fetchRecipeById } from '../../api';
+import ImageGallery from '../../components/ImageGallery';
+import Loading from './loading';
+import EditableRecipeDetails from '../../components/EditDescription'
+import ReviewsSection from '../../components/ReviewsSection';
+import AllergensSection from '../../components/AllergensSection';
+import VoiceAssistant from "../../components/VoiceAssistant";
+import RecipeIngredientsSelector from '../../components/RecipeIngredientsSelector'
+import Link from 'next/link';
+
 // Generate metadata for the recipe page dynamically
 export async function generateMetadata({ params }) {
   const { id } = params;
