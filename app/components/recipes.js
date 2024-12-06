@@ -7,7 +7,7 @@ import Image from 'next/image';
 import {
   FaClock,
   FaUtensils,
-
+  FaCaretDown
 } from "react-icons/fa";
 import { PiCookingPotDuotone, PiHeart } from "react-icons/pi";
 import Carousel from "./ui/Carousel";
@@ -25,6 +25,7 @@ import { useSearchParams } from "next/navigation";
 const Recipes = ({ recipes: initialRecipes }) => {
   const [recipes, setRecipes] = useState(initialRecipes);
   const [favoritedRecipes, setFavoritedRecipes] = useState(new Set());
+  const [dropdownVisible, setDropdownVisible] = useState(false);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const searchParams = useSearchParams();

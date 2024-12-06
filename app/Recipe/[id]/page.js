@@ -4,7 +4,7 @@ import BackButton from "../../components/ui/BackButton";
 import { fetchRecipeById } from '../../api';
 import ImageGallery from '../../components/ImageGallery';
 import Loading from './loading';
-import EditableRecipeDetails from '../../components/EditDescription'
+import EditableRecipeDetails from '../../components/EditableRecipeDetails'
 import ReviewsSection from '../../components/ReviewsSection';
 import AllergensSection from '../../components/AllergensSection';
 import VoiceAssistant from "../../components/VoiceAssistant";

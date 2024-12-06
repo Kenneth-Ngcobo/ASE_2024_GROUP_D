@@ -35,6 +35,7 @@ const Header = ({ isAuthenticated, onLogout }) => {
   const [showModal, setShowModal] = useState(false);
   const [shoppingListCount, setShoppingListCount] = useState(0); // State for shopping list count
   const [favoritesCount, setFavoritesCount] = useState(0);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [error, setError] = useState(null);
   const router = useRouter();
 
@@ -121,12 +122,6 @@ const Header = ({ isAuthenticated, onLogout }) => {
               Recipes
             </Link>
             <Link
-              href=""
-              className="block text-[ #020123] hover:text-[#fc9d4f] font-medium py-2 uppercase"
-            >
-              Recommended
-            </Link>
-            <Link
               href="/favorites"
               className="block text-[ #020123] hover:text-[#fc9d4f] font-medium py-2 uppercase flex items-center"
             >
@@ -168,15 +163,10 @@ const Header = ({ isAuthenticated, onLogout }) => {
               <FaUser className="w-5 h-5" />
             </button>
 
-            {/* Authentication Modal */}
-            <Suspense fallback={<Loading />}>
-              <ShoppingListProvider>
-                <ShoppingBagHeader />
-              </ShoppingListProvider>
-            </Suspense>
+            <Suspense fallback={<Loading />}></Suspense>
             
             <UserModal show={showModal} onClose={toggleModal} />
-         
+
             <ThemeButton />
 
             <Link href="/shopping_lists" className="relative">
@@ -243,7 +233,6 @@ const Header = ({ isAuthenticated, onLogout }) => {
       </div>
       {/* Modals */}
       {isFilterOpen && <FilterModal onClose={() => setIsFilterOpen(false)} />}
-      <RecipeSearchBar />
       <UserModal show={showModal} onClose={() => setShowModal(false)} />
 
       {/* Search Bar Conditionally Rendered */}

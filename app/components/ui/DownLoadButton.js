@@ -1,5 +1,5 @@
 // DownloadButton.js
-import { useDownload } from './DownloadContext';
+import { useDownload } from '../DownloadContext';
 
 const DownloadButton = ({ recipe }) => {
     const { downloadRecipe } = useDownload();
