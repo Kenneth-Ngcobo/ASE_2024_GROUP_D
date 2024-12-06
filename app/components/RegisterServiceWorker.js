@@ -1,3 +1,4 @@
+// components/RegisterServiceWorker.js
 'use client';
 import { useEffect } from "react";
 

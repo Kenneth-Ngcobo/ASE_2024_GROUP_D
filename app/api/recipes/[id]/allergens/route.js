@@ -1,21 +1,6 @@
 import { NextResponse } from "next/server";
 import connectToDatabase from "../../../../../db";
 
-/**
- * Retrieves allergens for a specific recipe by its ID.
- * 
- * @async
- * @function GET
- * @param {Request} request - The incoming HTTP request object
- * @param {Object} context - Route context containing recipe ID
- * @param {Object} context.params - Route parameters
- * @param {string} context.params.id - The ID of the recipe
- * @returns {NextResponse} JSON response containing detected and existing allergens
- * - Success (200): { allergens: string[] }
- * - Error (400): { error: 'Recipe ID is required' }
- * - Error (404): { error: 'Recipe not found' }
- * - Error (500): { error: 'Failed to fetch allergens', details: string }
- */
 export async function GET(request, { params }) {
     try {
         const db = await connectToDatabase();
@@ -108,21 +93,7 @@ function matchIngredientsWithAllergens(ingredients, allergens) {
     );
 }
 
-/**
- * Adds or updates allergens for a specific recipe.
- * 
- * @async
- * @function PUT
- * @param {Request} request - The incoming HTTP request object
- * @param {Object} context - Route context containing recipe ID
- * @param {Object} context.params - Route parameters
- * @param {string} context.params.id - The ID of the recipe
- * @returns {NextResponse} JSON response indicating the result of the update
- * - Success (200): { success: true, allergens: string[] }
- * - Error (400): { error: 'Recipe ID is required' }
- * - Error (404): { error: 'Recipe not found' }
- * - Error (500): { error: 'Failed to update allergens', details: string }
- */
+// Add/update allergens to a recipe
 export async function PUT(request, { params }) {
     try {
         const db = await connectToDatabase();

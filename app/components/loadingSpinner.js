@@ -1,11 +1,3 @@
-/**
- * A loading spinner component that displays a circular spinner and a "Loading..." message.
- * It is centered both horizontally and vertically.
- * 
- * @component
- * @example
- * return <LoadingSpinner />;
- */
 export default function LoadingSpinner() {
     return (
         <div className="flex justify-center items-center h-screen">

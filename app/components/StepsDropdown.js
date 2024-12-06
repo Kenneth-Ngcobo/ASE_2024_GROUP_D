@@ -1,24 +1,9 @@
+// StepsDropdown.js
 import { useState } from "react";
 
-/**
- * A dropdown component to select the number of steps.
- * It allows the user to select a number from 0 (All) to 100.
- * 
- * @param {Object} props The component props.
- * @param {number} [props.selectedSteps=0] The initially selected number of steps (defaults to 0 if not provided).
- * @param {Function} props.onStepsChange The callback function to notify the parent component when the selected steps change.
- * 
- * @returns {JSX.Element} The StepsDropdown component.
- */
 const StepsDropdown = ({ selectedSteps, onStepsChange }) => {
     const [steps, setSteps] = useState(selectedSteps || 0);
 
-    /**
-     * Handles the change in selected number of steps.
-     * Updates the local state and informs the parent component.
-     * 
-     * @param {React.ChangeEvent<HTMLSelectElement>} e The change event from the select element.
-     */
     const handleChange = (e) => {
         const value = Number(e.target.value);
         setSteps(value);

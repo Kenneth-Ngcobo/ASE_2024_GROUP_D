@@ -4,13 +4,6 @@ import { useState } from 'react';
 import Image from 'next/image';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 
-/**
- * ImageGallery component for displaying a gallery of recipe images with navigation controls.
- *
- * @param {Object} props - The component props.
- * @param {string[]} props.images - An array of image URLs to display in the gallery.
- * @returns {JSX.Element} The ImageGallery component.
- */
 export default function ImageGallery({ images }) {
     const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -58,20 +51,20 @@ export default function ImageGallery({ images }) {
 
             <div className="flex justify-center mt-4 space-x-4">
                 {images.map((image, index) => (
-                    <div
-                        key={index}
-                        className={`relative w-32 h-28 cursor-pointer rounded-lg ${currentIndex === index ? 'shadow-lg shadow-[#ffebe5]' : ''}`}
-                        onClick={() => setCurrentIndex(index)}
-                    >
-                        <Image
-                            src={image}
-                            alt={`Recipe image ${index + 1}`}
-                            className={`rounded-lg `}
-                            fill
-                            sizes="100%"
-                            style={{ objectFit: 'fill' }}
-                        />
-                    </div>
+                    <div 
+                    key={index} 
+                    className={`relative w-32 h-28 cursor-pointer rounded-lg ${currentIndex === index ? 'shadow-lg shadow-[#ffebe5]' : ''}`}
+                    onClick={() => setCurrentIndex(index)}
+                >
+                    <Image
+                        src={image}
+                        alt={`Recipe image ${index + 1}`}
+                        className={`rounded-lg `}
+                        fill
+                        sizes="100%"
+                        style={{ objectFit: 'fill' }}
+                    />
+                </div>
                 ))}
             </div>
         </div>

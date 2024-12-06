@@ -1,16 +1,9 @@
+// app/components/FavoriteButton.js
 'use client';
 import { useState, useEffect } from 'react';
 import { FaHeart, FaRegHeart } from 'react-icons/fa';
 import { useRouter } from 'next/navigation';
 
-/**
- * A button component to toggle the favorite status of a recipe.
- * It displays a filled heart when the recipe is favorited and an empty heart when not.
- *
- * @param {Object} props - The props for the component.
- * @param {string} props.recipeId - The ID of the recipe to be favorited or unfavorited.
- * @returns {JSX.Element} - The FavoriteButton component.
- */
 export const FavoriteButton = ({ recipeId }) => {
   const [isFavorited, setIsFavorited] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -34,12 +27,6 @@ export const FavoriteButton = ({ recipeId }) => {
     checkFavoriteStatus();
   }, [recipeId]);
 
-  /**
-   * Handles the click event to toggle the favorite status of the recipe.
-   * Adds or removes the recipe from favorites.
-   *
-   * @param {Event} e - The click event.
-   */
   const handleFavoriteClick = async (e) => {
     e.preventDefault();
     e.stopPropagation();

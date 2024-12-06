@@ -22,8 +22,8 @@ export async function fetchRecipes(limit = 20, page, search, tags, category, ing
         ...(category && { category }), // Conditionally add 'category' to the query if it's provided
         ...(ingredients && { ingredients }), // Conditionally add 'ingredients' to the query if it's provided
         ...(instructions && { instructions }), // Conditionally add 'instructions' to the query if it's provided
-        ...(order && { order }),
-        ...(sort && { sort })
+        ...(order && {order}),
+        ...(sort && {sort})
     }).toString();
 
     try {

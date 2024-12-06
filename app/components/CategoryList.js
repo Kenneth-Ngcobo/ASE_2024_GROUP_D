@@ -3,16 +3,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
-/**
- * CategoryList component for displaying categories and filtering them.
- * It allows the user to search for categories and select a category
- * which updates the query parameters in the URL.
- *
- * @param {Object} props - Component properties.
- * @param {Function} props.onCategoryChange - Callback function to handle category changes.
- * @param {number} props.totalRecipes - The total number of recipes (used to update state).
- * @returns {JSX.Element} The rendered CategoryList component.
- */
 const CategoryList = ({ onCategoryChange, totalRecipes }) => {
   const [categories, setCategories] = useState([]);
   const [error, setError] = useState(null);
@@ -21,10 +11,10 @@ const CategoryList = ({ onCategoryChange, totalRecipes }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredCategories, setFilteredCategories] = useState([]);
   const [totalRecipesState, setTotalRecipes] = useState(0);
-
+  
   const router = useRouter();
   const searchParams = useSearchParams();
-
+  
   // Ref to hold a reference to the modal element for away click detection
   const modalRef = useRef(null); // Added reference for modal
 
@@ -70,12 +60,6 @@ const CategoryList = ({ onCategoryChange, totalRecipes }) => {
     };
   }, [isOpen]); // Dependencies include isOpen to trigger on open/close
 
-  /**
-   * Handles the category search functionality.
-   * Filters categories based on the search term.
-   *
-   * @param {Object} event - The submit event object.
-   */
   const handleSearch = (event) => {
     event.preventDefault();
     if (!searchTerm) {
@@ -88,11 +72,6 @@ const CategoryList = ({ onCategoryChange, totalRecipes }) => {
     setFilteredCategories(matches);
   };
 
-  /**
-   * Handles selecting a category from the list and updates the URL query parameters.
-   *
-   * @param {string} category - The selected category name.
-   */
   const handleCategorySelect = async (category) => {
     setIsOpen(false);
     const currentQuery = Object.fromEntries(searchParams.entries());
@@ -105,9 +84,6 @@ const CategoryList = ({ onCategoryChange, totalRecipes }) => {
     router.push(`?${queryString}`);
   };
 
-  /**
-   * Clears the category filter by updating the URL query parameters.
-   */
   const clearCategory = () => {
     const currentQuery = Object.fromEntries(searchParams.entries());
     const { category, ...updatedQuery } = currentQuery;

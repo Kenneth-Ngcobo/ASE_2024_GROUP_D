@@ -3,13 +3,6 @@
 import { useState, useEffect } from 'react';
 import { subscribeUser, unsubscribeUser, sendNotification } from '../actions/Actions';
 
-/**
-   * Converts a base64 string to a Uint8Array for use in push notifications.
-   * 
-   * @param {string} base64String The base64-encoded string.
-   * @returns {Uint8Array} The converted Uint8Array.
-   * @throws {Error} If the base64String is undefined.
-   */
 function urlBase64ToUint8Array(base64String) {
   if (!base64String) {
     throw new Error('The base64String is not defined.');
@@ -34,12 +27,6 @@ function urlBase64ToUint8Array(base64String) {
 
 const applicationServerKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY ? urlBase64ToUint8Array(process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY) : null;
 
-/**
- * PushNotificationManager component manages user subscriptions to push notifications and handles sending test notifications.
- * It registers a service worker and allows the user to subscribe, unsubscribe, and send test notifications.
- * 
- * @returns {JSX.Element} The component JSX element.
- */
 export default function PushNotificationManager() {
   const [isSupported, setIsSupported] = useState(false);
   const [subscription, setSubscription] = useState(null);
@@ -52,9 +39,6 @@ export default function PushNotificationManager() {
     }
   }, []);
 
-  /**
-   * Registers the service worker and retrieves the current push subscription.
-   */
   async function registerServiceWorker() {
     const registration = await navigator.serviceWorker.register('/Service-Worker.js', {
       scope: '/',
@@ -64,9 +48,6 @@ export default function PushNotificationManager() {
     setSubscription(sub);
   }
 
-  /**
-   * Subscribes the user to push notifications.
-   */
   async function subscribeToPush() {
     const registration = await navigator.serviceWorker.ready;
     const sub = await registration.pushManager.subscribe({
@@ -77,9 +58,6 @@ export default function PushNotificationManager() {
     await subscribeUser(sub);
   }
 
-  /**
-   * Unsubscribes the user from push notifications.
-   */
   async function unsubscribeFromPush() {
     if (subscription) {
       await subscription.unsubscribe();
@@ -88,9 +66,6 @@ export default function PushNotificationManager() {
     }
   }
 
-  /**
-   * Sends a test notification to the subscribed user.
-   */
   async function sendTestNotification() {
     if (subscription) {
       await sendNotification(message);

@@ -13,15 +13,17 @@ export default function UserModal({ show, onClose }) {
     fullName: "",
     phoneNumber: "",
   });
-  const [authMode, setAuthMode] = useState("signup");
   const [authState, setAuthState] = useState({
-    isLoading: false,
+    isCheckingUser: false,
+    isLogin: null,
     loggedInUser: null,
+    isLoggingIn: false,
+    isConfirmingLogout: false,
     isVerifyingGoogle: false,
     isLoggingOut: false,
-    isConfirmingLogout: false,
   });
 
+  // Handle form input changes
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormState((prev) => ({
@@ -30,6 +32,7 @@ export default function UserModal({ show, onClose }) {
     }));
   };
 
+  // Fetch session on mount
   useEffect(() => {
     const initializeAuth = async () => {
       const storedEmail = localStorage.getItem("loggedInUserEmail");
@@ -47,6 +50,7 @@ export default function UserModal({ show, onClose }) {
     initializeAuth();
   }, []);
 
+  // Google Sign In
   const handleGoogleSignIn = useCallback(async () => {
     setAuthState((prev) => ({ ...prev, isVerifyingGoogle: true }));
     try {
@@ -54,27 +58,11 @@ export default function UserModal({ show, onClose }) {
       if (result?.ok) {
         const session = await getSession();
         if (session?.user?.email) {
-          const response = await fetch("/api/auth/google-signup", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              email: session.user.email,
-              fullName: session.user.name,
-              image: session.user.image,
-            }),
-          });
-
-          if (!response.ok) {
-            throw new Error("Failed to process Google sign-in");
-          }
-
           localStorage.setItem("loggedInUserEmail", session.user.email);
           setAuthState((prev) => ({
             ...prev,
             loggedInUser: session.user.email,
-            isVerifyingGoogle: false,
           }));
-          alert("Signed in successfully!");
           onClose();
         } else {
           alert("Error: Unable to retrieve email.");
@@ -88,24 +76,38 @@ export default function UserModal({ show, onClose }) {
     }
   }, [onClose]);
 
-  const handleSubmit = useCallback(async () => {
-    const fieldsToCheck =
-      authMode === "signup"
-        ? ["fullName", "email", "phoneNumber", "password"]
-        : ["email", "password"];
-
-    const emptyFields = fieldsToCheck.filter(
-      (field) => !formState[field] || formState[field].trim() === ""
-    );
-
-    if (emptyFields.length > 0) {
-      alert("All fields are required");
+  // Email check
+  const handleEmailCheck = useCallback(async () => {
+    if (!formState.email) {
+      alert("Please enter an email.");
       return;
     }
 
-    setAuthState((prev) => ({ ...prev, isLoading: true }));
+    setAuthState((prev) => ({ ...prev, isCheckingUser: true }));
     try {
-      if (authMode === "login") {
+      const response = await fetch("/api/auth/checkuser", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: formState.email }),
+      });
+
+      setAuthState((prev) => ({
+        ...prev,
+        isCheckingUser: false,
+        isLogin: response.status === 200,
+      }));
+    } catch (error) {
+      console.error("Error checking user:", error);
+      alert("Error checking user. Please try again.");
+      setAuthState((prev) => ({ ...prev, isCheckingUser: false }));
+    }
+  }, [formState.email]);
+
+  // Form submission
+  const handleSubmit = useCallback(async () => {
+    setAuthState((prev) => ({ ...prev, isLoggingIn: true }));
+    try {
+      if (authState.isLogin) {
         const result = await signIn("credentials", {
           email: formState.email,
           password: formState.password,
@@ -116,7 +118,6 @@ export default function UserModal({ show, onClose }) {
           alert("Login failed. Please check your credentials.");
           return;
         }
-        alert("Logged in successfully!");
       } else {
         const response = await fetch("/api/auth/signup", {
           method: "POST",
@@ -134,41 +135,26 @@ export default function UserModal({ show, onClose }) {
           alert(result.message || "Sign-up failed. Please try again.");
           return;
         }
-        alert("Signed up successfully!");
       }
 
       localStorage.setItem("loggedInUserEmail", formState.email);
       setAuthState((prev) => ({ ...prev, loggedInUser: formState.email }));
       router.push("/");
       onClose();
-    } catch (error) {
-      console.error("Submission error:", error);
-      alert("An error occurred. Please try again.");
     } finally {
-      setAuthState((prev) => ({ ...prev, isLoading: false }));
+      setAuthState((prev) => ({ ...prev, isLoggingIn: false }));
     }
-  }, [authMode, formState, router, onClose]);
+  }, [authState.isLogin, formState, router, onClose]);
+
+  // Logout handling
   const handleLogout = () =>
     setAuthState((prev) => ({ ...prev, isConfirmingLogout: true }));
-
   const confirmLogout = useCallback(async () => {
     setAuthState((prev) => ({ ...prev, isLoggingOut: true }));
     try {
       localStorage.removeItem("loggedInUserEmail");
-
-      await signOut({
-        redirect: false,
-        callbackUrl: "/",
-      });
-
-      setAuthState({
-        isLoading: false,
-        loggedInUser: null,
-        isVerifyingGoogle: false,
-        isLoggingOut: false,
-        isConfirmingLogout: false,
-      });
-
+      setAuthState((prev) => ({ ...prev, loggedInUser: null }));
+      await signOut();
       alert("Logged out successfully!");
       router.push("/");
     } catch (error) {
@@ -182,16 +168,14 @@ export default function UserModal({ show, onClose }) {
   const cancelLogout = () =>
     setAuthState((prev) => ({ ...prev, isConfirmingLogout: false }));
 
-  const toggleAuthMode = () => {
-    setAuthMode(authMode === "login" ? "signup" : "login");
-
-    setFormState({
-      email: "",
-      password: "",
+  const handleBack = useCallback(() => {
+    setAuthState((prev) => ({ ...prev, isLogin: null }));
+    setFormState((prev) => ({
+      ...prev,
       fullName: "",
       phoneNumber: "",
-    });
-  };
+    }));
+  }, []);
 
   if (!show) return null;
 
@@ -205,6 +189,27 @@ export default function UserModal({ show, onClose }) {
           &times;
         </button>
 
+        {authState.isLogin !== null && (
+          <button
+            onClick={handleBack}
+            className="absolute top-3 left-3 text-gray-500 text-2xl"
+          >
+            &#8592;
+          </button>
+        )}
+
+        <h2 className="text-2xl font-bold text-center mb-4">
+          {authState.isCheckingUser
+            ? "Verifying..."
+            : authState.isLoggingIn
+              ? "Logging in..."
+              : authState.isLogin === null
+                ? "Sign Up or Login"
+                : authState.isLogin
+                  ? "Login"
+                  : "Sign Up"}
+        </h2>
+
         {authState.loggedInUser ? (
           <div className="text-center">
             <h2 className="text-2xl font-bold mb-4">
@@ -213,57 +218,32 @@ export default function UserModal({ show, onClose }) {
             <Link href="/editdetails">
               <button
                 onClick={onClose}
-                className="w-full bg-[#fc9d4f] text-white py-3 rounded-md mb-4"
+                className="w-full bg-teal-700 text-white py-3 rounded-md mb-4"
               >
-                Go to Profile
+                Edit Profile
               </button>
             </Link>
             <button
               onClick={handleLogout}
-              className="w-full bg-[#FF4F1A] text-white py-3 rounded-md mb-4"
+              className="w-full bg-red-500 text-white py-3 rounded-md mb-4"
             >
               Log Out
             </button>
           </div>
         ) : (
           <>
-            <button
-              onClick={handleGoogleSignIn}
-              className="w-full border rounded-md py-3 flex items-center justify-center mb-4"
-              disabled={authState.isVerifyingGoogle}
-            >
-              {authState.isVerifyingGoogle ? (
-                "Verifying..."
-              ) : (
-                <>
-                  <Image
-                    src="/google.svg"
-                    alt="Google icon"
-                    width={20}
-                    height={20}
-                    className="w-5 mr-2"
-                  />
-                  Continue with Google
-                </>
-              )}
-            </button>
+            {authState.isLogin === null && (
+              <input
+                type="email"
+                name="email"
+                placeholder="Email"
+                value={formState.email}
+                onChange={handleInputChange}
+                className="w-full border rounded-md p-3 text-gray-700 mb-4"
+              />
+            )}
 
-            <div className="text-center text-gray-500 mb-4">OR</div>
-
-            <h2 className="text-2xl text-[#fc9d4f] font-bold text-center mb-4">
-              {authMode === "login" ? "Login" : "Sign Up"}
-            </h2>
-
-            <input
-              type="email"
-              name="email"
-              placeholder="Email"
-              value={formState.email}
-              onChange={handleInputChange}
-              className="w-full border rounded-md p-3 text-gray-700 mb-4"
-            />
-
-            {authMode === "signup" && (
+            {authState.isLogin === false && (
               <>
                 <input
                   type="text"
@@ -284,44 +264,57 @@ export default function UserModal({ show, onClose }) {
               </>
             )}
 
-            <input
-              type="password"
-              name="password"
-              placeholder="Password"
-              value={formState.password}
-              onChange={handleInputChange}
-              className="w-full border rounded-md p-3 text-gray-700 mb-4"
-            />
+            {authState.isLogin !== null && (
+              <input
+                type="password"
+                name="password"
+                placeholder="Password"
+                value={formState.password}
+                onChange={handleInputChange}
+                className="w-full border rounded-md p-3 text-gray-700 mb-4"
+              />
+            )}
 
-            <button
-              onClick={handleSubmit}
-              className="w-full bg-[#fc9d4f] hover:bg-[#f9efd2] text-white py-3 rounded-md mb-4"
-              disabled={authState.isLoading}
-            >
-              {authState.isLoading
-                ? authMode === "login"
-                  ? "Logging in..."
-                  : "Signing up..."
-                : authMode === "login"
-                  ? "Login"
-                  : "Sign Up"}
-            </button>
-
-            <div className="text-center mb-4">
-              <span className="text-gray-600">
-                {authMode === "login"
-                  ? "Don't have an account? "
-                  : "Already have an account? "}
-              </span>
+            {authState.isLogin === null ? (
               <button
-                onClick={toggleAuthMode}
-                className="text-[#fc9d4f] hover:underline ml-1"
+                onClick={handleEmailCheck}
+                className="w-full bg-teal-700 text-white py-3 rounded-md mb-4"
               >
-                {authMode === "login" ? "Sign Up" : "Login"}
+                Continue with Email
               </button>
-            </div>
+            ) : (
+              <button
+                onClick={handleSubmit}
+                className="w-full bg-teal-700 text-white py-3 rounded-md"
+              >
+                {authState.isLogin ? "Login" : "Sign Up"}
+              </button>
+            )}
           </>
         )}
+
+        <div className="text-center text-gray-500 mb-4">OR</div>
+
+        <button
+          onClick={handleGoogleSignIn}
+          className="w-full border rounded-md py-3 flex items-center justify-center mb-2"
+          disabled={authState.isVerifyingGoogle}
+        >
+          {authState.isVerifyingGoogle ? (
+            "Verifying..."
+          ) : (
+            <>
+              <Image
+                src="/google.svg"
+                alt="Google icon"
+                width={20}
+                height={20}
+                className="w-5 mr-2"
+              />
+              Continue with Google
+            </>
+          )}
+        </button>
 
         {authState.isConfirmingLogout && (
           <div className="text-center mt-4">

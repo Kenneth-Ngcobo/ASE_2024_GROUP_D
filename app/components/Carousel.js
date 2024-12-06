@@ -2,37 +2,19 @@ import { useState } from 'react';
 import Image from 'next/image';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 
-/**
- * Carousel component to display images in a sliding format.
- * @param {Object} props - The component props.
- * @param {string[]} props.images - An array of image URLs to be displayed in the carousel.
- * @returns {JSX.Element} The rendered carousel component.
- */
 export default function Carousel({ images }) {
     const [currentIndex, setCurrentIndex] = useState(0);
 
-    /**
-     * Navigate to the previous image.
-     * @param {Event} event - The click event.
-     */
     const goToPrevious = (event) => {
         event.preventDefault();
         setCurrentIndex(currentIndex === 0 ? images.length - 1 : currentIndex - 1);
     };
 
-    /**
-     * Navigate to the next image.
-     * @param {Event} event - The click event.
-     */
     const goToNext = (event) => {
         event.preventDefault();
         setCurrentIndex(currentIndex === images.length - 1 ? 0 : currentIndex + 1);
     };
 
-    /**
-     * Navigate to a specific image by index.
-     * @param {number} index - The index of the image to navigate to.
-     */
     const goToIndex = (index) => {
         setCurrentIndex(index);
     };
@@ -78,8 +60,9 @@ export default function Carousel({ images }) {
                         {images.map((_, index) => (
                             <button
                                 key={index}
-                                className={`w-3 h-3 rounded-full ${currentIndex === index ? 'bg-[#fc9d4f]' : 'bg-gray-200'
-                                    } focus:outline-none`}
+                                className={`w-3 h-3 rounded-full ${
+                                    currentIndex === index ? 'bg-[#fc9d4f]' : 'bg-gray-200'
+                                } focus:outline-none`}
                                 onClick={() => goToIndex(index)}
                             />
                         ))}
