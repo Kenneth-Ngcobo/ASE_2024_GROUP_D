@@ -2,33 +2,29 @@
 
 import { useState, useEffect, useRef } from 'react';
 
-/**
- * VoiceAssistant component provides an interactive voice assistant that reads
- * and controls a set of instructions.
- * 
- * @param {Object} props - Component props.
- * @param {string[]} props.instructions - List of instructions to be read out.
- */
+// Helper to parse numbers from text (e.g., "five" to 5)
+const parseNumberFromText = (text) => {
+    const numberWords = {
+        one: 1, two: 2, three: 3, four: 4, five: 5,
+        six: 6, seven: 7, eight: 8, nine: 9, ten: 10,
+    };
+    return numberWords[text] || parseInt(text, 10);
+};
+
 export default function VoiceAssistant({ instructions }) {
     const [isActive, setIsActive] = useState(false);
     const [currentStep, setCurrentStep] = useState(0);
     const [isSpeaking, setIsSpeaking] = useState(false);
-    const [isPlaying, setIsPlaying] = useState(false); // Track if instructions are being played sequentially
+    const [isPlaying, setIsPlaying] = useState(false);
     const [speechSpeed, setSpeechSpeed] = useState(1);
     const [error, setError] = useState(null);
 
-    const synthRef = useRef(null); // For text-to-speech
-    const recognitionRef = useRef(null); // For voice commands
-    const playIntervalRef = useRef(null); // Ref to store the playback interval
+    const synthRef = useRef(null);
+    const recognitionRef = useRef(null);
 
-    /**
-     * Initializes speech synthesis and recognition when the component mounts.
-     */
     useEffect(() => {
-        // Initialize speech synthesis
         synthRef.current = window.speechSynthesis;
 
-        // Initialize speech recognition
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         if (SpeechRecognition) {
             const recognition = new SpeechRecognition();
@@ -41,37 +37,50 @@ export default function VoiceAssistant({ instructions }) {
         } else {
             setError("Speech Recognition not supported in this browser.");
         }
-    }, []); // Runs only once on the client
+    }, []);
 
-    /**
-     * Resets the current step if instructions change.
-     */
     useEffect(() => {
         if (currentStep >= instructions.length) {
-            setCurrentStep(0); // Reset to the beginning
+            setCurrentStep(0);
         }
     }, [instructions]);
 
-    /**
-    * Monitors changes to `currentStep` and reads the instruction aloud.
-    */
     useEffect(() => {
         if (isActive && !isSpeaking) {
             readInstruction();
         }
     }, [currentStep]);
 
-    /**
-     * Starts the voice assistant, activating voice commands and instruction reading.
-     */
     const startVoiceAssistant = () => {
         setIsActive(true);
         recognitionRef.current?.start();
     };
 
-    /**
-     * Stops the voice assistant, halting all speech and voice recognition.
-     */
+    const playInstructions = () => {
+        if (isPlaying) return;
+        setIsPlaying(true);
+
+        const speakSequentialStep = (step) => {
+            if (step < instructions.length) {
+                const utterance = new SpeechSynthesisUtterance(instructions[step]);
+                utterance.rate = speechSpeed;
+                utterance.onend = () => {
+                    if (isPlaying) {
+                        setCurrentStep(step + 1);
+                        speakSequentialStep(step + 1);
+                    }
+                };
+                utterance.onerror = () => setIsPlaying(false);
+                synthRef.current.speak(utterance);
+            } else {
+                setIsPlaying(false);
+                speakText("All instructions have been played.");
+            }
+        };
+
+        speakSequentialStep(currentStep);
+    };
+
     const stopVoiceAssistant = () => {
         setIsActive(false);
         synthRef.current.cancel();
@@ -79,14 +88,10 @@ export default function VoiceAssistant({ instructions }) {
         setIsSpeaking(false);
         setCurrentStep(0);
         setIsPlaying(false);
-        stopPlayingInstructions(); // Stop sequential playback
     };
 
-    /**
-     * Reads the current instruction aloud using speech synthesis.
-     */
     const readInstruction = () => {
-        synthRef.current.cancel(); // Stop ongoing speech
+        synthRef.current.cancel();
         if (currentStep < instructions.length) {
             const utterance = new SpeechSynthesisUtterance(instructions[currentStep]);
             utterance.rate = speechSpeed;
@@ -98,106 +103,15 @@ export default function VoiceAssistant({ instructions }) {
         }
     };
 
-    /**
-     * Sequentially plays instructions with a delay between each step.
-     */
-    const playInstructions = () => {
-        stopPlayingInstructions(); // Clear any previous playback
-        setIsPlaying(true);
-        let step = currentStep; // Start from the current step
-
-        /**
-         * Recursively speaks each instruction in the sequence.
-         * 
-         * @param {number} index - The current index in the instructions list.
-         */
-        const speakStep = (index) => {
-            if (index < instructions.length) {
-                const utterance = new SpeechSynthesisUtterance(instructions[index]);
-                utterance.rate = speechSpeed;
-                utterance.onend = () => {
-                    setCurrentStep((prev) => prev + 1); // Update the step in state
-                    speakStep(index + 1); // Move to the next step
-                };
-                utterance.onerror = (e) => {
-                    console.error("Error with speech synthesis:", e);
-                    setIsPlaying(false);
-                };
-                synthRef.current.speak(utterance);
-            } else {
-                stopPlayingInstructions();
-                speakText("All instructions have been played.");
-            }
-        };
-
-        speakStep(step); // Start speaking from the current step
+    const speakText = (text) => {
+        synthRef.current.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.rate = speechSpeed;
+        synthRef.current.speak(utterance);
     };
 
-    /**
-     * Stops the sequential playback of instructions.
-     */
-    const stopPlayingInstructions = () => {
-        if (playIntervalRef.current) {
-            clearInterval(playIntervalRef.current);
-            playIntervalRef.current = null;
-        }
-        setIsPlaying(false);
-    };
-
-    console.log("current step is :", currentStep)
-
-    /**
-     * Handles the voice command results and triggers appropriate actions.
-     * 
-     * @param {SpeechRecognitionEvent} event - The speech recognition event containing the voice command.
-     */
-    const handleVoiceCommand = (event) => {
-        const transcript = event.results[event.results.length - 1][0].transcript.trim().toLowerCase();
-        console.log("Voice Command Received:", transcript);
-
-        if (transcript.includes("next step")) {
-            setIsPlaying(false);
-            // stopPlayingInstructions(); // Stop sequential playback if a manual command is given
-            goToNextStep();
-        } else if (transcript.includes("previous step")) {
-            setIsPlaying(false);
-            // stopPlayingInstructions();
-            goToPreviousStep();
-        } else if (transcript.includes("repeat step")) {
-            setIsPlaying(false);
-            // stopPlayingInstructions();
-            readInstruction();
-        } else if (transcript.includes("pause")) {
-            pauseSpeech();
-        } else if (transcript.includes("resume")) {
-            resumeSpeech();
-        } else if (transcript.includes("play")) {
-            playInstructions();
-        } else if (transcript.includes("stop")) {
-            stopVoiceAssistant();
-        } else {
-            speakText("Command not recognized. Please try again.");
-        }
-    };
-
-    /**
-     * Pauses the speech synthesis.
-     */
-    const pauseSpeech = () => {
-        synthRef.current.pause();
-    };
-
-    /**
-     * Resumes the speech synthesis from where it was paused.
-     */
-    const resumeSpeech = () => {
-        synthRef.current.resume();
-    };
-
-    /**
-     * Moves to the next step in the instruction sequence.
-     */
     const goToNextStep = () => {
+        synthRef.current.cancel();
         if (currentStep < instructions.length - 1) {
             setCurrentStep((prev) => prev + 1);
         } else {
@@ -205,27 +119,57 @@ export default function VoiceAssistant({ instructions }) {
         }
     };
 
-    /**
-     * Moves to the previous step in the instruction sequence.
-     */
     const goToPreviousStep = () => {
-        if (currentStep > 0) {
-            setCurrentStep((prev) => prev - 1);
-        } else {
-            speakText("You are already at the first step.");
-        }
+        synthRef.current.cancel();
+        setCurrentStep((prevStep) => {
+            if (prevStep > 0) {
+                return prevStep - 1;
+            } else {
+                speakText("You are already at the first step.");
+                return prevStep;
+            }
+        });
     };
 
-    /**
-     * Speaks a custom text aloud.
-     * 
-     * @param {string} text - The text to be spoken.
-     */
-    const speakText = (text) => {
-        synthRef.current.cancel(); // Stop ongoing speech
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.rate = speechSpeed;
-        synthRef.current.speak(utterance);
+    const handleVoiceCommand = (event) => {
+        const transcript = event.results[event.results.length - 1][0].transcript.trim().toLowerCase();
+        console.log("Voice Command Received:", transcript);
+
+        if (transcript.includes("next step")) {
+            setIsPlaying(false);
+            goToNextStep();
+        } else if (transcript.includes("previous step")) {
+            setIsPlaying(false);
+            goToPreviousStep();
+        } else if (transcript.includes("repeat step")) {
+            setIsPlaying(false);
+            readInstruction();
+        } else if (transcript.includes("play instructions")) {
+            playInstructions();
+        } else if (transcript.includes("pause")) {
+            synthRef.current.pause();
+        } else if (transcript.includes("resume")) {
+            synthRef.current.resume();
+        } else if (transcript.includes("step")) {
+            const match = transcript.match(/step (\w+)/);
+            if (match && match[1]) {
+                const stepNumber = parseNumberFromText(match[1]);
+                if (!isNaN(stepNumber)) {
+                    if (stepNumber >= 1 && stepNumber <= instructions.length) {
+                        setCurrentStep(stepNumber - 1);
+                        speakText(`Jumping to step ${stepNumber}`);
+                    } else {
+                        speakText("Step number out of range. Please try again.");
+                    }
+                } else {
+                    speakText("Unable to recognize the step number. Please try again.");
+                }
+            } else {
+                speakText("Unable to recognize the step number. Please try again.");
+            }
+        } else {
+            speakText("Command not recognized. Please try again.");
+        }
     };
 
     return (
@@ -248,16 +192,6 @@ export default function VoiceAssistant({ instructions }) {
                             disabled={isPlaying}
                             className="bg-green-500 text-white p-2 rounded-md hover:bg-green-600 disabled:opacity-50 transition-all">
                             Play Instructions
-                        </button>
-                        <button
-                            onClick={pauseSpeech}
-                            className="bg-yellow-500 text-white p-2 rounded-md hover:bg-yellow-600 transition-all">
-                            Pause
-                        </button>
-                        <button
-                            onClick={resumeSpeech}
-                            className="bg-yellow-500 text-white p-2 rounded-md hover:bg-yellow-600 transition-all">
-                            Resume
                         </button>
                         <button
                             onClick={goToNextStep}

@@ -21,8 +21,10 @@ export async function GET(req, { params }) {
       throw new Error('Failed to get database connection');
     }
 
-    // Attempt to find a single recipe by its ID
+
+    // Attempt to find a single recipe by its ID in the 'recipes' collection
     const recipe = await db.collection('recipes').findOne({ _id: id });
+
 
     if (!recipe) {
       return new Response(
