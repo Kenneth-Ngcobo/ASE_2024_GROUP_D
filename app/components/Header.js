@@ -5,11 +5,11 @@ import { useState, useEffect, Suspense } from 'react';
 import { FaUser, FaShoppingBag, FaHeart, FaSearch } from 'react-icons/fa';
 import { useRouter } from 'next/navigation';
 import CategoryList from './ui/CategoryList.js';
-import { FilterButton } from './filter-sort/FilterButton.js';
+import { FilterButton } from './FilterButton.js';
 import ThemeButton from './ui/ThemeButton';
 import RecipeSearchBar from './ui/searchBar.js';
 import UserModal from './UserModal.js';
-import { FilterModal } from './filter-sort/FilterButton.js';
+import { FilterModal } from './FilterButton.js';
 import Loading from '../loading.js';
 
 /**
