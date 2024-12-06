@@ -2,14 +2,17 @@ import { Suspense } from "react";
 import Image from "next/image";
 import BackButton from "../../components/ui/BackButton";
 import { fetchRecipeById } from '../../api';
-import ImageGallery from '../../components/recipe-detail/ImageGallery';
+import ImageGallery from '../../components/ImageGallery';
 import Loading from './loading';
-import EditableRecipeDetails from '../../components/recipe-detail/EditDescription'
-import ReviewsSection from '../../components/recipe-detail/ReviewsSection';
-import AllergensSection from '../../components/recipe-detail/AllergensSection';
-import VoiceAssistant from "../../components/voice-ai/VoiceAssistant";
-import RecipeIngredientsSelector from '../../components/recipe/RecipeIngredientsSelector'
+import EditableRecipeDetails from '../../components/EditDescription'
+import ReviewsSection from '../../components/ReviewsSection';
+import AllergensSection from '../../components/AllergensSection';
+import VoiceAssistant from "../../components/VoiceAssistant";
+import RecipeIngredientsSelector from '../../components/RecipeIngredientsSelector'
 import Link from 'next/link';
+import { DownloadProvider, useDownload } from "../../context/DownloadContext";
+import RegisterServiceWorker from "../../components/RegisterServiceWorker";
+import DownloadButton from "../../components/ui/DownLoadButton";
 
 // Generate metadata for the recipe page dynamically
 export async function generateMetadata({ params }) {
@@ -57,6 +60,7 @@ export default async function RecipePage({ params }) {
 
     return (
         <div className="min-h-screen bg-[#fcfde2] dark:bg-[#1c1d02] py-8">
+            <DownloadProvider>
             <Suspense fallback={<Loading />}>
                 <div className="container mx-auto px-4 max-w-5xl">
                     {/* Back Button */}
@@ -174,8 +178,10 @@ export default async function RecipePage({ params }) {
                             </p>
                         </Link>
                     </div >
+                    <DownloadButton recipe={recipe} />
                 </div >
             </Suspense >
+            </DownloadProvider>
         </div >
 
     );

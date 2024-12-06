@@ -34,7 +34,7 @@ const StepsDropdown = ({ selectedSteps, onStepsChange }) => {
                 className="mt-2 p-2 border border-gray-300 rounded-md"
             >
                 <option value="0">All</option>
-                {Array.from({ length: 100 }, (_, i) => i + 1).map((step) => (
+                {Array.from({ length: 200 }, (_, i) => i + 1).map((step) => (
                     <option key={step} value={step}>{step}</option>
                 ))}
             </select>

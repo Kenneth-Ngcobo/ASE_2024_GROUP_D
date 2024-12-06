@@ -35,7 +35,7 @@ export default function IngDisplay({ selectedIngs = [], onIngsChange = () => { }
         onIngsChange(urlIngs);
       }
     }
-  }, [searchParams, selectedIngs, onIngsChange]);
+  }, [searchParams]);
 
   useEffect(() => {
     const fetchIngs = async () => {

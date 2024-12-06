@@ -301,7 +301,7 @@ const RecipeSearchBar = ({
                             </ul>
                         ) : search.length >= minCharacters ? (
                             <div className="p-6 text-gray-600 text-center font-medium">
-                                No recipes found matching "{search}"
+                                No recipes found matching &quot;{search}&quot;
                                 <button
                                     onClick={clearRecentSearches}
                                     className="mt-2 text-green-600 hover:underline"

@@ -28,7 +28,7 @@ export default function TagDisplay({ selectedTags, onTagsChange }) {
         onTagsChange(urlTags);
       }
     }
-  }, [searchParams, selectedTags, onTagsChange]);
+  }, [searchParams]);
 
   useEffect(() => {
     const fetchTags = async () => {
