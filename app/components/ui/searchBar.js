@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { useState, useEffect } from 'react';
 import { FaSearch } from 'react-icons/fa';
@@ -6,12 +6,11 @@ import { XCircle, Timer, Coffee, Utensils } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 /**
- * Highlights search terms in a given text by wrapping the matching parts with a styled span.
- *
+ * Highlights matching parts of the text based on search terms.
  * @param {Object} props - Component props.
- * @param {string} props.text - The text to be searched for highlights.
- * @param {Array<string>} props.searchTerms - The terms to highlight in the text.
- * @returns {JSX.Element} - The text with highlighted search terms.
+ * @param {string} text - The text to highlight parts of.
+ * @param {string[]} searchTerms - The search terms to highlight in the text.
+ * @returns {JSX.Element} A span element with highlighted matching text.
  */
 const HighlightedText = ({ text, searchTerms }) => {
     if (!searchTerms || searchTerms.length === 0) return text;
@@ -40,20 +39,17 @@ const HighlightedText = ({ text, searchTerms }) => {
 };
 
 /**
- * RecipeSearchBar component that provides a search input with real-time suggestions for recipes.
- * It fetches recipe suggestions based on the user's search input and allows users to search by title, ingredient, or category.
- * It also displays recent searches and allows users to clear them.
- *
- * @param {Object} props - Component props.
- * @param {string} [props.currentSearch] - The initial search query.
- * @param {Function} props.onSearch - A callback function that is called when a search is made.
- * @param {number} [props.minCharacters=2] - The minimum number of characters required to trigger search suggestions.
- * @returns {JSX.Element} - The RecipeSearchBar component with input field and suggestion list.
+ * Recipe search bar component that handles search input, suggestions, and routing.
+ * @param {object} props - The component props.
+ * @param {string} props.currentSearch - The current search query to initialize the input field.
+ * @param {function} [props.onSearch] - Callback function to handle the search query.
+ * @param {number} [props.minCharacters=2] - Minimum characters before search is triggered.
+ * @returns {JSX.Element} The rendered search bar component.
  */
 const RecipeSearchBar = ({
     currentSearch = '',
     onSearch,
-    minCharacters = 2
+    minCharacters = 2,
 }) => {
     const [search, setSearch] = useState(currentSearch);
     const [showSuggestions, setShowSuggestions] = useState(false);
@@ -61,18 +57,20 @@ const RecipeSearchBar = ({
     const [loading, setLoading] = useState(false);
     const [recentSearches, setRecentSearches] = useState([]);
     const [selectedRecipe, setSelectedRecipe] = useState(null);
+    const [debouncedSearch, setDebouncedSearch] = useState(search);
     const router = useRouter();
 
-
+    /**
+     * Updates the search input value based on the current search query.
+     */
     useEffect(() => {
         setSearch(currentSearch);
     }, [currentSearch]);
 
     /**
-     * Formats the search input into individual terms to be used in the search query.
-     *
-     * @param {string} searchText - The search input text.
-     * @returns {Array<string>} - An array of search terms.
+     * Splits the search text into individual terms for highlighting matches.
+     * @param {string} searchText - The text to split into search terms.
+     * @returns {string[]} An array of search terms.
      */
     const getSearchTerms = (searchText) => {
         return searchText
@@ -82,9 +80,8 @@ const RecipeSearchBar = ({
     };
 
     /**
-     * Saves the search term to local storage as a recent search.
-     *
-     * @param {string} searchTerm - The search term to be saved.
+     * Saves a recent search term to localStorage and updates the recent searches state.
+     * @param {string} searchTerm - The search term to save.
      */
     const saveRecentSearch = (searchTerm) => {
         const updatedSearches = [
@@ -97,7 +94,8 @@ const RecipeSearchBar = ({
     };
 
     /**
-     * Fetches recipe suggestions based on the current search input.
+     * Fetches recipe suggestions from the API based on the current search input.
+     * The API is queried after a debounce period, and the results are saved to the suggestions state.
      */
     useEffect(() => {
         const fetchSuggestions = async () => {
@@ -109,7 +107,6 @@ const RecipeSearchBar = ({
             try {
                 setLoading(true);
 
-                // Check for an exact match
                 const exactMatchResponse = await fetch(`/api/recipes?exactTitle=${encodeURIComponent(search)}`);
                 if (!exactMatchResponse.ok) throw new Error('Failed to check for exact match');
                 const exactMatchData = await exactMatchResponse.json();
@@ -120,7 +117,6 @@ const RecipeSearchBar = ({
                     return;
                 }
 
-                // Fallback to general suggestions
                 const params = new URLSearchParams({
                     search,
                     limit: '10',
@@ -140,10 +136,39 @@ const RecipeSearchBar = ({
             }
         };
 
-
-        const timeoutId = setTimeout(fetchSuggestions, 500);
+        const timeoutId = setTimeout(fetchSuggestions, 100);
         return () => clearTimeout(timeoutId);
     }, [search, minCharacters]);
+
+    /**
+     * Debounces the search input to avoid triggering the search on every keystroke.
+     */
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setDebouncedSearch(search.trim());
+        }, 1000);
+
+        return () => clearTimeout(timer);
+    }, [search]);
+
+    /**
+     * Handles the search logic when the debounced search term changes.
+     * It updates the URL and calls the provided `onSearch` callback.
+     */
+    useEffect(() => {
+        if (debouncedSearch) {
+            saveRecentSearch(debouncedSearch);
+            setShowSuggestions(true);
+            setSelectedRecipe(null);
+
+            router.push(`/?search=${encodeURIComponent(debouncedSearch)}`);
+
+            if (onSearch) {
+                onSearch(debouncedSearch);
+            }
+            
+        }
+    }, [debouncedSearch, router, onSearch]);
 
     /**
      * Fetches details of a specific recipe by ID.
@@ -163,28 +188,8 @@ const RecipeSearchBar = ({
     };
 
     /**
-     * Handles the form submission for the search input.
-     *
-     * @param {Event} e - The form submit event.
-     */
-    const handleSearchSubmit = (e) => {
-        e.preventDefault();
-        if (search.trim()) {
-            saveRecentSearch(search.trim());
-            setShowSuggestions(false);
-            setSelectedRecipe(null);
-
-            router.push(`/?search=${encodeURIComponent(search.trim())}`);
-            if (onSearch) {
-                onSearch(search);
-            }
-        }
-    };
-
-    /**
-     * Handles the click on a suggestion.
-     *
-     * @param {Object} suggestion - The selected suggestion object.
+     * Handles the click event on a suggestion to populate the search input.
+     * @param {object} suggestion - The suggestion object containing the recipe data.
      */
     const handleSuggestionClick = (suggestion) => {
         setSearch(suggestion.title);
@@ -195,7 +200,7 @@ const RecipeSearchBar = ({
     };
 
     /**
-     * Clears the current search input and suggestions.
+     * Clears the search input and resets the state related to suggestions and selected recipe.
      */
     const clearSearch = () => {
         setSearch('');
@@ -208,18 +213,40 @@ const RecipeSearchBar = ({
     };
 
     /**
-     * Clears the recent search history stored in local storage.
+     * Clears the list of recent searches and removes them from localStorage.
      */
     const clearRecentSearches = () => {
         setRecentSearches([]);
         localStorage.removeItem('recentRecipeSearches');
     };
 
+    useEffect(() => {
+        const handleFocusIn = (e) => {
+            if (e.target.closest(".search-container")) {
+                setShowSuggestions(true);
+            }
+        };
+    
+        const handleFocusOut = (e) => {
+            if (!e.relatedTarget || !e.relatedTarget.closest(".search-container")) {
+                setShowSuggestions(false);
+            }
+        };
+    
+        document.addEventListener("focusin", handleFocusIn);
+        document.addEventListener("focusout", handleFocusOut);
+    
+        return () => {
+            document.removeEventListener("focusin", handleFocusIn);
+            document.removeEventListener("focusout", handleFocusOut);
+        };
+    }, []);
+
     const searchTerms = getSearchTerms(search);
 
     return (
-        <div className="max-w-3xl mx-auto">
-            <form onSubmit={handleSearchSubmit} className="relative">
+        <div className="search-container max-w-3xl mx-auto">
+            <div className="relative">
                 <div className="relative flex items-center">
                     <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-[#ff4f1a]">
                         <FaSearch className="h-4 w-4" />
@@ -247,24 +274,15 @@ const RecipeSearchBar = ({
                                 <XCircle className="h-5 w-5" />
                             </button>
                         )}
-                        {/* <button 
-                            type="submit" 
-                            className=" text-gray-400 p-3 "
-                            aria-label="Search"
-                        >
-                        </button>*/}
                     </div>
                 </div>
 
                 {showSuggestions && (
-                    <div
-                        className="absolute z-10 w-full mt-2 bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden"
-                        onMouseDown={(e) => e.preventDefault()}
-                    >
+                    <div className="absolute z-10 w-full mt-2 bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden" onMouseDown={(e) => e.preventDefault()}>
                         {loading ? (
                             <div className="p-6 text-gray-600 flex items-center justify-center">
                                 <Coffee className="animate-spin mr-2 text-teal-500" />
-                                <span className="font-medium" >Finding recipes...</span>
+                                <span className="font-medium">Finding recipes...</span>
                             </div>
                         ) : suggestions.length > 0 ? (
                             <ul className="divide-y divide-gray-100">
@@ -275,60 +293,44 @@ const RecipeSearchBar = ({
                                         onClick={() => handleSuggestionClick(suggestion)}
                                     >
                                         <div className="p-4">
-                                            <div className="flex items-center mb-2">
-                                                <Utensils className="h-4 w-4 text-teal-500 mr-3" />
-                                                <span className="font-medium text-gray-800">
-                                                    <HighlightedText
-                                                        text={suggestion.title}
-                                                        searchTerms={searchTerms}
-                                                    />
-                                                </span>
-                                            </div>
-                                            {suggestion.cookTime && (
-                                                <div className="flex items-center text-sm text-gray-500 mt-2 ml-7">
-                                                    <Timer className="h-4 w-4 mr-1 text-teal-500" />
-                                                    <span>{suggestion.cookTime} mins</span>
-                                                </div>
-                                            )}
+                                            <HighlightedText
+                                                text={suggestion.title}
+                                                searchTerms={searchTerms}
+                                            />
                                         </div>
                                     </li>
                                 ))}
                             </ul>
-                        ) : search.length >= minCharacters ? (
-                            <div className="p-6 text-gray-600 text-center font-medium">
-                                No recipes found matching &quot;{search}&quot;
-                                <button
-                                    onClick={clearRecentSearches}
-                                    className="mt-2 text-green-600 hover:underline"
-                                >
-                                    Clear recent searches
-                                </button>
-                            </div>
-                        ) : recentSearches.length > 0 ? (
-                            <div className="p-4">
-                                <h3 className="text-sm font-medium text-gray-400 uppercase tracking-wider mb-3 px-2">Recent Searches</h3>
-                                <ul className="space-y-2">
+                        ) : (
+                            <div className="p-6 text-center text-gray-600">No suggestions found</div>
+                        )}
+
+                        {recentSearches.length > 0 && !loading && (
+                            <div>
+                                <div className="p-4 bg-gray-50 text-gray-800 font-semibold">
+                                    Recent Searches
+                                </div>
+                                <ul className="divide-y divide-gray-100">
                                     {recentSearches.map((term, index) => (
                                         <li
                                             key={index}
-                                            className="cursor-pointer text-gray-700 hover:text-teal-500 flex items-center p-2 rounded-lg hover:bg-gray-50 transition-colors duration-200"
+                                            className="hover:bg-gray-50 transition-colors cursor-pointer"
                                             onClick={() => {
                                                 setSearch(term);
-                                                setShowSuggestions(false);
-                                                if (onSearch) onSearch(term);
+                                                saveRecentSearch(term);
                                             }}
                                         >
-                                            <FaSearch className="h-3 w-3 mr-3 text-gray-400" />
-                                            {term}
+                                            <div className="p-4">
+                                                <span className="text-sm text-gray-600">{term}</span>
+                                            </div>
                                         </li>
                                     ))}
                                 </ul>
                             </div>
-                        ) : null}
+                        )}
                     </div>
                 )}
-            </form>
-
+            </div>
             {selectedRecipe && (
                 <div className="mt-8 p-6 bg-white rounded-xl shadow-md border border-gray-100">
                     <h2 className="text-2xl font-bold text-gray-800 mb-3">{selectedRecipe.title}</h2>
@@ -341,7 +343,6 @@ const RecipeSearchBar = ({
             )}
         </div>
     );
-
 };
 
 export default RecipeSearchBar;
