@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 /**
  * IngDisplay component allows users to select ingredients from a list, 
@@ -26,16 +26,14 @@ export default function IngDisplay({ selectedIngs = [], onIngsChange = () => { }
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
 
+  const router = useRouter();
   const searchParams = useSearchParams();
 
   useEffect(() => {
-    const urlIngs = searchParams.get('ingredients')?.split(',') || [];
-    if (urlIngs.length && urlIngs !== ' ' && urlIngs !== '') {
-      if (urlIngs.join(',') !== selectedIngs.join(',')) {
-        onIngsChange(urlIngs);
-      }
-    }
-  }, [searchParams, selectedIngs, onIngsChange]);
+    const params = new URLSearchParams(searchParams.toString);
+    params.set('tags', selectedIngs.join(','));
+    router.push(`?${params.toString()}`);
+  }, [selectedIngs, searchParams]);
 
   useEffect(() => {
     const fetchIngs = async () => {
@@ -61,8 +59,8 @@ export default function IngDisplay({ selectedIngs = [], onIngsChange = () => { }
     params.set('ingredients', selectedIngs.join(','));
   }, [selectedIngs, searchParams]);
 
-  if (loading) {
-    return <div className="text-center py-4">Loading ingredients...</div>;
+  if (!loading && ings.length === 0) {
+    return <div className="text-center py-4">No ingredients found</div>;
   }
 
   if (error) {
@@ -75,12 +73,17 @@ export default function IngDisplay({ selectedIngs = [], onIngsChange = () => { }
     } else {
       onIngsChange(selectedIngs.filter((t) => t !== ing));
     }
-    setIsOpen(false);
   };
 
-  const filteredIngs = ings.filter(ing =>
+  const filteredIngs = ings.filter((ing) =>
     ing.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+);
+ 
+const clearAll = () => {
+  onTagsChange([]); // Clear selected tags
+  router.push('/'); // Navigate back to the home page
+};
+
 
   return (
     <div className="p-6 bg-white dark:bg-gray-950 shadow-md rounded-lg">
