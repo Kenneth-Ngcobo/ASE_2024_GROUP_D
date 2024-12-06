@@ -144,4 +144,3 @@ export async function DELETE(req) {
 export async function PUT(req) {
   return await handlePut(req);
 }
-

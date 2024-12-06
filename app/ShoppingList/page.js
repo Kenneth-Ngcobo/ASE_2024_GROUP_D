@@ -3,12 +3,6 @@
 import { useEffect, useState } from 'react';
 import { FaWhatsapp } from 'react-icons/fa';
 
-/**
- * Renders the shopping list page, displaying items fetched from the API.
- * 
- * @component
- * @returns {JSX.Element} Shopping list with functionality to delete items, mark items as purchased, share on WhatsApp, and adjust quantities.
- */
 const ShoppingListPage = () => {
     const [shoppingList, setShoppingList] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -17,7 +11,6 @@ const ShoppingListPage = () => {
     const [newItemName, setNewItemName] = useState('');
     const [newItemQuantity, setNewItemQuantity] = useState(1);
 
-  // Fetch the shopping list items from the API when the component mounts
   useEffect(() => {
     const fetchShoppingList = async () => {
       try {
@@ -40,7 +33,7 @@ const ShoppingListPage = () => {
 
   const showNotification = (message) => {
     setNotification(message);
-    setTimeout(() => setNotification(null), 3000); // Clear message after 3 seconds
+    setTimeout(() => setNotification(null), 3000);
     };
     
     const addItem = async (name, quantity) => {
@@ -76,12 +69,6 @@ const ShoppingListPage = () => {
         addItem(newItemName, newItemQuantity);
       };
 
-
-  /**
-   * Deletes an item from the shopping list.
-   * 
-   * @param {string} id - The ID of the item to delete
-   */
   const deleteItem = async (id) => {
     try {
       const response = await fetch('/api/shopping_lists', {
@@ -103,9 +90,6 @@ const ShoppingListPage = () => {
     }
   };
 
-  /**
-   * Clears all items from the shopping list.
-   */
   const clearList = async () => {
     try {
       const response = await fetch('/api/shopping_lists', {
@@ -127,11 +111,6 @@ const ShoppingListPage = () => {
     }
   };
 
-  /**
-   * Marks an item as purchased.
-   * 
-   * @param {string} id - The ID of the item to mark as purchased
-   */
   const markAsPurchased = async (id) => {
     try {
       const response = await fetch('/api/shopping_lists/purchased', {
@@ -155,12 +134,6 @@ const ShoppingListPage = () => {
     }
   };
 
-  /**
-   * Updates the quantity of an item.
-   * 
-   * @param {string} id - The ID of the item to update
-   * @param {number} quantity - The new quantity
-   */
   const updateQuantity = async (id, quantity) => {
     try {
       const response = await fetch('/api/shopping_lists/quantity', {
@@ -219,7 +192,6 @@ const ShoppingListPage = () => {
       )}
       <h1 className="text-2xl text-[#fc9d4f] dark:text-[#b05103] font-semibold mb-4">Shopping List</h1>
 
-      {/* Add Item Form */}
       <form className="mb-4 flex space-x-2" onSubmit={handleAddItem}>
         <input
           type="text"
@@ -300,6 +272,3 @@ const ShoppingListPage = () => {
 };
 
 export default ShoppingListPage;
-
-
-
