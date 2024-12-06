@@ -12,14 +12,14 @@ import { FaWhatsapp } from 'react-icons/fa';
 const ShoppingListPage = () => {
   const [shoppingList, setShoppingList] = useState([]);
   const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-    const [notification, setNotification] = useState(null);
+  const [error, setError] = useState(null);
+  const [notification, setNotification] = useState(null);
 
   // Fetch the shopping list items from the API when the component mounts
   useEffect(() => {
     const fetchShoppingList = async () => {
       try {
-        const response = await fetch('/api/shopping_lists'); 
+        const response = await fetch('/api/shopping_lists');
         const data = await response.json();
         if (data.success) {
           setShoppingList(data.data);
@@ -35,12 +35,12 @@ const ShoppingListPage = () => {
 
     fetchShoppingList();
   }, []);
-    
+
   const showNotification = (message) => {
     setNotification(message);
     setTimeout(() => setNotification(null), 3000); // Clear message after 3 seconds
   };
-    
+
 
   /**
    * Deletes an item from the shopping list.
@@ -49,7 +49,7 @@ const ShoppingListPage = () => {
    */
   const deleteItem = async (id) => {
     try {
-      const response = await fetch('/api/shopping_lists', { 
+      const response = await fetch('/api/shopping_lists', {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -73,7 +73,7 @@ const ShoppingListPage = () => {
    */
   const clearList = async () => {
     try {
-      const response = await fetch('/api/shopping_lists', { 
+      const response = await fetch('/api/shopping_lists', {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -99,8 +99,8 @@ const ShoppingListPage = () => {
    */
   const markAsPurchased = async (id) => {
     try {
-      const response = await fetch('/api/shopping_lists/purchased', { 
-        method: 'PATCH',
+      const response = await fetch('/api/shopping_lists/purchased', {
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -128,8 +128,8 @@ const ShoppingListPage = () => {
    */
   const updateQuantity = async (id, quantity) => {
     try {
-      const response = await fetch('/api/shopping_lists/quantity', { 
-        method: 'PATCH',
+      const response = await fetch('/api/shopping_lists/quantity', {
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -176,8 +176,8 @@ const ShoppingListPage = () => {
   }
 
   return (
-      <div className="container mx-auto py-6">
-               {notification && (
+    <div className="container mx-auto py-6">
+      {notification && (
         <div className="mb-4 bg-green-200 text-green-800 p-2 rounded">
           {notification}
         </div>
@@ -228,7 +228,7 @@ const ShoppingListPage = () => {
             className="bg-green-500 text-white px-4 py-2 rounded flex items-center"
           >
             <FaWhatsapp size={20} className="mr-2" />
-           
+
           </button>
         </div>
       )}
