@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useEffect } from 'react';
@@ -8,12 +7,48 @@ import {
   FaClock,
   FaUtensils,
   FaCaretDown,
-
+  FaStar,
+  FaStarHalfAlt,
+  FaRegStar
 } from "react-icons/fa";
 import { PiCookingPotDuotone, PiHeart } from "react-icons/pi";
 import Carousel from "./ui/Carousel";
 import { SortControl } from "./SortControl";
 import { useSearchParams } from "next/navigation";
+
+// Star Rating Component
+const StarRating = ({ rating, reviewCount }) => {
+  const renderStars = () => {
+    const stars = [];
+    const fullStars = Math.floor(rating);
+    const hasHalfStar = rating % 1 >= 0.5;
+
+    // Full stars
+    for (let i = 0; i < fullStars; i++) {
+      stars.push(<FaStar key={`full-${i}`} className="text-yellow-500" />);
+    }
+
+    // Half star
+    if (hasHalfStar) {
+      stars.push(<FaStarHalfAlt key="half" className="text-yellow-500" />);
+    }
+
+    // Empty stars to fill up to 5
+    const emptyStarsCount = 5 - stars.length;
+    for (let i = 0; i < emptyStarsCount; i++) {
+      stars.push(<FaRegStar key={`empty-${i}`} className="text-gray-300" />);
+    }
+
+    return stars;
+  };
+
+  return (
+    <div className="flex items-center">
+      <div className="flex mr-2">{renderStars()}</div>
+      <span className="text-sm text-gray-600">({reviewCount || 0})</span>
+    </div>
+  );
+};
 
 /**
  * Recipes component displays a list of recipes, allows the user to favorite recipes,
@@ -32,8 +67,6 @@ const Recipes = ({ recipes: initialRecipes }) => {
   const [isLoading, setIsLoading] = useState(true);
   const searchParams = useSearchParams();
 
-
-  console.log("received recipes is :", recipes)
   /**
    * Fetches the user's favorite recipes when the component mounts.
    */
@@ -144,10 +177,6 @@ const Recipes = ({ recipes: initialRecipes }) => {
     }
   };
 
-  console.log("received recipes is :", recipes)
-
-
-
   return (
     <>
       <div className="container mx-auto p-4 pt-6 md:p-6 lg:p-12">
@@ -168,8 +197,7 @@ const Recipes = ({ recipes: initialRecipes }) => {
             <PiHeart className="mr-2" size={20} />
             <span>Favorites ({favoritedRecipes.size})</span>
             <FaCaretDown
-              className={`ml-2 ${dropdownVisible ? "transform rotate-180" : ""
-                }`}
+              className={`ml-2 ${dropdownVisible ? "transform rotate-180" : ""}`}
             />
           </button>
 
@@ -204,7 +232,12 @@ const Recipes = ({ recipes: initialRecipes }) => {
                   <Carousel images={recipe.images} />
                 ) : (
                   <div className="relative w-full h-full">
-                    <Image src={recipe.images[0]} alt={recipe.title} fill className="object-cover" />
+                    <Image 
+                      src={recipe.images[0]} 
+                      alt={recipe.title} 
+                      fill 
+                      className="object-cover" 
+                    />
                   </div>
                 )}
               </div>
@@ -228,6 +261,12 @@ const Recipes = ({ recipes: initialRecipes }) => {
               </div>
 
               <div className="space-y-2">
+                {/* Star Rating Component */}
+                <StarRating 
+                  rating={recipe.averageRating || 0} 
+                  reviewCount={recipe.reviewCount || 0} 
+                />
+
                 <p className="text-sm text-gray-600 flex items-center">
                   <FaClock className="text-[#020123] mr-2" />
                   {recipe.prep} mins
@@ -237,30 +276,28 @@ const Recipes = ({ recipes: initialRecipes }) => {
                   {recipe.cook} mins
                 </p>
                 <p className="text-sm text-gray-600 flex items-center">
-                  <FaUtensils className="text-[#020123] dark:text-[#dddcfe mr-2" />
+                  <FaUtensils className="text-[#020123] dark:text-[#dddcfe] mr-2" />
                   Serves {recipe.servings}
                 </p>
               </div>
+
               <div className="flex flex-wrap gap-2 mt-3">
                 {recipe.category && (
                   <span className="inline-block bg-[#f9efd2] dark:bg-[#1c1d02] dark:text-[#dddcfe] text-[#020123] text-sm px-2 py-1 rounded">
                     {recipe.category}
                   </span>
                 )}
-                <span className="inline-block bg-[#f9efd2] text-[#020123]  dark:bg-[#1c1d02] dark:text-[#dddcfe] text-sm px-2 py-1 rounded">
+                <span className="inline-block bg-[#f9efd2] text-[#020123] dark:bg-[#1c1d02] dark:text-[#dddcfe] text-sm px-2 py-1 rounded">
                   {recipe.instructions.length} steps
                 </span>
-                <span className="inline-block bg-[#f9efd2] text-[#020123]  dark:bg-[#1c1d02] dark:text-[#dddcfe] text-sm px-2 py-1 rounded">
+                <span className="inline-block bg-[#f9efd2] text-[#020123] dark:bg-[#1c1d02] dark:text-[#dddcfe] text-sm px-2 py-1 rounded">
                   {new Date(recipe.published).toDateString()}
                 </span>
-
               </div>
             </Link>
           ))}
         </div>
       </div>
-
-
     </>
   );
 };

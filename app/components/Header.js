@@ -123,11 +123,11 @@ const Header = ({ isAuthenticated, onLogout }) => {
               Recommended
             </Link>
 
-            {/* Favorites Section */}
+            {/* Favorites Section
             <Link href="/favorites" className="flex items-center text-[#020123] hover:text-[#fc9d4f] font-medium py-2 uppercase">
               <PiHeart className="mr-2" size={20} />
               <span>Favorites ({favoriteDetails.length})</span>
-            </Link>
+            </Link> */}
 
             
           </div>
@@ -213,11 +213,11 @@ const Header = ({ isAuthenticated, onLogout }) => {
             Recommended
           </Link>
 
-          {/* Favorites Section */}
+          {/* Favorites Section
           <Link href="/favorites" className="flex items-center text-[#020123] hover:text-[#fc9d4f] font-medium py-2">
             <PiHeart className="mr-2" size={20} />
             <span>Favorites ({favoriteDetails.length})</span>
-          </Link>
+          </Link> */}
 
           <div className="py-2">
             <Suspense fallback={<Loading />}>
