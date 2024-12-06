@@ -58,7 +58,6 @@ const RecipeSearchBar = ({
     const [recentSearches, setRecentSearches] = useState([]);
     const [selectedRecipe, setSelectedRecipe] = useState(null);
     const [debouncedSearch, setDebouncedSearch] = useState(search);
-    const [error, setError] = useState(null);
     const router = useRouter();
 
     /**
@@ -107,7 +106,6 @@ const RecipeSearchBar = ({
 
             try {
                 setLoading(true);
-                setError(null);
 
                 const exactMatchResponse = await fetch(`/api/recipes?exactTitle=${encodeURIComponent(search)}`);
                 if (!exactMatchResponse.ok) throw new Error('Failed to check for exact match');
@@ -132,7 +130,6 @@ const RecipeSearchBar = ({
                 setSuggestions(data.recipes);
             } catch (error) {
                 console.error('Error fetching suggestions:', error);
-                setError('Failed to fetch suggestions. Please try again.');
                 setSuggestions([]);
             } finally {
                 setLoading(false);
@@ -287,16 +284,6 @@ const RecipeSearchBar = ({
                                 <Coffee className="animate-spin mr-2 text-teal-500" />
                                 <span className="font-medium">Finding recipes...</span>
                             </div>
-                        ) : error ? (
-                            <div className="p-6 text-red-600 text-center font-medium">
-                                {error}
-                                <button
-                                    onClick={() => setSearch('')}
-                                    className="mt-2 text-green-600 hover:underline"
-                                >
-                                    Retry
-                                </button>
-                            </div>
                         ) : suggestions.length > 0 ? (
                             <ul className="divide-y divide-gray-100">
                                 {suggestions.map((suggestion, index) => (
@@ -314,20 +301,16 @@ const RecipeSearchBar = ({
                                     </li>
                                 ))}
                             </ul>
-                        ) : search.length >= minCharacters ? (
-                            <div className="p-6 text-gray-600 text-center font-medium">
-                                No recipes found matching {search}
-                                <button
-                                    onClick={clearRecentSearches}
-                                    className="mt-2 text-green-600 hover:underline"
-                                >
-                                    Clear recent searches
-                                </button>
-                            </div>
-                        ) : recentSearches.length > 0 ? (
-                            <div className="p-4">
-                                <h3 className="text-sm font-medium text-gray-400 uppercase tracking-wider mb-3 px-2">Recent Searches</h3>
-                                <ul className="space-y-2">
+                        ) : (
+                            <div className="p-6 text-center text-gray-600">No suggestions found</div>
+                        )}
+
+                        {recentSearches.length > 0 && !loading && (
+                            <div>
+                                <div className="p-4 bg-gray-50 text-gray-800 font-semibold">
+                                    Recent Searches
+                                </div>
+                                <ul className="divide-y divide-gray-100">
                                     {recentSearches.map((term, index) => (
                                         <li
                                             key={index}
