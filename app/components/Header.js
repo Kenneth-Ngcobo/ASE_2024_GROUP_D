@@ -219,6 +219,17 @@ const Header = ({ isAuthenticated, onLogout }) => {
           >
             Recipes
           </Link>
+          <Link
+            href="/Favourite"
+            className=" text-[#020123] hover:text-[#fc9d4f] font-medium py-2 flex items-center"
+          >
+            Favourites
+            {favoritesCount > 0 && (
+              <span className="ml-2 bg-[#fc9d4f] text-white text-xs rounded-full px-2 py-1">
+                {favoritesCount}
+              </span>
+            )}
+          </Link>
           <Suspense fallback={<Loading />}>
             <CategoryList
               totalRecipes={totalRecipes}
