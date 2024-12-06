@@ -8,13 +8,12 @@ import {
   FaClock,
   FaUtensils,
   FaCaretDown,
-  FaShoppingBag,
+
 } from "react-icons/fa";
 import { PiCookingPotDuotone, PiHeart } from "react-icons/pi";
 import Carousel from "./ui/Carousel";
-import { SortControl } from "./filter-sort/SortControl";
+import { SortControl } from "./SortControl";
 import { useSearchParams } from "next/navigation";
-import { useShoppingList } from '../context/shoppingListContext';
 
 /**
  * Recipes component displays a list of recipes, allows the user to favorite recipes,
@@ -32,10 +31,9 @@ const Recipes = ({ recipes: initialRecipes }) => {
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const searchParams = useSearchParams();
-  const { dispatch: dispatchShoppingList } = useShoppingList();
-  const [addedToList, setAddedToList] = useState(new Set());
 
 
+  console.log("received recipes is :", recipes)
   /**
    * Fetches the user's favorite recipes when the component mounts.
    */
@@ -146,29 +144,7 @@ const Recipes = ({ recipes: initialRecipes }) => {
     }
   };
 
-  /**
-   * Adds recipe ingredients to the shopping list.
-   * 
-   * @param {Object} ingredients The ingredients object to add to the shopping list.
-   */
-  const addIngredientsToShoppingList = (ingredients) => {
-    const ingredientsArray = Object.keys(ingredients).map((key) => ({
-      name: key,
-      quantity: ingredients[key],
-    }));
-
-    ingredientsArray.forEach((ingredient) => {
-      dispatchShoppingList({
-        type: 'ADD_ITEM',
-        payload: {
-          id: ingredient.name.toLowerCase().replace(/\s+/g, '-'),
-          name: `${ingredient.name} - ${ingredient.quantity}`,
-          purchased: false
-        },
-      });
-    });
-  };
-
+  console.log("received recipes is :", recipes)
 
 
 
@@ -278,20 +254,6 @@ const Recipes = ({ recipes: initialRecipes }) => {
                   {new Date(recipe.published).toDateString()}
                 </span>
 
-                <button
-                  className={`inline-block bg-[#f9efd2] text-sm px-2 py-1 rounded mt-2 transition-colors duration-300 ${addedToList.has(recipe._id) ? 'bg-[#fc9d4f]' : 'bg-[#f9efd2]'
-                    }`}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    addIngredientsToShoppingList(recipe.ingredients);
-                    setAddedToList(prev => new Set([...prev, recipe._id]));
-                  }}
-                >
-                  <FaShoppingBag
-                    className={`${addedToList.has(recipe._id) ? 'text-white' : 'text-[#020123]'
-                      } mr-2`}
-                  />
-                </button>
               </div>
             </Link>
           ))}

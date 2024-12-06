@@ -8,9 +8,6 @@ import Providers from "./providers";
 import { Montserrat } from "next/font/google";
 import DynamicManifest from "./components/DynamicLink";
 // import RegisterServiceWorker from "./components/RegisterServiceWorker";
-import { ShoppingListProvider } from "./context/shoppingListContext";
-
-
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -29,7 +26,6 @@ const montserrat = Montserrat({
 });
 
 export default function RootLayout({ children }) {
-
   return (
     <html lang="en" className={montserrat.className}>
       <head>
@@ -75,14 +71,12 @@ export default function RootLayout({ children }) {
           <ThemeProvider attribute="class">
             <Header /> {/* Rendering the Header component */}
             <Suspense fallback={<Loading />}>
-              <ShoppingListProvider>
-                {children} {/* Rendering the child components or pages */}
-                </ShoppingListProvider>
-            </Suspense>
-          </ThemeProvider>
-        </Providers>
+              {children} {/* Rendering the child components or pages */}
+            </Suspense >
+          </ThemeProvider >
+        </Providers >
         {/* <RegisterServiceWorker /> Register the service worker */}
-      </body>
-    </html>
+      </body >
+    </html >
   );
 }
