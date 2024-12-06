@@ -3,32 +3,24 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 
-/**
- * TagDisplay component allows the user to select and filter tags.
- * 
- * @param {Object} props - Component props
- * @param {Array} props.selectedTags - List of selected tags.
- * @param {Function} props.onTagsChange - Callback function to update selected tags.
- * 
- * @returns {JSX.Element} - The rendered component.
- */
 export default function TagDisplay({ selectedTags, onTagsChange }) {
   const [tags, setTags] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState(''); // State for search term
 
   const searchParams = useSearchParams();
 
   useEffect(() => {
+    // Initialize selected tags from URL search params if present
     const urlTags = searchParams.get('tags')?.split(',') || [];
     if (urlTags.length && urlTags !== ' ' && urlTags !== '') {
       if (urlTags.join(',') !== selectedTags.join(',')) {
-        onTagsChange(urlTags);
+        onTagsChange(urlTags); // Populate selectedTags from URL
       }
     }
-  }, [searchParams, selectedTags, onTagsChange]);
+  }, [searchParams]); // Only dependent on searchParams
 
   useEffect(() => {
     const fetchTags = async () => {
@@ -50,6 +42,7 @@ export default function TagDisplay({ selectedTags, onTagsChange }) {
   }, []);
 
   useEffect(() => {
+    // Update URL with selected tags as query parameters
     const params = new URLSearchParams(searchParams);
     params.set('tags', selectedTags.join(','));
   }, [selectedTags, searchParams]);
@@ -98,8 +91,9 @@ export default function TagDisplay({ selectedTags, onTagsChange }) {
               {filteredTags.map((tag, index) => (
                 <button
                   key={index}
-                  className={`p-2 border border-gray-300 rounded-md transition duration-200 ${selectedTags.includes(tag) ? 'bg-blue-300' : 'bg-gray-200 hover:bg-gray-300'
-                    }`}
+                  className={`p-2 border border-gray-300 rounded-md transition duration-200 ${
+                    selectedTags.includes(tag) ? 'bg-blue-300' : 'bg-gray-200 hover:bg-gray-300'
+                  }`}
                   onClick={() => handleTagSelect(tag)}
                 >
                   {tag}

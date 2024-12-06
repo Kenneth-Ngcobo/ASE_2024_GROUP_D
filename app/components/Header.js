@@ -5,11 +5,11 @@ import { useState, useEffect, Suspense } from 'react';
 import { FaUser, FaShoppingBag, FaHeart, FaSearch } from 'react-icons/fa';
 import { useRouter } from 'next/navigation';
 import CategoryList from './ui/CategoryList.js';
-import { FilterButton } from './FilterButton.js';
+import { FilterButton } from '../components/FilterButton.js'
 import ThemeButton from './ui/ThemeButton';
 import RecipeSearchBar from './ui/searchBar.js';
 import UserModal from './UserModal.js';
-import { FilterModal } from './FilterButton.js';
+import { FilterModal } from '../components/FilterButton.js'
 import Loading from '../loading.js';
 
 /**
@@ -99,7 +99,7 @@ const Header = ({ isAuthenticated, onLogout }) => {
           </Link>
 
           <div className="hidden md:flex items-center space-x-8">
-            <button>
+            <button onClick={toggleSearch}>
               <FaSearch className="w-5 h-5" />
             </button>
 
@@ -181,7 +181,7 @@ const Header = ({ isAuthenticated, onLogout }) => {
       {/* Search Bar Conditionally Rendered */}
       {isSearchOpen && (
         <div className="absolute top-full left-0 w-full z-50">
-          <RecipeSearchBar onClose={toggleSearch} />
+          <RecipeSearchBar />
         </div>
       )}
     </header>
