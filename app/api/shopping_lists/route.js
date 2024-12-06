@@ -19,8 +19,10 @@ async function handleGet() {
 async function handlePost(req) {
   try {
     const newItem = await req.json();
+    console.log('Received new item:', newItem); // Log the received item
 
     if (!newItem.name || typeof newItem.quantity !== 'number') {
+      console.error('Invalid item data:', newItem); // Log invalid data
       return NextResponse.json({ success: false, error: 'Invalid item data' }, { status: 400 });
     }
 
