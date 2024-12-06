@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useEffect } from 'react';
@@ -6,24 +7,33 @@ import Image from 'next/image';
 import {
   FaClock,
   FaUtensils,
-  FaShoppingBag,
+
 } from "react-icons/fa";
 import { PiCookingPotDuotone, PiHeart } from "react-icons/pi";
-import Carousel from "./Carousel";
+import Carousel from "./ui/Carousel";
 import { SortControl } from "./SortControl";
 import { useSearchParams } from "next/navigation";
-import { useShoppingList } from '../context/shoppingListContext';
 
+/**
+ * Recipes component displays a list of recipes, allows the user to favorite recipes,
+ * and adds ingredients to the shopping list.
+ * 
+ * @param {Object} props The component's props.
+ * @param {Array} props.recipes The initial list of recipes.
+ * @returns {JSX.Element} The component JSX element.
+ */
 const Recipes = ({ recipes: initialRecipes }) => {
   const [recipes, setRecipes] = useState(initialRecipes);
   const [favoritedRecipes, setFavoritedRecipes] = useState(new Set());
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const searchParams = useSearchParams();
-  const { dispatch: dispatchShoppingList } = useShoppingList();
-  const [addedToList, setAddedToList] = useState(new Set());
 
-  // Fetch favorites when component mounts
+
+  console.log("received recipes is :", recipes)
+  /**
+   * Fetches the user's favorite recipes when the component mounts.
+   */
   useEffect(() => {
     const fetchFavorites = async () => {
       const loggedInEmail = localStorage.getItem('loggedInUserEmail');
@@ -59,6 +69,11 @@ const Recipes = ({ recipes: initialRecipes }) => {
     setRecipes(initialRecipes);
   }, [initialRecipes, searchParams]);
 
+  /**
+   * Toggles a recipe's favorite status and updates the favorites list.
+   * 
+   * @param {string} recipeId The ID of the recipe to toggle favorite status for.
+   */
   const toggleFavorite = async (recipeId) => {
     const loggedInEmail = localStorage.getItem('loggedInUserEmail');
     if (!loggedInEmail) {
@@ -115,26 +130,9 @@ const Recipes = ({ recipes: initialRecipes }) => {
     }
   };
 
-  const addIngredientsToShoppingList = (ingredients, recipeId) => {
-    const ingredientsArray = Object.keys(ingredients).map((key) => ({
-      name: key,
-      quantity: ingredients[key], 
-    }));
-    
-    ingredientsArray.forEach((ingredient) => {
-      dispatchShoppingList({
-        type: 'ADD_ITEM',
-        payload: {
-          id: ingredient.name.toLowerCase().replace(/\s+/g, '-'),
-          name: `${ingredient.name} - ${ingredient.quantity}`,
-          purchased: false
-        },
-      });
-    });
+  console.log("received recipes is :", recipes)
 
-    // Update addedToList state
-    setAddedToList(prev => new Set([...prev, recipeId]));
-  };
+
 
   return (
     <>
@@ -147,6 +145,38 @@ const Recipes = ({ recipes: initialRecipes }) => {
         )}
 
         <SortControl />
+
+        <div className="mb-4 relative">
+          <button
+            onClick={() => setDropdownVisible(!dropdownVisible)}
+            className="flex items-center text-gray-800 font-roboto"
+          >
+            <PiHeart className="mr-2" size={20} />
+            <span>Favorites ({favoritedRecipes.size})</span>
+            <FaCaretDown
+              className={`ml-2 ${dropdownVisible ? "transform rotate-180" : ""
+                }`}
+            />
+          </button>
+
+          {dropdownVisible && (
+            <div className="mt-2 absolute bg-white border border-gray-200 rounded-lg shadow-lg w-60 z-10">
+              {favoriteDetails.length === 0 ? (
+                <p className="p-4 text-gray-500">No favorites yet</p>
+              ) : (
+                <ul className="max-h-60 overflow-y-auto p-2">
+                  {favoriteDetails.map((recipe) => (
+                    <li key={recipe._id} className="p-2 hover:bg-gray-100">
+                      <Link href={`/Recipe/${recipe._id}`} className="block text-sm text-gray-800">
+                        {recipe.title}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          )}
+        </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {recipes.map((recipe) => (
@@ -171,8 +201,8 @@ const Recipes = ({ recipes: initialRecipes }) => {
                 </h2>
                 <button
                   className={`ml-2 ${favoritedRecipes.has(recipe._id)
-                      ? "text-red-500"
-                      : "text-gray-400"
+                    ? "text-red-500"
+                    : "text-gray-400"
                     } hover:text-red-500 transition-colors duration-200`}
                   onClick={(e) => {
                     e.preventDefault();
@@ -209,27 +239,14 @@ const Recipes = ({ recipes: initialRecipes }) => {
                 <span className="inline-block bg-[#f9efd2] text-[#020123]  dark:bg-[#1c1d02] dark:text-[#dddcfe] text-sm px-2 py-1 rounded">
                   {new Date(recipe.published).toDateString()}
                 </span>
-                
-                <button
-                  className={`inline-block bg-[#f9efd2] text-sm px-2 py-1 rounded mt-2 transition-colors duration-300 ${
-                    addedToList.has(recipe._id) ? 'bg-[#fc9d4f]' : 'bg-[#f9efd2]'
-                  }`}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    addIngredientsToShoppingList(recipe.ingredients, recipe._id);
-                  }}
-                >
-                  <FaShoppingBag 
-                    className={`${
-                      addedToList.has(recipe._id) ? 'text-white' : 'text-[#020123]'
-                    } mr-2`} 
-                  />
-                </button>
+
               </div>
             </Link>
           ))}
         </div>
       </div>
+
+
     </>
   );
 };

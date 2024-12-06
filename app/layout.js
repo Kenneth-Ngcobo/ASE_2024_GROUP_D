@@ -75,14 +75,12 @@ export default function RootLayout({ children }) {
           <ThemeProvider attribute="class">
             <Header /> {/* Rendering the Header component */}
             <Suspense fallback={<Loading />}>
-              <ShoppingListProvider>
-                {children} {/* Rendering the child components or pages */}
-                </ShoppingListProvider>
-            </Suspense>
-          </ThemeProvider>
-        </Providers>
-        <RegisterServiceWorker /> {/* Register the service worker */}
-      </body>
-    </html>
+              {children} {/* Rendering the child components or pages */}
+            </Suspense >
+          </ThemeProvider >
+        </Providers >
+        {/* <RegisterServiceWorker /> Register the service worker */}
+      </body >
+    </html >
   );
 }

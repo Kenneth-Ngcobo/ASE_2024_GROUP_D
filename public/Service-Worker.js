@@ -1,24 +1,24 @@
-const CACHE_NAME = 'staticCache-v2';
+/*const CACHE_NAME = 'staticCache-v2';
 const urlsToCache = [
     // Add more static assets to cache here
 ];
 
-self.addEventListener('install', event => {
-    self.skipWaiting();  // Activate the service worker immediately after install
-    event.waitUntil(
-        caches.open(CACHE_NAME)
-            .then(cache => {
-                console.log('Opened cache');
-                return Promise.all(
-                    urlsToCache.map(url => {
-                        return cache.add(url).catch(error => {
-                            console.error('Failed to cache:', url, error);
-                        });
-                    })
-                );
-            })
-    );
-});
+//  self.addEventListener('install', event => {
+//     self.skipWaiting();  // Activate the service worker immediately after install
+//     event.waitUntil(
+//         caches.open(CACHE_NAME)
+//             .then(cache => {
+//                 console.log('Opened cache');
+//                 return Promise.all(
+//                     urlsToCache.map(url => {
+//                         return cache.add(url).catch(error => {
+//                             console.error('Failed to cache:', url, error);
+//                         });
+//                     })
+//                 );
+//             })
+//     );
+// });
 
 self.addEventListener('fetch', event => {
     console.log('Fetching:', event.request.url);
@@ -56,4 +56,4 @@ self.addEventListener('activate', event => {
             );
         }).then(() => self.clients.claim())  // Take control of all clients immediately
     );
-});
+});*/
