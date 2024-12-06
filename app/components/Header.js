@@ -2,7 +2,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useState, useEffect, Suspense } from "react";
-import { FaUser, FaCaretDown } from "react-icons/fa";
+// import { FaUser, FaCaretDown } from "react-icons/fa";
 import { PiHeart } from "react-icons/pi";
 import { useRouter } from "next/navigation";
 import CategoryList from "./ui/CategoryList.js";
