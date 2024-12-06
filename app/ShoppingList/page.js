@@ -19,7 +19,7 @@ const ShoppingListPage = () => {
   useEffect(() => {
     const fetchShoppingList = async () => {
       try {
-        const response = await fetch('/api/shopping_lists'); 
+        const response = await fetch('/api/shopping_lists');
         const data = await response.json();
         if (data.success) {
           setShoppingList(data.data);
@@ -48,7 +48,7 @@ const ShoppingListPage = () => {
    */
   const deleteItem = async (id) => {
     try {
-      const response = await fetch('/api/shopping_lists', { 
+      const response = await fetch('/api/shopping_lists', {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -72,7 +72,7 @@ const ShoppingListPage = () => {
    */
   const clearList = async () => {
     try {
-      const response = await fetch('/api/shopping_lists', { 
+      const response = await fetch('/api/shopping_lists', {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -98,8 +98,8 @@ const ShoppingListPage = () => {
    */
   const markAsPurchased = async (id) => {
     try {
-      const response = await fetch('/api/shopping_lists/purchased', { 
-        method: 'POST',
+      const response = await fetch('/api/shopping_lists/purchased', {
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -127,8 +127,8 @@ const ShoppingListPage = () => {
    */
   const updateQuantity = async (id, quantity) => {
     try {
-      const response = await fetch('/api/shopping_lists/quantity', { 
-        method: 'POST',
+      const response = await fetch('/api/shopping_lists/quantity', {
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
