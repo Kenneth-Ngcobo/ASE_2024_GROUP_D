@@ -8,44 +8,35 @@ import {
   FaUtensils,
   FaCaretDown,
   FaStar,
-  FaStarHalfAlt,
-  FaRegStar
+  FaRegStar,
+  FaStarHalfAlt
 } from "react-icons/fa";
 import { PiCookingPotDuotone, PiHeart } from "react-icons/pi";
 import Carousel from "./ui/Carousel";
 import { SortControl } from "./SortControl";
 import { useSearchParams } from "next/navigation";
 
-// Star Rating Component
-const StarRating = ({ rating, reviewCount }) => {
-  const renderStars = () => {
-    const stars = [];
-    const fullStars = Math.floor(rating);
-    const hasHalfStar = rating % 1 >= 0.5;
-
-    // Full stars
-    for (let i = 0; i < fullStars; i++) {
-      stars.push(<FaStar key={`full-${i}`} className="text-yellow-500" />);
-    }
-
-    // Half star
-    if (hasHalfStar) {
-      stars.push(<FaStarHalfAlt key="half" className="text-yellow-500" />);
-    }
-
-    // Empty stars to fill up to 5
-    const emptyStarsCount = 5 - stars.length;
-    for (let i = 0; i < emptyStarsCount; i++) {
-      stars.push(<FaRegStar key={`empty-${i}`} className="text-gray-300" />);
-    }
-
-    return stars;
-  };
+/**
+ * Renders star rating based on the average rating
+ * 
+ * @param {number} rating Average rating (0-5)
+ * @param {number} size Size of the star icons
+ * @returns {JSX.Element} Star rating display
+ */
+const StarRating = ({ rating, size = 16 }) => {
+  const fullStars = Math.floor(rating);
+  const halfStar = rating % 1 >= 0.5 ? 1 : 0;
+  const emptyStars = 5 - fullStars - halfStar;
 
   return (
     <div className="flex items-center">
-      <div className="flex mr-2">{renderStars()}</div>
-      <span className="text-sm text-gray-600">({reviewCount || 0})</span>
+      {[...Array(fullStars)].map((_, i) => (
+        <FaStar key={`full-${i}`} className="text-yellow-500" size={size} />
+      ))}
+      {halfStar > 0 && <FaStarHalfAlt className="text-yellow-500" size={size} />}
+      {[...Array(emptyStars)].map((_, i) => (
+        <FaRegStar key={`empty-${i}`} className="text-yellow-500" size={size} />
+      ))}
     </div>
   );
 };
@@ -67,6 +58,7 @@ const Recipes = ({ recipes: initialRecipes }) => {
   const [isLoading, setIsLoading] = useState(true);
   const searchParams = useSearchParams();
 
+  console.log("received recipes is :", recipes)
   /**
    * Fetches the user's favorite recipes when the component mounts.
    */
@@ -232,12 +224,7 @@ const Recipes = ({ recipes: initialRecipes }) => {
                   <Carousel images={recipe.images} />
                 ) : (
                   <div className="relative w-full h-full">
-                    <Image 
-                      src={recipe.images[0]} 
-                      alt={recipe.title} 
-                      fill 
-                      className="object-cover" 
-                    />
+                    <Image src={recipe.images[0]} alt={recipe.title} fill className="object-cover" />
                   </div>
                 )}
               </div>
@@ -261,11 +248,12 @@ const Recipes = ({ recipes: initialRecipes }) => {
               </div>
 
               <div className="space-y-2">
-                {/* Star Rating Component */}
-                <StarRating 
-                  rating={recipe.averageRating || 0} 
-                  reviewCount={recipe.reviewCount || 0} 
-                />
+                <div className="flex items-center space-x-2">
+                  <StarRating rating={recipe.averageRating || 0} />
+                  <span className="text-sm text-gray-600">
+                    ({recipe.reviewCount || 0})
+                  </span>
+                </div>
 
                 <p className="text-sm text-gray-600 flex items-center">
                   <FaClock className="text-[#020123] mr-2" />
@@ -280,17 +268,16 @@ const Recipes = ({ recipes: initialRecipes }) => {
                   Serves {recipe.servings}
                 </p>
               </div>
-
               <div className="flex flex-wrap gap-2 mt-3">
                 {recipe.category && (
                   <span className="inline-block bg-[#f9efd2] dark:bg-[#1c1d02] dark:text-[#dddcfe] text-[#020123] text-sm px-2 py-1 rounded">
                     {recipe.category}
                   </span>
                 )}
-                <span className="inline-block bg-[#f9efd2] text-[#020123] dark:bg-[#1c1d02] dark:text-[#dddcfe] text-sm px-2 py-1 rounded">
+                <span className="inline-block bg-[#f9efd2] text-[#020123]  dark:bg-[#1c1d02] dark:text-[#dddcfe] text-sm px-2 py-1 rounded">
                   {recipe.instructions.length} steps
                 </span>
-                <span className="inline-block bg-[#f9efd2] text-[#020123] dark:bg-[#1c1d02] dark:text-[#dddcfe] text-sm px-2 py-1 rounded">
+                <span className="inline-block bg-[#f9efd2] text-[#020123]  dark:bg-[#1c1d02] dark:text-[#dddcfe] text-sm px-2 py-1 rounded">
                   {new Date(recipe.published).toDateString()}
                 </span>
               </div>
