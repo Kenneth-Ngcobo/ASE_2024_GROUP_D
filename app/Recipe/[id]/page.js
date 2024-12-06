@@ -10,6 +10,9 @@ import AllergensSection from '../../components/AllergensSection';
 import VoiceAssistant from "../../components/VoiceAssistant";
 import RecipeIngredientsSelector from '../../components/RecipeIngredientsSelector'
 import Link from 'next/link';
+import { DownloadProvider, useDownload } from "../../context/DownloadContext";
+import RegisterServiceWorker from "../../components/RegisterServiceWorker";
+import DownloadButton from "../../components/ui/DownLoadButton";
 
 // Generate metadata for the recipe page dynamically
 export async function generateMetadata({ params }) {
@@ -57,6 +60,7 @@ export default async function RecipePage({ params }) {
 
     return (
         <div className="min-h-screen bg-[#fcfde2] dark:bg-[#1c1d02] py-8">
+            <DownloadProvider>
             <Suspense fallback={<Loading />}>
                 <div className="container mx-auto px-4 max-w-5xl">
                     {/* Back Button */}
@@ -174,8 +178,10 @@ export default async function RecipePage({ params }) {
                             </p>
                         </Link>
                     </div >
+                    <DownloadButton recipe={recipe} />
                 </div >
             </Suspense >
+            </DownloadProvider>
         </div >
 
     );

@@ -301,6 +301,7 @@ const RecipeSearchBar = ({
                                     </li>
                                 ))}
                             </ul>
+
                         ) : (
                             <div className="p-6 text-center text-gray-600">No suggestions found</div>
                         )}
