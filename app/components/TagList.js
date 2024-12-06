@@ -1,17 +1,8 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 
-/**
- * TagDisplay component allows the user to select and filter tags.
- * 
- * @param {Object} props - Component props
- * @param {Array} props.selectedTags - List of selected tags.
- * @param {Function} props.onTagsChange - Callback function to update selected tags.
- * 
- * @returns {JSX.Element} - The rendered component.
- */
 export default function TagDisplay({ selectedTags, onTagsChange }) {
   const [tags, setTags] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -19,15 +10,18 @@ export default function TagDisplay({ selectedTags, onTagsChange }) {
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState(''); // State for search term
 
-  const router = useRouter();
   const searchParams = useSearchParams();
 
   useEffect(() => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set('tags', selectedTags.join(','));
-    router.push(`?${params.toString()}`);
-  }, [selectedTags, searchParams]);
-  
+    // Initialize selected tags from URL search params if present
+    const urlTags = searchParams.get('tags')?.split(',') || [];
+    if (urlTags.length && urlTags !== ' ' && urlTags !== '') {
+      if (urlTags.join(',') !== selectedTags.join(',')) {
+        onTagsChange(urlTags); // Populate selectedTags from URL
+      }
+    }
+  }, [searchParams]); // Only dependent on searchParams
+
   useEffect(() => {
     const fetchTags = async () => {
       try {
@@ -53,8 +47,8 @@ export default function TagDisplay({ selectedTags, onTagsChange }) {
     params.set('tags', selectedTags.join(','));
   }, [selectedTags, searchParams]);
 
-  if (!loading && tags.length === 0) {
-    return <div className="text-center py-4">No tags found.</div>;
+  if (loading) {
+    return <div className="text-center py-4">Loading tags...</div>;
   }
 
   if (error) {
@@ -67,15 +61,12 @@ export default function TagDisplay({ selectedTags, onTagsChange }) {
     } else {
       onTagsChange(selectedTags.filter((t) => t !== tag));
     }
+    setIsOpen(false);
   };
 
   const filteredTags = tags.filter(tag =>
-    typeof tag === 'string' && tag.toLowerCase().includes(searchTerm.toLowerCase())
+    tag.toLowerCase().includes(searchTerm.toLowerCase())
   );
-
-  const clearSelectedTags = () => {
-    onTagsChange([]);
-  };
 
   return (
     <div className="p-6 bg-white dark:bg-gray-950 shadow-md rounded-lg">
@@ -100,13 +91,13 @@ export default function TagDisplay({ selectedTags, onTagsChange }) {
               {filteredTags.map((tag, index) => (
                 <button
                   key={index}
-                  className={`p-2 border border-gray-300 rounded-md transition duration-200 ${selectedTags.includes(tag) ? 'bg-blue-300' : 'bg-gray-200 hover:bg-gray-300'
-                    }`}
+                  className={`p-2 border border-gray-300 rounded-md transition duration-200 ${
+                    selectedTags.includes(tag) ? 'bg-blue-300' : 'bg-gray-200 hover:bg-gray-300'
+                  }`}
                   onClick={() => handleTagSelect(tag)}
                 >
                   {tag}
                 </button>
-                
               ))}
             </div>
           </div>
@@ -124,12 +115,6 @@ export default function TagDisplay({ selectedTags, onTagsChange }) {
               {tag}
             </span>
           ))}
-          <button
-  onClick={clearSelectedTags}
-  className="mt-4 bg-red-500 text-white px-4 py-2 rounded"
->
-  Clear All
-</button>
         </div>
       </div>
     </div>

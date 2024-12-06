@@ -147,7 +147,25 @@ export const FilterModal = ({ onClose }) => {
                     <div className="flex flex-col">
                         <label className="text-sm font-medium text-gray-700">Ingredients</label>
                         <TagDisplay selectedTags={selectedTags} onTagsChange={handleTagsChange} /> {/* Pass selected tags and function */}
+                        <div
+                    onClick={() => {
+                 
+                        setSelectedTags([]); // Clear selected tags
+                    }}
+                    className="text-red-600 text-sm cursor-pointer mb-4 hover:underline"
+                >
+                    Clear Tags
+                </div>
                         <IngDisplay selectedIngs={selectedIngs} onIngsChange={handleIngsChange} />
+                        <div
+                    onClick={() => {
+                   
+                        setSelectedIngs([]); // Clear selected tags
+                    }}
+                    className="text-red-600 text-sm cursor-pointer mb-4 hover:underline"
+                >
+                    Clear Ingredients 
+                </div>
                         <StepsDropdown selectedSteps={steps} onStepsChange={handleStepsChange} />
                     </div>
 
@@ -176,7 +194,9 @@ export const FilterModal = ({ onClose }) => {
                     onClick={() => {
                         setCookTime(0);
                         setSelectedTags([]); // Clear selected tags
-                    }}
+                   
+                        setSelectedIngs([]);}} // Clear selected tags
+                 
                     className="text-red-600 text-sm cursor-pointer mb-4 hover:underline"
                 >
                     Clear All Filters
