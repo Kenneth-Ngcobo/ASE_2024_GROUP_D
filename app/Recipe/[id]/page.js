@@ -13,47 +13,47 @@ import Link from 'next/link';
 
 // Generate metadata for the recipe page dynamically
 export async function generateMetadata({ params }) {
-  const { id } = params;
-  const recipe = await fetchRecipeById(id);
+    const { id } = params;
+    const recipe = await fetchRecipeById(id);
 
-  if (!recipe) {
+    if (!recipe) {
+        return {
+            title: "Recipe not found",
+            description: "Error occurred while fetching the recipe.",
+        };
+    }
+
     return {
-      title: "Recipe not found",
-      description: "Error occurred while fetching the recipe.",
+        title: recipe.title || "Untitled Recipe",
+        description: recipe.description || "No description available.",
+        openGraph: {
+            title: recipe.title || "Untitled Recipe",
+            description: recipe.description || "No description available.",
+            images: recipe.images?.[0] || "/0.png",
+            type: "article",
+        },
     };
-  }
-
-  return {
-    title: recipe.title || "Untitled Recipe",
-    description: recipe.description || "No description available.",
-    openGraph: {
-      title: recipe.title || "Untitled Recipe",
-      description: recipe.description || "No description available.",
-      images: recipe.images?.[0] || "/0.png",
-      type: "article",
-    },
-  };
 }
 
 // Main Recipe Page Component
 export default async function RecipePage({ params }) {
-  const { id } = params;
-  let recipe;
-  let load = true;
-  let error = null;
+    const { id } = params;
+    let recipe;
+    let load = true;
+    let error = null;
 
-  try {
-    recipe = await fetchRecipeById(id);
-  } catch (error) {
-    console.error("Error fetching recipe:", error);
-    error = "Failed to load recipe data.";
-  } finally {
-    load = false;
-  }
+    try {
+        recipe = await fetchRecipeById(id);
+    } catch (error) {
+        console.error("Error fetching recipe:", error);
+        error = "Failed to load recipe data.";
+    } finally {
+        load = false;
+    }
 
-  if (error) {
-    throw error;
-  }
+    if (error) {
+        throw error;
+    }
 
     return (
         <div className="min-h-screen bg-[#fcfde2] dark:bg-[#1c1d02] py-8">
@@ -125,32 +125,32 @@ export default async function RecipePage({ params }) {
 
                         {/* Ingredients and Instructions Section*/}
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-white dark:bg-gray-950 rounded-2xl shadow-xl p-6">
-                         <div className="space-y-4">
-                                    <h2 className="text-xl font-bold text-[#fc9d4f] dark:text-[#b05103]">Ingredients</h2>
-                                    <RecipeIngredientsSelector ingredients={recipe.ingredients || {}} />
-                                </div>
-                                <div className="space-y-4">
-                                    <h2 className="text-xl font-bold text-[#fc9d4f] dark:text-[#b05103]">Instructions</h2>
-                                    <ol className="list-decimal list-inside">
-                                        {Object.entries(recipe.instructions || {}).map(([key, value], index) => (
-                                            <li key={index} className="text-[#020123] dark:text-[#dddcfe]">
-                                                {key}: {value}
-                                            </li>
-                                        ))}
-                                    </ol>
-                                    <VoiceAssistant instructions={recipe.instructions || []} />
-                                </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-white dark:bg-gray-950 rounded-2xl shadow-xl p-6">
+                            <div className="space-y-4">
+                                <h2 className="text-xl font-bold text-[#fc9d4f] dark:text-[#b05103]">Ingredients</h2>
+                                <RecipeIngredientsSelector ingredients={recipe.ingredients || {}} />
                             </div>
+                            <div className="space-y-4">
+                                <h2 className="text-xl font-bold text-[#fc9d4f] dark:text-[#b05103]">Instructions</h2>
+                                <ol className="list-decimal list-inside">
+                                    {Object.entries(recipe.instructions || {}).map(([key, value], index) => (
+                                        <li key={index} className="text-[#020123] dark:text-[#dddcfe]">
+                                            {key}: {value}
+                                        </li>
+                                    ))}
+                                </ol>
+                                <VoiceAssistant instructions={recipe.instructions || []} />
+                            </div>
+                        </div>
 
                         {/* Reviews Section */}
                         <div className="space-y-4">
                             <h2 className="text-xl font-bold text-[#fc9d4f] dark:text-[#b05103]">Reviews</h2>
                             <ReviewsSection recipeId={id} />
-                        </div>
+                        </div >
 
                         {/* Footer Information */}
-                        <div className="mt-8 bg-white dark:bg-[#1c1d02] p-6 rounded-xl shadow-xl">
+                        < div className="mt-8 bg-white dark:bg-[#1c1d02] p-6 rounded-xl shadow-xl" >
                             <p className="text-sm text-[#020123] dark:text-[#dddcfe]">
                                 <strong>Published:</strong> {new Date(recipe.published).toDateString()}
                             </p>
@@ -166,19 +166,19 @@ export default async function RecipePage({ params }) {
                             <p className="text-sm text-[#020123] dark:text-[#dddcfe]">
                                 <strong>Category:</strong> {recipe.category}
                             </p>
-                        </div>
+                        </div >
 
                         <Link href="/shopping_lists">
                             <p className="mt-4 px-4 py-2 bg-[#fc9d4f] dark:bg-[#b05103] text-white rounded-xl">
                                 View Shopping List
                             </p>
                         </Link>
-                    </div>
-                </div>
-            </Suspense>
-        </div>
-     
-  );
+                    </div >
+                </div >
+            </Suspense >
+        </div >
+
+    );
 }
 
 

@@ -82,7 +82,7 @@ const Header = ({ isAuthenticated, onLogout }) => {
             <Suspense fallback={<Loading />}>
               <CategoryList
                 totalRecipes={totalRecipes}
-                onCategoryChange={() => {}}
+                onCategoryChange={() => { }}
               />
               <FilterButton onClick={toggleFilterModal} />
             </Suspense>
@@ -99,7 +99,7 @@ const Header = ({ isAuthenticated, onLogout }) => {
           </Link>
 
           <div className="hidden md:flex items-center space-x-8">
-           <button>
+            <button>
               <FaSearch className="w-5 h-5" />
             </button>
 
@@ -152,9 +152,8 @@ const Header = ({ isAuthenticated, onLogout }) => {
       </div>
 
       <div
-        className={`md:hidden bg-white border-t transition-all duration-300 ${
-          isDropdownOpen ? "max-h-screen py-4" : "max-h-0 overflow-hidden"
-        }`}
+        className={`md:hidden bg-white border-t transition-all duration-300 ${isDropdownOpen ? "max-h-screen py-4" : "max-h-0 overflow-hidden"
+          }`}
       >
         <div className="container mx-auto px-4 space-y-4">
           <Link
@@ -166,7 +165,7 @@ const Header = ({ isAuthenticated, onLogout }) => {
           <Suspense fallback={<Loading />}>
             <CategoryList
               totalRecipes={totalRecipes}
-              onCategoryChange={() => {}}
+              onCategoryChange={() => { }}
             />
             <div className="py-2">
               <FilterButton onClick={() => setIsFilterOpen(!isFilterOpen)} />

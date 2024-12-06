@@ -1,10 +1,10 @@
 "use client";
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import TagDisplay from "../TagList";
-import { fetchRecipes } from "../../api";
-import IngDisplay from "../IngredientList";
-import StepsDropdown from "../StepsDropdown";
+import TagDisplay from "./TagList";
+import { fetchRecipes } from "../api";
+import IngDisplay from "./IngredientList";
+import StepsDropdown from "./StepsDropdown";
 
 /**
  * Modal component for filtering recipes with various search criteria.
