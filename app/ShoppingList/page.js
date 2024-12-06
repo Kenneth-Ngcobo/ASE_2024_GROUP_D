@@ -12,8 +12,8 @@ import { FaWhatsapp } from 'react-icons/fa';
 const ShoppingListPage = () => {
   const [shoppingList, setShoppingList] = useState([]);
   const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-    const [notification, setNotification] = useState(null);
+  const [error, setError] = useState(null);
+  const [notification, setNotification] = useState(null);
 
   // Fetch the shopping list items from the API when the component mounts
   useEffect(() => {
@@ -35,12 +35,11 @@ const ShoppingListPage = () => {
 
     fetchShoppingList();
   }, []);
-    
+
   const showNotification = (message) => {
     setNotification(message);
     setTimeout(() => setNotification(null), 3000); // Clear message after 3 seconds
   };
-    
 
   /**
    * Deletes an item from the shopping list.
@@ -100,11 +99,11 @@ const ShoppingListPage = () => {
   const markAsPurchased = async (id) => {
     try {
       const response = await fetch('/api/shopping_lists/purchased', { 
-        method: 'PATCH',
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ id }),
+        body: JSON.stringify({ id, action: 'togglePurchased' }),
       });
 
       const data = await response.json();
@@ -129,11 +128,11 @@ const ShoppingListPage = () => {
   const updateQuantity = async (id, quantity) => {
     try {
       const response = await fetch('/api/shopping_lists/quantity', { 
-        method: 'PATCH',
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ id, quantity }),
+        body: JSON.stringify({ id, quantity, action: 'updateQuantity' }),
       });
 
       const data = await response.json();
@@ -176,8 +175,8 @@ const ShoppingListPage = () => {
   }
 
   return (
-      <div className="container mx-auto py-6">
-               {notification && (
+    <div className="container mx-auto py-6">
+      {notification && (
         <div className="mb-4 bg-green-200 text-green-800 p-2 rounded">
           {notification}
         </div>
@@ -219,7 +218,7 @@ const ShoppingListPage = () => {
         <div className="flex space-x-4 mt-4">
           <button
             onClick={clearList}
-            className="bg-[#ff4f1a] dark:bg-[#e63600] text-[#020123] dark:text-[ #dddcfe] px-4 py-2 rounded"
+            className="bg-[#ff4f1a] dark:bg-[#e63600] text-[#020123] dark:text-[#dddcfe] px-4 py-2 rounded"
           >
             Clear List
           </button>
@@ -228,7 +227,7 @@ const ShoppingListPage = () => {
             className="bg-green-500 text-white px-4 py-2 rounded flex items-center"
           >
             <FaWhatsapp size={20} className="mr-2" />
-           
+            Share on WhatsApp
           </button>
         </div>
       )}
@@ -237,5 +236,6 @@ const ShoppingListPage = () => {
 };
 
 export default ShoppingListPage;
+
 
 
