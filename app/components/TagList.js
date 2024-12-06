@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 /**
  * TagDisplay component allows the user to select and filter tags.
@@ -17,19 +17,17 @@ export default function TagDisplay({ selectedTags, onTagsChange }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState(''); // State for search term
 
+  const router = useRouter();
   const searchParams = useSearchParams();
 
   useEffect(() => {
-    const urlTags = searchParams.get('tags')?.split(',') || [];
-    if (urlTags.length && urlTags !== ' ' && urlTags !== '') {
-      if (urlTags.join(',') !== selectedTags.join(',')) {
-        onTagsChange(urlTags);
-      }
-    }
-  }, [searchParams]);
-
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('tags', selectedTags.join(','));
+    router.push(`?${params.toString()}`);
+  }, [selectedTags, searchParams]);
+  
   useEffect(() => {
     const fetchTags = async () => {
       try {
@@ -50,12 +48,13 @@ export default function TagDisplay({ selectedTags, onTagsChange }) {
   }, []);
 
   useEffect(() => {
+    // Update URL with selected tags as query parameters
     const params = new URLSearchParams(searchParams);
     params.set('tags', selectedTags.join(','));
   }, [selectedTags, searchParams]);
 
-  if (loading) {
-    return <div className="text-center py-4">Loading tags...</div>;
+  if (!loading && tags.length === 0) {
+    return <div className="text-center py-4">No tags found.</div>;
   }
 
   if (error) {
@@ -68,12 +67,15 @@ export default function TagDisplay({ selectedTags, onTagsChange }) {
     } else {
       onTagsChange(selectedTags.filter((t) => t !== tag));
     }
-    setIsOpen(false);
   };
 
   const filteredTags = tags.filter(tag =>
-    tag.toLowerCase().includes(searchTerm.toLowerCase())
+    typeof tag === 'string' && tag.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const clearSelectedTags = () => {
+    onTagsChange([]);
+  };
 
   return (
     <div className="p-6 bg-white dark:bg-gray-950 shadow-md rounded-lg">
@@ -104,6 +106,7 @@ export default function TagDisplay({ selectedTags, onTagsChange }) {
                 >
                   {tag}
                 </button>
+                
               ))}
             </div>
           </div>
@@ -121,6 +124,12 @@ export default function TagDisplay({ selectedTags, onTagsChange }) {
               {tag}
             </span>
           ))}
+          <button
+  onClick={clearSelectedTags}
+  className="mt-4 bg-red-500 text-white px-4 py-2 rounded"
+>
+  Clear All
+</button>
         </div>
       </div>
     </div>
