@@ -15,17 +15,9 @@ export default function EditDetails() {
   const [isSaving, setIsSaving] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [error, setError] = useState(null);
-  const [authState, setAuthState] = useState({
-    isLoading: false,
-    loggedInUser: null,
-    isLoggingOut: false,
-    isConfirmingLogout: false,
-  });
-
 
   const router = useRouter();
 
-  // Fetch user details from localStorage or API
   useEffect(() => {
     const loggedInUserEmail = localStorage.getItem("loggedInUserEmail");
 
@@ -46,7 +38,6 @@ export default function EditDetails() {
     }
   }, []);
 
-  // Fetch user data from API
   const fetchUserData = async (email) => {
     try {
       const response = await fetch(`/api/auth/user/${email}/profile`);
@@ -65,7 +56,6 @@ export default function EditDetails() {
     }
   };
 
-  // Handle user details update
   const handleUpdate = async (e) => {
     e.preventDefault();
     setIsSaving(true);
@@ -134,8 +124,9 @@ export default function EditDetails() {
   }
 
   return (
-    <div className="min-h-screen flex">
-      <div className="w-1/4 bg-gray-100 p-8">
+    <div className="min-h-screen flex flex-col md:flex-row">
+      {/* Sidebar */}
+      <div className="w-full md:w-1/4 bg-gray-100 p-8">
         <button
           onClick={() => router.push("/")}
           className="w-full bg-gray-200 text-gray-700 py-2 px-4 rounded-lg mb-4 text-center"
@@ -154,7 +145,8 @@ export default function EditDetails() {
         </div>
       </div>
 
-      <div className="w-3/4 p-8">
+      {/* Main Content */}
+      <div className="w-full md:w-3/4 p-8">
         <h1 className="text-2xl font-bold text-[#fc9d4f] mb-6">ABOUT YOU</h1>
         {showSuccessMessage && (
           <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">

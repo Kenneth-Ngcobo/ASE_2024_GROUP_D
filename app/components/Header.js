@@ -11,7 +11,7 @@ import RecipeSearchBar from "./ui/searchBar.js";
 import UserModal from "./UserModal.js";
 import { FilterModal } from "./filter-sort/FilterButton.js";
 import Loading from "../loading.js";
-import { FaUser, FaSearch, FaHeart } from "react-icons/fa";
+import { FaUser, FaSearch, FaHeart, FaList, FaFilter } from "react-icons/fa";
 
 /**
  * Header component renders the navigation bar, including the logo, links,
@@ -35,6 +35,7 @@ const Header = ({ isAuthenticated, onLogout }) => {
   const [totalRecipes, setTotalRecipes] = useState(0); // State to hold total recipes
   const [showModal, setShowModal] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isCategoryOpen, setIsCategoryOpen] = useState(false);
   const router = useRouter();
 
   const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
@@ -118,28 +119,68 @@ const Header = ({ isAuthenticated, onLogout }) => {
         </nav>
       </div>
 
-      {/* Mobile Menu */}
+      {/* Mobile menu dropdown */}
       <div
-        className={`md:hidden bg-white border-t transition-all duration-300 ${
-          isDropdownOpen ? "max-h-screen py-4" : "max-h-0 overflow-hidden"
-        }`}
+        className={`md:hidden items-center justify-center bg-white border-t transition-all duration-300 ${isDropdownOpen ? "max-h-24 py-2" : "max-h-0 overflow-hidden"}`}
       >
-        <div className="container mx-auto px-4 space-y-4">
+        <div className="container mx-auto px-4 space-y-4 flex flex-col items-start">
           <Link
-            href="/recipes"
+            href="/"
             className="block text-[#020123] hover:text-[#fc9d4f] font-medium py-2"
           >
-            Recipes
+            {/* Optional link for logo or home */}
           </Link>
-          <Suspense fallback={<Loading />}>
-            <CategoryList
-              totalRecipes={totalRecipes}
-              onCategoryChange={() => {}}
+
+          {/* Flex container for icons */}
+          <div className="flex space-x-6 ">
+            {/* Category icon with functionality */}
+            <FaList
+              className="w-5 h-5 text-[#020123] hover:text-[#fc9d4f]"
+              onClick={() => setIsCategoryOpen(!isCategoryOpen)} 
             />
-            <div className="py-2">
-              <FilterButton onClick={() => setIsFilterOpen(!isFilterOpen)} />
-            </div>
-          </Suspense>
+            {isCategoryOpen && (
+              <CategoryList
+                totalRecipes={totalRecipes}
+                onCategoryChange={(category) => {}}
+              />
+            )}
+
+            {/* Filter icon with functionality */}
+            <FaFilter
+              className="w-5 h-5 text-[#020123] hover:text-[#fc9d4f]"
+              onClick={() => setIsFilterOpen(!isFilterOpen)}
+            />
+
+            {/**Search bar */}
+
+{isSearchOpen && (
+        <div className="absolute top-full left-0 w-full z-50">
+          <RecipeSearchBar onClose={toggleSearch} />
+        </div>
+      )}
+
+            {/* User icon */}
+            <button
+              onClick={toggleModal}
+              className="text-[#020123] dark:text-white hover:text-[#fc9d4f]"
+            >
+              <FaUser className="w-5 h-5" />
+            </button>
+
+            {/* Favourite icon */}
+            <Link
+              href="/Favourite"
+              className="text-[#020123] dark:text-white hover:text-[#fc9d4f]"
+            >
+              <FaHeart className="w-5 h-5" />
+            </Link>
+
+            <ThemeButton />
+
+      
+          </div>
+
+          <Suspense fallback={<Loading />}></Suspense>
         </div>
       </div>
 
@@ -147,7 +188,7 @@ const Header = ({ isAuthenticated, onLogout }) => {
       {isFilterOpen && <FilterModal onClose={() => setIsFilterOpen(false)} />}
       <UserModal show={showModal} onClose={() => setShowModal(false)} />
 
-      {/* Search Bar Conditionally Rendered */}
+      {/* Search bar */}
       {isSearchOpen && (
         <div className="absolute top-full left-0 w-full z-50">
           <RecipeSearchBar onClose={toggleSearch} />
