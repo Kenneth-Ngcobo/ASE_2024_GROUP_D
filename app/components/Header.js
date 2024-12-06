@@ -1,17 +1,16 @@
-"use client";
-import Link from "next/link";
-import Image from "next/image";
-import { useState, useEffect, Suspense } from "react";
-
-import { useRouter } from "next/navigation";
-import CategoryList from "./ui/CategoryList.js";
-import { FilterButton } from "./filter-sort/FilterButton.js";
-import ThemeButton from "./ui/ThemeButton";
-import RecipeSearchBar from "./ui/searchBar.js";
-import UserModal from "./UserModal.js";
-import { FilterModal } from "./filter-sort/FilterButton.js";
-import Loading from "../loading.js";
-import { FaUser, FaSearch, FaHeart } from "react-icons/fa";
+'use client';
+import Link from 'next/link';
+import Image from 'next/image';
+import { useState, useEffect, Suspense } from 'react';
+import { FaUser, FaShoppingBag, FaHeart, FaSearch } from 'react-icons/fa';
+import { useRouter } from 'next/navigation';
+import CategoryList from './ui/CategoryList.js';
+import { FilterButton } from './filter-sort/FilterButton.js';
+import ThemeButton from './ui/ThemeButton';
+import RecipeSearchBar from './ui/searchBar.js';
+import UserModal from './UserModal.js';
+import { FilterModal } from './filter-sort/FilterButton.js';
+import Loading from '../loading.js';
 
 /**
  * Header component renders the navigation bar, including the logo, links,
@@ -34,12 +33,39 @@ const Header = ({ isAuthenticated, onLogout }) => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [totalRecipes, setTotalRecipes] = useState(0); // State to hold total recipes
   const [showModal, setShowModal] = useState(false);
+  const [shoppingListCount, setShoppingListCount] = useState(0); // State for shopping list count
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const router = useRouter();
 
   const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
   const toggleFilterModal = () => setIsFilterOpen((prev) => !prev);
   const toggleModal = () => setShowModal((prev) => !prev);
+
+  /**
+   * Fetches the shopping list items from the API and updates the shopping list count state.
+   * @async
+   */
+  useEffect(() => {
+    const fetchShoppingList = async () => {
+      try {
+        const response = await fetch('/api/shopping_lists');
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        if (data.success) {
+          setShoppingListCount(data.data.length); // Update the shopping list count
+        } else {
+          throw new Error('Failed to fetch shopping list');
+        }
+      } catch (error) {
+        console.error('Error fetching shopping list:', error);
+      }
+    };
+
+    fetchShoppingList();
+  }, []);
+
   const toggleSearch = () => setIsSearchOpen((prev) => !prev);
 
   return (
@@ -56,7 +82,7 @@ const Header = ({ isAuthenticated, onLogout }) => {
             <Suspense fallback={<Loading />}>
               <CategoryList
                 totalRecipes={totalRecipes}
-                onCategoryChange={() => {}}
+                onCategoryChange={() => { }}
               />
               <FilterButton onClick={toggleFilterModal} />
             </Suspense>
@@ -71,11 +97,9 @@ const Header = ({ isAuthenticated, onLogout }) => {
               className="h-20 w-"
             />
           </Link>
+
           <div className="hidden md:flex items-center space-x-8">
-            <button
-              onClick={toggleSearch}
-              className="text-[#020123] dark:text-white hover:text-[#fc9d4f]"
-            >
+            <button>
               <FaSearch className="w-5 h-5" />
             </button>
 
@@ -96,6 +120,15 @@ const Header = ({ isAuthenticated, onLogout }) => {
             <Suspense fallback={<Loading />}></Suspense>
 
             <ThemeButton />
+
+            <Link href="/shopping_lists" className="relative">
+              <FaShoppingBag className="w-5 h-5 text-[#020123] dark:text-white hover:text-[#fc9d4f]" />
+              {shoppingListCount > 0 && (
+                <span className="absolute -top-1 -right-2 bg-red-500 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">
+                  {shoppingListCount}
+                </span>
+              )}
+            </Link>
           </div>
 
           <button
@@ -118,11 +151,9 @@ const Header = ({ isAuthenticated, onLogout }) => {
         </nav>
       </div>
 
-      {/* Mobile Menu */}
       <div
-        className={`md:hidden bg-white border-t transition-all duration-300 ${
-          isDropdownOpen ? "max-h-screen py-4" : "max-h-0 overflow-hidden"
-        }`}
+        className={`md:hidden bg-white border-t transition-all duration-300 ${isDropdownOpen ? "max-h-screen py-4" : "max-h-0 overflow-hidden"
+          }`}
       >
         <div className="container mx-auto px-4 space-y-4">
           <Link
@@ -134,7 +165,7 @@ const Header = ({ isAuthenticated, onLogout }) => {
           <Suspense fallback={<Loading />}>
             <CategoryList
               totalRecipes={totalRecipes}
-              onCategoryChange={() => {}}
+              onCategoryChange={() => { }}
             />
             <div className="py-2">
               <FilterButton onClick={() => setIsFilterOpen(!isFilterOpen)} />

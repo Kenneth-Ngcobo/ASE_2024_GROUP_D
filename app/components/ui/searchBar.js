@@ -61,8 +61,8 @@ const RecipeSearchBar = ({
     const [loading, setLoading] = useState(false);
     const [recentSearches, setRecentSearches] = useState([]);
     const [selectedRecipe, setSelectedRecipe] = useState(null);
+    const [error, setError] = useState(null);
     const router = useRouter();
-
 
     useEffect(() => {
         setSearch(currentSearch);
@@ -108,6 +108,7 @@ const RecipeSearchBar = ({
 
             try {
                 setLoading(true);
+                setError(null);
 
                 // Check for an exact match
                 const exactMatchResponse = await fetch(`/api/recipes?exactTitle=${encodeURIComponent(search)}`);
@@ -134,12 +135,12 @@ const RecipeSearchBar = ({
                 setSuggestions(data.recipes);
             } catch (error) {
                 console.error('Error fetching suggestions:', error);
+                setError('Failed to fetch suggestions. Please try again.');
                 setSuggestions([]);
             } finally {
                 setLoading(false);
             }
         };
-
 
         const timeoutId = setTimeout(fetchSuggestions, 500);
         return () => clearTimeout(timeoutId);
@@ -247,12 +248,6 @@ const RecipeSearchBar = ({
                                 <XCircle className="h-5 w-5" />
                             </button>
                         )}
-                        {/* <button 
-                            type="submit" 
-                            className=" text-gray-400 p-3 "
-                            aria-label="Search"
-                        >
-                        </button>*/}
                     </div>
                 </div>
 
@@ -264,7 +259,17 @@ const RecipeSearchBar = ({
                         {loading ? (
                             <div className="p-6 text-gray-600 flex items-center justify-center">
                                 <Coffee className="animate-spin mr-2 text-teal-500" />
-                                <span className="font-medium" >Finding recipes...</span>
+                                <span className="font-medium">Finding recipes...</span>
+                            </div>
+                        ) : error ? (
+                            <div className="p-6 text-red-600 text-center font-medium">
+                                {error}
+                                <button
+                                    onClick={() => setSearch('')}
+                                    className="mt-2 text-green-600 hover:underline"
+                                >
+                                    Retry
+                                </button>
                             </div>
                         ) : suggestions.length > 0 ? (
                             <ul className="divide-y divide-gray-100">
@@ -296,7 +301,7 @@ const RecipeSearchBar = ({
                             </ul>
                         ) : search.length >= minCharacters ? (
                             <div className="p-6 text-gray-600 text-center font-medium">
-                                No recipes found matching &quot;{search}&quot;
+                                No recipes found matching "{search}"
                                 <button
                                     onClick={clearRecentSearches}
                                     className="mt-2 text-green-600 hover:underline"
@@ -341,7 +346,6 @@ const RecipeSearchBar = ({
             )}
         </div>
     );
-
 };
 
 export default RecipeSearchBar;
