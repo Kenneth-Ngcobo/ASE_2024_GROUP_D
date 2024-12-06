@@ -10,8 +10,6 @@ import RegisterServiceWorker from "./components/RegisterServiceWorker";
 export default async function Home({ searchParams }) {
     let recipes = {};
     let error = null;
-    let recipes = {};
-    let error = null;
 
     const page = searchParams.page ? parseInt(searchParams.page) : 1;
     const sort = searchParams.sort || "";
