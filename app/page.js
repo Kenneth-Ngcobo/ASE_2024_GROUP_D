@@ -4,7 +4,7 @@ import Pagination from "./components/pagination";
 import Recipes from "./components/recipes";
 import Footer from "./components/ui/footer";
 import Loading from "./loading";
-import RecipeCarousel from "./components/recipe/RecipeCarousel";
+import RecipeCarousel from "./components/RecipeCarousel";
 import RegisterServiceWorker from "./components/RegisterServiceWorker";
 
 export default async function Home({ searchParams }) {
