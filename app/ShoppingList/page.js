@@ -10,10 +10,12 @@ import { FaWhatsapp } from 'react-icons/fa';
  * @returns {JSX.Element} Shopping list with functionality to delete items, mark items as purchased, share on WhatsApp, and adjust quantities.
  */
 const ShoppingListPage = () => {
-  const [shoppingList, setShoppingList] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [notification, setNotification] = useState(null);
+    const [shoppingList, setShoppingList] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [notification, setNotification] = useState(null);
+    const [newItemName, setNewItemName] = useState('');
+    const [newItemQuantity, setNewItemQuantity] = useState(1);
 
   // Fetch the shopping list items from the API when the component mounts
   useEffect(() => {
@@ -39,7 +41,41 @@ const ShoppingListPage = () => {
   const showNotification = (message) => {
     setNotification(message);
     setTimeout(() => setNotification(null), 3000); // Clear message after 3 seconds
-  };
+    };
+    
+    const addItem = async (name, quantity) => {
+        try {
+          const response = await fetch('/api/shopping_lists', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ name, quantity }),
+          });
+    
+          const data = await response.json();
+          if (data.success) {
+            setShoppingList((prevList) => [...prevList, data.item]);
+            setNewItemName('');
+            setNewItemQuantity(1);
+            showNotification('Item added successfully!');
+          } else {
+            throw new Error('Failed to add item');
+          }
+        } catch (error) {
+          console.error('Error adding item:', error);
+        }
+      };
+    
+      const handleAddItem = (event) => {
+        event.preventDefault();
+        if (newItemName.trim() === '') {
+          showNotification('Item name cannot be empty');
+          return;
+        }
+        addItem(newItemName, newItemQuantity);
+      };
+
 
   /**
    * Deletes an item from the shopping list.
@@ -182,6 +218,33 @@ const ShoppingListPage = () => {
         </div>
       )}
       <h1 className="text-2xl text-[#fc9d4f] dark:text-[#b05103] font-semibold mb-4">Shopping List</h1>
+
+      {/* Add Item Form */}
+      <form className="mb-4 flex space-x-2" onSubmit={handleAddItem}>
+        <input
+          type="text"
+          placeholder="Item name"
+          value={newItemName}
+          onChange={(e) => setNewItemName(e.target.value)}
+          className="px-2 py-1 border rounded w-full"
+          required
+        />
+        <input
+          type="number"
+          min="1"
+          placeholder="Quantity"
+          value={newItemQuantity}
+          onChange={(e) => setNewItemQuantity(Number(e.target.value))}
+          className="w-16 px-2 py-1 border rounded"
+        />
+        <button
+          type="submit"
+          className="bg-[#edd282] text-[#020123] px-3 py-1 rounded"
+        >
+          Add
+        </button>
+      </form>
+
       <ul className="space-y-4">
         {shoppingList.length > 0 ? (
           shoppingList.map((item) => (
@@ -192,7 +255,7 @@ const ShoppingListPage = () => {
                   type="number"
                   min="0"
                   value={item.quantity}
-                  onChange={(event) => handleQuantityChange(item._id, event)}
+                  onChange={(event) => updateQuantity(item._id, event.target.value)}
                   className="w-16 px-2 py-1 border rounded"
                 />
                 <button
@@ -214,6 +277,7 @@ const ShoppingListPage = () => {
           <p>Your shopping list is empty.</p>
         )}
       </ul>
+
       {shoppingList.length > 0 && (
         <div className="flex space-x-4 mt-4">
           <button
